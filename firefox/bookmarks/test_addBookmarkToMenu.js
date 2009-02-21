@@ -69,13 +69,12 @@ var testAddBookmarkToBookmarksMenu = function() {
   // Open the bookmark panel via bookmarks menu
   controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
 
-  // editBookmarksPanel is loaded lazily
-  // XXX: "initialized" doesn't exist yet - we run into a timeout for now (bug 473976)
-  let panel = new elementslib.ID(controller.window.document, "editBookmarkPanel");
-  controller.waitForEval("subject.initialized == 'true'", 1000, 100, panel.getNode());
+  // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
+  controller.waitForEval("subject._overlayLoaded == true", 2000, 100, controller.window.top.StarUI);
 
   // Bookmark should automatically be stored under the Bookmark Menu
   // XXX: We should give a unique name too when controller.type will send oninput events (bug 474667)
+  controller.sleep(500);
   controller.click(new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton"));
 
   // Check if bookmark was created in the Bookmarks Menu
