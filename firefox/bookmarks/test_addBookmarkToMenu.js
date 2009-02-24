@@ -11,9 +11,9 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is mozilla.org code.
+ * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Henrik Skupin
+ * The Initial Developer of the Original Code is Mozilla Corporation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  places.restoreDefaultBookmarks();
+  //places.restoreDefaultBookmarks();
 }
 
 /**
@@ -74,6 +74,7 @@ var testAddBookmarkToBookmarksMenu = function() {
 
   // Bookmark should automatically be stored under the Bookmark Menu
   // XXX: We should give a unique name too when controller.type will send oninput events (bug 474667)
+  controller.type(new elementslib.ID(controller.window.document, "editBMPanel_namePicker"),"Mozilla");
   controller.sleep(500);
   controller.click(new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton"));
 
