@@ -49,7 +49,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  //places.restoreDefaultBookmarks();
+  places.restoreDefaultBookmarks();
 }
 
 /**
