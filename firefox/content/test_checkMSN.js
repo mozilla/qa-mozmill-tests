@@ -40,7 +40,7 @@ var elementslib = {}; Components.utils.import('resource://mozmill/modules/elemen
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
-
+ 
 /**
  *  Waits until element exists before calling assertNode
  */
