@@ -44,6 +44,13 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
+var teardownModule = function(module) {
+  // Remove all cookies which were set by Amazon.com
+  var cm = Components.classes["@mozilla.org/cookiemanager;1"].
+                      getService(Components.interfaces.nsICookieManager);
+  cm.removeAll();
+}
+
 /**
  *  Waits until element exists before calling assertNode
  */
@@ -53,22 +60,15 @@ function delayedAssertNode(aNode, aTimeout) {
 }
 
 /**
- *  Waits until element exists before clicking on it
- */
-function delayedClick(aNode, aTimeout) {
-  controller.waitForElement(aNode, aTimeout);
-  controller.click(aNode);
-}
-
-/**
  *  Run tests against a given search field
  */
 function checkSearchField(aElem, aTerm, aSubmit, aTimeout) {
-  delayedClick(aElem, aTimeout);
+  delayedAssertNode(aElem, aTimeout);
   controller.type(aElem, aTerm);
 
   if (aSubmit) {
-    delayedClick(aSubmit, aTimeout);
+    delayedAssertNode(aSubmit, aTimeout);
+    controller.click(aSubmit);
   }
 }
 
@@ -76,9 +76,7 @@ function checkSearchField(aElem, aTerm, aSubmit, aTimeout) {
  *  Testcase ID #5917 - Top Site - Amazon.com
  */
 var testCheckAmazonCom = function () {
-  let aURL = "http://www.amazon.com";
-
-  controller.open(aURL);
+  controller.open("http://www.amazon.com");
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Check sign-in link
@@ -89,38 +87,32 @@ var testCheckAmazonCom = function () {
   let account = new elementslib.Link(controller.tabs.activeTab, "Your Account");
   delayedAssertNode(account, gTimeout);
 
-  // XXX: For now we can only test for click (bug 476231)
+  // Select category 'Music'
   let category = new elementslib.Name(controller.tabs.activeTab, "url");
-  delayedClick(category);
+  delayedAssertNode(category, gTimeout);
+  controller.select(category, null, "Music", null);
 
   // Check search field
   let searchField = new elementslib.ID(controller.tabs.activeTab, "twotabsearchtextbox");
-  let searchSubmit = new elementslib.ID(controller.tabs.activeTab, "navGoButtonPanel");
-  checkSearchField(searchField, "iPhone", searchSubmit);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
-
-  // XXX: controller.goBack() will throw an exception (bug 476225)
-  controller.window.content.history.back();
-
-  // Check footer search field too
-  let footerField = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='page-footer']/form/table/tbody/tr[2]/td/table/tbody/tr/td/input");
-  let footerSubmit = new elementslib.Name(controller.tabs.activeTab, "Go");
-  checkSearchField(footerField, "The Police CD", footerSubmit);
+  let searchSubmit = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='navGoButton']/input");
+  checkSearchField(searchField, "The Police", searchSubmit);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Click on image of the first search result
   let item = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='result_0']/div[2]/a/img");
-  delayedClick(item, gTimeout);
+  delayedAssertNode(item, gTimeout);
+  controller.click(item);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Add item to cart
   let addButton = new elementslib.Name(controller.tabs.activeTab, "submit.add-to-cart");
-  delayedClick(addButton, gTimeout);
+  delayedAssertNode(addButton, gTimeout);
+  controller.click(addButton);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Open cart
-  let cart = new elementslib.XPath(controller.tabs.activeTab, "//li[@id='navCartNonJSSwapPanel']/a/img");
-  delayedClick(cart, gTimeout);
+  let cart = new elementslib.Link(controller.tabs.activeTab, "Cart");
+  controller.click(cart);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Check if the item was added
