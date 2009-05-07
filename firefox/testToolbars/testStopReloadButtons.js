@@ -57,16 +57,16 @@ var setupModule = function(module) {
 var testStopAndReload = function() {
   var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
 
-  // Go to the NYPost front page and start loading for some milli seconds
+  // Go to the NYPost front page and start loading for some milliseconds
   controller.open("http://www.nypost.com/");
   controller.sleep(500);
 
-  // Throbber on tab should immediately replaced by the favicon when hitting the stop button
+  // The link at the bottom of the page should not exist when hitting the stop button
   controller.click(new elementslib.ID(controller.window.document, "stop-button"));
   controller.assertNodeNotExist(elem);
   controller.sleep(1000);
 
-  // Reload the web page and wait for it to completely load
+  // Reload, wait for it to completely loading and test again
   controller.refresh();
   utils.delayedAssertNode(controller, elem, gTimeout);
 }
