@@ -33,18 +33,42 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * **** END LICENSE BLOCK ***** */
- 
-var MODULE_NAME = 'utilsAPI';
+
+var MODULE_NAME = 'PlacesAPI';
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-/**
- * Create a new URI
- */
-function createURI(aSpec, aOriginCharset, aBaseURI) {
-  let iosvc = Cc["@mozilla.org/network/io-service;1"].
-              getService(Ci.nsIIOService);
+// Bookmark service
+let bookmarks = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
+                getService(Ci.nsINavBookmarksService);
 
-  return iosvc.newURI(aSpec, aOriginCharset, aBaseURI);
+/**
+ * Check if a URI is bookmarked within a given folder
+ */
+function isBookmarkInFolder( aURI, aFolderId) {
+  let ids = bookmarks.getBookmarkIdsForURI(aURI, {});
+  for (let i = 0; i < ids.length; i++) {
+    if (bookmarks.getFolderIdForItem(ids[i]) == aFolderId)
+      return true;
+  }
+
+  return false;
+}
+
+/**
+ * Restore the default bookmarks by overwriting all existing entries
+ */
+function restoreDefaultBookmarks() {
+  // Get the default bookmarks.html
+  let dirService = Cc["@mozilla.org/file/directory_service;1"].
+                   getService(Ci.nsIProperties);
+
+  bookmarksFile = dirService.get("profDef", Ci.nsILocalFile);
+  bookmarksFile.append("bookmarks.html");
+
+  // Run the import
+  let importer = Cc["@mozilla.org/browser/places/import-export-service;1"].
+                 getService(Ci.nsIPlacesImportExportService);
+  importer.importHTMLFromFile(bookmarksFile, true);
 }

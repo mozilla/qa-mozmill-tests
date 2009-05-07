@@ -1,4 +1,4 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/* * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -11,14 +11,14 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla Mozmill Test Code.
+ * The Original Code is MozMill Test code.
  *
  * The Initial Developer of the Original Code is Mozilla Corporation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -32,39 +32,40 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * ***** END LICENSE BLOCK ***** */
+ * **** END LICENSE BLOCK ***** */
+ 
+var MODULE_NAME = 'UtilsAPI';
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+/**
+ * Create a new URI
+ */
+function createURI(aSpec, aOriginCharset, aBaseURI) {
+  let iosvc = Cc["@mozilla.org/network/io-service;1"].
+              getService(Ci.nsIIOService);
+
+  return iosvc.newURI(aSpec, aOriginCharset, aBaseURI);
+}
+
+/**
+ *  Run tests against a given search field
+ */
+function checkSearchField(controller, aElem, aTerm, aSubmit, aTimeout) {
+  delayedAssertNode(controller, aElem, aTimeout);
+  controller.type(aElem, aTerm);
+
+  if (aSubmit) {
+    delayedAssertNode(controller, aSubmit, aTimeout);
+    controller.click(aSubmit);
+  }
 }
 
 /**
  *  Waits until element exists before calling assertNode
  */
-function delayedAssertNode(aNode, aTimeout) {
+function delayedAssertNode(controller, aNode, aTimeout) {
   controller.waitForElement(aNode, aTimeout);
   controller.assertNode(aNode);
-}
-
-/**
- *  Testcase ID #5988 - Stop and Reload buttons
- */
-var testStopAndReload = function() {
-  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
-
-  // Go to the NYPost front page and start loading for some milli seconds
-  controller.open("http://www.nypost.com/");
-  controller.sleep(500);
-
-  // Throbber on tab should immediately replaced by the favicon when hitting the stop button
-  controller.click(new elementslib.ID(controller.window.document, "stop-button"));
-  controller.assertNodeNotExist(elem);
-  controller.sleep(1000);
-
-  // Reload the web page and wait for it to completely load
-  controller.refresh();
-  delayedAssertNode(elem, 5000);
 }

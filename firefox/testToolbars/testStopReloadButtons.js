@@ -1,4 +1,4 @@
-/* * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -11,14 +11,15 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is MozMill Test code.
+ * The Original Code is Mozilla Mozmill Test Code.
  *
  * The Initial Developer of the Original Code is Mozilla Corporation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@gmail.com>
+ *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -32,43 +33,40 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * **** END LICENSE BLOCK ***** */
+ * ***** END LICENSE BLOCK ***** */
 
-var MODULE_NAME = 'placesAPI';
+var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
+var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
 
-// Bookmark service
-let bookmarks = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
-                getService(Ci.nsINavBookmarksService);
+// Global timeout value
+const gTimeout = 10000;
 
-/**
- * Check if a URI is bookmarked within a given folder
- */
-function isBookmarkInFolder( aURI, aFolderId) {
-  let ids = bookmarks.getBookmarkIdsForURI(aURI, {});
-  for (let i = 0; i < ids.length; i++) {
-    if (bookmarks.getFolderIdForItem(ids[i]) == aFolderId)
-      return true;
-  }
+var setupModule = function(module) {
+  module.controller = mozmill.getBrowserController();
 
-  return false;
+  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
- * Restore the default bookmarks by overwriting all existing entries
+ *  Testcase ID #5988 - Stop and Reload buttons
  */
-function restoreDefaultBookmarks() {
-  // Get the default bookmarks.html
-  let dirService = Cc["@mozilla.org/file/directory_service;1"].
-                   getService(Ci.nsIProperties);
+var testStopAndReload = function() {
+  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
 
-  bookmarksFile = dirService.get("profDef", Ci.nsILocalFile);
-  bookmarksFile.append("bookmarks.html");
+  // Go to the NYPost front page and start loading for some milli seconds
+  controller.open("http://www.nypost.com/");
+  controller.sleep(500);
 
-  // Run the import
-  let importer = Cc["@mozilla.org/browser/places/import-export-service;1"].
-                 getService(Ci.nsIPlacesImportExportService);
-  importer.importHTMLFromFile(bookmarksFile, true);
+  // Throbber on tab should immediately replaced by the favicon when hitting the stop button
+  controller.click(new elementslib.ID(controller.window.document, "stop-button"));
+  controller.assertNodeNotExist(elem);
+  controller.sleep(1000);
+
+  // Reload the web page and wait for it to completely load
+  controller.refresh();
+  utils.delayedAssertNode(controller, elem, gTimeout);
 }

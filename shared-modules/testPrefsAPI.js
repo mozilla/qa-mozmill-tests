@@ -34,7 +34,7 @@
  *
  * **** END LICENSE BLOCK ***** */
  
-var MODULE_NAME = 'prefsAPI';
+var MODULE_NAME = 'PrefsAPI';
 
 /**
  * Preferences helper object for accessing nsIPrefBranch.

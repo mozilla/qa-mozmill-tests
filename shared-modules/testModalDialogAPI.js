@@ -40,7 +40,7 @@ var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js
 // Huge amounts of code here were leveraged from the password manager mochitest
 // suite: http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/test/prompt_common.js
 
-const MODULE_NAME = 'modalDialogAPI';
+const MODULE_NAME = 'ModalDialogAPI';
 
 /**
  * Observer for modal dialog

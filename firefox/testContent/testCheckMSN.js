@@ -37,30 +37,17 @@
 var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
 var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
+// Global timeout value
+const gTimeout = 10000;
+
 var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-}
+  module.controller = mozmill.getBrowserController();
 
-/**
- *  Waits until element exists before calling assertNode
- */
-function delayedAssertNode(aNode) {
-  controller.waitForElement(aNode);
-  controller.assertNode(aNode);
-}
-
-/**
- *  Run tests against a given search field
- */
-function checkSearchField(aElem, aTerm, aSubmit) {
-  delayedAssertNode(aElem);
-  controller.click(aElem);
-  controller.type(aElem, aTerm);
-
-  if (aSubmit) {
-    controller.click(aSubmit);
-    controller.waitForPageLoad(controller.tabs.activeTab);
-  }
+  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -70,38 +57,38 @@ var testCheckMSNCom = function () {
   let aURL = "http://www.msn.com";
 
   controller.open(aURL);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Check sign-in link
   let signIn = new elementslib.ID(controller.tabs.activeTab, "ppsgin");
-  delayedAssertNode(signIn);
+  utils.delayedAssertNode(controller, signIn, gTimeout);
 
   // check sign-up link for hotmail
   let signUp = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='content']/div[@id='arear']/div[@id='wlive']/div[@id='hmm']/div[1]/div/p[1]/span[3]/a/b");
-  delayedAssertNode(signUp);
+  utils.delayedAssertNode(controller, signUp, gTimeout);
 
   // Check images and link texts for Hotmail, Messenger, My MSN, and MSN Directory links
   for (let i = 1; i <= 4; i++) {
     let img = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a/img[1]");
-    let link = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a/span/strong");
+    let link = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a");
 
     // Image has to be loaded first
-    controller.waitForEval("subject.complete === true", 1000, 100, img.getNode());
+    controller.waitForEval("subject.complete === true", gTimeout, 100, img.getNode());
     controller.assertImageLoaded(img);
 
-    delayedAssertNode(link);
+    utils.delayedAssertNode(controller, link, gTimeout);
   }
 
   // Check top search field
   let f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
   let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/form[@id='srchfrm']/div/input[3]");
-  checkSearchField(f1, "Microsoft", f1Submit);
+  utils.checkSearchField(controller, f1, "Microsoft", f1Submit);
 
   controller.open(aURL);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Check footer search field
   let footerSearch = new elementslib.ID(controller.tabs.activeTab, "footersearch");
   let footerSearchSubmit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='foot']/div[@id='foot1']/div/form[@id='srchfrmfooter']/div/input[3]");
-  checkSearchField(footerSearch, "MSN", footerSearchSubmit);
+  utils.checkSearchField(controller, footerSearch, "MSN", footerSearchSubmit);
 }

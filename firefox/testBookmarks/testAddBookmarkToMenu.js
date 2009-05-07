@@ -39,13 +39,13 @@ var elementslib = {}; Components.utils.import('resource://mozmill/modules/elemen
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['placesAPI', 'utilsAPI'];
+var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  module.places = collector.getModule('placesAPI');
-  module.utils = collector.getModule('utilsAPI');
+  module.places = collector.getModule('PlacesAPI');
+  module.utils = collector.getModule('UtilsAPI');
 }
 
 var teardownModule = function(module) {
