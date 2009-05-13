@@ -37,16 +37,31 @@
 var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
 var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
 const gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
  *  Testcase ID #6375 - Access "View Page Info" from Context Menu
  */
 var testAccessPageInfo = function () {
+  // List of all available panes inside the page info window
+  var panes = [
+               {button: 'generalTab', panel: 'generalPanel'},
+               {button: 'mediaTab', panel: 'mediaPanel'},
+               {button: 'feedTab', panel: 'feedListbox'},
+               {button: 'permTab', panel: 'permPanel'},
+               {button: 'securityTab', panel: 'securityPanel'}
+              ];
+
+  // Load web page with RSS feed
   controller.open('http://www.cnn.com');
   controller.waitForPageLoad(controller.tabs.activeTab);
 
@@ -68,10 +83,13 @@ var testAccessPageInfo = function () {
   var piController = new mozmill.controller.MozMillController(window);
 
   // Step through each of the tabs
-  for each (tab in ['generalTab', 'mediaTab', 'feedTab', 'permTab', 'securityTab']) {
-    var elem = new elementslib.ID(piController.window.document, tab);
-    piController.click(elem);
+  for each (pane in panes) {
+    piController.click(new elementslib.ID(piController.window.document, pane.button));
     piController.sleep(gDelay);
+
+    // Check if the panel has been shown
+    var node = new elementslib.ID(piController.window.document, pane.panel);
+    utils.delayedAssertNode(piController, node);
   }
 
   // Close the Page Info window by pressing ESC
