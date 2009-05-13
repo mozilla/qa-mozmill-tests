@@ -33,7 +33,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * **** END LICENSE BLOCK ***** */
- 
+
 var MODULE_NAME = 'UtilsAPI';
 
 const Cc = Components.classes;
@@ -47,6 +47,22 @@ function createURI(aSpec, aOriginCharset, aBaseURI) {
               getService(Ci.nsIIOService);
 
   return iosvc.newURI(aSpec, aOriginCharset, aBaseURI);
+}
+
+/**
+ * Called to get the state of an individual property.
+ *
+ * @param url string URL of the string bundle
+ * @param prefName string The property to get the state of.
+ *
+ * @returns string The value of the requested property
+ */
+function getProperty(url, prefName) {
+  var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"].
+                       getService(Components.interfaces.nsIStringBundleService);
+  var bundle = sbs.createBundle(url);
+
+  return bundle.GetStringFromName(prefName);
 }
 
 /**
