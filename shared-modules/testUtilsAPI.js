@@ -34,10 +34,13 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var MODULE_NAME = 'UtilsAPI';
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+var elementslib = {}; Cu.import("resource://mozmill/modules/elementslib.js", elementslib);
+
+var MODULE_NAME = 'UtilsAPI';
 
 /**
  * Create a new URI
@@ -47,6 +50,17 @@ function createURI(aSpec, aOriginCharset, aBaseURI) {
               getService(Ci.nsIIOService);
 
   return iosvc.newURI(aSpec, aOriginCharset, aBaseURI);
+}
+
+/**
+ * Close all tabs of the current window except the last one
+ */
+var closeAllTabs = function(controller) {
+  while (controller.tabs.length > 1) {
+    controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_close));
+  }
+
+  controller.open("about:blank");
 }
 
 /**
