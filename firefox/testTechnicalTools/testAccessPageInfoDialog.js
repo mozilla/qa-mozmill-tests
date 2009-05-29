@@ -69,17 +69,10 @@ var testAccessPageInfo = function () {
   controller.rightclick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
   controller.sleep(gDelay);
   controller.click(new elementslib.ID(controller.window.document, "context-viewinfo"));
-  controller.sleep(gDelay);
+  controller.sleep(500);
 
-  // Check if the Page Info window has been opened and is in the foreground
-  var window = mozmill.wm.getMostRecentWindow('');
-  if (window &&
-      window.document.documentElement.getAttribute('windowtype') != 'Browser:page-info') {
-    window.close();
-    throw "Page info window not in foreground";
-  }
-
-  // Create controller for checking all tabs
+  // Check if the Page Info window has been opened
+  var window = mozmill.wm.getMostRecentWindow('Browser:page-info');
   var piController = new mozmill.controller.MozMillController(window);
 
   // Step through each of the tabs
@@ -92,7 +85,6 @@ var testAccessPageInfo = function () {
     utils.delayedAssertNode(piController, node);
   }
 
-  // Close the Page Info window by pressing ESC
-  var deck = new elementslib.ID(piController.window.document, "mainDeck");
-  piController.keypress(deck, 27, false, false, false, false);
+  // Close the Page Info window by pressing Escape
+  piController.keypress(null, 'VK_ESCAPE', {});
 }
