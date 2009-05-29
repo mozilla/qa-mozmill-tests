@@ -37,36 +37,28 @@
 var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
 var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
 
-var gDelay = 0;
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  gDelay = 0;
+  isMac = (mozmill.platform == 'darwin');
 }
 
 /**
  *  Testcase ID #6200 - Open search by keyboard shortcuts
  */
 var testSearchBarFocusAndSearch = function() {
-  var os = mozmill.platform;
+  var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
+  var searchBar = new elementslib.ID(controller.window.document, 'searchbar');
+
   var searchTerm = "Mozilla";
 
-  var searchBar = new elementslib.ID(controller.window.document, 'searchbar');
-  var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
-
   // Focus the search bar and enter search term
-  var key_K = 107;
-  if (os == 'darwin') {
-    controller.keypress(new elementslib.ID(controller.window.document, "main-window"), key_K, false, false, false, true);
-  } else {
-    controller.keypress(new elementslib.ID(controller.window.document, "main-window"), key_K, true, false, false, false);
-  }
-
+  controller.keypress(null, 'k', {ctrlKey: !isMac, metaKey: isMac});
   controller.type(searchBar, searchTerm);
-  controller.sleep(gDelay);
 
-  // XXX: Pressing enter doesn't work right now due to a regression caused by
-  //      bug 488315. So clicking the search icon for now.
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/{"class":"search-go-container"}/anon({"anonid":"search-go-button"})'));
+  // Start the search by pressing return
+  controller.keypress(searchBar, 'VK_RETURN', {});
   controller.waitForPageLoad(controller.tabs.activeTab);
 
   // Retrieve the URL which is used for the currently selected search engine
@@ -83,6 +75,8 @@ var testSearchBarFocusAndSearch = function() {
   if(locationBar.getNode().value.indexOf(searchTerm) == -1)
     throw "Search term in URL expected but not found.";
 
-  // Clear search bar
-  searchBar.getNode().value = "";
+  // Focus search bar, clear content and start an empty search
+  controller.keypress(null, 'k', {ctrlKey: !isMac, metaKey: isMac});
+  controller.keypress(searchBar, 'VK_DELETE', {});
+  controller.keypress(searchBar, 'VK_RETURN', {});
 }
