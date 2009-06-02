@@ -41,7 +41,6 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   gDelay = 0;
-  isMac = (mozmill.platform == 'darwin');
 }
 
 /**
@@ -54,7 +53,7 @@ var testSearchBarFocusAndSearch = function() {
   var searchTerm = "Mozilla";
 
   // Focus the search bar and enter search term
-  controller.keypress(null, 'k', {ctrlKey: !isMac, metaKey: isMac});
+  controller.keypress(null, 'k', {ctrlKey: !mozmill.isMac, metaKey: mozmill.isMac});
   controller.type(searchBar, searchTerm);
 
   // Start the search by pressing return
@@ -76,7 +75,7 @@ var testSearchBarFocusAndSearch = function() {
     throw "Search term in URL expected but not found.";
 
   // Focus search bar, clear content and start an empty search
-  controller.keypress(null, 'k', {ctrlKey: !isMac, metaKey: isMac});
+  controller.keypress(null, 'k', {ctrlKey: !mozmill.isMac, metaKey: mozmill.isMac});
   controller.keypress(searchBar, 'VK_DELETE', {});
   controller.keypress(searchBar, 'VK_RETURN', {});
 }
