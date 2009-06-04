@@ -36,9 +36,6 @@
 
 var MODULE_NAME = 'PlacesAPI';
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-
 // Bookmark service
 let bookmarks = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
                 getService(Ci.nsINavBookmarksService);

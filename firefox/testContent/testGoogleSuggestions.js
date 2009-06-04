@@ -33,9 +33,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -60,5 +57,5 @@ var testGoogleSuggestedTerms = function() {
 
   // Check if Search page has come up
   controller.waitForElement(new elementslib.Name(controller.tabs.activeTab, "q"));
-  controller.waitForElement(new elementslib.Link(controller.tabs.activeTab, "Next")); 
+  controller.waitForElement(new elementslib.Link(controller.tabs.activeTab, "Next"));
 }

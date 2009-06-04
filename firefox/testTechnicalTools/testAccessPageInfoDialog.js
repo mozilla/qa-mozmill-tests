@@ -34,9 +34,6 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -45,7 +42,6 @@ const gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -82,7 +78,7 @@ var testAccessPageInfo = function () {
 
     // Check if the panel has been shown
     var node = new elementslib.ID(piController.window.document, pane.panel);
-    utils.delayedAssertNode(piController, node);
+    UtilsAPI.delayedAssertNode(piController, node);
   }
 
   // Close the Page Info window by pressing Escape

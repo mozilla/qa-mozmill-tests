@@ -35,10 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
-const timeout = 6000;
+// Global timeout value
+const gTimeout = 10000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -50,25 +48,25 @@ var setupModule = function(module) {
 var testBackandForward = function() {
   var websites = ['http://www.google.com/webhp?hl=en&complete=1', 'http://www.cnn.com/', 'http://www.msn.com/'];
   var pageElements = ['guser', 'cnnHeadSrchTxt', 'f1'];
-  
+
   // Open up the list of websites statically assigned in the array
   for (var k = 0; k < websites.length; k++) {
     controller.open(websites[k]);
     controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[k]), timeout);
+    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[k]), gTimeout);
   }
-  
+
   // Click on the Back button for the number of websites visited
   for (var i = websites.length - 2; i >= 0; i--) {
     controller.goBack();
     controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[i]), timeout);
+    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[i]), gTimeout);
   }
-  
-  //Click on the Forward button for the number of websites visited
+
+  // Click on the Forward button for the number of websites visited
   for (var j = 1; j < websites.length; j++) {
     controller.goForward();
     controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[j]), timeout);
+    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[j]), gTimeout);
   }
 }

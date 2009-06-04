@@ -34,12 +34,6 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
-
-var elementslib = {}; Cu.import("resource://mozmill/modules/elementslib.js", elementslib);
-
 var MODULE_NAME = 'UtilsAPI';
 
 /**
@@ -84,6 +78,7 @@ function getProperty(url, prefName) {
  */
 function checkSearchField(controller, aElem, aTerm, aSubmit, aTimeout) {
   delayedAssertNode(controller, aElem, aTimeout);
+  controller.click(aElem);
   controller.type(aElem, aTerm);
 
   if (aSubmit) {

@@ -42,8 +42,8 @@ var MODULE_NAME = 'PrefsAPI';
  * @class Preferences
  */
 var preferences = {
-  _branch : Components.classes["@mozilla.org/preferences-service;1"].
-                       getService(Components.interfaces.nsIPrefBranch),
+  _branch : Cc["@mozilla.org/preferences-service;1"].
+            getService(Ci.nsIPrefBranch),
 
   /**
    *  Use branch to access low level functions of nsIPrefBranch

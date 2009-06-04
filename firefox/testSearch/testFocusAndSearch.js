@@ -34,13 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
+const gDelay = 0;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-
-  gDelay = 0;
 }
 
 /**

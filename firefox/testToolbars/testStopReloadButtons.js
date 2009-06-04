@@ -35,9 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -47,26 +44,24 @@ const gTimeout = 10000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
  *  Testcase ID #5988 - Stop and Reload buttons
  */
 var testStopAndReload = function() {
-  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
-
   // Go to the NYPost front page and start loading for some milliseconds
   controller.open("http://www.nypost.com/");
   controller.sleep(500);
 
   // The link at the bottom of the page should not exist when hitting the stop button
+  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
+
   controller.click(new elementslib.ID(controller.window.document, "stop-button"));
   controller.assertNodeNotExist(elem);
   controller.sleep(1000);
 
   // Reload, wait for it to completely loading and test again
   controller.refresh();
-  utils.delayedAssertNode(controller, elem, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, elem, gTimeout);
 }

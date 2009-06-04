@@ -34,9 +34,6 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -46,8 +43,6 @@ const gTimeout = 10000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  module.utils = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -61,11 +56,11 @@ var testCheckMSNCom = function () {
 
   // Check sign-in link
   let signIn = new elementslib.ID(controller.tabs.activeTab, "ppsgin");
-  utils.delayedAssertNode(controller, signIn, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, signIn, gTimeout);
 
   // check sign-up link for hotmail
   let signUp = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='content']/div[@id='arear']/div[@id='wlive']/div[@id='hmm']/div[1]/div/p[1]/span[3]/a/b");
-  utils.delayedAssertNode(controller, signUp, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, signUp, gTimeout);
 
   // Check images and link texts for Hotmail, Messenger, My MSN, and MSN Directory links
   for (let i = 1; i <= 4; i++) {
@@ -76,19 +71,11 @@ var testCheckMSNCom = function () {
     controller.waitForEval("subject.complete === true", gTimeout, 100, img.getNode());
     controller.assertImageLoaded(img);
 
-    utils.delayedAssertNode(controller, link, gTimeout);
+    UtilsAPI.delayedAssertNode(controller, link, gTimeout);
   }
 
   // Check top search field
   let f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
-  let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/form[@id='srchfrm']/div/input[3]");
-  utils.checkSearchField(controller, f1, "Microsoft", f1Submit);
-
-  controller.open(aURL);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
-
-  // Check footer search field
-  let footerSearch = new elementslib.ID(controller.tabs.activeTab, "footersearch");
-  let footerSearchSubmit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='foot']/div[@id='foot1']/div/form[@id='srchfrmfooter']/div/input[3]");
-  utils.checkSearchField(controller, footerSearch, "MSN", footerSearchSubmit);
+  let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[4]");
+  UtilsAPI.checkSearchField(controller, f1, "MSN", f1Submit);
 }

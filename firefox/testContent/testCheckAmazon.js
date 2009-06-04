@@ -34,9 +34,6 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -46,8 +43,6 @@ const gTimeout = 10000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  module.utils = collector.getModule('UtilsAPI');
 }
 
 var teardownModule = function(module) {
@@ -66,32 +61,32 @@ var testCheckAmazonCom = function () {
 
   // Check sign-in link
   let signIn = new elementslib.Link(controller.tabs.activeTab, "personalized recommendations");
-  utils.delayedAssertNode(controller, signIn, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, signIn, gTimeout);
 
   // Check your account link
   let account = new elementslib.Link(controller.tabs.activeTab, "Your Account");
-  utils.delayedAssertNode(controller, account, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, account, gTimeout);
 
   // Select category 'Music'
   let category = new elementslib.Name(controller.tabs.activeTab, "url");
-  utils.delayedAssertNode(controller, category, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, category, gTimeout);
   controller.select(category, null, "Music", null);
 
   // Check search field
   let searchField = new elementslib.ID(controller.tabs.activeTab, "twotabsearchtextbox");
   let searchSubmit = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='navGoButton']/input");
-  utils.checkSearchField(controller, searchField, "The Police", searchSubmit);
+  UtilsAPI.checkSearchField(controller, searchField, "The Police", searchSubmit);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Click on image of the first search result
   let item = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='result_0']/div[2]/a/img");
-  utils.delayedAssertNode(controller, item, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, item, gTimeout);
   controller.click(item);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
   // Add item to cart
   let addButton = new elementslib.Name(controller.tabs.activeTab, "submit.add-to-cart");
-  utils.delayedAssertNode(controller, addButton, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, addButton, gTimeout);
   controller.click(addButton);
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
 
@@ -102,6 +97,6 @@ var testCheckAmazonCom = function () {
 
   // Check if the item was added
   let quantity = new elementslib.Name(controller.tabs.activeTab, "quantity.1");
-  utils.delayedAssertNode(controller, quantity, gTimeout);
+  UtilsAPI.delayedAssertNode(controller, quantity, gTimeout);
   controller.assertValue(quantity, "1");
 }

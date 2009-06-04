@@ -34,32 +34,26 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
-var elementslib = {}; Components.utils.import('resource://mozmill/modules/elementslib.js', elementslib);
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  module.places = collector.getModule('PlacesAPI');
-  module.utils = collector.getModule('UtilsAPI');
 }
 
 var teardownModule = function(module) {
-  places.restoreDefaultBookmarks();
+  PlacesAPI.restoreDefaultBookmarks();
 }
 
 /**
  *  Testcase ID #5954 - Add a bookmark via Main Menu
  */
 var testAddBookmarkToBookmarksMenu = function() {
-  var uri = utils.createURI("http://www.mozilla.org");
+  var uri = UtilsAPI.createURI("http://www.mozilla.org");
 
   // Fail if the URI is already bookmarked
-  if (places.bookmarks.isBookmarked(uri))
+  if (PlacesAPI.bookmarks.isBookmarked(uri))
     throw "Failed: " + uri.spec + " is already bookmarked.";
 
   // Open URI and wait until it has been finished loading
@@ -80,6 +74,6 @@ var testAddBookmarkToBookmarksMenu = function() {
 
   // Check if bookmark was created in the Bookmarks Menu
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
-  if (!places.isBookmarkInFolder(uri, places.bookmarks.bookmarksMenuFolder))
+  if (!PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarks.bookmarksMenuFolder))
     throw "Failed: Bookmark for " + uri.spec + " not added to Bookmarks Menu";
 }
