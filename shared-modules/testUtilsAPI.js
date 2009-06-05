@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@gmail.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -84,6 +85,31 @@ function checkSearchField(controller, aElem, aTerm, aSubmit, aTimeout) {
   if (aSubmit) {
     delayedAssertNode(controller, aSubmit, aTimeout);
     controller.click(aSubmit);
+  }
+}
+
+/**
+ * Checks the visibility of an element
+ *
+ * @param controller aController A Mozmill controller
+ * @param element aElement A DOM element
+ * @param boolean aVisible Whether an element should be visible or not
+ *
+ * @throws Error Element is visible but should be hidden
+ * @throws Error Element is hidden but should be visible
+ */
+var assertElementVisible = function(aController, aElement, aVisible) {
+  // XXX: Until Mozmill tests fail when an invisible element is actioned,
+  //      use the style property (bug 490548)
+  var style = aController.window.getComputedStyle(aElement.getNode(), "");
+  var visibility = style.getPropertyValue("visibility");
+ 
+  if (aVisible) {
+    if (visibility != 'visible')
+      throw "Element is hidden but should be visible";
+  } else {
+    if (visibility == 'visible')
+      throw "Element is visible but should be hidden";
   }
 }
 
