@@ -34,7 +34,7 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/** This test script is for testing 
+/** This test script is for testing
  *  Litmus Test Case #5914: location Field and Go button
  *  https://litmus.mozilla.org/show_test.cgi?id=5914
  */
@@ -48,7 +48,7 @@ var gDelay = 0;
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
- 
+
 /**
  * Test to make sure the GO button only appears while typing.
  */
@@ -56,30 +56,30 @@ var testGoButtonOnTypeOnly = function() {
   // Start from a web page
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
-   
+
   // Verify GO button is hidden
   var goButton = new elementslib.ID(controller.window.document, "go-button");
   UtilsAPI.assertElementVisible(controller, goButton, false);
 
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  
+
   // Focus and type a single character into the location bar
-  controller.keypress(null, "l", {metaKey: mozmill.isMac, ctrlKey: !mozmill.isMac});
+  controller.keypress(null, "l", {accelKey: true});
   controller.sleep(gDelay);
   controller.keypress(locationBar, "w", {});
   controller.sleep(gDelay);
-          
+
   // Verify GO button visible and continue if TRUE
   UtilsAPI.assertElementVisible(controller, goButton, true);
- 
+
   // Press Backspace to delete the typed character
   controller.keypress(locationBar, "VK_BACK_SPACE", {});
   controller.sleep(gDelay);
-  
+
   // Press ESC to clear focus
   controller.keypress(locationBar, "VK_ESCAPE", {});
-  controller.sleep(gDelay);   
-      
+  controller.sleep(gDelay);
+
   // Verify the GO button is hidden again
   UtilsAPI.assertElementVisible(controller, goButton, false);
 }
@@ -91,15 +91,15 @@ var testClickLocationBarAndGo = function() {
   // Start from a web page
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
-  
+
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
   // Focus and type a URL into the location bar
-  controller.keypress(null, "l", {metaKey: mozmill.isMac, ctrlKey: !mozmill.isMac});
+  controller.keypress(null, "l", {accelKey: true});
   controller.sleep(gDelay);
   controller.type(locationBar, "http://www.google.com/webhp?complete=1&hl=en");
   controller.sleep(gDelay);
-    
+
   // Click the GO button
   var goButton = new elementslib.ID(controller.window.document, "go-button");
   controller.click(goButton);
@@ -107,13 +107,13 @@ var testClickLocationBarAndGo = function() {
 
   // Wait for the page to load
   controller.waitForPageLoad();
-  
+
   // Check if the Google logo exists
   controller.assertNode(new elementslib.Name(controller.tabs.activeTab, "q"));
-  
+
   // Verify the GO button is hidden
   UtilsAPI.assertElementVisible(controller, goButton, false);
-  
+
   // Check if the URL bar matches the expected domain name
   controller.assertValue(locationBar, "http://www.google.com/webhp?complete=1&hl=en");
 }
