@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@gmail.com>
+ *   Clint Talbert <ctalbert@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,6 +36,49 @@
  * **** END LICENSE BLOCK ***** */
 
 var MODULE_NAME = 'PrefsAPI';
+
+const RELATIVE_ROOT = '.'
+const MODULE_REQUIRES = ['ModalDialogAPI'];
+
+/**
+ * Preferences Function for access to the dialog
+ *
+ * @param callback handler The callback handler to use to interact with the preference dialog
+ * @param callback launcher An optional callback to be used for launching the preference dialog
+ */
+function handlePreferencesDialog(handler, launcher) {
+  if(!handler)
+    throw "No handler given for Preferences Dialog";
+
+  if (mozmill.isWindows) {
+    // Pref dialog is modal on windows, set up our handler
+    var md = collector.getModule('ModalDialogAPI');
+    var prefModal = new md.modalDialog(handler);
+    prefModal.start();
+  }
+
+  // Launch the dialog
+  var prefCtrl = null;
+  if (launcher) {
+    launcher();
+
+    // Now that we've launched the dialog, wait a bit for the window
+    mozmill.controller.sleep(500);
+    var win = Cc["@mozilla.org/appshell/window-mediator;1"]
+                 .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
+    prefCtrl = new mozmill.controller.MozMillController(win);
+  } else {
+    prefCtrl = new mozmill.getPreferencesController();
+  }
+
+  // If the dialog is not modal, run the callback directly
+  if (!mozmill.isWindows) {
+    handler(prefCtrl);
+  }
+
+  // Wait a bit to make sure window has been closed
+  mozmill.controller.sleep(500);
+}
 
 /**
  * Preferences helper object for accessing nsIPrefBranch.

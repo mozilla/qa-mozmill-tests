@@ -47,9 +47,9 @@ const MODULE_NAME = 'ModalDialogAPI';
  */
 var mdObserver = {
   QueryInterface : function (iid) {
-    const interfaces = [Components.interfaces.nsIObserver,
-                        Components.interfaces.nsISupports,
-                        Components.interfaces.nsISupportsWeakReference];
+    const interfaces = [Ci.nsIObserver,
+                        Ci.nsISupports,
+                        Ci.nsISupportsWeakReference];
 
     if (!interfaces.some( function(v) { return iid.equals(v) } ))
       throw Components.results.NS_ERROR_NO_INTERFACE;
@@ -99,59 +99,42 @@ modalDialog.prototype.setHandler = function md_sethndlr(aHandler) {
  */
 modalDialog.prototype.start = function md_start(aObserver) {
   const dialogDelay = 100;
-  var modalDialogTimer = Components.classes["@mozilla.org/timer;1"].
-                         createInstance(Components.interfaces.nsITimer);
+  var modalDialogTimer = Cc["@mozilla.org/timer;1"].
+                         createInstance(Ci.nsITimer);
 
   // If we are not called from the observer, we have to use the supplied
   // observer instead of this.observer
   if (aObserver) {
     modalDialogTimer.init(aObserver,
                           dialogDelay,
-                          Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+                          Ci.nsITimer.TYPE_ONE_SHOT);
   } else {
     modalDialogTimer.init(this.observer,
                           dialogDelay,
-                          Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+                          Ci.nsITimer.TYPE_ONE_SHOT);
   }
 }
 
 /**
  * Get document of wanted modal dialog
  *
- * @returns DOMDocument Document of child window
+ * @returns bool Returns true if modal dialog has been found
  */
 modalDialog.prototype.getDialogDoc = function md_getDD() {
-  var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"].
-           getService(Components.interfaces.nsIWindowMediator);
-  var enumerator = wm.getXULWindowEnumerator(null);
+  var enumerator = mozmill.wm.getXULWindowEnumerator("");
 
   // Find the <browser> which contains notifyWindow, by looking
   // through all the open windows and all the <browsers> in each.
   while (enumerator.hasMoreElements()) {
     var win = enumerator.getNext();
-    var windowDocShell = win.QueryInterface(Components.interfaces.nsIXULWindow).docShell;
 
-    var containedDocShells = windowDocShell.getDocShellEnumerator(
-                                      Components.interfaces.nsIDocShellTreeItem.typeChrome,
-                                      Components.interfaces.nsIDocShell.ENUMERATE_FORWARDS);
-
-    while (containedDocShells.hasMoreElements()) {
-        // Get the corresponding document for this docshell
-        var childDocShell = containedDocShells.getNext();
-
-        // We don't want it if it's not done loading.
-        if (childDocShell.busyFlags != Components.interfaces.nsIDocShell.BUSY_FLAGS_NONE)
-          continue;
-
-        var childDoc = childDocShell.QueryInterface(Components.interfaces.nsIDocShell)
-                                    .contentViewer
-                                    .DOMDocument;
-
-        // We only wanna have dialogs
-        if (childDoc.location.href == "chrome://global/content/commonDialog.xul")
-          return childDoc;
+    // Ensure that we are only returning the dialog if it is indeed the modal
+    // dialog we were looking for.
+    if (win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_MODAL &&
+        win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
+      return true;
     }
   }
 
-  return null;
+  return false;
 }
