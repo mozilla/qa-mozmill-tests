@@ -38,19 +38,19 @@ const gDelay = 0;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  locationBar = new elementslib.ID(controller.window.document, 'urlbar');
+  searchBar = new elementslib.ID(controller.window.document, 'searchbar');
 }
 
 /**
- *  Testcase ID #6200 - Open search by keyboard shortcuts
+ * Start a search with the given search term and checks if the resulting URL
+ * contains the search term.
+ *
+ * @param searchTerm string Text you are searching for
  */
-var testSearchBarFocusAndSearch = function() {
-  var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
-  var searchBar = new elementslib.ID(controller.window.document, 'searchbar');
-
-  var searchTerm = "Mozilla";
-
-  // Focus the search bar and enter search term
-  controller.keypress(null, 'k', {accelKey: true});
+var doSearch = function(searchTerm) {
+  // Enter search term in text field
   controller.type(searchBar, searchTerm);
 
   // Start the search by pressing return
@@ -70,6 +70,21 @@ var testSearchBarFocusAndSearch = function() {
   // Check if search term is listed in URL
   if(locationBar.getNode().value.indexOf(searchTerm) == -1)
     throw "Search term in URL expected but not found.";
+}
+
+/**
+ * Testcase ID #6199 - Use mouse to focus search bar and start a search
+ * Testcase ID #6200 - Open search by keyboard shortcuts
+ */
+var testSearchBarFocusAndSearch = function() {
+  // Click search field and start search
+  var searchTextbox = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/anon({"class":"autocomplete-textbox-container"})/anon({"anonid":"textbox-input-box"})');
+  controller.click(searchTextbox);
+  doSearch("Firefox");
+
+  // Use shortcut to start search
+  controller.keypress(null, 'k', {accelKey: true});
+  doSearch("Mozilla");
 
   // Focus search bar, clear content and start an empty search
   controller.keypress(null, 'k', {accelKey: true});
