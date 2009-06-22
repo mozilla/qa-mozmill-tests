@@ -73,6 +73,7 @@ function handlePreferencesDialog(handler, launcher) {
 
   // If the dialog is not modal, run the callback directly
   if (!mozmill.isWindows) {
+    prefCtrl.sleep(500);
     handler(prefCtrl);
   }
 
