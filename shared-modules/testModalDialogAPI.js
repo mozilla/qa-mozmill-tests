@@ -127,12 +127,26 @@ modalDialog.prototype.getDialogDoc = function md_getDD() {
   // through all the open windows and all the <browsers> in each.
   while (enumerator.hasMoreElements()) {
     var win = enumerator.getNext();
+    var windowDocShell = win.QueryInterface(Components.interfaces.nsIXULWindow).docShell;
 
-    // Ensure that we are only returning the dialog if it is indeed the modal
-    // dialog we were looking for.
-    if (win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_MODAL &&
-        win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
-      return true;
+    var containedDocShells = windowDocShell.getDocShellEnumerator(
+                                      Components.interfaces.nsIDocShellTreeItem.typeChrome,
+                                      Components.interfaces.nsIDocShell.ENUMERATE_FORWARDS);
+
+    while (containedDocShells.hasMoreElements()) {
+      // Get the corresponding document for this docshell
+      var childDocShell = containedDocShells.getNext();
+
+      // We don't want it if it's not done loading.
+      if (childDocShell.busyFlags != Components.interfaces.nsIDocShell.BUSY_FLAGS_NONE)
+        continue;
+
+      // Ensure that we are only returning the dialog if it is indeed the modal
+      // dialog we were looking for.
+      if (win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_MODAL &&
+          win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
+        return true;
+      }
     }
   }
 
