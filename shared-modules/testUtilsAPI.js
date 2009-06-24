@@ -56,6 +56,7 @@ var closeAllTabs = function(controller) {
   }
 
   controller.open("about:blank");
+  controller.waitForPageLoad(controller.tabs.activeTab);
 }
 
 /**
