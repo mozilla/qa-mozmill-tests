@@ -98,7 +98,6 @@ var prefDialogHomePageCallback = function(controller) {
   // Close the Preferences dialog
   if (mozmill.isWindows) {
     var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept","icon":"accept","default":"false"}')
-    Cu.reportError(okButton.getNode().label);
     controller.click(okButton);
   } else {
     controller.keypress(null, 'VK_ESCAPE', {});
