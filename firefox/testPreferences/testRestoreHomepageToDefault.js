@@ -45,6 +45,12 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
+var teardownModule = function(module) {
+  try {
+    PrefsAPI.preferences.branch.clearUserPref("browser.startup.homepage");
+  } catch(e) {}
+}
+
 /**
  *  Testcase ID #6287 - Restore Home Page to default
  */
