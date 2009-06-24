@@ -18,7 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@gmail.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -103,7 +103,7 @@ var assertElementVisible = function(aController, aElement, aVisible) {
   //      use the style property (bug 490548)
   var style = aController.window.getComputedStyle(aElement.getNode(), "");
   var visibility = style.getPropertyValue("visibility");
- 
+
   if (aVisible) {
     if (visibility != 'visible')
       throw "Element is hidden but should be visible";

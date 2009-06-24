@@ -18,7 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@gmail.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *   Clint Talbert <ctalbert@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
