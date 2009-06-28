@@ -92,17 +92,17 @@ function checkSearchField(controller, aElem, aTerm, aSubmit, aTimeout) {
 /**
  * Checks the visibility of an element
  *
- * @param controller aController A Mozmill controller
- * @param element aElement A DOM element
- * @param boolean aVisible Whether an element should be visible or not
+ * @param aController {MozmillController} Controller to work on
+ * @param aNode {Element} Element to check
+ * @param aVisible {bool} Expected visibility state of the element
  *
  * @throws Error Element is visible but should be hidden
  * @throws Error Element is hidden but should be visible
  */
-var assertElementVisible = function(aController, aElement, aVisible) {
+var assertElementVisible = function(aController, aNode, aVisible) {
   // XXX: Until Mozmill tests fail when an invisible element is actioned,
   //      use the style property (bug 490548)
-  var style = aController.window.getComputedStyle(aElement.getNode(), "");
+  var style = aController.window.getComputedStyle(aNode.getNode(), "");
   var visibility = style.getPropertyValue("visibility");
 
   if (aVisible) {
@@ -115,9 +115,25 @@ var assertElementVisible = function(aController, aElement, aVisible) {
 }
 
 /**
- *  Waits until element exists before calling assertNode
+ *  Waits until the specified element exists before calling assertNode
+ *
+ *  @param controller {MozmillController} Controller to work on
+ *  @param aNode {Element} Element to check
+ *  @param aTimeout {number} Timeout value in milli seconds
  */
 function delayedAssertNode(controller, aNode, aTimeout) {
   controller.waitForElement(aNode, aTimeout);
   controller.assertNode(aNode);
+}
+
+/**
+ *  Waits until element exists before simulating a click on it
+ *
+ *  @param controller {MozmillController} Controller to work on
+ *  @param aNode {Element} Element to click
+ *  @param aTimeout {number} Timeout value in milli seconds
+ */
+function delayedClick(aController, aNode, aTimeout) {
+  controller.waitForElement(aNode, aTimeout);
+  controller.click(aNode);
 }
