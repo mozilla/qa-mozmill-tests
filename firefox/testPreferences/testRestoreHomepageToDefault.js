@@ -87,7 +87,9 @@ var prefDialogHomePageCallback = function(controller) {
   controller.sleep(gDelay);
 
   // Set home page to the current page
-  controller.click(new elementslib.ID(controller.window.document, "useCurrent"));
+  var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
+  controller.waitForElement(useCurrent);
+  controller.click(useCurrent);
   controller.sleep(gDelay);
 
   // Close the Preferences dialog
@@ -105,11 +107,13 @@ var prefDialogDefHomePageCallback = function(controller) {
   controller.sleep(gDelay);
 
   // Reset home page to the default page
-  var browserHomePage = new elementslib.ID(controller.window.document, "browserHomePage");
-  controller.click(new elementslib.ID(controller.window.document, "restoreDefaultHomePage"));
+  var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
+  controller.waitForElement(useDefault);
+  controller.click(useDefault);
   controller.sleep(gDelay);
 
   // Check the browserconfig file to get the get default homepage
+  var browserHomePage = new elementslib.ID(controller.window.document, "browserHomePage");
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
   controller.assertValue(browserHomePage, defaultHomePage);
 

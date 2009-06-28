@@ -143,8 +143,8 @@ modalDialog.prototype.getDialogDoc = function md_getDD() {
 
       // Ensure that we are only returning the dialog if it is indeed the modal
       // dialog we were looking for.
-      if (win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_MODAL &&
-          win.chromeFlags | Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
+      if (win.chromeFlags & Ci.nsIWebBrowserChrome.CHROME_MODAL &&
+          win.chromeFlags & Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
         return true;
       }
     }
