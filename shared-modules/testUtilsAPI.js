@@ -121,9 +121,9 @@ var assertElementVisible = function(aController, aNode, aVisible) {
  *  @param aNode {Element} Element to check
  *  @param aTimeout {number} Timeout value in milli seconds
  */
-function delayedAssertNode(controller, aNode, aTimeout) {
-  controller.waitForElement(aNode, aTimeout);
-  controller.assertNode(aNode);
+function delayedAssertNode(aController, aNode, aTimeout) {
+  aController.waitForElement(aNode, aTimeout);
+  aController.assertNode(aNode);
 }
 
 /**
@@ -134,6 +134,6 @@ function delayedAssertNode(controller, aNode, aTimeout) {
  *  @param aTimeout {number} Timeout value in milli seconds
  */
 function delayedClick(aController, aNode, aTimeout) {
-  controller.waitForElement(aNode, aTimeout);
-  controller.click(aNode);
+  aController.waitForElement(aNode, aTimeout);
+  aController.click(aNode);
 }
