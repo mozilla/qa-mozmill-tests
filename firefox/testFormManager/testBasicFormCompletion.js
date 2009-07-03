@@ -62,8 +62,6 @@ var testFormCompletion = function() {
   controller.assertNode(searchField);
 
   // Perform a search
-  // XXX: We have to manually set the focus until the Mozmill focus bug is fixed
-  searchField.getNode().focus();
   controller.type(searchField, searchText);
   controller.sleep(gDelay);
 
@@ -79,8 +77,6 @@ var testFormCompletion = function() {
   controller.waitForPageLoad(controller.tabs.activeTab);
 
   // Verify search field element and type in a portion of the field
-  // XXX: We have to manually set the focus until the Mozmill focus bug is fixed
-  searchField.getNode().focus();
   controller.type(searchField,"mozilla");
 
   // Select the first element of the drop down
