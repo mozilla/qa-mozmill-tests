@@ -34,6 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5919: Navigate FTP
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -42,9 +46,6 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
-/**
- * Testcase ID #5919 - Navigate FTP
- */
 var testNavigateFTP = function () {
   // opens the mozilla.org ftp page then navigates through a couple levels.
   controller.open('ftp://ftp.mozilla.org/pub/');

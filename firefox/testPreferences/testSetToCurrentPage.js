@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5921: Set Home Page to current page
+ * Litmus test #5989: Home button
+ */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
@@ -52,10 +56,6 @@ var teardownModule = function(module) {
   } catch(e) {}
 }
 
-/**
- *  Testcase ID #5921 - Set Home Page to current page
- *  Testcase ID #5989 - Home button
- */
 var testSetHomePage = function() {
   var homepage = 'http://www.mozilla.org/';
 

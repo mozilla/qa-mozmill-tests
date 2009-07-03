@@ -34,9 +34,8 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/** This test script is for testing
- *  Litmus Test Case #6327: Pop-ups Allowed
- *  https://litmus.mozilla.org/show_test.cgi?id=6327
+/**
+ * Litmus test #6327: Pop-ups Allowed
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

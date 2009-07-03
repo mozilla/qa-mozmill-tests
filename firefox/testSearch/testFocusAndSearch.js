@@ -34,6 +34,11 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #6199: Use mouse to focus search bar and start a search
+ * Litmus test #6200: Open search by keyboard shortcuts
+ */
+
 const gDelay = 0;
 
 var setupModule = function(module) {
@@ -72,10 +77,6 @@ var doSearch = function(searchTerm) {
     throw "Search term in URL expected but not found.";
 }
 
-/**
- * Testcase ID #6199 - Use mouse to focus search bar and start a search
- * Testcase ID #6200 - Open search by keyboard shortcuts
- */
 var testSearchBarFocusAndSearch = function() {
   // Click search field and start search
   var searchTextbox = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/anon({"class":"autocomplete-textbox-container"})/anon({"anonid":"textbox-input-box"})');

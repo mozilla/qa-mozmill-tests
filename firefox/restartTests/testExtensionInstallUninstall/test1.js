@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5929: Install an extension
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
@@ -51,9 +55,6 @@ var teardownModule = function(module) {
   UtilsAPI.closeAllTabs(controller);
 }
 
-/**
- *  Testcase ID #5929 - Install an extension
- */
 var testInstallExtension = function() {
   // Make sure only one tab is open
   UtilsAPI.closeAllTabs(controller);

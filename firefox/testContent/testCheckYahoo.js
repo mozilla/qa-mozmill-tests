@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5915: Top Site - Yahoo
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -43,9 +47,6 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
-/**
- * Litmus Testcase ID #5915 - Top Site - Yahoo
- */
 var testYahoo = function () {
   // Use the Yahoo website for testing
   var url = 'http://us.yahoo.com/';

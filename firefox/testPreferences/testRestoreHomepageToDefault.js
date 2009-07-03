@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #6287: Restore Home Page to default
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -51,9 +55,6 @@ var teardownModule = function(module) {
   } catch(e) {}
 }
 
-/**
- *  Testcase ID #6287 - Restore Home Page to default
- */
 var testRestoreHomeToDefault = function() {
   // Close all tabs and open a blank page
   UtilsAPI.closeAllTabs(controller);

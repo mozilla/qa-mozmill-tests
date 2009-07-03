@@ -34,9 +34,8 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/** This test script is for testing
- *  Litmus Test Case #5927: Find in page
- *  https://litmus.mozilla.org/show_test.cgi?id=5927
+/**
+ * Litmus test #5927: Find in page
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5922: Basic Form Completion
+ */
+
 const gDelay = 0;
 
 var setupModule = function(module) {
@@ -46,9 +50,6 @@ var setupModule = function(module) {
   formHistory.removeAllEntries();
 }
 
-/**
- *  Testcase ID #5922 - Basic Form Completion
- */
 var testFormCompletion = function() {
   var url = 'http://www.mozilla.org/';
   var searchText = 'mozillazine';

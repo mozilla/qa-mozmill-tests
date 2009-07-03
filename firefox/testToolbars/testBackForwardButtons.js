@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5990: Back and Forward buttons
+ */
+
 // Global timeout value
 const gTimeout = 10000;
 
@@ -42,9 +46,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #5990 - Back and Forward buttons
- */
 var testBackandForward = function() {
   var websites = ['http://www.google.com/webhp?hl=en&complete=1', 'http://www.cnn.com/', 'http://www.msn.com/'];
   var pageElements = ['guser', 'cnnHeadSrchTxt', 'f1'];

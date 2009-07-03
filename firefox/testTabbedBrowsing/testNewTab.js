@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #6044: Open a New Tab
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -50,9 +54,6 @@ var teardownModule = function(module) {
   UtilsAPI.closeAllTabs(controller);
 }
 
-/**
- * Litmus Testcase ID #6044 - Open a New Tab
- */
 var testNewTab = function () {
   // Make sure all tabs are closed
   UtilsAPI.closeAllTabs(controller);

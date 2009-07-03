@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5929: Install an extension
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -45,9 +49,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #5929 - Install an extension
- */
 var testCheckInstalledExtension = function() {
   // Check if Add-ons Manager is opened after restart
   var window = mozmill.wm.getMostRecentWindow('Extension:Manager');

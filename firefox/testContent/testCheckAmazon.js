@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5917: Top Site - Amazon.com
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -52,9 +56,6 @@ var teardownModule = function(module) {
   cm.removeAll();
 }
 
-/**
- *  Testcase ID #5917 - Top Site - Amazon.com
- */
 var testCheckAmazonCom = function () {
   controller.open("http://www.amazon.com");
   controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);

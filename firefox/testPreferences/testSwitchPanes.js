@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5970: Main Menu of Options (Preferences)
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -45,9 +49,6 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #5970 - Main Menu of Options (Preferences)
- */
 var testPreferencesPanes = function() {
   PrefsAPI.handlePreferencesDialog(prefDialogCallback);
 }

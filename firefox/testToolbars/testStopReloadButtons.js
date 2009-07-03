@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5988: Stop and Reload buttons
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -46,9 +50,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #5988 - Stop and Reload buttons
- */
 var testStopAndReload = function() {
   // Go to the NYPost front page and start loading for some milliseconds
   controller.open("http://www.nypost.com/");

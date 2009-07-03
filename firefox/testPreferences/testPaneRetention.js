@@ -35,6 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5971: Options (Preferences) dialog state retention
+ * Litmus test #5972: Open and dismiss the Options (Preferences) dialog
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -45,10 +50,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #5971 - Options (Preferences) dialog state retention
- *  Testcase ID #5972 - Open and dismiss the Options (Preferences) dialog
- */
 var testOptionsDialogRetention = function() {
   // Reset pane to the main pane before starting the test
   PrefsAPI.handlePreferencesDialog(prefPaneResetCallback);

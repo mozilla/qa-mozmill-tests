@@ -34,6 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5920: Security notification
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI','PrefsAPI'];
@@ -44,10 +48,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-
-/**
- *  Testcase ID #5920 - [security] Security notification
- */
 var testSecNotification = function() {
 
   // Close all tabs and open a blank page

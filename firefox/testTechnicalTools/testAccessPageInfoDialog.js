@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #6375: Access "View Page Info" from Context Menu
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -44,9 +48,6 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #6375 - Access "View Page Info" from Context Menu
- */
 var testAccessPageInfo = function () {
   // List of all available panes inside the page info window
   var panes = [

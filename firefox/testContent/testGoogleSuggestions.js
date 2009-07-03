@@ -34,13 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #6041: Test XMLHttpRequest to provide suggested search terms
+ */
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
-/**
- *  Testcase ID #6041 - Test XMLHttpRequest to provide suggested search terms
- */
 var testGoogleSuggestedTerms = function() {
   // Open the Google Webpage
   controller.open("http://www.google.com/webhp?complete=1&hl=en");

@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5954: Add a bookmark via Main Menu
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
@@ -46,9 +50,6 @@ var teardownModule = function(module) {
   PlacesAPI.restoreDefaultBookmarks();
 }
 
-/**
- *  Testcase ID #5954 - Add a bookmark via Main Menu
- */
 var testAddBookmarkToBookmarksMenu = function() {
   var uri = UtilsAPI.createURI("http://www.mozilla.org");
 

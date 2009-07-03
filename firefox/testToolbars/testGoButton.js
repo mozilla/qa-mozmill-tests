@@ -34,9 +34,8 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/** This test script is for testing
- *  Litmus Test Case #5914: location Field and Go button
- *  https://litmus.mozilla.org/show_test.cgi?id=5914
+/**
+ * Litmus test #5914: location Field and Go button
  */
 
 // Include necessary modules

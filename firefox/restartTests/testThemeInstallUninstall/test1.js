@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5930: Install a theme
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
@@ -51,9 +55,6 @@ var teardownModule = function(module) {
   UtilsAPI.closeAllTabs(controller);
 }
 
-/**
- *  Testcase ID #5930 - Install a theme
- */
 var testInstallTheme = function() {
   // Make sure only one tab is open
   UtilsAPI.closeAllTabs(controller);

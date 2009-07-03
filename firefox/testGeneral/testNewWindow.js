@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5911: Open a New Window
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -54,9 +58,6 @@ var teardownModule = function(module) {
   }
 }
 
-/**
- * Litmus Testcase ID #5911 - Open a New Window
- */
 var testNewWindow = function () {
   // Open the current homepage to get its value
   controller.click(new elementslib.ID(controller.window.document, "home-button"));

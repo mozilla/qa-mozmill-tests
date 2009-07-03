@@ -35,10 +35,10 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- *  Testcase ID #7394 - Enable Private Browsing Mode
- *  Testcase ID #7395 - Stop Private Browsing Mode
- *  Testcase ID #7443 - Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
- *  Testcase ID #7463 - Verify about:privatebrowsing in private browsing mode
+ *  Litmus test #7394: Enable Private Browsing Mode
+ *  Litmus test #7395: Stop Private Browsing Mode
+ *  Litmus test #7443: Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
+ *  Litmus test #7463: Verify about:privatebrowsing in private browsing mode
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

@@ -34,6 +34,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * Litmus test #5930: Install a theme
+ */
+
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -48,9 +52,6 @@ var setupModule = function(module) {
   module.addonsController = mozmill.getAddonsController();
 }
 
-/**
- *  Testcase ID #5930 - Install a theme
- */
 var testCheckInstalledTheme = function() {
   // Select the Themes pane
   var themesPane = new elementslib.ID(addonsController.window.document, "themes-view");
