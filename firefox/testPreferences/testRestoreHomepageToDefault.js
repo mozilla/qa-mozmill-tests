@@ -95,7 +95,7 @@ var prefDialogHomePageCallback = function(controller) {
 
   // Close the Preferences dialog
   if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept","icon":"accept","default":"false"}')
+    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
     controller.click(okButton);
   } else {
     controller.keypress(null, 'VK_ESCAPE', {});
@@ -120,7 +120,7 @@ var prefDialogDefHomePageCallback = function(controller) {
 
     // Close the Preferences dialog
   if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept","icon":"accept","default":"false"}')
+    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
     controller.click(okButton);
   } else {
     controller.keypress(null, 'VK_ESCAPE', {});
