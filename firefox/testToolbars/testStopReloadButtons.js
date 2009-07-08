@@ -43,26 +43,31 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-// Global timeout value
-const gTimeout = 10000;
+var gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
 var testStopAndReload = function() {
+  // Make sure we have a blank page
+  controller.open("about:blank");
+  controller.waitForPageLoad(controller.tabs.activeTab);
+
   // Go to the NYPost front page and start loading for some milliseconds
   controller.open("http://www.nypost.com/");
-  controller.sleep(500);
+  controller.sleep(300);
 
   // The link at the bottom of the page should not exist when hitting the stop button
   var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
 
   controller.click(new elementslib.ID(controller.window.document, "stop-button"));
   controller.assertNodeNotExist(elem);
-  controller.sleep(1000);
+  controller.sleep(gDelay);
 
   // Reload, wait for it to completely loading and test again
   controller.refresh();
-  UtilsAPI.delayedAssertNode(controller, elem, gTimeout);
+  controller.waitForPageLoad(controller.tabs.activeTab);
+
+  UtilsAPI.delayedAssertNode(controller, elem, 5000);
 }

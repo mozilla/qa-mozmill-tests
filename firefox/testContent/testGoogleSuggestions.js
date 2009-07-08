@@ -43,16 +43,18 @@ var setupModule = function(module) {
 }
 
 var testGoogleSuggestedTerms = function() {
-  // Open the Google Webpage
+  // Open the Google web page
   controller.open("http://www.google.com/webhp?complete=1&hl=en");
   controller.waitForPageLoad();
 
-  // Activate the search bar and input in a search parameter
+  // Enter a search term into the Google search field
   controller.type(new elementslib.Name(controller.tabs.activeTab, "q"), "area");
-  controller.waitForElement(new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[2]/tbody/tr[1]/td[1]"));
 
-  // Click the first element in the pop-down autocomplete and start the search
-  controller.click(new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[2]/tbody/tr[1]/td[1]"));
+  // Click the first element in the pop-down autocomplete
+  var autocomplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[@id='main']/center/span[@id='body']/center/form/table[2]/tbody/tr[2]/td");
+  controller.waitThenClick(autocomplete);
+
+  // Start the search
   controller.click(new elementslib.Name(controller.tabs.activeTab, "btnG"));
   controller.waitForPageLoad();
 

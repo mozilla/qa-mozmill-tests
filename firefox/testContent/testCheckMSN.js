@@ -77,6 +77,6 @@ var testCheckMSNCom = function () {
 
   // Check top search field
   let f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
-  let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[4]");
+  let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[3]");
   UtilsAPI.checkSearchField(controller, f1, "MSN", f1Submit);
 }
