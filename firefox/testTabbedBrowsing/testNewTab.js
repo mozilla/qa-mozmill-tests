@@ -74,13 +74,13 @@ var testNewTab = function () {
   controller.assertNode(tabTitle);
   controller.sleep(gDelay);
 
-  // Use the shortcut to open a new tab and check that 3 tabs are open
+  // Use the shortcut to open a new tab
   controller.keypress(null, "t", {accelKey:true});
   controller.waitForEval("subject.length == 3", 1000, 100, controller.tabs);
   controller.sleep(gDelay);
 
-  // Double click the empty tab strip to open a new tab and check that 4 tabs are open
+  // Double click the empty tab strip directly left of the all tabs button (28px wide) to open a new tab
   var tabStrip = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"flex":"1","class":"tabs-stack"})/{"xbl:inherits":"overflow","class":"tabs-container"}/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbox"})/anon({"class":"box-inherit scrollbox-innerbox","xbl:inherits":"orient,align,pack,dir","flex":"1","orient":"horizontal"})');
-  controller.doubleClick(tabStrip);
+  controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 30);
   controller.waitForEval("subject.length == 4", 1000, 100, controller.tabs);
 }
