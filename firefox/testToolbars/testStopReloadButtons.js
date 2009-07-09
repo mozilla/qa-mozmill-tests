@@ -56,7 +56,7 @@ var testStopAndReload = function() {
 
   // Go to the NYPost front page and start loading for some milliseconds
   controller.open("http://www.nypost.com/");
-  controller.sleep(300);
+  controller.sleep(750);
 
   // The link at the bottom of the page should not exist when hitting the stop button
   var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");

@@ -54,6 +54,21 @@ var teardownModule = function(module) {
   UtilsAPI.closeAllTabs(controller);
 }
 
+var checkNewTab = function() {
+  // Check that two tabs are open and wait until the document has been finished loading
+  controller.waitForEval("subject.length == 2", 1000, 100, controller.tabs);
+  controller.waitForPageLoad(controller.tabs.activeTab);
+
+  // Check that the new tab is opened and shows the correct title
+  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
+  var tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ title +'"}/anon({"class":"tab-text"})')
+  controller.assertNode(tabTitle);
+
+  // Close the tab again
+  controller.keypress(null, "w", {accelKey: true});
+  controller.waitForEval("subject.length == 1", 1000, 100, controller.tabs);
+}
+
 var testNewTab = function () {
   // Make sure all tabs are closed
   UtilsAPI.closeAllTabs(controller);
@@ -65,22 +80,17 @@ var testNewTab = function () {
 
   // Open a new tab via the menu (by default it should open with an a blank (Untitled) page)
   controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab));
-  controller.waitForEval("subject.length == 2", 1000, 100, controller.tabs);
-  controller.waitForPageLoad(controller.tabs.activeTab);
-
-  // checks that the new tab is opened with (Untitled) blank page
-  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
-  var tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ title +'"}/anon({"xbl:inherits":"value=label,crop,accesskey","class":"tab-text","crop":"end"})')
-  controller.assertNode(tabTitle);
+  checkNewTab();
   controller.sleep(gDelay);
 
   // Use the shortcut to open a new tab
   controller.keypress(null, "t", {accelKey:true});
-  controller.waitForEval("subject.length == 3", 1000, 100, controller.tabs);
+  checkNewTab();
   controller.sleep(gDelay);
 
-  // Double click the empty tab strip directly left of the all tabs button (28px wide) to open a new tab
-  var tabStrip = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"flex":"1","class":"tabs-stack"})/{"xbl:inherits":"overflow","class":"tabs-container"}/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbox"})/anon({"class":"box-inherit scrollbox-innerbox","xbl:inherits":"orient,align,pack,dir","flex":"1","orient":"horizontal"})');
-  controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 30);
-  controller.waitForEval("subject.length == 4", 1000, 100, controller.tabs);
+  // Double click the empty tab strip left of the all tabs button to open a new tab
+  var tabStrip = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"class":"tabs-stack"})/{"class":"tabs-container"}/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbox"})/anon({"class":"box-inherit scrollbox-innerbox"})');
+
+  controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+  checkNewTab();
 }
