@@ -47,6 +47,10 @@ const gDelay = 0;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  // Build the element for a blank untitled tab
+  module.untitled = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
+  module.tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ module.untitled +'"}/anon({"class":"tab-text"})');
 }
 
 var teardownModule = function(module) {
@@ -59,9 +63,6 @@ var checkNewTab = function() {
   controller.waitForEval("subject.length == 2", 1000, 100, controller.tabs);
   controller.waitForPageLoad(controller.tabs.activeTab);
 
-  // Check that the new tab is opened and shows the correct title
-  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
-  var tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ title +'"}/anon({"class":"tab-text"})')
   controller.assertNode(tabTitle);
 
   // Close the tab again
@@ -76,6 +77,7 @@ var testNewTab = function () {
   // Ensure current tab does not have blank page loaded
   controller.open('http://www.mozilla.org');
   controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.assertNodeNotExist(tabTitle);
   controller.sleep(gDelay);
 
   // Open a new tab via the menu (by default it should open with an a blank (Untitled) page)
