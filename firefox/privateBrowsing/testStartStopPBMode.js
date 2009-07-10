@@ -11,9 +11,9 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is mozilla.org code.
+ * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Henrik Skupin
+ * The Initial Developer of the Original Code is Mozilla Corporation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
