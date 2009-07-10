@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -68,6 +69,10 @@ var teardownModule = function(module) {
  * @throws Searched string does not match Selected string!
  */
 var testFindInPage = function() {
+  var searchTerm = "mozilla";
+  var comparator = Ci.nsIDOMRange.START_TO_START;
+  var tabContent = controller.tabs.activeTabWindow;
+
   // Open a website
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
@@ -82,26 +87,33 @@ var testFindInPage = function() {
 
   // Type "mozilla" into the find bar text field and press return to start the search
   var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');
-  controller.type(findBarTextField, "mozilla");
+  controller.type(findBarTextField, searchTerm);
   controller.keypress(null, "VK_RETURN", {});
   controller.sleep(gDelay);
 
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
-  var searchedText = findBarTextField.getNode().value;
-  var selectedText = controller.tabs.activeTabWindow.getSelection();
-  if (selectedText.toString().toLowerCase() != searchedText) {
-    throw "Searched string does not match Selected string!"
+  var selectedText = tabContent.getSelection();
+  if (selectedText.toString().toLowerCase() != searchTerm) {
+    throw "Searched string does not match selected string."
   }
+
+  // Remember DOM range of first search result
+  var range = selectedText.getRangeAt(0);
 
   // Click the next button and check the strings again
   var findBarNextButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-next"})');
   controller.click(findBarNextButton);
   controller.sleep(gDelay);
 
-  selectedText = controller.tabs.activeTabWindow.getSelection();
-  if (selectedText.toString().toLowerCase() != searchedText) {
-    throw "Searched string does not match Selected string!"
+  selectedText = tabContent.getSelection();
+  if (selectedText.toString().toLowerCase() != searchTerm) {
+    throw "Searched string does not match selected string."
+  }
+
+  // Check that the next result has been selected
+  if (selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0) {
+    throw "Next search result has not been highlighted."
   }
 
   // Click the prev button and check the strings again
@@ -109,8 +121,13 @@ var testFindInPage = function() {
   controller.click(findBarPrevButton);
   controller.sleep(gDelay);
 
-  selectedText = controller.tabs.activeTabWindow.getSelection();
-  if (selectedText.toString().toLowerCase() != searchedText) {
-    throw "Searched string does not match Selected string!"
+  selectedText = tabContent.getSelection();
+  if (selectedText.toString().toLowerCase() != searchTerm) {
+    throw "Searched string does not match selected string."
+  }
+
+  // Check that the first result has been selected again
+  if (selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) != 0) {
+    throw "Previous search result has not been highlighted."
   }
 }
