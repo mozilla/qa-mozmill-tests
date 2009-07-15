@@ -72,7 +72,7 @@ var testSetLanguages = function () {
 
 var prefDialogCallback = function(controller) {
   // Go to the Choose Language Section in the Contents pane
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}'));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}'));
   controller.sleep(gDelay);
 
   // Call language dialog and set Italian as primary language
