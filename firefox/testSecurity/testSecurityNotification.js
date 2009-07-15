@@ -90,9 +90,9 @@ var testSecNotification = function() {
     throw 'Identity Box is not shown with a gray background when it should be';
   }
 
-  // Go to the HTTP Verisign redirect
+  // Go to a Verisign page which does not have a valid cert
   controller.open('https://verisign.com');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad(controller.tabs.activeTab, 1000);
 
   // Verify security functionality in HTTPS certificate exception page
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "cert_domain_link"));
