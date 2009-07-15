@@ -80,7 +80,7 @@ var doSearch = function(searchTerm) {
 var testSearchBarFocusAndSearch = function() {
   // The engine button overlays the textbox so click 1px behind the button
   var engineButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/anon({"anonid":"searchbar-engine-button"})');
-  controller.click(searchBar, engineButton.getNode().clientWidth, 1);
+  controller.click(searchBar, engineButton.getNode().clientWidth + 10, 1);
   doSearch("Firefox");
 
   // Use shortcut to start search
