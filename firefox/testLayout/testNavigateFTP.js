@@ -51,12 +51,10 @@ var testNavigateFTP = function () {
   controller.open('ftp://ftp.mozilla.org/pub/');
   controller.waitForPageLoad(controller.tabs.activeTab);
 
-  controller.click(new elementslib.Link(controller.tabs.activeTab, 'firefox'));
+  controller.waitThenClick(new elementslib.Link(controller.tabs.activeTab, 'firefox'));
   controller.waitForPageLoad(controller.tabs.activeTab);
 
-  var nightlyLink = new elementslib.Link(controller.tabs.activeTab, 'nightly');
-  controller.waitForElement(nightlyLink);
-  controller.click(nightlyLink);
+  controller.waitThenClick(new elementslib.Link(controller.tabs.activeTab, 'nightly'));
   controller.waitForPageLoad(controller.tabs.activeTab);
 
   var latestLink = new elementslib.Link(controller.tabs.activeTab, 'latest-trunk');
