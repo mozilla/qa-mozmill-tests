@@ -132,8 +132,10 @@ function delayedAssertNode(aController, aNode, aTimeout) {
  *  @param controller {MozmillController} Controller to work on
  *  @param aNode {Element} Element to click
  *  @param aTimeout {number} Timeout value in milli seconds
- */
-function delayedClick(aController, aNode, aTimeout) {
+ *  @param aX {number} Click x position
+ *  @param aY {number} Click y position
+ *  */
+function delayedClick(aController, aNode, aTimeout, aX, aY) {
   aController.waitForElement(aNode, aTimeout);
-  aController.click(aNode);
+  aController.click(aNode, aX, aY);
 }

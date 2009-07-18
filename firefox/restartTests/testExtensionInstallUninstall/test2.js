@@ -59,7 +59,7 @@ var testCheckInstalledExtension = function() {
   addonsController.waitForEval("subject.selected == true", 5000, 100, extensionsPane.getNode());
 
   // Notification bar should show one new installed extension
-  var notificationBar = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/{"value":"1 new add-on has been installed.","image":"chrome://global/skin/icons/information-16.png","priority":"4","type":"warning"}/anon({"class":"notification-inner outset","flex":"1","xbl:inherits":"type","type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
+  var notificationBar = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/{"image":"chrome://global/skin/icons/information-16.png","priority":"4","type":"warning"}/anon({"class":"notification-inner outset","flex":"1","xbl:inherits":"type","type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
   UtilsAPI.delayedAssertNode(addonsController, notificationBar, 5000);
 
   // The installed extension should be displayed with a different background in the list.

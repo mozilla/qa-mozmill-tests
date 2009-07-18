@@ -61,5 +61,5 @@ var testCheckInstalledTheme = function() {
   // XXX: Use a hard-coded name to access the entry directly until we can pass the info
   // between restart test files (bug 500987)
   var theme = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"current":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"class":"addonName","crop":"end","xbl:inherits":"value=name","value":"' + gThemeName + '"})');
-  UtilsAPI.delayedAssertNode(addonsController, theme);
+  UtilsAPI.delayedAssertNode(addonsController, theme, 5000);
 }

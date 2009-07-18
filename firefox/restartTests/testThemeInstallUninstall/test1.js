@@ -80,7 +80,7 @@ var testInstallTheme = function() {
   md.start();
 
   // Click link to install the theme which triggers a modal dialog
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[3]/div[@id='addon-summary']/div[1]/p[1]/a");
+  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
   UtilsAPI.delayedClick(controller, triggerLink);
 
   // Wait that the Installation pane is shown while the theme is installed

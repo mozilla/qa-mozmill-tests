@@ -80,8 +80,9 @@ var testInstallExtension = function() {
   md.start();
 
   // Click the link to install the extension
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[3]/div[@id='addon-summary']/div[1]/p[1]/a");
-  UtilsAPI.delayedClick(controller, triggerLink);
+  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
+  controller.waitForElement(triggerLink, 5000, 100);
+  controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
 
   // Wait that the Installation pane is selected in the Add-ons Manager after the extension has been installed
   var installPane = new elementslib.ID(addonsController.window.document, "installs-view");
@@ -125,6 +126,6 @@ var handleTriggerDialog = function(controller) {
 
   // Wait for the install button is enabled before clicking on it
   var installButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", 5000, 100, installButton.getNode());
+  controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
   controller.click(installButton);
 }
