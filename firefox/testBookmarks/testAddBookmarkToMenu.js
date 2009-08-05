@@ -54,7 +54,7 @@ var testAddBookmarkToBookmarksMenu = function() {
   var uri = UtilsAPI.createURI("http://www.mozilla.org");
 
   // Fail if the URI is already bookmarked
-  if (PlacesAPI.bookmarks.isBookmarked(uri))
+  if (PlacesAPI.bookmarksService.isBookmarked(uri))
     throw "Failed: " + uri.spec + " is already bookmarked.";
 
   // Open URI and wait until it has been finished loading
@@ -75,6 +75,6 @@ var testAddBookmarkToBookmarksMenu = function() {
 
   // Check if bookmark was created in the Bookmarks Menu
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
-  if (!PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarks.bookmarksMenuFolder))
+  if (!PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarksService.bookmarksMenuFolder))
     throw "Failed: Bookmark for " + uri.spec + " not added to Bookmarks Menu";
 }

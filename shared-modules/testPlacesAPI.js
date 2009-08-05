@@ -36,17 +36,21 @@
 
 var MODULE_NAME = 'PlacesAPI';
 
-// Bookmark service
-let bookmarks = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
-                getService(Ci.nsINavBookmarksService);
+// Instances for useful services
+var bookmarksService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
+                       getService(Ci.nsINavBookmarksService);
+var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].
+                     getService(Ci.nsINavHistoryService);
+var livemarkService = Cc["@mozilla.org/browser/livemark-service;2"].
+                      getService(Ci.nsILivemarkService);
 
 /**
  * Check if a URI is bookmarked within a given folder
  */
 function isBookmarkInFolder( aURI, aFolderId) {
-  let ids = bookmarks.getBookmarkIdsForURI(aURI, {});
+  let ids = bookmarksService.getBookmarkIdsForURI(aURI, {});
   for (let i = 0; i < ids.length; i++) {
-    if (bookmarks.getFolderIdForItem(ids[i]) == aFolderId)
+    if (bookmarksService.getFolderIdForItem(ids[i]) == aFolderId)
       return true;
   }
 
