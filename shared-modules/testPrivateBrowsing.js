@@ -1,4 +1,4 @@
-/* * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -32,7 +32,14 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * **** END LICENSE BLOCK ***** */
+ * ***** END LICENSE BLOCK ***** */
+
+/**
+ * @fileoverview
+ * The PrivateBrowsingAPI adds support for handling the private browsing mode.
+ *
+ * @version 1.0.0
+ */
 
 const MODULE_NAME = 'PrivateBrowsingAPI';
 
@@ -43,14 +50,30 @@ const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI'];
 const PB_NO_PROMPT_PREF = 'browser.privatebrowsing.dont_prompt_on_enter';
 
 /**
- * Constructor for privateBrowsing class
+ * Create a new privateBrowsing instance.
  *
- * @param controller object Controller of the browser window
+ * @class This class adds support for the Private Browsing mode
+ * @param {MozMillController} controller
+ *        MozMillController to use for the modal entry dialog
  */
-function privateBrowsing(controller) {
+function privateBrowsing(controller)
+{
+  /**
+   * Instance of the preference API
+   * @private
+   */
   this._prefs = collector.getModule('PrefsAPI').preferences;
 
+  /**
+   * The MozMillController to operate on
+   * @private
+   */
   this._controller = controller;
+
+  /**
+   * Menu item in the main menu to enter/leave Private Browsing mode
+   * @private
+   */
   this._pbMenuItem = new elementslib.Elem(this._controller.menus['tools-menu'].privateBrowsingItem);
 
   this.__defineGetter__('_pbs', function() {
@@ -61,22 +84,28 @@ function privateBrowsing(controller) {
 }
 
 /**
- * privateBrowsing class
+ * Prototype definition of the privateBrowsing class
  */
 privateBrowsing.prototype = {
+  /**
+   * Callback function for the modal enter dialog
+   * @private
+   */
   _handler: null,
 
   /**
-   *  Start Private Browsing mode
+   * Start the Private Browsing mode
    *
-   *  @param useMenu boolean Use menu entry if true otherwise the keyboard shortcut
+   * @param {boolean} useMenu
+   *        Use the menu entry if true otherwise the keyboard shortcut is used
    */
-  start: function pbstart(useMenu) {
+  start: function privateBrowsing_start(useMenu)
+  {
     if (this.enabled)
       return;
 
     if (this.showPrompt) {
-      // Check if handler is set to prevent a hang
+      // Check if handler is set to prevent a hang when the modal dialog is opened
       if (!this._handler)
         throw "Private Browsing mode not enabled due to missing handler";
 
@@ -96,11 +125,13 @@ privateBrowsing.prototype = {
   },
 
   /**
-   * Stop Private Browsing mode
+   * Stop the Private Browsing mode
    *
-   *  @param useMenu boolean Use menu entry if true otherwise the keyboard shortcut
+   * @param {boolean} useMenu
+   *        Use the menu entry if true otherwise the keyboard shortcut is used
    */
-  stop: function pbstop(useMenu) {
+  stop: function privateBrowsing_stop(useMenu)
+  {
     if (!this.enabled)
       return;
 
@@ -115,6 +146,9 @@ privateBrowsing.prototype = {
   }
 }
 
+/**
+ * (Get/Set) Property to start/stop the Private Browsing mode
+ */
 privateBrowsing.prototype.__defineGetter__('enabled', function() {
   return this._pbs.privateBrowsingEnabled;
 });
@@ -123,10 +157,16 @@ privateBrowsing.prototype.__defineSetter__('enabled', function(v) {
   this._pbs.privateBrowsingEnabled = v;
 });
 
+/**
+ * (Set) Property to set the callback function
+ */
 privateBrowsing.prototype.__defineSetter__('handler', function(v) {
   this._handler = v;
 });
 
+/**
+ * (Get/Set) Property to enable/disable the modal entry dialog
+ */
 privateBrowsing.prototype.__defineGetter__('showPrompt', function() {
   return !this._prefs.getPref(PB_NO_PROMPT_PREF, true);
 });

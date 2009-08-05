@@ -1,4 +1,4 @@
-/* * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -33,7 +33,15 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * **** END LICENSE BLOCK ***** */
+ * ***** END LICENSE BLOCK ***** */
+
+/**
+ * @fileoverview
+ * The PrefsAPI adds support for preferences related functions. It gives access
+ * to the preferences system and allows to handle the preferences dialog
+ *
+ * @version 1.0.1
+ */
 
 var MODULE_NAME = 'PrefsAPI';
 
@@ -43,22 +51,25 @@ const MODULE_REQUIRES = ['ModalDialogAPI'];
 /**
  * Preferences Function for access to the dialog
  *
- * @param callback handler The callback handler to use to interact with the preference dialog
- * @param callback launcher An optional callback to be used for launching the preference dialog
+ * @param {function} callback
+ *        The callback handler to use to interact with the preference dialog
+ * @param {function} launcher
+ *        (Optional) A callback handler to launch the preference dialog
  */
-function handlePreferencesDialog(handler, launcher) {
-  if(!handler)
-    throw "No handler given for Preferences Dialog";
+function handlePreferencesDialog(callback, launcher) {
+  var prefCtrl = null;
+
+  if(!callback)
+    throw "No callback given for Preferences Dialog";
 
   if (mozmill.isWindows) {
-    // Pref dialog is modal on windows, set up our handler
+    // Preference dialog is modal on windows, set up our callback
     var md = collector.getModule('ModalDialogAPI');
-    var prefModal = new md.modalDialog(handler);
+    var prefModal = new md.modalDialog(callback);
     prefModal.start();
   }
 
-  // Launch the dialog
-  var prefCtrl = null;
+  // Launch the preference dialog
   if (launcher) {
     launcher();
 
@@ -74,7 +85,7 @@ function handlePreferencesDialog(handler, launcher) {
   // If the dialog is not modal, run the callback directly
   if (!mozmill.isWindows) {
     prefCtrl.sleep(500);
-    handler(prefCtrl);
+    callback(prefCtrl);
   }
 
   // Wait a bit to make sure window has been closed
@@ -82,69 +93,71 @@ function handlePreferencesDialog(handler, launcher) {
 }
 
 /**
- * Preferences helper object for accessing nsIPrefBranch.
- *
- * @class Preferences
+ * Preferences object to simplify the access to the nsIPrefBranch.
  */
 var preferences = {
   _branch : Cc["@mozilla.org/preferences-service;1"].
             getService(Ci.nsIPrefBranch),
 
   /**
-   *  Use branch to access low level functions of nsIPrefBranch
+   * Use branch to access low level functions of nsIPrefBranch
+   *
+   * @return Instance of the preferences branch
+   * @type nsIPrefBranch
    */
   get branch() {
     return this._branch;
   },
 
   /**
-   * Called to get the state of an individual preference.
+   * Retrieve the value of an individual preference.
    *
-   * @param aPrefName     string The preference to get the state of.
-   * @param aDefaultValue any    The default value if preference was not found.
-   *
-   * @returns any The value of the requested preference
-   *
-   * @see setPref
+   * @param {string} prefName
+   *        The preference to get the value of.
+   * @param {boolean/number/string} defaultValue
+   *        The default value if preference cannot be found.
+   * @return The value of the requested preference
+   * @type boolean/int/string
    */
-  getPref : function p_getPref(aPrefName, aDefaultValue) {
+  getPref : function preferences_getPref(prefName, defaultValue) {
     try {
-      switch (typeof aDefaultValue) {
+      switch (typeof defaultValue) {
         case ('boolean'):
-          return this._branch.getBoolPref(aPrefName);
+          return this._branch.getBoolPref(prefName);
         case ('string'):
-          return this._branch.getCharPref(aPrefName);
+          return this._branch.getCharPref(prefName);
         case ('number'):
-          return this._branch.getIntPref(aPrefName);
+          return this._branch.getIntPref(prefName);
         default:
           return undefined;
       }
     } catch(e) {
-      return aDefaultValue;
+      return defaultValue;
     }
   },
 
   /**
-   * Called to set the state of an individual preference.
+   * Set the value of an individual preference.
    *
-   * @param aPrefName string The preference to set the state of.
-   * @param aValue    any    The value to set the preference to.
+   * @param {string} prefName
+   *        The preference to set the value of.
+   * @param {boolean/number/string} value
+   *        The value to set the preference to.
    *
-   * @returns boolean Returns true if value was successfully set.
-   *
-   * @see getPref
+   * @return Returns if the value was successfully set.
+   * @type boolean
    */
-  setPref : function p_setPref(aName, aValue) {
+  setPref : function preferences_setPref(name, value) {
     try {
-      switch (typeof aValue) {
+      switch (typeof value) {
         case ('boolean'):
-          this._branch.setBoolPref(aName, aValue);
+          this._branch.setBoolPref(name, value);
           break;
         case ('string'):
-          this._branch.setCharPref(aName, aValue);
+          this._branch.setCharPref(name, value);
           break;
         case ('number'):
-          this._branch.setIntPref(aName, aValue);
+          this._branch.setIntPref(name, value);
           break;
         default:
           return false;

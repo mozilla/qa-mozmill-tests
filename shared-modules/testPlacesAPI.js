@@ -1,4 +1,4 @@
-/* * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -32,25 +32,57 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * **** END LICENSE BLOCK ***** */
+ * ***** END LICENSE BLOCK ***** */
+
+/**
+ * @fileoverview
+ * The ModalDialogAPI adds support for handling modal dialogs. It
+ * has to be used e.g. for alert boxes and other commonDialog instances.
+ *
+ * @version 1.0.2
+ */
 
 var MODULE_NAME = 'PlacesAPI';
 
-// Instances for useful services
+/**
+ * Instance of the bookmark service to gain access to the bookmark API.
+ *
+ * @see http://mxr.mozilla.org/mozilla-central (nsINavBookmarksService.idl)
+ */
 var bookmarksService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
                        getService(Ci.nsINavBookmarksService);
+
+/**
+ * Instance of the history service to gain access to the history API.
+ *
+ * @see http://mxr.mozilla.org/mozilla-central (nsINavHistoryService.idl)
+ */
 var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].
                      getService(Ci.nsINavHistoryService);
+
+/**
+ * Instance of the livemark service to gain access to the livemark API
+ *
+ * @see http://mxr.mozilla.org/mozilla-central (nsILivemarkService.idl)
+ */
 var livemarkService = Cc["@mozilla.org/browser/livemark-service;2"].
                       getService(Ci.nsILivemarkService);
 
 /**
- * Check if a URI is bookmarked within a given folder
+ * Check if an URI is bookmarked within the specified folder
+ *
+ * @param (nsIURI) uri
+ *        URI of the bookmark
+ * @param {String} folderId
+ *        Folder in which the search has to take place
+ * @return Returns if the URI exists in the given folder
+ * @type Boolean
  */
-function isBookmarkInFolder( aURI, aFolderId) {
-  let ids = bookmarksService.getBookmarkIdsForURI(aURI, {});
+function isBookmarkInFolder(uri, folderId)
+{
+  var ids = bookmarksService.getBookmarkIdsForURI(uri, {});
   for (let i = 0; i < ids.length; i++) {
-    if (bookmarksService.getFolderIdForItem(ids[i]) == aFolderId)
+    if (bookmarksService.getFolderIdForItem(ids[i]) == folderId)
       return true;
   }
 
@@ -58,7 +90,7 @@ function isBookmarkInFolder( aURI, aFolderId) {
 }
 
 /**
- * Restore the default bookmarks by overwriting all existing entries
+ * Restore the default bookmarks for the current profile
  */
 function restoreDefaultBookmarks() {
   // Get the default bookmarks.html

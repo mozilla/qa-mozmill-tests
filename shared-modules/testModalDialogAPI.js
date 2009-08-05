@@ -1,4 +1,4 @@
-/* * ***** BEGIN LICENSE BLOCK *****
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -33,17 +33,24 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * **** END LICENSE BLOCK ***** */
+ * ***** END LICENSE BLOCK ***** */
 
-var mozmill = {}; Components.utils.import('resource://mozmill/modules/mozmill.js', mozmill);
+/**
+ * @fileoverview
+ * The ModalDialogAPI adds support for handling modal dialogs. It
+ * has to be used e.g. for alert boxes and other commonDialog instances.
+ *
+ * @version 1.0.2
+ */
 
-// Huge amounts of code here were leveraged from the password manager mochitest
-// suite: http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/test/prompt_common.js
+/* Huge amounts of code have been leveraged from the password manager mochitest suite.
+ * http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/test/prompt_common.js
+ */
 
 const MODULE_NAME = 'ModalDialogAPI';
 
 /**
- * Observer for modal dialog
+ * Observer object to find the modal dialog
  */
 var mdObserver = {
   QueryInterface : function (iid) {
@@ -56,7 +63,8 @@ var mdObserver = {
     return this;
   },
 
-  observe : function (subject, topic, data) {
+  observe : function (subject, topic, data)
+  {
     if (this.docFinder()) {
       var window = mozmill.wm.getMostRecentWindow("");
       this.handler(new mozmill.controller.MozMillController(window));
@@ -72,40 +80,48 @@ var mdObserver = {
 };
 
 /**
- * Constructor for Modal Dialog
+ * Create a new modalDialog instance.
  *
- * @param aHandler function Callback function
+ * @class A class to handle modal dialogs
+ * @constructor
+ * @param {function} callback
+ *        The callback handler to use to interact with the modal dialog
  */
-var modalDialog = function(aHandler) {
+function modalDialog(callback)
+{
   this.observer = mdObserver;
-  this.observer.handler = aHandler;
+  this.observer.handler = callback;
   this.observer.startTimer = this.start;
-  this.observer.docFinder = this.getDialogDoc;
+  this.observer.docFinder = this.getDialog;
 }
 
 /**
- * Assign a new handler which will be called when the modal dialog has been opened
+ * Set a new callback handler.
  *
- * @param aHandler function Callback function
+ * @param {function} callback
+ *        The callback handler to use to interact with the modal dialog
  */
-modalDialog.prototype.setHandler = function md_sethndlr(aHandler) {
-  this.observer.handler = aHandler;
+modalDialog.prototype.setHandler = function modalDialog_setHandler(callback)
+{
+  this.observer.handler = callback;
 }
 
 /**
- * Start timer to wait for modal dialog
+ * Start timer to wait for the modal dialog.
  *
- * @param aObserver object Observer
+ * @param {object} observer
+ *        (Optional) Observer for modal dialog checks
  */
-modalDialog.prototype.start = function md_start(aObserver) {
+modalDialog.prototype.start = function modalDialog_start(observer)
+{
   const dialogDelay = 100;
   var modalDialogTimer = Cc["@mozilla.org/timer;1"].
                          createInstance(Ci.nsITimer);
 
   // If we are not called from the observer, we have to use the supplied
   // observer instead of this.observer
-  if (aObserver) {
-    modalDialogTimer.init(aObserver,
+  if (observer) {
+    modalDialogTimer.init(observer,
                           dialogDelay,
                           Ci.nsITimer.TYPE_ONE_SHOT);
   } else {
@@ -116,11 +132,14 @@ modalDialog.prototype.start = function md_start(aObserver) {
 }
 
 /**
- * Get document of wanted modal dialog
+ * Check if the modal dialog has been opened
  *
- * @returns bool Returns true if modal dialog has been found
+ * @private
+ * @return Returns if the modal dialog has been found or not
+ * @type Boolean
  */
-modalDialog.prototype.getDialogDoc = function md_getDD() {
+modalDialog.prototype.getDialog = function modalDialog_getDialog()
+{
   var enumerator = mozmill.wm.getXULWindowEnumerator("");
 
   // Find the <browser> which contains notifyWindow, by looking

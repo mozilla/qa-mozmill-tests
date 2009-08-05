@@ -35,22 +35,46 @@
  *
  * **** END LICENSE BLOCK ***** */
 
+/**
+ * @fileoverview
+ * The UtilsAPI offers various helper functions for any other API which is
+ * not already covered by another shared module.
+ *
+ * @version 1.0.3
+ */
+
 var MODULE_NAME = 'UtilsAPI';
 
 /**
  * Create a new URI
+ *
+ * @param {string} spec
+ *        The URI string in UTF-8 encoding.
+ * @param {string} originCharset
+ *        The charset of the document from which this URI string originated.
+ * @param {string} baseURI
+ *        If null, spec must specify an absolute URI. Otherwise, spec may be
+ *        resolved relative to baseURI, depending on the protocol.
+ * @return A URI object
+ * @type nsIURI
  */
-function createURI(aSpec, aOriginCharset, aBaseURI) {
+function createURI(spec, originCharset, baseURI)
+{
   let iosvc = Cc["@mozilla.org/network/io-service;1"].
               getService(Ci.nsIIOService);
 
-  return iosvc.newURI(aSpec, aOriginCharset, aBaseURI);
+  return iosvc.newURI(spec, originCharset, baseURI);
 }
 
 /**
- * Close all tabs of the current window except the last one
+ * Close all tabs of the controllers window except the last one and open a blank
+ * page.
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
-var closeAllTabs = function(controller) {
+var closeAllTabs = function(controller)
+{
   while (controller.tabs.length > 1) {
     controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_close));
   }
@@ -60,14 +84,18 @@ var closeAllTabs = function(controller) {
 }
 
 /**
- * Called to get the state of an individual property.
+ * Called to get the value of an individual property.
  *
- * @param url string URL of the string bundle
- * @param prefName string The property to get the state of.
+ * @param {string} url
+ *        URL of the string bundle.
+ * @param {string} prefName
+ *        The property to get the value of.
  *
- * @returns string The value of the requested property
+ * @return The value of the requested property
+ * @type string
  */
-function getProperty(url, prefName) {
+function getProperty(url, prefName)
+{
   var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"].
                        getService(Components.interfaces.nsIStringBundleService);
   var bundle = sbs.createBundle(url);
@@ -76,66 +104,90 @@ function getProperty(url, prefName) {
 }
 
 /**
- *  Run tests against a given search field
+ * Run tests against a given search form
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ * @param {ElemBase} searchField
+ *        The HTML input form element to test
+ * @param {string} searchTerm
+ *        The search term for the test
+ * @param {ElemBase} submitButton
+ *        (Optional) The forms submit button
+ * @param {number} timeout
+ *        The timeout value for the single tests
  */
-function checkSearchField(controller, aElem, aTerm, aSubmit, aTimeout) {
-  delayedAssertNode(controller, aElem, aTimeout);
-  controller.click(aElem);
-  controller.type(aElem, aTerm);
+function checkSearchField(controller, searchField, searchTerm, submitButton, timeout)
+{
+  delayedAssertNode(controller, searchField, timeout);
+  controller.click(searchField);
+  controller.type(searchField, searchTerm);
 
-  if (aSubmit) {
-    delayedAssertNode(controller, aSubmit, aTimeout);
-    controller.click(aSubmit);
+  if (submitButton) {
+    controller.waitThenClick(submitButton, timeout);
   }
 }
 
 /**
- * Checks the visibility of an element
+ * Checks the visibility of an element.
+ * XXX: Mozmill doesn't check if an element is visible and also operates on
+ * elements which are invisible. (Bug 490548)
  *
- * @param aController {MozmillController} Controller to work on
- * @param aNode {Element} Element to check
- * @param aVisible {bool} Expected visibility state of the element
- *
+ * @param {MozmillController} controller
+ *        MozMillController of the window to operate on
+ * @param {ElemBase} element
+ *        Element to check its visibility
+ * @param {boolean} visibility
+ *        Expected visibility state of the element
  * @throws Error Element is visible but should be hidden
  * @throws Error Element is hidden but should be visible
  */
-var assertElementVisible = function(aController, aNode, aVisible) {
-  // XXX: Until Mozmill tests fail when an invisible element is actioned,
-  //      use the style property (bug 490548)
-  var style = aController.window.getComputedStyle(aNode.getNode(), "");
-  var visibility = style.getPropertyValue("visibility");
+function assertElementVisible(controller, element, visibility)
+{
+  var style = controller.window.getComputedStyle(element.getNode(), "");
+  var state = style.getPropertyValue("visibility");
 
-  if (aVisible) {
-    if (visibility != 'visible')
+  if (visibility) {
+    if (state != 'visible')
       throw "Element is hidden but should be visible";
   } else {
-    if (visibility == 'visible')
+    if (state == 'visible')
       throw "Element is visible but should be hidden";
   }
 }
 
 /**
- *  Waits until the specified element exists before calling assertNode
+ * Waits until the specified element exists before calling assertNode
  *
- *  @param controller {MozmillController} Controller to work on
- *  @param aNode {Element} Element to check
- *  @param aTimeout {number} Timeout value in milli seconds
+ * @param {MozMillController} controller
+ *        Controller of the window to operate on.
+ * @param {ElemBase} element
+ *        Element to check its existence.
+ * @param {number} timeout
+ *        Timeout value for the test
  */
-function delayedAssertNode(aController, aNode, aTimeout) {
-  aController.waitForElement(aNode, aTimeout);
-  aController.assertNode(aNode);
+function delayedAssertNode(controller, element, timeout)
+{
+  controller.waitForElement(element, timeout);
+  controller.assertNode(element);
 }
 
 /**
- *  Waits until element exists before simulating a click on it
+ * Waits until the element exists before simulating a click on it
  *
- *  @param controller {MozmillController} Controller to work on
- *  @param aNode {Element} Element to click
- *  @param aTimeout {number} Timeout value in milli seconds
- *  @param aX {number} Click x position
- *  @param aY {number} Click y position
- *  */
-function delayedClick(aController, aNode, aTimeout, aX, aY) {
-  aController.waitForElement(aNode, aTimeout);
-  aController.click(aNode, aX, aY);
+ * @param {MozMillController} controller
+ *        Controller of the window to operate on
+ * @param {ElemBase} element
+ *        Element to click
+ * @param {number} timeout
+ *        Timeout value for the test
+ * @param {number} x
+ *        Click x position
+ * @param {number} y
+ *        Click y position
+ */
+function delayedClick(controller, element, timeout, x, y)
+{
+  controller.waitForElement(element, timeout);
+  controller.click(element, x, y);
 }
