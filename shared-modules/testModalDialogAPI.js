@@ -47,6 +47,8 @@
  * http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/test/prompt_common.js
  */
 
+var frame = {}; Components.utils.import('resource://mozmill/modules/frame.js', frame);
+
 const MODULE_NAME = 'ModalDialogAPI';
 
 /**
@@ -66,8 +68,13 @@ var mdObserver = {
   observe : function (subject, topic, data)
   {
     if (this.docFinder()) {
-      var window = mozmill.wm.getMostRecentWindow("");
-      this.handler(new mozmill.controller.MozMillController(window));
+      try {
+        var window = mozmill.wm.getMostRecentWindow("");
+        this.handler(new mozmill.controller.MozMillController(window));
+      } catch(ex) {
+          window.close();
+          frame.events.fail({'function':ex});
+      }
     } else {
       // try again in a bit
       this.startTimer(this);
@@ -146,24 +153,25 @@ modalDialog.prototype.getDialog = function modalDialog_getDialog()
   // through all the open windows and all the <browsers> in each.
   while (enumerator.hasMoreElements()) {
     var win = enumerator.getNext();
-    var windowDocShell = win.QueryInterface(Components.interfaces.nsIXULWindow).docShell;
+    var windowDocShell = win.QueryInterface(Ci.nsIXULWindow).docShell;
 
     var containedDocShells = windowDocShell.getDocShellEnumerator(
-                                      Components.interfaces.nsIDocShellTreeItem.typeChrome,
-                                      Components.interfaces.nsIDocShell.ENUMERATE_FORWARDS);
+                                      Ci.nsIDocShellTreeItem.typeChrome,
+                                      Ci.nsIDocShell.ENUMERATE_FORWARDS);
 
     while (containedDocShells.hasMoreElements()) {
       // Get the corresponding document for this docshell
       var childDocShell = containedDocShells.getNext();
 
       // We don't want it if it's not done loading.
-      if (childDocShell.busyFlags != Components.interfaces.nsIDocShell.BUSY_FLAGS_NONE)
+      if (childDocShell.busyFlags != Ci.nsIDocShell.BUSY_FLAGS_NONE)
         continue;
 
-      // Ensure that we are only returning the dialog if it is indeed the modal
+      // Ensure that we are only returning true if it is indeed the modal
       // dialog we were looking for.
-      if (win.chromeFlags & Ci.nsIWebBrowserChrome.CHROME_MODAL &&
-          win.chromeFlags & Ci.nsIWebBrowserChrome.CHROME_DEPENDENT) {
+      var chrome = win.QueryInterface(Ci.nsIInterfaceRequestor).
+                       getInterface(Ci.nsIWebBrowserChrome);
+      if (chrome.isWindowModal()) {
         return true;
       }
     }
