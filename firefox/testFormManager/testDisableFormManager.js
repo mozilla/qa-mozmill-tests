@@ -108,9 +108,9 @@ var prefDialogFormCallback = function(controller) {
   controller.sleep(gDelay);
 
   // Select custom settings for history and uncheck remember search and form history
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "historyMode"));
-  controller.sleep(gDelay);
-  controller.click(new elementslib.XPath(controller.window.document, "/*[name()='prefwindow']/*[name()='prefpane'][5]/*[name()='groupbox'][1]/*[name()='hbox'][1]/*[name()='menulist'][1]/*[name()='menupopup'][1]/*[name()='menuitem'][3]"));
+  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
+  controller.waitForElement(historyMode);
+  controller.select(historyMode, null, null, "custom");
 
   controller.waitThenClick(new elementslib.ID(controller.window.document, "rememberForms"));
   controller.sleep(gDelay);
