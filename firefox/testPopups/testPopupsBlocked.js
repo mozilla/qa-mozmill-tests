@@ -84,11 +84,8 @@ var testPopUpBlocked = function() {
   controller.open(url);
   controller.waitForPageLoad(controller.tabs.activeTab);
 
-  // Check for the warning bar
-  var panel = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})');
-  UtilsAPI.delayedAssertNode(controller, panel);
-  var childNodes = panel.getNode().childNodes;
-  var xButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})/{"flex":"1","id":"' + childNodes[0].id + '"}/{"value":"popup-blocked","image":"chrome://browser/skin/Info.png","priority":"5","type":"warning"}/anon({"class":"notification-inner outset","flex":"1","xbl:inherits":"type","type":"warning"})/{"ondblclick":"event.stopPropagation();","class":"messageCloseButton tabbable","xbl:inherits":"hidden=hideclose","oncommand":"document.getBindingParent(this).close();"}')
+  // Check for the close button in the notification bar
+  var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"popup-blocked"}/anon({"type":"warning"})/{"class":"messageCloseButton tabbable"}');
   UtilsAPI.delayedAssertNode(controller, xButton, 1000);
 
   // Check for the status bar icon

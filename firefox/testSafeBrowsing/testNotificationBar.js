@@ -42,28 +42,27 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 1000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-
-  module.panel = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})');
 }
 
 var testNotificationBar = function() {
-  var badSites = ['http://www.mozilla.com/firefox/its-a-trap.html', 'http://www.mozilla.com/firefox/its-an-attack.html'];
+  var badSites = ['http://www.mozilla.com/firefox/its-a-trap.html',
+                  'http://www.mozilla.com/firefox/its-an-attack.html'];
 
   // Leave only one tab open in the browser
   UtilsAPI.closeAllTabs(controller);
 
-  for (var i = 0; i < badSites.length; i++ ) { 
+  for (var i = 0; i < badSites.length; i++ ) {
     // Go to one of mozilla's phishing protection test pages
     controller.open(badSites[i]);
     controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
-    
+
     // Wait for the ignoreWarning button to be loaded onto the page and then click on the button
     checkIgnoreWarningButton(badSites[i]);
     checkNoPhishingButton(badSites[i]);
@@ -75,12 +74,12 @@ var testNotificationBar = function() {
 
     // Test the get me out of here button
     checkGetMeOutOfHereButton();
-    
+
     // Go back to the notification bar
     controller.goBack();
     controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
     checkIgnoreWarningButton(badSites[i]);
-    
+
     // Test the x button on the drop down bar
     checkXButton();
   }
@@ -111,13 +110,11 @@ var checkIgnoreWarningButton = function(badUrl) {
  * @param badUrl {string} URL of testing page
  */
 var checkNoPhishingButton = function(badUrl) {
-  UtilsAPI.delayedAssertNode(controller, panel);
-
   if (badUrl == 'http://www.mozilla.com/firefox/its-a-trap.html' ) {
     // Click on the web forgery report button
     var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAForgeryButton.label");
-    var notWebForgeryButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})/{"flex":"1","id":"' + panel.getNode().childNodes[0].id + '"}/{"value":"blocked-badware-page","priority":"9","type":"critical"}/{"label":"' + label + '"}');
-    controller.click(notWebForgeryButton);
+    var notWebForgeryButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
+    controller.waitThenClick(notWebForgeryButton);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-a-web-forgery report page is loaded
@@ -128,9 +125,9 @@ var checkNoPhishingButton = function(badUrl) {
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
     // Click on the attack site report button
     var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAnAttackButton.label");
-    var notAttackSiteButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})/{"flex":"1","id":"' + panel.getNode().childNodes[0].id + '"}/{"value":"blocked-badware-page","priority":"9","type":"critical"}/{"label":"' + label + '"}');
+    var notAttackSiteButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
-    controller.click(notAttackSiteButton);
+    controller.waitThenClick(notAttackSiteButton);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-an-attack-site report page is loaded
@@ -146,12 +143,10 @@ var checkNoPhishingButton = function(badUrl) {
  * Check the "Get me out of here" button in the notification bar
  */
 var checkGetMeOutOfHereButton = function() {
-  UtilsAPI.delayedAssertNode(controller, panel);
-
   // Click on the get me out of here button
   var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.getMeOutOfHereButton.label");
-  var getMeOutForgeryOfHereButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})/{"flex":"1","id":"' + panel.getNode().childNodes[0].id + '"}/{"value":"blocked-badware-page","priority":"9","type":"critical"}/{"label":"' + label + '"}');
-  controller.click(getMeOutForgeryOfHereButton);
+  var getMeOutForgeryOfHereButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
+  controller.waitThenClick(getMeOutForgeryOfHereButton);
 
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad(controller.tabs.activeTab);
@@ -172,12 +167,9 @@ var checkGetMeOutOfHereButton = function() {
  * Check the X button in the notification bar
  */
 var checkXButton = function() {
-  UtilsAPI.delayedAssertNode(controller, panel);
-
   // Click on the x button and verify the notification bar dissapears
-    var xButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})/{"id":"' + panel.getNode().childNodes[0].id + '"}/{"value":"blocked-badware-page","priority":"9","type":"critical"}/anon({"type":"critical"})/{"class":"messageCloseButton tabbable"}');
-  controller.click(xButton);
+  var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/anon({"type":"critical"})/{"class":"messageCloseButton tabbable"}');
+  controller.waitThenClick(xButton);
   controller.sleep(gTimeout);
   controller.assertNodeNotExist(xButton);
 }
-

@@ -191,3 +191,30 @@ function delayedClick(controller, element, timeout, x, y)
   controller.waitForElement(element, timeout);
   controller.click(element, x, y);
 }
+
+/**
+ * Creates the child element of the tab's notification bar
+ *
+ * @param {MozMillController} controller
+ *        Controller of the window to operate on
+ * @param {string} elemString
+ *        (Optional) Lookup string of the notification bar's child element
+ * @param {number} tabIndex
+ *        (Optional) Index of the tab to check
+ * @return The created child element
+ * @type ElemBase
+ */
+function createNotificationBarElement(controller, elemString, tabIndex)
+{
+  const containerString = '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})';
+
+  var index = tabIndex ? tabIndex : controller.tabs.activeTabIndex;
+  var elemStr = elemString ? elemString : "";
+
+  // Get the panel so we can fetch the panel id
+  var container = new elementslib.Lookup(controller.window.document, containerString);
+  controller.waitForElement(container, 500);
+
+  var expression = containerString + '/{"id":"' + container.getNode().childNodes[index].id + '"}' + elemStr;
+  return new elementslib.Lookup(controller.window.document, expression);
+}
