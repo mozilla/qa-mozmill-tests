@@ -44,7 +44,7 @@ var MODULE_REQUIRES = ['UtilsAPI'];
 
 // Shared variable
 var gThemeName = "Walnut for Firefox";
-var gTimeout = 5000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   // The Add-ons Manager is not opened automatically as what happens for new extensions

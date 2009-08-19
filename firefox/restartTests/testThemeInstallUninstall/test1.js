@@ -44,7 +44,7 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
 // Shared variable
 var gThemeName = "Walnut for Firefox";
-var gTimeout = 5000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

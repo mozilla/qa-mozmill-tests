@@ -43,8 +43,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-var gDelay = 0;
-var gTimeout = 5000;
+const gDelay = 0;
+const gTimeout = 5000;
 
 // Holds the instance of the newly created window
 var newWindow = null;

@@ -42,7 +42,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-var gTimeout = 5000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

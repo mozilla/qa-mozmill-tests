@@ -38,7 +38,7 @@
  * Litmus test #6041: Test XMLHttpRequest to provide suggested search terms
  */
 
-var gTimeout = 5000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();

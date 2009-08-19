@@ -39,7 +39,7 @@
 * Litmus test #0000: Sample testcase description
 */
 
-var gDelay = 0;
+const gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

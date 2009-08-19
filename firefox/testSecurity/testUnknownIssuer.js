@@ -38,8 +38,8 @@
  * Litmus Test 6871: Unknown Issuer error page
  */
 
-var gDelay = 0;
-var gTimeout = 5000;
+const gDelay = 0;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

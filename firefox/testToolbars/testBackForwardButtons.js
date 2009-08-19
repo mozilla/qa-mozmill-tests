@@ -39,7 +39,7 @@
  * Litmus test #5990: Back and Forward buttons
  */
 
-var gTimeout = 5000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
