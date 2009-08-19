@@ -42,19 +42,20 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-
-var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
   try {
     // Reset the pop-up blocking pref
     PrefsAPI.preferences.branch.clearUserPref("dom.disable_open_during_load");
-  } catch(e) {
+  } catch (ex) {
   }
 
   for each (window in mozmill.utils.getWindows()) {
@@ -62,8 +63,6 @@ var teardownModule = function(module) {
       window.close();
     }
   }
-
-  UtilsAPI.closeAllTabs(controller);
 }
 
 /**
@@ -73,7 +72,7 @@ var teardownModule = function(module) {
  * @throws Status bar icon is not visible
  */
 var testPopUpBlocked = function() {
-  UtilsAPI.closeAllTabs(controller);
+  var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
 
   PrefsAPI.handlePreferencesDialog(prefDialogCallback);
 
@@ -82,11 +81,11 @@ var testPopUpBlocked = function() {
 
   // Open the Pop-up test site
   controller.open(url);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Check for the close button in the notification bar
   var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"popup-blocked"}/anon({"type":"warning"})/{"class":"messageCloseButton tabbable"}');
-  UtilsAPI.delayedAssertNode(controller, xButton, 1000);
+  controller.waitForElement(xButton, gTimeout);
 
   // Check for the status bar icon
   var cssInfo = controller.window.getComputedStyle(controller.window.document.getElementById("page-report-button"), "");
@@ -106,14 +105,13 @@ var testPopUpBlocked = function() {
 var prefDialogCallback = function(controller) {
   // Get the Content Pane
   var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}';
-  controller.click(new elementslib.Lookup(controller.window.document, pane));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
   controller.sleep(gDelay);
 
   // Make sure the pref is checked
   var pref = new elementslib.ID(controller.window.document, "popupPolicy");
-  controller.waitForElement(pref, null, null);
-  var checked = pref.getNode().checked;
-  if (!checked) {
+  controller.waitForElement(pref, gTimeout);
+  if (!pref.getNode().checked) {
     controller.click(pref);
     controller.sleep(gDelay);
   }

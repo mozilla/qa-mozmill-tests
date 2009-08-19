@@ -38,6 +38,8 @@
  * Litmus test #6041: Test XMLHttpRequest to provide suggested search terms
  */
 
+var gTimeout = 5000;
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
@@ -48,17 +50,20 @@ var testGoogleSuggestedTerms = function() {
   controller.waitForPageLoad();
 
   // Enter a search term into the Google search field
-  controller.type(new elementslib.Name(controller.tabs.activeTab, "q"), "area");
+  var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
+  controller.type(searchField, "area");
 
   // Click the first element in the pop-down autocomplete
   var autocomplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[@id='main']/center/span[@id='body']/center/form/table[2]/tbody/tr[2]/td");
-  controller.waitThenClick(autocomplete);
+  controller.waitThenClick(autocomplete, gTimeout);
 
   // Start the search
   controller.click(new elementslib.Name(controller.tabs.activeTab, "btnG"));
   controller.waitForPageLoad();
 
   // Check if Search page has come up
-  controller.waitForElement(new elementslib.Name(controller.tabs.activeTab, "q"));
-  controller.waitForElement(new elementslib.Link(controller.tabs.activeTab, "Next"));
+  var nextField = new elementslib.Link(controller.tabs.activeTab, "Next");
+
+  controller.waitForElement(searchField, gTimeout);
+  controller.waitForElement(nextField, gTimeout);
 }

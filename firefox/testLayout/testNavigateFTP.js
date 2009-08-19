@@ -42,6 +42,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
+var gTimeout = 5000;
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
@@ -49,14 +51,16 @@ var setupModule = function(module) {
 var testNavigateFTP = function () {
   // opens the mozilla.org ftp page then navigates through a couple levels.
   controller.open('ftp://ftp.mozilla.org/pub/');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
-  controller.waitThenClick(new elementslib.Link(controller.tabs.activeTab, 'firefox'));
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  var firefox = new elementslib.Link(controller.tabs.activeTab, 'firefox');
+  controller.waitThenClick(firefox, gTimeout);
+  controller.waitForPageLoad();
 
-  controller.waitThenClick(new elementslib.Link(controller.tabs.activeTab, 'nightly'));
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  var nightly = new elementslib.Link(controller.tabs.activeTab, 'nightly');
+  controller.waitThenClick(nightly, gTimeout);
+  controller.waitForPageLoad();
 
   var latestLink = new elementslib.Link(controller.tabs.activeTab, 'latest-trunk');
-  UtilsAPI.delayedAssertNode(controller, latestLink);
+  controller.waitForElement(latestLink, gTimeout);
 }

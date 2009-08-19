@@ -44,7 +44,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -64,11 +65,11 @@ var testOptionsDialogRetention = function() {
 var prefPaneResetCallback = function(controller) {
   // Select the Main pane
   var paneMain = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
-  controller.click(new elementslib.Lookup(controller.window.document, paneMain));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneMain), gTimeout);
 
   // Check if the Main pane is active
   var privElem = new elementslib.ID(controller.window.document, "browserStartupPage");
-  UtilsAPI.delayedAssertNode(controller, privElem);
+  controller.waitForElement(privElem, gTimeout);
 
   // Close the Preferences dialog
   controller.keypress(null, 'VK_ESCAPE', {});
@@ -77,12 +78,12 @@ var prefPaneResetCallback = function(controller) {
 var prefPaneSetCallback = function(controller) {
   // Select the Advanced pane
   var firstPane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.click(new elementslib.Lookup(controller.window.document, firstPane));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, firstPane), gTimeout);
   controller.sleep(gDelay);
 
   // Check if the Advanced pane is active
   var advElem = new elementslib.ID(controller.window.document, "checkDefaultButton");
-  UtilsAPI.delayedAssertNode(controller, advElem);
+  controller.waitForElement(advElem, gTimeout);
 
   // Select the Privacy pane
   var paneCheck = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"panePrivacy"}';
@@ -90,7 +91,7 @@ var prefPaneSetCallback = function(controller) {
 
   // Check if the Privacy pane is active
   var privElem = new elementslib.ID(controller.window.document, "historyMode");
-  UtilsAPI.delayedAssertNode(controller, privElem);
+  controller.waitForElement(privElem, gTimeout);
 
   // Close the Preferences dialog
   controller.keypress(null, 'VK_ESCAPE', {});
@@ -99,8 +100,8 @@ var prefPaneSetCallback = function(controller) {
 var prefPaneCheckCallback = function(controller) {
   // Check if the Privacy pane is retained
   var privElem = new elementslib.ID(controller.window.document, "historyMode");
+  controller.waitForElement(privElem, gTimeout);
   controller.sleep(gDelay);
-  UtilsAPI.delayedAssertNode(controller, privElem);
 
   // Close the Preferences dialog
   controller.keypress(null, 'VK_ESCAPE', {});

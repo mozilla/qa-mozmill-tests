@@ -48,6 +48,22 @@ var setupModule = function(module) {
   searchBar = new elementslib.ID(controller.window.document, 'searchbar');
 }
 
+var testSearchBarFocusAndSearch = function() {
+  // The engine button overlays the textbox so click 1px behind the button
+  var engineButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/anon({"anonid":"searchbar-engine-button"})');
+  controller.click(searchBar, engineButton.getNode().clientWidth + 10, 1);
+  doSearch("Firefox");
+
+  // Use shortcut to start search
+  controller.keypress(null, 'k', {accelKey: true});
+  doSearch("Mozilla");
+
+  // Focus search bar, clear content and start an empty search
+  controller.keypress(null, 'k', {accelKey: true});
+  controller.keypress(searchBar, 'VK_DELETE', {});
+  controller.keypress(searchBar, 'VK_RETURN', {});
+}
+
 /**
  * Start a search with the given search term and checks if the resulting URL
  * contains the search term.
@@ -75,20 +91,4 @@ var doSearch = function(searchTerm) {
   // Check if search term is listed in URL
   if(locationBar.getNode().value.indexOf(searchTerm) == -1)
     throw "Search term in URL expected but not found.";
-}
-
-var testSearchBarFocusAndSearch = function() {
-  // The engine button overlays the textbox so click 1px behind the button
-  var engineButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/anon({"anonid":"searchbar-engine-button"})');
-  controller.click(searchBar, engineButton.getNode().clientWidth + 10, 1);
-  doSearch("Firefox");
-
-  // Use shortcut to start search
-  controller.keypress(null, 'k', {accelKey: true});
-  doSearch("Mozilla");
-
-  // Focus search bar, clear content and start an empty search
-  controller.keypress(null, 'k', {accelKey: true});
-  controller.keypress(searchBar, 'VK_DELETE', {});
-  controller.keypress(searchBar, 'VK_RETURN', {});
 }

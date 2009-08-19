@@ -42,41 +42,40 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-// Global timeout value
-const gTimeout = 10000;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
 var testCheckMSNCom = function () {
-  let aURL = "http://www.msn.com";
+  var url = "http://www.msn.com";
 
-  controller.open(aURL);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  controller.open(url);
+  controller.waitForPageLoad();
 
   // Check sign-in link
-  let signIn = new elementslib.ID(controller.tabs.activeTab, "ppsgin");
-  UtilsAPI.delayedAssertNode(controller, signIn, gTimeout);
+  var signIn = new elementslib.ID(controller.tabs.activeTab, "ppsgin");
+  controller.waitForElement(signIn, gTimeout);
 
   // check sign-up link for hotmail
-  let signUp = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='content']/div[@id='arear']/div[@id='wlive']/div[@id='hmm']/div[1]/div/p[1]/span[3]/a/b");
-  UtilsAPI.delayedAssertNode(controller, signUp, gTimeout);
+  var signUp = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='content']/div[@id='arear']/div[@id='wlive']/div[@id='hmm']/div[1]/div/p[1]/span[3]/a/b");
+  controller.waitForElement(signUp, gTimeout);
 
   // Check images and link texts for Hotmail, Messenger, My MSN, and MSN Directory links
-  for (let i = 1; i <= 4; i++) {
-    let img = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a/img[1]");
-    let link = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a");
+  for (var i = 1; i <= 4; i++) {
+    var img = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a/img[1]");
+    var link = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a");
 
     // Image has to be loaded first
     controller.waitForEval("subject.complete === true", gTimeout, 100, img.getNode());
     controller.assertImageLoaded(img);
 
-    UtilsAPI.delayedAssertNode(controller, link, gTimeout);
+    controller.waitForElement(link, gTimeout);
   }
 
   // Check top search field
-  let f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
-  let f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[3]");
+  var f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
+  var f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[3]");
   UtilsAPI.checkSearchField(controller, f1, "MSN", f1Submit);
 }

@@ -43,37 +43,32 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
 // Shared variable
-const gExtensionName = "Adblock Plus";
+var gExtensionName = "Adblock Plus";
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.addonsController = mozmill.getAddonsController();
-}
 
-var teardownModule = function(module) {
-  // Close all open tabs
   UtilsAPI.closeAllTabs(controller);
 }
 
 var testInstallExtension = function() {
-  // Make sure only one tab is open
-  UtilsAPI.closeAllTabs(controller);
-
   // Make sure the Get Add-ons pane is visible
   var getAddonsPane = new elementslib.ID(addonsController.window.document, "search-view");
-  UtilsAPI.delayedClick(addonsController, getAddonsPane);
+  addonsController.waitThenClick(getAddonsPane, gTimeout);
 
   // Wait for the Browse All Add-ons link and click on it
   var browseAddonsLink = new elementslib.ID(addonsController.window.document, "browseAddons");
-  UtilsAPI.delayedClick(addonsController, browseAddonsLink);
+  addonsController.waitThenClick(browseAddonsLink, gTimeout);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.length == 2", 5000, 100, controller.tabs);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  controller.waitForPageLoad();
 
   // To avoid a broken test lets install Adblock directly
   controller.open("https://addons.mozilla.org/de/firefox/addon/1865");
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
   var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
@@ -81,7 +76,7 @@ var testInstallExtension = function() {
 
   // Click the link to install the extension
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
-  controller.waitForElement(triggerLink, 5000, 100);
+  controller.waitForElement(triggerLink, gTimeout);
   controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
 
   // Wait that the Installation pane is selected in the Add-ons Manager after the extension has been installed
@@ -89,12 +84,12 @@ var testInstallExtension = function() {
   addonsController.waitForEval("subject.selected == true", 10000, 100, installPane.getNode());
 
   // Check if the installed extension is visible in the Add-ons Manager
-  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/[1]/anon({"flex":"1"})/[0]/[1]/{"class":"addon-name-version","xbl:inherits":"name, version=newVersion"}/anon({"class":"addonName","crop":"end","xbl:inherits":"value=name","value":"' + gExtensionName + '"})');
-  UtilsAPI.delayedAssertNode(addonsController, extension, 5000, 100);
+  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/[1]/anon({"flex":"1"})/[0]/[1]/{"class":"addon-name-version","xbl:inherits":"name, version=newVersion"}/anon({"value":"' + gExtensionName + '"})');
+  addonsController.waitForElement(extension, gTimeout);
 
   // Check if restart button is present
-  var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window' and namespace-uri()='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul']/*[name()='notificationbox' and namespace-uri()='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'][1]/*[name()='notification' and namespace-uri()='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'][1]/*[name()='button' and namespace-uri()='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'][1]");
-  UtilsAPI.delayedAssertNode(addonsController, restartButton);
+  var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  addonsController.waitForElement(restartButton, gTimeout);
 }
 
 /**
@@ -102,21 +97,22 @@ var testInstallExtension = function() {
  */
 var handleTriggerDialog = function(controller) {
   // Get list of extensions which should be installed
-  var itemList = controller.window.document.getElementById("itemList");
-  UtilsAPI.delayedAssertNode(controller, new elementslib.Elem(controller.window.document, itemList));
+  var itemElem = controller.window.document.getElementById("itemList");
+  var itemList = new elementslib.Elem(controller.window.document, itemElem);
+  controller.waitForElement(itemList, gTimeout);
 
   // There should be listed only one extension
-  if (itemList.childNodes.length != 1) {
+  if (itemElem.childNodes.length != 1) {
     throw "Expected one extension for installation";
   }
 
   // Check if the extension name is shown
-  if (itemList.childNodes[0].name != gExtensionName) {
+  if (itemElem.childNodes[0].name != gExtensionName) {
     throw "Visible extension name doesn't match target extension";
   }
 
   // Will the extension be installed from https://addons.mozilla.org/?
-  if (itemList.childNodes[0].url.indexOf("https://addons.mozilla.org/") == -1) {
+  if (itemElem.childNodes[0].url.indexOf("https://addons.mozilla.org/") == -1) {
     throw "Extension location doesn't contain https://addons.mozilla.org/";
   }
 

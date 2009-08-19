@@ -43,40 +43,24 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 
   // Build the element for a blank untitled tab
   module.untitled = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
   module.tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ module.untitled +'"}/anon({"class":"tab-text"})');
 }
 
-var teardownModule = function(module) {
-  // Close the new Tab to reset state
-  UtilsAPI.closeAllTabs(controller);
-}
-
-var checkNewTab = function() {
-  // Check that two tabs are open and wait until the document has been finished loading
-  controller.waitForEval("subject.length == 2", 1000, 100, controller.tabs);
-  controller.waitForPageLoad(controller.tabs.activeTab);
-
-  controller.assertNode(tabTitle);
-
-  // Close the tab again
-  controller.keypress(null, "w", {accelKey: true});
-  controller.waitForEval("subject.length == 1", 1000, 100, controller.tabs);
-}
-
 var testNewTab = function () {
-  // Make sure all tabs are closed
-  UtilsAPI.closeAllTabs(controller);
-
   // Ensure current tab does not have blank page loaded
   controller.open('http://www.mozilla.org');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
+
   controller.assertNodeNotExist(tabTitle);
   controller.sleep(gDelay);
 
@@ -92,7 +76,21 @@ var testNewTab = function () {
 
   // Double click the empty tab strip left of the all tabs button to open a new tab
   var tabStrip = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"class":"tabs-stack"})/{"class":"tabs-container"}/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbox"})/anon({"class":"box-inherit scrollbox-innerbox"})');
-
   controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
   checkNewTab();
+}
+
+/**
+ * Check if a new tab has been opened, has a title and can be closed
+ */
+var checkNewTab = function() {
+  // Check that two tabs are open and wait until the document has been finished loading
+  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  controller.waitForPageLoad();
+
+  controller.assertNode(tabTitle);
+
+  // Close the tab again
+  controller.keypress(null, "w", {accelKey: true});
+  controller.waitForEval("subject.length == 1", gTimeout, 100, controller.tabs);
 }

@@ -42,6 +42,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
 
+var gDelay = 0;
+
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
@@ -59,7 +61,7 @@ var testAddBookmarkToBookmarksMenu = function() {
 
   // Open URI and wait until it has been finished loading
   controller.open(uri.spec);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Open the bookmark panel via bookmarks menu
   controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
@@ -69,9 +71,12 @@ var testAddBookmarkToBookmarksMenu = function() {
 
   // Bookmark should automatically be stored under the Bookmark Menu
   // XXX: We should give a unique name too when controller.type will send oninput events (bug 474667)
-  controller.type(new elementslib.ID(controller.window.document, "editBMPanel_namePicker"),"Mozilla");
-  controller.sleep(500);
-  controller.click(new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton"));
+  var nameField = new elementslib.ID(controller.window.document, "editBMPanel_namePicker");
+  var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
+
+  controller.type(nameField, "Mozilla");
+  controller.sleep(gDelay);
+  controller.click(doneButton);
 
   // Check if bookmark was created in the Bookmarks Menu
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)

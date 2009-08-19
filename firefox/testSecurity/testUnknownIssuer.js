@@ -38,7 +38,8 @@
  * Litmus Test 6871: Unknown Issuer error page
  */
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -52,23 +53,23 @@ var setupModule = function(module) {
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
   controller.open('https://mur.at');
-  controller.waitForPageLoad(controller.tabs.activeTab, 2000);
+  controller.waitForPageLoad(1000);
 
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link);
+  controller.waitForElement(link, gTimeout);
   controller.assertProperty(link, "textContent", "secure.mur.at");
-  
+
   // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
-  
+
   // Verify "Add Exception" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton"));
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text);
-  if (text.getNode().textContent.indexOf("sec_error_unknown_issuer") == -1) {  
+  controller.waitForElement(text, gTimeout);
+  if (text.getNode().textContent.indexOf("sec_error_unknown_issuer") == -1) {
     throw "No sec_error_unknown_issuer error displayed!";
-  } 
+  }
 }

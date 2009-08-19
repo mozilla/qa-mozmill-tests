@@ -39,35 +39,42 @@
  * Litmus test #5990: Back and Forward buttons
  */
 
-// Global timeout value
-const gTimeout = 10000;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
 var testBackandForward = function() {
-  var websites = ['http://www.google.com/webhp?hl=en&complete=1', 'http://www.cnn.com/', 'http://www.msn.com/'];
   var pageElements = ['guser', 'cnnHeadSrchTxt', 'f1'];
+  var websites = ['http://www.google.com/webhp?hl=en&complete=1',
+                  'http://www.cnn.com/',
+                  'http://www.msn.com/'];
 
   // Open up the list of websites statically assigned in the array
   for (var k = 0; k < websites.length; k++) {
     controller.open(websites[k]);
-    controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[k]), gTimeout);
+    controller.waitForPageLoad();
+
+    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[k]);
+    controller.waitForElement(element, gTimeout);
   }
 
   // Click on the Back button for the number of websites visited
   for (var i = websites.length - 2; i >= 0; i--) {
     controller.goBack();
-    controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[i]), gTimeout);
+    controller.waitForPageLoad();
+
+    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[i]);
+    controller.waitForElement(element, gTimeout);
   }
 
   // Click on the Forward button for the number of websites visited
   for (var j = 1; j < websites.length; j++) {
     controller.goForward();
-    controller.waitForPageLoad(controller.tabs.activeTab);
-    controller.waitForElement(new elementslib.ID(controller.tabs.activeTab, pageElements[j]), gTimeout);
+    controller.waitForPageLoad();
+
+    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[j]);
+    controller.waitForElement(element, gTimeout);
   }
 }

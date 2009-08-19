@@ -42,37 +42,37 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var testWarningPages = function() {
   var urls = ['http://www.mozilla.com/firefox/its-a-trap.html',
               'http://www.mozilla.com/firefox/its-an-attack.html'];
 
-  // Leave only one tab open in the browser
-  UtilsAPI.closeAllTabs(controller);
-
   for (var i = 0; i < urls.length; i++ ) {
     // Open one of the mozilla phishing protection test pages
     controller.open(urls[i]);
-    controller.waitForPageLoad(controller.tabs.activeTab, 1000);
+    controller.waitForPageLoad(1000);
 
     // Test the getMeOutButton
     checkGetMeOutOfHereButton();
 
     // Go back to the warning page
     controller.open(urls[i]);
-    controller.waitForPageLoad(controller.tabs.activeTab, 1000);
+    controller.waitForPageLoad(1000);
 
     // Test the reportButton
     checkReportButton(i, urls[i]);
 
     // Go back to the warning page
     controller.open(urls[i]);
-    controller.waitForPageLoad(controller.tabs.activeTab, 1000);
+    controller.waitForPageLoad(1000);
 
     // Test the ignoreWarning button
     checkIgnoreWarningButton(urls[i]);
@@ -86,7 +86,7 @@ var checkGetMeOutOfHereButton = function() {
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutButton");
 
   // Wait for the getMeOutOfHereButton to be safely loaded on the warning page and click it
-  controller.waitThenClick(getMeOutOfHereButton);
+  controller.waitThenClick(getMeOutOfHereButton, gTimeout);
   controller.waitForPageLoad();
 
   // Safe URL of current web page
@@ -96,7 +96,7 @@ var checkGetMeOutOfHereButton = function() {
   // Open the default home page
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
   controller.open(defaultHomePage);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   controller.assertValue(locationBar, pageURL);
 }
@@ -113,7 +113,7 @@ var checkReportButton = function(type, badUrl) {
   var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
 
   // Wait for the reportButton to be safely loaded onto the warning page
-  controller.waitThenClick(reportButton);
+  controller.waitThenClick(reportButton, gTimeout);
   controller.waitForPageLoad();
 
   var locale = PrefsAPI.preferences.getPref("general.useragent.locale", "");
@@ -156,7 +156,7 @@ var checkIgnoreWarningButton = function(url) {
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
 
   // Wait for the ignoreButton to be safely loaded on the warning page
-  controller.waitThenClick(ignoreWarningButton);
+  controller.waitThenClick(ignoreWarningButton, gTimeout);
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url

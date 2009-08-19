@@ -53,8 +53,6 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  UtilsAPI.closeAllTabs(controller);
-
   // Reset Private Browsing options
   pb.showPrompt = true;
   pb.enabled = false;
@@ -77,7 +75,6 @@ var testTabRestoration = function() {
   // Open urls in separate tabs after closing existing tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
 
-  UtilsAPI.closeAllTabs(controller);
   for (var ii = 0; ii < urls.length; ii++) {
     controller.open(urls[ii].url);
     controller.click(newTab);
@@ -86,7 +83,7 @@ var testTabRestoration = function() {
   // Wait until all tabs have been finished loading
   for (var ii = 0; ii < urls.length; ii++) {
     var elem = new elementslib.ID(controller.tabs.getTab(ii), urls[ii].id);
-    UtilsAPI.delayedAssertNode(controller, elem);
+    controller.waitForElement(elem, gTimeout);
   }
 
   // Start Private Browsing
@@ -94,9 +91,8 @@ var testTabRestoration = function() {
   controller.sleep(gDelay);
 
   // Open a page which should be removed after leaving Private Browsing mode
-  // Somehow delayedAssertNode doesn't work here
   controller.open("http://www.google.com/webhp?complete=1&hl=en");
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "logo"));
 
   // Check if Private Browsing mode is active
@@ -112,6 +108,6 @@ var testTabRestoration = function() {
   // Check if pages were loaded
   for (var ii = 0; ii < urls.length; ii++) {
     var elem = new elementslib.ID(controller.tabs.getTab(ii), urls[ii].id);
-    UtilsAPI.delayedAssertNode(controller, elem);
+    controller.waitForElement(elem, gTimeout);
   }
 }

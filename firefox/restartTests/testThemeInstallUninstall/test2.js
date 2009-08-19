@@ -43,7 +43,8 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
 // Shared variable
-const gThemeName = "Walnut for Firefox";
+var gThemeName = "Walnut for Firefox";
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   // The Add-ons Manager is not opened automatically as what happens for new extensions
@@ -54,13 +55,13 @@ var testCheckInstalledTheme = function() {
   // Select the Themes pane
   var themesPane = new elementslib.ID(controller.window.document, "themes-view");
   controller.sleep(100);
-  UtilsAPI.delayedClick(controller, themesPane);
+  controller.waitThenClick(themesPane, gTimeout);
 
   // The installed theme should be the current theme in the list
   // XXX: Use the add-on uuid to access the entry directly until we can pass the info
   // between restart test files (bug 500987)
   var item = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}")');
-  controller.waitThenClick(item, 5000);
+  controller.waitThenClick(item, gTimeout);
 
   // Check if the Walnut Theme is the current theme
   if (!item.getNode().getAttribute('current')) {

@@ -45,6 +45,7 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
 var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -56,22 +57,9 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  UtilsAPI.closeAllTabs(controller);
-
   // Reset Private Browsing options
   pb.showPrompt = true;
   pb.enabled = false;
-}
-
-/**
- * Handler for modal dialog
- */
-var pbStartHandler = function(controller) {
-  // Check to not ask anymore for entering Private Browsing mode
-  controller.click(new elementslib.ID(controller.window.document, 'checkbox'));
-  controller.sleep(gDelay);
-
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
 }
 
 /**
@@ -97,7 +85,7 @@ var testEnterPrivateBrowsingMode = function() {
 
     // Check for the more info link in the about:privatebrowsing page
     var link = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-    UtilsAPI.delayedAssertNode(controller, link);
+    controller.waitForElement(link);
 
     pb.stop(ii);
     controller.sleep(gDelay);
@@ -131,4 +119,16 @@ var testWindowTitle = function() {
   // Title modifier should have been removed
   if (doc.title.indexOf(modifier) != -1)
     throw "Private Browsing identifier is still visible in window title";
+}
+
+/**
+ * Handler for modal dialog
+ */
+var pbStartHandler = function(controller) {
+  // Check to not ask anymore for entering Private Browsing mode
+  var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
+  controller.waitThenClick(checkbox, 5000);
+  controller.sleep(gDelay);
+
+  controller.click(new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
 }

@@ -54,14 +54,14 @@ var setupModule = function(module) {
     var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
                          getService(Ci.nsIFormHistory2);
     formHistory.removeAllEntries();
-  } catch (e) {
+  } catch (ex) {
   }
 }
 
 var teardownModule = function(module) {
   try {
     PrefsAPI.preferences.branch.clearUserPref("browser.formfill.enable");
-  } catch (e) {
+  } catch (ex) {
   }
 }
 
@@ -69,10 +69,10 @@ var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
   PrefsAPI.handlePreferencesDialog(prefDialogFormCallback);
 
-  var sampleFormSite = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
+  var url = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
 
   // Go to the sample form website and submit form data
-  controller.open(sampleFormSite);
+  controller.open(url);
   controller.waitForPageLoad();
 
   var firstName = new elementslib.Name(controller.tabs.activeTab, "ship_fname");
@@ -85,7 +85,7 @@ var testToggleFormManager = function() {
 
   controller.click(new elementslib.Name(controller.tabs.activeTab, "SubmitButton"));
   controller.waitForPageLoad();
-  controller.waitForElement(firstName);
+  controller.waitForElement(firstName, gTimeout);
 
   // Verify no form completion in each submitted form field
   var popDownAutoCompList = new elementslib.Lookup(controller.window.content.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
@@ -112,7 +112,8 @@ var prefDialogFormCallback = function(controller) {
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "rememberForms"));
+  var rememberForms = new elementslib.ID(controller.window.document, "rememberForms");
+  controller.waitThenClick(rememberForms);
   controller.sleep(gDelay);
 
   // Close the Preferences dialog

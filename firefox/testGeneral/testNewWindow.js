@@ -43,7 +43,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 // Holds the instance of the newly created window
 var newWindow = null;
@@ -61,13 +62,14 @@ var teardownModule = function(module) {
 var testNewWindow = function () {
   // Open the current homepage to get its value
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
-  controller.waitForPageLoad(controller.tabs.activeTab);
-  var homePageURL = new elementslib.ID(controller.window.document, "urlbar").getNode().value;
+  controller.waitForPageLoad();
+
+  var homePageURL = controller.window.document.getElementById("urlbar").value;
   controller.sleep(gDelay);
 
   // Ensure current window does not have the home page loaded
   controller.open('about:blank');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Get the pre test window count
   var windowCountBeforeTest = mozmill.utils.getWindows().length;
@@ -79,7 +81,7 @@ var testNewWindow = function () {
   // Check if a new window has been opened
   newWindow = mozmill.wm.getMostRecentWindow("navigator:browser");
   var controller2 = new mozmill.controller.MozMillController(newWindow);
-  controller2.waitForPageLoad(controller2.tabs.activeTab);
+  controller2.waitForPageLoad();
 
   // Get the post test window count
   var windowCountAfterTest = mozmill.utils.getWindows().length;
@@ -89,6 +91,6 @@ var testNewWindow = function () {
 
   // Checks that the new window contains the default home page.
   var locationBar = new elementslib.ID(controller2.window.document, "urlbar");
-  controller2.waitForElement(locationBar);
+  controller2.waitForElement(locationBar, gTimeout);
   controller2.assertValue(locationBar, homePageURL);
 }

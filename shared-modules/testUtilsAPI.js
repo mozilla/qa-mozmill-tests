@@ -80,7 +80,7 @@ var closeAllTabs = function(controller)
   }
 
   controller.open("about:blank");
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 }
 
 /**
@@ -119,11 +119,10 @@ function getProperty(url, prefName)
  */
 function checkSearchField(controller, searchField, searchTerm, submitButton, timeout)
 {
-  delayedAssertNode(controller, searchField, timeout);
-  controller.click(searchField);
+  controller.waitThenClick(searchField, timeout);
   controller.type(searchField, searchTerm);
 
-  if (submitButton) {
+  if (submitButton != undefined) {
     controller.waitThenClick(submitButton, timeout);
   }
 }
@@ -154,42 +153,6 @@ function assertElementVisible(controller, element, visibility)
     if (state == 'visible')
       throw "Element is visible but should be hidden";
   }
-}
-
-/**
- * Waits until the specified element exists before calling assertNode
- *
- * @param {MozMillController} controller
- *        Controller of the window to operate on.
- * @param {ElemBase} element
- *        Element to check its existence.
- * @param {number} timeout
- *        Timeout value for the test
- */
-function delayedAssertNode(controller, element, timeout)
-{
-  controller.waitForElement(element, timeout);
-  controller.assertNode(element);
-}
-
-/**
- * Waits until the element exists before simulating a click on it
- *
- * @param {MozMillController} controller
- *        Controller of the window to operate on
- * @param {ElemBase} element
- *        Element to click
- * @param {number} timeout
- *        Timeout value for the test
- * @param {number} x
- *        Click x position
- * @param {number} y
- *        Click y position
- */
-function delayedClick(controller, element, timeout, x, y)
-{
-  controller.waitForElement(element, timeout);
-  controller.click(element, x, y);
 }
 
 /**

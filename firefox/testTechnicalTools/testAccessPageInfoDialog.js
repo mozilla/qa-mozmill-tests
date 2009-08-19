@@ -42,7 +42,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -60,7 +61,7 @@ var testAccessPageInfo = function () {
 
   // Load web page with RSS feed
   controller.open('http://www.cnn.com');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Open context menu on the html element and select Page Info entry
   controller.rightclick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
@@ -79,7 +80,7 @@ var testAccessPageInfo = function () {
 
     // Check if the panel has been shown
     var node = new elementslib.ID(piController.window.document, pane.panel);
-    UtilsAPI.delayedAssertNode(piController, node);
+    piController.waitForElement(node, gTimeout);
   }
 
   // Close the Page Info window by pressing Escape

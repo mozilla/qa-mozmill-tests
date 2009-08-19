@@ -44,10 +44,13 @@ const gDelay = 0;
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  // Clear complete form history so we don't interfer with already added entries
-  var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                      getService(Ci.nsIFormHistory2);
-  formHistory.removeAllEntries();
+  try {
+    // Clear complete form history so we don't interfer with already added entries
+    var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
+                        getService(Ci.nsIFormHistory2);
+    formHistory.removeAllEntries();
+  } catch (ex) {
+  }
 }
 
 var testFormCompletion = function() {
@@ -56,7 +59,7 @@ var testFormCompletion = function() {
 
   // Open the URL and verify it's the correct page
   controller.open(url);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   var searchField = new elementslib.ID(controller.tabs.activeTab, "q");
   controller.assertNode(searchField);
@@ -66,18 +69,18 @@ var testFormCompletion = function() {
   controller.sleep(gDelay);
 
   controller.click(new elementslib.ID(controller.tabs.activeTab, "submit"));
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Go to a filler site
   controller.open('http://www.yahoo.com/');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Go back to the starting page
   controller.open(url);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Verify search field element and type in a portion of the field
-  controller.type(searchField,"mozilla");
+  controller.type(searchField, "mozilla");
 
   // Select the first element of the drop down
   var popDownAutoCompList = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');

@@ -43,7 +43,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -76,7 +77,7 @@ var prefDialogCallback = function(controller) {
 
     // Check if the panel has been shown
     var node = new elementslib.ID(controller.window.document, pane.panel);
-    UtilsAPI.delayedAssertNode(controller, node);
+    controller.waitForElement(node, gTimeout);
   }
 
   // Close the Preferences window

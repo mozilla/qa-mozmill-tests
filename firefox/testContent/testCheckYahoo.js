@@ -43,22 +43,23 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
+var gTimeout = 5000;
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
 var testYahoo = function () {
-  // Use the Yahoo website for testing
   var url = 'http://us.yahoo.com/';
   var searchTerm = "Mozilla";
 
   // Open the web page.
   controller.open(url);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Check for the Yahoo logo
   var yahooLogo = new elementslib.ID(controller.tabs.activeTab, 'ylogo');
-  UtilsAPI.delayedAssertNode(controller, yahooLogo);
+  controller.waitForElement(yahooLogo, gTimeout);
 
   // Check the location bar has the correct URL
   var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
@@ -66,13 +67,13 @@ var testYahoo = function () {
 
   // Check existance of More Yahoo! Services button
   var servicesButton = new elementslib.ID(controller.tabs.activeTab, "allyservices")
-  UtilsAPI.delayedAssertNode(controller, servicesButton);
+  controller.waitForElement(servicesButton, gTimeout);
 
   // Check search field
   var searchField = new elementslib.ID(controller.tabs.activeTab, 'p');
   var searchSubmit = new elementslib.ID(controller.tabs.activeTab, "searchsubmit");
   UtilsAPI.checkSearchField(controller, searchField, searchTerm, searchSubmit);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Check if the correct search was performed
   var resultSearchField = new elementslib.ID(controller.tabs.activeTab, "yschsp");

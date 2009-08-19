@@ -42,20 +42,18 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI','PrefsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var testSecNotification = function() {
-
-  // Close all tabs and open a blank page
-  UtilsAPI.closeAllTabs(controller);
-
   // Go to the secure HTTPS Verisign site
   controller.open('https://www.verisign.com/');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   var aboutVer = new elementslib.Link(controller.tabs.activeTab, "About VeriSign");
   controller.assertNode(aboutVer);
@@ -78,7 +76,8 @@ var testSecNotification = function() {
 
   // Go to the unsecure HTTP Verisign site
   controller.open('http://www.verisign.com');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
+
   controller.assertNode(aboutVer);
 
   // Verify security functionality of http verisign site
@@ -92,7 +91,7 @@ var testSecNotification = function() {
 
   // Go to a Verisign page which does not have a valid cert
   controller.open('https://verisign.com');
-  controller.waitForPageLoad(controller.tabs.activeTab, 1000);
+  controller.waitForPageLoad(1000);
 
   // Verify security functionality in HTTPS certificate exception page
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "cert_domain_link"));

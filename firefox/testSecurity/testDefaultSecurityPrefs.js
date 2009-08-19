@@ -42,7 +42,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -61,18 +62,18 @@ var testDefaultSecurityPreferences = function() {
 var prefDialogCallback = function(controller) {
   // Get the Advanced Pane
   var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
   controller.sleep(gDelay);
 
   // Get the Encryption tab
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "encryptionTab"));
+  var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
+  controller.waitThenClick(encryption, gTimeout);
   controller.sleep(gDelay);
 
   // Make sure the prefs are checked
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
   var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
-  controller.waitForElement(sslPref);
-  controller.waitForElement(tlsPref);
+  controller.waitForElement(sslPref, gTimeout);
   controller.assertChecked(sslPref);
   controller.assertChecked(tlsPref);
 

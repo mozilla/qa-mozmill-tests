@@ -44,10 +44,13 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -59,24 +62,23 @@ var teardownModule = function(module) {
 var testSetHomePage = function() {
   var homepage = 'http://www.mozilla.org/';
 
-  // Close all tabs and open a blank page
-  UtilsAPI.closeAllTabs(controller);
-
   // Go to the Mozilla.org website and verify the correct page has loaded
   controller.open(homepage);
-  controller.waitForPageLoad(controller.tabs.activeTab);
-  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Mozilla"));
+  controller.waitForPageLoad();
+
+  var link = new elementslib.Link(controller.tabs.activeTab, "Mozilla");
+  controller.assertNode(link);
 
   // Call Prefs Dialog and set Home Page
   PrefsAPI.handlePreferencesDialog(prefDialogHomePageCallback);
 
   // Open another page before going to the home page
   controller.open('http://www.yahoo.com/');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Verify location bar with the saved home page
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
@@ -85,15 +87,17 @@ var testSetHomePage = function() {
 
 var prefDialogHomePageCallback = function(controller) {
   // Select the Main pane
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}'));
+  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
 
   // Check if the Main pane is active
   var node = new elementslib.ID(controller.window.document, 'paneMain');
-  UtilsAPI.delayedAssertNode(controller, node);
+  controller.waitForElement(node, gTimeout);
   controller.sleep(gDelay);
 
   // Set Home Page to the current page
-  controller.click(new elementslib.ID(controller.window.document, "useCurrent"));
+  var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
+  controller.click(useCurrent);
 
   // Close the Preferences dialog
   if (mozmill.isWindows) {

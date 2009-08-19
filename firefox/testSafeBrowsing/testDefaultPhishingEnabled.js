@@ -42,7 +42,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -56,14 +57,14 @@ var testDefaultPhishingEnabled = function() {
 var prefPaneSetCallback = function(controller) {
   // Select the Security pane
   var paneCheck = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneSecurity"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneCheck));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneCheck), gTimeout);
 
   // Check if the Security pane is active
   var attackElem = new elementslib.ID(controller.window.document, "blockAttackSites");
   var forgeryElem = new elementslib.ID(controller.window.document, "blockWebForgeries");
 
   // Verify Block Attack Sites and Reported Web Forgeries are checked by default
-  controller.waitForElement(attackElem);
+  controller.waitForElement(attackElem, gTimeout);
   controller.assertChecked(attackElem);
   controller.assertChecked(forgeryElem);
   controller.sleep(gDelay);

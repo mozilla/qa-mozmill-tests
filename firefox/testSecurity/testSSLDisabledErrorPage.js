@@ -43,7 +43,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -54,7 +55,7 @@ var teardownModule = function(module) {
     // Reset the SSL and TLS prefs
     PrefsAPI.preferences.branch.clearUserPref("security.enable_ssl3");
     PrefsAPI.preferences.branch.clearUserPref("security.enable_tls");
-  } catch(e) {
+  } catch (ex) {
   }
 }
 
@@ -69,15 +70,16 @@ var teardownModule = function(module) {
 var testDisableSSL = function() {
   // Open a blank page so we don't have any error page shown
   controller.open("about:blank");
-  controller.waitForPageLoad(1000);
+  controller.waitForPageLoad();
 
   PrefsAPI.handlePreferencesDialog(prefDialogCallback);
 
   controller.open("https://www.verisign.com");
+  controller.waitForPageLoad(1000);
 
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
-  controller.waitForElement(title);
+  controller.waitForElement(title, gTimeout);
   if (title.getNode().textContent != "Secure Connection Failed") {
       throw "Expected error title 'Secure Connection Failed'!";
   }
@@ -87,7 +89,7 @@ var testDisableSSL = function() {
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
-  controller.waitForElement(text);
+  controller.waitForElement(text, gTimeout);
   if (text.getNode().textContent.indexOf("ssl_error_ssl_disabled") == -1) {
     throw "Expected error code ssl_error_ssl_disabled!";
   }
@@ -107,23 +109,24 @@ var testDisableSSL = function() {
 var prefDialogCallback = function(controller) {
   // Get the Advanced Pane
   var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane));
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
   controller.sleep(gDelay);
 
   // Get the Encryption tab
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "encryptionTab"));
+  var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
+  controller.waitThenClick(encryption, gTimeout);
   controller.sleep(gDelay);
 
   // Make sure the Use SSL pref is not checked
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
-  controller.waitForElement(sslPref);
+  controller.waitForElement(sslPref, gTimeout);
   if (sslPref.getNode().checked) {
     controller.click(sslPref);
   }
 
   // Make sure the Use TLS pref is not checked
   var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
-  controller.waitForElement(tlsPref);
+  controller.waitForElement(tlsPref, gTimeout);
   if (tlsPref.getNode().checked) {
     controller.click(tlsPref);
   }

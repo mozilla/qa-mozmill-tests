@@ -39,10 +39,8 @@
  * Litmus test #5927: Find in page
  */
 
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
-
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -83,7 +81,7 @@ var testFindInPage = function() {
 
   // Check that the find bar is visible
   var findBar = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})');
-  UtilsAPI.delayedAssertNode(controller, findBar);
+  controller.waitForElement(findBar, gTimeout);
 
   // Type "mozilla" into the find bar text field and press return to start the search
   var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');

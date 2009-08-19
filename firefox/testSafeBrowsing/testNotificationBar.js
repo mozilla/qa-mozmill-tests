@@ -44,24 +44,23 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 1000;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var testNotificationBar = function() {
   var badSites = ['http://www.mozilla.com/firefox/its-a-trap.html',
                   'http://www.mozilla.com/firefox/its-an-attack.html'];
 
-  // Leave only one tab open in the browser
-  UtilsAPI.closeAllTabs(controller);
-
   for (var i = 0; i < badSites.length; i++ ) {
     // Go to one of mozilla's phishing protection test pages
     controller.open(badSites[i]);
-    controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+    controller.waitForPageLoad(1000);
 
     // Wait for the ignoreWarning button to be loaded onto the page and then click on the button
     checkIgnoreWarningButton(badSites[i]);
@@ -69,7 +68,7 @@ var testNotificationBar = function() {
 
     // Go back to the notification bar
     controller.goBack();
-    controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+    controller.waitForPageLoad(1000);
     checkIgnoreWarningButton(badSites[i]);
 
     // Test the get me out of here button
@@ -77,7 +76,7 @@ var testNotificationBar = function() {
 
     // Go back to the notification bar
     controller.goBack();
-    controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+    controller.waitForPageLoad(1000);
     checkIgnoreWarningButton(badSites[i]);
 
     // Test the x button on the drop down bar
@@ -93,7 +92,7 @@ var testNotificationBar = function() {
 var checkIgnoreWarningButton = function(badUrl) {
   // Verify the element is loaded onto the page and go to the phishing site
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
-  controller.waitThenClick(ignoreWarningButton);
+  controller.waitThenClick(ignoreWarningButton, gTimeout);
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
@@ -114,12 +113,12 @@ var checkNoPhishingButton = function(badUrl) {
     // Click on the web forgery report button
     var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAForgeryButton.label");
     var notWebForgeryButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-    controller.waitThenClick(notWebForgeryButton);
+    controller.waitThenClick(notWebForgeryButton, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-a-web-forgery report page is loaded
     var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
-    controller.waitForElement(urlField);
+    controller.waitForElement(urlField, gTimeout);
     controller.assertValue(urlField, 'http://www.mozilla.com/firefox/its-a-trap.html');
 
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
@@ -127,7 +126,7 @@ var checkNoPhishingButton = function(badUrl) {
     var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAnAttackButton.label");
     var notAttackSiteButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
-    controller.waitThenClick(notAttackSiteButton);
+    controller.waitThenClick(notAttackSiteButton, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-an-attack-site report page is loaded
@@ -146,10 +145,10 @@ var checkGetMeOutOfHereButton = function() {
   // Click on the get me out of here button
   var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.getMeOutOfHereButton.label");
   var getMeOutForgeryOfHereButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-  controller.waitThenClick(getMeOutForgeryOfHereButton);
+  controller.waitThenClick(getMeOutForgeryOfHereButton, gTimeout);
 
   // Verify that the default home page is displayed in the location bar
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Safe URL of current web page
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
@@ -158,7 +157,7 @@ var checkGetMeOutOfHereButton = function() {
   // Open the default home page
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
   controller.open(defaultHomePage);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   controller.assertValue(locationBar, pageURL);
 }
@@ -169,7 +168,7 @@ var checkGetMeOutOfHereButton = function() {
 var checkXButton = function() {
   // Click on the x button and verify the notification bar dissapears
   var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/anon({"type":"critical"})/{"class":"messageCloseButton tabbable"}');
-  controller.waitThenClick(xButton);
-  controller.sleep(gTimeout);
+  controller.waitThenClick(xButton, gTimeout);
+  controller.sleep(1000);
   controller.assertNodeNotExist(xButton);
 }

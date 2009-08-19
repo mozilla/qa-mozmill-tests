@@ -40,7 +40,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI', 'PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI'];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -71,7 +71,7 @@ var testVerifyDefaultBookmarks = function() {
 
   var urlBar = new elementslib.ID(controller.window.document, "urlbar");
   controller.click(gettingStarted, 5, 5);
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
   controller.assertValue(urlBar, toolbarNodes.getChild(1).uri);
 
   // Check the title of the default RSS feed toolbar button

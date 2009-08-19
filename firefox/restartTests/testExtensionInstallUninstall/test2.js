@@ -43,7 +43,8 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
 // Shared variable
-const gExtensionName = "Adblock Plus";
+var gExtensionName = "Adblock Plus";
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -56,16 +57,16 @@ var testCheckInstalledExtension = function() {
 
   // Extensions pane should be selected
   var extensionsPane = new elementslib.ID(addonsController.window.document, "extensions-view");
-  addonsController.waitForEval("subject.selected == true", 5000, 100, extensionsPane.getNode());
+  addonsController.waitForEval("subject.selected == true", gTimeout, 100, extensionsPane.getNode());
 
   // Notification bar should show one new installed extension
-  var notificationBar = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/{"image":"chrome://global/skin/icons/information-16.png","priority":"4","type":"warning"}/anon({"class":"notification-inner outset","flex":"1","xbl:inherits":"type","type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
-  UtilsAPI.delayedAssertNode(addonsController, notificationBar, 5000);
+  var notificationBar = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/{"type":"warning"}/anon({"type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
+  addonsController.waitForElement(notificationBar, gTimeout);
 
   // The installed extension should be displayed with a different background in the list.
   // We can find it by the attribute "newAddon"
   // XXX: Use a hard-coded name to access the entry directly until we can pass the info
   // between restart test files (bug 500987)
-  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"class":"addonName","crop":"end","xbl:inherits":"value=name","value":"' + gExtensionName + '"})');
+  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + gExtensionName + '"})');
   addonsController.assertNode(extension);
 }

@@ -43,7 +43,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+var gDelay = 0;
+var gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -61,25 +62,26 @@ var testSetLanguages = function () {
 
   // Open the Google Home page
   controller.open('http://www.google.com/');
-  controller.waitForPageLoad(controller.tabs.activeTab);
+  controller.waitForPageLoad();
 
   // Verify the site is Italian oriented
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Preferenze"));
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
-
 }
 
 var prefDialogCallback = function(controller) {
   // Go to the Choose Language Section in the Contents pane
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}'));
+  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}';
+  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
   controller.sleep(gDelay);
 
   // Call language dialog and set Italian as primary language
   var md = new ModalDialogAPI.modalDialog(langHandler);
   md.start();
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "chooseLanguage"));
+  var language = new elementslib.ID(controller.window.document, "chooseLanguage");
+  controller.waitThenClick(language, gTimeout);
 
   // Close the Preferences dialog
   if (mozmill.isWindows) {
@@ -93,7 +95,7 @@ var prefDialogCallback = function(controller) {
 var langHandler = function(controller) {
   // Add the Italian Language
   var langDropDown = new elementslib.ID(controller.window.document, "availableLanguages");
-  controller.waitForElement(langDropDown);
+  controller.waitForElement(langDropDown, gTimeout);
 
   controller.keypress(langDropDown, "i", {});
   controller.sleep(100);
@@ -106,7 +108,7 @@ var langHandler = function(controller) {
 
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(controller.window.document, "addButton");
-  controller.waitForEval("subject.disabled == false", 5000, 100, addButton.getNode());
+  controller.waitForEval("subject.disabled == false", gTimeout, 100, addButton.getNode());
   controller.click(addButton);
 
   // Move the Language to the Top of the List and Accept the new settings

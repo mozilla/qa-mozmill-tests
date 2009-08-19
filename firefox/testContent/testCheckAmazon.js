@@ -43,7 +43,7 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
 // Global timeout value
-const gTimeout = 10000;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -58,46 +58,44 @@ var teardownModule = function(module) {
 
 var testCheckAmazonCom = function () {
   controller.open("http://www.amazon.com");
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  controller.waitForPageLoad();
 
   // Check sign-in link
-  let signIn = new elementslib.Link(controller.tabs.activeTab, "personalized recommendations");
-  UtilsAPI.delayedAssertNode(controller, signIn, gTimeout);
+  var signIn = new elementslib.Link(controller.tabs.activeTab, "personalized recommendations");
+  controller.waitForElement(signIn, gTimeout);
 
   // Check your account link
-  let account = new elementslib.Link(controller.tabs.activeTab, "Your Account");
-  UtilsAPI.delayedAssertNode(controller, account, gTimeout);
+  var account = new elementslib.Link(controller.tabs.activeTab, "Your Account");
+  controller.waitForElement(account, gTimeout);
 
   // Select category 'Music'
-  let category = new elementslib.Name(controller.tabs.activeTab, "url");
-  UtilsAPI.delayedAssertNode(controller, category, gTimeout);
+  var category = new elementslib.Name(controller.tabs.activeTab, "url");
+  controller.waitForElement(category, gTimeout);
   controller.select(category, null, "Music", null);
 
   // Check search field
-  let searchField = new elementslib.ID(controller.tabs.activeTab, "twotabsearchtextbox");
-  let searchSubmit = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='navGoButton']/input");
+  var searchField = new elementslib.ID(controller.tabs.activeTab, "twotabsearchtextbox");
+  var searchSubmit = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='navGoButton']/input");
   UtilsAPI.checkSearchField(controller, searchField, "The Police", searchSubmit);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  controller.waitForPageLoad();
 
   // Click on image of the first search result
-  let item = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='result_0']/div[2]/a/img");
-  UtilsAPI.delayedAssertNode(controller, item, gTimeout);
-  controller.click(item);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  var item = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='result_0']/div[2]/a/img");
+  controller.waitThenClick(item, gTimeout);
+  controller.waitForPageLoad();
 
   // Add item to cart
-  let addButton = new elementslib.Name(controller.tabs.activeTab, "submit.add-to-cart");
-  UtilsAPI.delayedAssertNode(controller, addButton, gTimeout);
-  controller.click(addButton);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  var addButton = new elementslib.Name(controller.tabs.activeTab, "submit.add-to-cart");
+  controller.waitThenClick(addButton, gTimeout);
+  controller.waitForPageLoad();
 
   // Open cart
-  let cart = new elementslib.Link(controller.tabs.activeTab, "Cart");
-  controller.click(cart);
-  controller.waitForPageLoad(controller.tabs.activeTab, gTimeout);
+  var cart = new elementslib.Link(controller.tabs.activeTab, "Cart");
+  controller.waitThenClick(cart, gTimeout);
+  controller.waitForPageLoad();
 
   // Check if the item was added
-  let quantity = new elementslib.Name(controller.tabs.activeTab, "quantity.1");
-  UtilsAPI.delayedAssertNode(controller, quantity, gTimeout);
+  var quantity = new elementslib.Name(controller.tabs.activeTab, "quantity.1");
+  controller.waitForElement(quantity, gTimeout);
   controller.assertValue(quantity, "1");
 }
