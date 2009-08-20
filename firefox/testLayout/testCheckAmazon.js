@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5917: Top Site - Amazon.com
+ * Litmus test #7960: Top Site - Amazon.com
  */
 
 // Include necessary modules

@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5990: Back and Forward buttons
+ * Litmus test #8032: Back and Forward buttons
  */
 
 const gTimeout = 5000;

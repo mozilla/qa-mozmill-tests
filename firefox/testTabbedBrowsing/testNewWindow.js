@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5911: Open a New Window
+ * Litmus test #7954: Open a New Window
  */
 
 // Include necessary modules
