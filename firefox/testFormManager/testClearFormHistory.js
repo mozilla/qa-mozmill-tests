@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6009: Verify clearing form and search history
- * Litmus test #6010: Verify saving and filling in form information
+ * Litmus test #8051: Verify clearing form and search history
+ * Litmus test #8052: Verify saving and filling in form information
  */
 
 // Include necessary modules

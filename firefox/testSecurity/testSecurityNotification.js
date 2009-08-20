@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5920: Security notification
+ * Litmus test #7963: Security notification
  */
 
 // Include necessary modules

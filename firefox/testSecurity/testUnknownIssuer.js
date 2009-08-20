@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus Test 6871: Unknown Issuer error page
+ * Litmus Test 8900: Unknown Issuer error page
  */
 
 const gDelay = 0;

@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- *  Testcase ID #6282 - Choose your preferred language for display
+ *  Testcase ID #8322 - Choose your preferred language for display
  */
 
 // Include necessary modules

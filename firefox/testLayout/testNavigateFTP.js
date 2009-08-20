@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5919: Navigate FTP
+ * Litmus test #7962: Navigate FTP
  */
 
 // Include necessary modules

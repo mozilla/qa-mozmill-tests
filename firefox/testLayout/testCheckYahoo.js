@@ -11,14 +11,14 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozmill Test Code.
+ * The Original Code is MozMill Test code.
  *
  * The Initial Developer of the Original Code is Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Aakash Desai <adesai@mozilla.com>
+ *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -36,38 +36,46 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5988: Stop and Reload buttons
+ * Litmus test #7958: Top Site - Yahoo
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+  controller = mozmill.getBrowserController();
 }
 
-var testStopAndReload = function() {
-  // Make sure we have a blank page
-  controller.open("about:blank");
+var testYahoo = function () {
+  var url = 'http://us.yahoo.com/';
+  var searchTerm = "Mozilla";
+
+  // Open the web page.
+  controller.open(url);
   controller.waitForPageLoad();
 
-  // Go to the NYPost front page and start loading for some milliseconds
-  controller.open("http://www.nypost.com/");
-  controller.sleep(750);
-  controller.click(new elementslib.ID(controller.window.document, "stop-button"));
+  // Check for the Yahoo logo
+  var yahooLogo = new elementslib.ID(controller.tabs.activeTab, 'ylogo');
+  controller.waitForElement(yahooLogo, gTimeout);
 
-  // The link at the bottom of the page should not exist when hitting the stop button
-  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
-  controller.assertNodeNotExist(elem);
-  controller.sleep(gDelay);
+  // Check the location bar has the correct URL
+  var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
+  controller.assertValue(locationBar, url);
 
-  // Reload, wait for it to completely loading and test again
-  controller.refresh();
+  // Check existance of More Yahoo! Services button
+  var servicesButton = new elementslib.ID(controller.tabs.activeTab, "allyservices")
+  controller.waitForElement(servicesButton, gTimeout);
+
+  // Check search field
+  var searchField = new elementslib.ID(controller.tabs.activeTab, 'p');
+  var searchSubmit = new elementslib.ID(controller.tabs.activeTab, "searchsubmit");
+  UtilsAPI.checkSearchField(controller, searchField, searchTerm, searchSubmit);
   controller.waitForPageLoad();
 
-  controller.waitForElement(elem, gTimeout);
+  // Check if the correct search was performed
+  var resultSearchField = new elementslib.ID(controller.tabs.activeTab, "yschsp");
+  controller.assertValue(resultSearchField, searchTerm);
 }

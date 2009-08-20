@@ -36,7 +36,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5927: Find in page
+ * Litmus test #7970: Find in page
  */
 
 const gDelay = 0;

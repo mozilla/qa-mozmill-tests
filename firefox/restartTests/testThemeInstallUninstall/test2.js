@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5930: Install a theme
+ * Litmus test #7973: Install a theme
  */
 
 // Include necessary modules

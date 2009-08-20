@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6041: Test XMLHttpRequest to provide suggested search terms
+ * Litmus test #8083: Test XMLHttpRequest to provide suggested search terms
  */
 
 const gTimeout = 5000;

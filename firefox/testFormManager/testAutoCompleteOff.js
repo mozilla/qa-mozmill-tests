@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #7054: Form AutoComplete respects source for autocomplete="off"
+ * Litmus test #9067: Form AutoComplete respects source for autocomplete="off"
  */
 
 const gDelay = 0;

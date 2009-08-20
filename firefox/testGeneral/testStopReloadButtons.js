@@ -11,14 +11,14 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is MozMill Test code.
+ * The Original Code is Mozmill Test Code.
  *
  * The Initial Developer of the Original Code is Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Tracy Walker <twalker@mozilla.com>
+ *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -36,46 +36,38 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5915: Top Site - Yahoo
+ * Litmus test #8030: Stop and Reload buttons
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
+const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+  module.controller = mozmill.getBrowserController();
 }
 
-var testYahoo = function () {
-  var url = 'http://us.yahoo.com/';
-  var searchTerm = "Mozilla";
-
-  // Open the web page.
-  controller.open(url);
+var testStopAndReload = function() {
+  // Make sure we have a blank page
+  controller.open("about:blank");
   controller.waitForPageLoad();
 
-  // Check for the Yahoo logo
-  var yahooLogo = new elementslib.ID(controller.tabs.activeTab, 'ylogo');
-  controller.waitForElement(yahooLogo, gTimeout);
+  // Go to the NYPost front page and start loading for some milliseconds
+  controller.open("http://www.nypost.com/");
+  controller.sleep(750);
+  controller.click(new elementslib.ID(controller.window.document, "stop-button"));
 
-  // Check the location bar has the correct URL
-  var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
-  controller.assertValue(locationBar, url);
+  // The link at the bottom of the page should not exist when hitting the stop button
+  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
+  controller.assertNodeNotExist(elem);
+  controller.sleep(gDelay);
 
-  // Check existance of More Yahoo! Services button
-  var servicesButton = new elementslib.ID(controller.tabs.activeTab, "allyservices")
-  controller.waitForElement(servicesButton, gTimeout);
-
-  // Check search field
-  var searchField = new elementslib.ID(controller.tabs.activeTab, 'p');
-  var searchSubmit = new elementslib.ID(controller.tabs.activeTab, "searchsubmit");
-  UtilsAPI.checkSearchField(controller, searchField, searchTerm, searchSubmit);
+  // Reload, wait for it to completely loading and test again
+  controller.refresh();
   controller.waitForPageLoad();
 
-  // Check if the correct search was performed
-  var resultSearchField = new elementslib.ID(controller.tabs.activeTab, "yschsp");
-  controller.assertValue(resultSearchField, searchTerm);
+  controller.waitForElement(elem, gTimeout);
 }

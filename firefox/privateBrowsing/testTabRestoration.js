@@ -35,8 +35,8 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #7643: Verify SSL sites load after switching back to regular browsing from Private Browsing
- * Litmus test #7714: Verify no private browsing content shown when switching browsing modes
+ * Litmus test #9265: Verify SSL sites load after switching back to regular browsing from Private Browsing
+ * Litmus test #9317: Verify no private browsing content shown when switching browsing modes
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

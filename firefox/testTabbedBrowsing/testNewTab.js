@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6044: Open a New Tab
+ * Litmus test #8086: Open a New Tab
  */
 
 // Include necessary modules

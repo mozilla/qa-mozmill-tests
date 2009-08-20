@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6008: Verify saving form information can be turned off
+ * Litmus test #8050: Verify saving form information can be turned off
  */
 
 // Include necessary modules

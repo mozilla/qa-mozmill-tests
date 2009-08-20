@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6287: Restore Home Page to default
+ * Litmus test #8327: Restore Home Page to default
  */
 
 // Include necessary modules

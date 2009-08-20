@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6375: Access "View Page Info" from Context Menu
+ * Litmus test #8413: Access "View Page Info" from Context Menu
  */
 
 // Include necessary modules

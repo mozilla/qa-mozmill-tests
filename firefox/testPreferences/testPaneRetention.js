@@ -36,8 +36,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5971: Options (Preferences) dialog state retention
- * Litmus test #5972: Open and dismiss the Options (Preferences) dialog
+ * Litmus test #8014: Options (Preferences) dialog state retention
+ * Litmus test #8015: Open and dismiss the Options (Preferences) dialog
  */
 
 // Include necessary modules

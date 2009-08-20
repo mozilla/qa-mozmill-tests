@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus Test 6544: Display and close Larry
+ * Litmus Test 8579: Display and close Larry
  */
 
 // Include necessary modules

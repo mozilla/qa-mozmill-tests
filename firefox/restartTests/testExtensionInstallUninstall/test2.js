@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5929: Install an extension
+ * Litmus test #7972: Install an extension
  */
 
 // Include necessary modules

@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #7774: Disable SSL
+ * Litmus test #9345: Disable SSL
  */
 
 // Include necessary modules

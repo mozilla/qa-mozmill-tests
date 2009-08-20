@@ -36,7 +36,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5918: Pop-up Blocked
+ * Litmus test #7961: Pop-up Blocked
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

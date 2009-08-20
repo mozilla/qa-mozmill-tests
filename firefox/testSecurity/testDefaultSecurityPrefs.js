@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6018: Default Security Preferences
+ * Litmus test #8060: Default Security Preferences
  */
 
 // Include necessary modules

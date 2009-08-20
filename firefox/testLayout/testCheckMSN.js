@@ -18,7 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,41 +34,48 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/*
- *  Testcase ID #6248 - Anti-Phishing feature enabled by default
+/**
+ * Litmus test #7959: Top Site - MSN.com
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-var testDefaultPhishingEnabled = function() {
-  // Verify phishing detection is enabled
-  PrefsAPI.handlePreferencesDialog(prefPaneSetCallback);
-}
+var testCheckMSNCom = function () {
+  var url = "http://www.msn.com";
 
-var prefPaneSetCallback = function(controller) {
-  // Select the Security pane
-  var paneCheck = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneSecurity"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneCheck), gTimeout);
+  controller.open(url);
+  controller.waitForPageLoad();
 
-  // Check if the Security pane is active
-  var attackElem = new elementslib.ID(controller.window.document, "blockAttackSites");
-  var forgeryElem = new elementslib.ID(controller.window.document, "blockWebForgeries");
+  // Check sign-in link
+  var signIn = new elementslib.ID(controller.tabs.activeTab, "ppsgin");
+  controller.waitForElement(signIn, gTimeout);
 
-  // Verify Block Attack Sites and Reported Web Forgeries are checked by default
-  controller.waitForElement(attackElem, gTimeout);
-  controller.assertChecked(attackElem);
-  controller.assertChecked(forgeryElem);
-  controller.sleep(gDelay);
+  // check sign-up link for hotmail
+  var signUp = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='content']/div[@id='arear']/div[@id='wlive']/div[@id='hmm']/div[1]/div/p[1]/span[3]/a/b");
+  controller.waitForElement(signUp, gTimeout);
 
-  // Close the Preferences dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  // Check images and link texts for Hotmail, Messenger, My MSN, and MSN Directory links
+  for (var i = 1; i <= 4; i++) {
+    var img = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a/img[1]");
+    var link = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='page']/div[@id='nav']/div/div/div[1]/ul/li[" + i + "]/a");
+
+    // Image has to be loaded first
+    controller.waitForEval("subject.complete === true", gTimeout, 100, img.getNode());
+    controller.assertImageLoaded(img);
+
+    controller.waitForElement(link, gTimeout);
+  }
+
+  // Check top search field
+  var f1 = new elementslib.ID(controller.tabs.activeTab, "f1");
+  var f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[3]");
+  UtilsAPI.checkSearchField(controller, f1, "MSN", f1Submit);
 }

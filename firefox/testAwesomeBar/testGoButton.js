@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5914: location Field and Go button
+ * Litmus test #7957: location Field and Go button
  */
 
 // Include necessary modules

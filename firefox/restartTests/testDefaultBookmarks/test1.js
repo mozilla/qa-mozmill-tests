@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6717: Verify default bookmarks with a fresh profile
+ * Litmus test #8751: Verify default bookmarks with a fresh profile
  */
 
 // Include necessary modules

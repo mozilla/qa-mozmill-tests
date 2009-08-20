@@ -35,10 +35,10 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- *  Litmus test #7394: Enable Private Browsing Mode
- *  Litmus test #7395: Stop Private Browsing Mode
- *  Litmus test #7443: Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
- *  Litmus test #7463: Verify about:privatebrowsing in private browsing mode
+ *  Litmus test #9154: Enable Private Browsing Mode
+ *  Litmus test #9155: Stop Private Browsing Mode
+ *  Litmus test #9186: Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
+ *  Litmus test #9203: Verify about:privatebrowsing in private browsing mode
  */
 
 var RELATIVE_ROOT = '../../shared-modules';

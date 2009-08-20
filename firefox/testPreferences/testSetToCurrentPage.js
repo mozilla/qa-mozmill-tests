@@ -36,8 +36,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5921: Set Home Page to current page
- * Litmus test #5989: Home button
+ * Litmus test #7964: Set Home Page to current page
+ * Litmus test #8031: Home button
  */
 
 // Include necessary modules

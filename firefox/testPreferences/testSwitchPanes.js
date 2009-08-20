@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5970: Main Menu of Options (Preferences)
+ * Litmus test #8013: Main Menu of Options (Preferences)
  */
 
 // Include necessary modules

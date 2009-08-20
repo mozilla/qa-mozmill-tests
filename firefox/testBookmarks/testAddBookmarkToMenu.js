@@ -35,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5954: Add a bookmark via Main Menu
+ * Litmus test #7997: Add a bookmark via Main Menu
  */
 
 // Include necessary modules

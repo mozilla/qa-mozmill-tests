@@ -35,8 +35,8 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6199: Use mouse to focus search bar and start a search
- * Litmus test #6200: Open search by keyboard shortcuts
+ * Litmus test #8241: Use mouse to focus search bar and start a search
+ * Litmus test #8242: Open search by keyboard shortcuts
  */
 
 const gDelay = 0;

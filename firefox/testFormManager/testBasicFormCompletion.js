@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #5922: Basic Form Completion
+ * Litmus test #7965: Basic Form Completion
  */
 
 const gDelay = 0;
