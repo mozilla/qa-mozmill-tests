@@ -75,7 +75,7 @@ var testInstallExtension = function() {
   md.start();
 
   // Click the link to install the extension
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
+  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
   controller.waitForElement(triggerLink, gTimeout);
   controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
 
