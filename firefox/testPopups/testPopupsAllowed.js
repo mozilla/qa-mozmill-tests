@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -57,10 +58,9 @@ var teardownModule = function(module) {
   } catch (ex) {
   }
 
-  for each (window in mozmill.utils.getWindows()) {
-    if (window.content && window.content.location == "http://www.mozilla.org/") {
+  for each (window in mozmill.utils.getWindows("navigator:browser")) {
+    if (!window.toolbar.visible)
       window.close();
-    }
   }
 }
 

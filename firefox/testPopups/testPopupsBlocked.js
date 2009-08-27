@@ -58,10 +58,9 @@ var teardownModule = function(module) {
   } catch (ex) {
   }
 
-  for each (window in mozmill.utils.getWindows()) {
-    if (window.content && window.content.location == "http://www.mozilla.org/") {
+  for each (window in mozmill.utils.getWindows("navigator:browser")) {
+    if (!window.toolbar.visible)
       window.close();
-    }
   }
 }
 
