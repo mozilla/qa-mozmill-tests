@@ -19,6 +19,8 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Anthony Hughes <ashughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,13 +45,15 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI','PrefsAPI'];
 
 const gDelay = 0;
+const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  UtilsAPI.closeAllTabs(controller);
 }
 
+/**
+ * Test the identity button and Bad Cert error page
+ */
 var testSecNotification = function() {
   // Go to the secure HTTPS Verisign site
   controller.open('https://www.verisign.com/');
@@ -58,21 +62,18 @@ var testSecNotification = function() {
   var aboutVer = new elementslib.Link(controller.tabs.activeTab, "About VeriSign");
   controller.assertNode(aboutVer);
 
-  // Assign elements needed for verification of HTTPS sites
-  var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  var cssSecButton = controller.window.getComputedStyle(controller.window.document.getElementById("security-button"), "");
-  var cssInfo = controller.window.getComputedStyle(controller.window.document.getElementById("identity-box"), "");
-
   // Verify Verisign label
+  var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
   controller.assertValue(identLabel, 'VeriSign, Inc. (US)');
 
-  if (cssSecButton.getPropertyValue('list-style-image') != 'url(chrome://browser/skin/Secure-statusbar.png)') {
-    throw 'Security button in status bar not visible when it should be';
-  }
+  // The security button should be visible in the status bar
+  var securityButton = controller.window.document.getElementById("security-button");
+  var cssSecButton = controller.window.getComputedStyle(securityButton, "");
+  controller.assertJS(cssSecButton.getPropertyValue('list-style-image') != 'none');
 
-  if (cssInfo.getPropertyValue('background-image') != 'url(chrome://browser/skin/urlbar/startcap-verified-start.png)') {
-    throw 'Identity Box is not shown with a green background when it should be';
-  }
+  // Identity box should have a green background
+  var identityBox = new elementslib.ID(controller.window.document, "identity-box");
+  controller.assertProperty(identityBox, "className", "verifiedIdentity");
 
   // Go to the unsecure HTTP Verisign site
   controller.open('http://www.verisign.com');
@@ -80,21 +81,29 @@ var testSecNotification = function() {
 
   controller.assertNode(aboutVer);
 
-  // Verify security functionality of http verisign site
-  if (cssSecButton.getPropertyValue('list-style-image') != 'none') {
-    throw 'Security button in status bar visible when it should not be';
-  }
+  // Security button should not be visible
+  controller.assertJS(cssSecButton.getPropertyValue('list-style-image') == 'none');
 
-  if (cssInfo.getPropertyValue('background-image') != 'url(chrome://browser/skin/urlbar/startcap.png)') {
-    throw 'Identity Box is not shown with a gray background when it should be';
-  }
+  // Identity box should have a gray background
+  controller.assertProperty(identityBox, "className", "unknownIdentity");
 
   // Go to a Verisign page which does not have a valid cert
   controller.open('https://verisign.com');
   controller.waitForPageLoad(1000);
 
-  // Verify security functionality in HTTPS certificate exception page
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "cert_domain_link"));
+  // Verify the link in Technical Details is correct
+  var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
+  controller.waitForElement(link, gTimeout);
+  controller.assertProperty(link, "textContent", "www.verisign.com");
+
+  // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
+
+  // Verify "Add Exception" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton"));
+
+  // Verify the error code is correct
+  var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
+  controller.waitForElement(text, gTimeout);
+  controller.assertJS(text.getNode().textContent.indexOf("ssl_error_bad_cert_domain") != -1);
 }
