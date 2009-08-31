@@ -77,7 +77,7 @@ var mdObserver = {
       }
     } else {
       // try again in a bit
-      this.startTimer(this);
+      this.startTimer(null, this);
     }
   },
 
@@ -116,12 +116,15 @@ modalDialog.prototype.setHandler = function modalDialog_setHandler(callback)
 /**
  * Start timer to wait for the modal dialog.
  *
+ * @param {Number} delay
+ *        Initial delay before the observer gets called
  * @param {object} observer
  *        (Optional) Observer for modal dialog checks
  */
-modalDialog.prototype.start = function modalDialog_start(observer)
+modalDialog.prototype.start = function modalDialog_start(delay, observer)
 {
-  const dialogDelay = 100;
+  const dialogDelay = (delay == undefined) ? 100 : delay;
+
   var modalDialogTimer = Cc["@mozilla.org/timer;1"].
                          createInstance(Ci.nsITimer);
 
