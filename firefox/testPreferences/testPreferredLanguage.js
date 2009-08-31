@@ -78,7 +78,7 @@ var prefDialogCallback = function(controller) {
 
   // Call language dialog and set Italian as primary language
   var md = new ModalDialogAPI.modalDialog(langHandler);
-  md.start();
+  md.start(200);
 
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
   controller.waitThenClick(language, gTimeout);
