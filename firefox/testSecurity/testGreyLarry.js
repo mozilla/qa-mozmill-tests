@@ -102,5 +102,5 @@ var testLarryGrey = function()
   pageInfoController.assertValue(webIDVerifierLabel, securityIdentifier);
 
   // Press ESC to close the Page Info dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  pageInfoController.keypress(null, 'VK_ESCAPE', {});
 }
