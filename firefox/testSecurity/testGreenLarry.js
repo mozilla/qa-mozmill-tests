@@ -165,5 +165,5 @@ var testLarryGreen = function()
   pageInfoController.assertValue(webIDVerifierLabel, cert.issuerOrganization);
 
   // Press ESC to close the Page Info dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  pageInfoController.keypress(null, 'VK_ESCAPE', {});
 }
