@@ -49,8 +49,6 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -70,7 +68,7 @@ var testSetHomePage = function() {
   controller.assertNode(link);
 
   // Call Prefs Dialog and set Home Page
-  PrefsAPI.handlePreferencesDialog(prefDialogHomePageCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogHomePageCallback);
 
   // Open another page before going to the home page
   controller.open('http://www.yahoo.com/');
@@ -85,25 +83,19 @@ var testSetHomePage = function() {
   controller.assertValue(locationBar, homepage);
 }
 
+/**
+ * Set the current page as home page
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefDialogHomePageCallback = function(controller) {
-  // Select the Main pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-
-  // Check if the Main pane is active
-  var node = new elementslib.ID(controller.window.document, 'paneMain');
-  controller.waitForElement(node, gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
   controller.sleep(gDelay);
 
   // Set Home Page to the current page
   var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
   controller.click(useCurrent);
 
-  // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }

@@ -48,8 +48,6 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -58,6 +56,9 @@ var teardownModule = function(module) {
   } catch (ex) {}
 }
 
+/**
+ * Restore home page to default
+ */
 var testRestoreHomeToDefault = function() {
   // Open a web page for the temporary home page
   controller.open('http://www.mozilla.org/');
@@ -67,7 +68,7 @@ var testRestoreHomeToDefault = function() {
   controller.assertNode(link);
 
   // Call Preferences dialog and set home page
-  PrefsAPI.handlePreferencesDialog(prefDialogHomePageCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogHomePageCallback);
 
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
@@ -75,17 +76,17 @@ var testRestoreHomeToDefault = function() {
   controller.assertNode(link);
 
   // Open Preferences dialog and reset home page to default
-  PrefsAPI.handlePreferencesDialog(prefDialogDefHomePageCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogDefHomePageCallback);
 }
 
+/**
+ * Set the current page as home page via the preferences dialog
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefDialogHomePageCallback = function(controller) {
-  // Select the Main pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-
-  // Check if the main pane is active
-  var node = new elementslib.ID(controller.window.document, 'paneMain');
-  controller.waitForElement(node, gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
   controller.sleep(gDelay);
 
   // Set home page to the current page
@@ -93,20 +94,11 @@ var prefDialogHomePageCallback = function(controller) {
   controller.waitThenClick(useCurrent);
   controller.sleep(gDelay);
 
-  // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }
 
 var prefDialogDefHomePageCallback = function(controller) {
-  // Main pane should still be visible. Just click to be on the safe side
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-  controller.sleep(gDelay);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
 
   // Reset home page to the default page
   var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
@@ -119,11 +111,5 @@ var prefDialogDefHomePageCallback = function(controller) {
   var browserHomePage = new elementslib.ID(controller.window.document, "browserHomePage");
   controller.assertValue(browserHomePage, defaultHomePage);
 
-    // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller);
 }

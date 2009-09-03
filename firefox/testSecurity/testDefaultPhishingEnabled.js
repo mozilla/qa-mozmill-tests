@@ -49,15 +49,21 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
+/**
+ * Verify phishing detection is enabled
+ */
 var testDefaultPhishingEnabled = function() {
-  // Verify phishing detection is enabled
-  PrefsAPI.handlePreferencesDialog(prefPaneSetCallback);
+  PrefsAPI.preferencesDialog.open(prefPaneSetCallback);
 }
 
+/**
+ * Check that phishing checkboxes are enabled
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefPaneSetCallback = function(controller) {
-  // Select the Security pane
-  var paneCheck = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneSecurity"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneCheck), gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
 
   // Check if the Security pane is active
   var attackElem = new elementslib.ID(controller.window.document, "blockAttackSites");
@@ -69,6 +75,5 @@ var prefPaneSetCallback = function(controller) {
   controller.assertChecked(forgeryElem);
   controller.sleep(gDelay);
 
-  // Close the Preferences dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  PrefsAPI.preferencesDialog.close(controller);
 }

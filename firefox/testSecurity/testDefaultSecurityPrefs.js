@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -53,17 +54,14 @@ var setupModule = function(module) {
  * Test that SSL and TLS are checked by default
  */
 var testDefaultSecurityPreferences = function() {
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 }
 
 /**
  * Call-back handler for preferences dialog
  */
 var prefDialogCallback = function(controller) {
-  // Get the Advanced Pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-  controller.sleep(gDelay);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneAdvanced');
 
   // Get the Encryption tab
   var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
@@ -77,5 +75,5 @@ var prefDialogCallback = function(controller) {
   controller.assertChecked(sslPref);
   controller.assertChecked(tlsPref);
 
-  controller.keypress(null, 'VK_ESCAPE', {});
+  PrefsAPI.preferencesDialog.close(controller);
 }

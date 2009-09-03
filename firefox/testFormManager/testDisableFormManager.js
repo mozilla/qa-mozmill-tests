@@ -49,13 +49,10 @@ const gTimeout = 200;
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  try {
-    // Clear complete form history so we don't interfer with already added entries
-    var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                         getService(Ci.nsIFormHistory2);
-    formHistory.removeAllEntries();
-  } catch (ex) {
-  }
+  // Clear complete form history so we don't interfer with already added entries
+  var formHistory = Cc["@mozilla.org/satchel/form-history;1"]
+                       .getService(Ci.nsIFormHistory2);
+  formHistory.removeAllEntries();
 }
 
 var teardownModule = function(module) {
@@ -67,7 +64,7 @@ var teardownModule = function(module) {
 
 var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
-  PrefsAPI.handlePreferencesDialog(prefDialogFormCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogFormCallback);
 
   var url = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
 
@@ -101,11 +98,14 @@ var testToggleFormManager = function() {
   controller.assertValue(lastName, lname.substring(0,2));
 }
 
-
+/**
+ * Use preferences dialog to disable the form manager
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefDialogFormCallback = function(controller) {
-  // Go to the privacy pane
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"panePrivacy"}'));
-  controller.sleep(gDelay);
+  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
 
   // Select custom settings for history and uncheck remember search and form history
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -116,11 +116,5 @@ var prefDialogFormCallback = function(controller) {
   controller.waitThenClick(rememberForms);
   controller.sleep(gDelay);
 
-  // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }
