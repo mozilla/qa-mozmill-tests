@@ -51,58 +51,63 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
+/**
+ * Panes of preferences dialog should retain state when opened next time
+ */
 var testOptionsDialogRetention = function() {
   // Reset pane to the main pane before starting the test
-  PrefsAPI.handlePreferencesDialog(prefPaneResetCallback);
+  PrefsAPI.preferencesDialog.open(prefPaneResetCallback);
 
   // Choose the Privacy pane
-  PrefsAPI.handlePreferencesDialog(prefPaneSetCallback);
+  PrefsAPI.preferencesDialog.open(prefPaneSetCallback);
 
   // And check if the Privacy pane is still selected
-  PrefsAPI.handlePreferencesDialog(prefPaneCheckCallback);
+  PrefsAPI.preferencesDialog.open(prefPaneCheckCallback);
 }
 
+/**
+ * Reset the current pane to the main options
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefPaneResetCallback = function(controller) {
-  // Select the Main pane
-  var paneMain = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneMain"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, paneMain), gTimeout);
-
-  // Check if the Main pane is active
-  var privElem = new elementslib.ID(controller.window.document, "browserStartupPage");
-  controller.waitForElement(privElem, gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
+  controller.sleep(gDelay);
 
   // Close the Preferences dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  PrefsAPI.preferencesDialog.close(controller);
 }
 
+/**
+ * Select the Advanced and the Privacy pane
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefPaneSetCallback = function(controller) {
   // Select the Advanced pane
-  var firstPane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, firstPane), gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneAdvanced');
   controller.sleep(gDelay);
-
-  // Check if the Advanced pane is active
-  var advElem = new elementslib.ID(controller.window.document, "checkDefaultButton");
-  controller.waitForElement(advElem, gTimeout);
 
   // Select the Privacy pane
-  var paneCheck = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"panePrivacy"}';
-  controller.click(new elementslib.Lookup(controller.window.document, paneCheck));
-
-  // Check if the Privacy pane is active
-  var privElem = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(privElem, gTimeout);
-
-  // Close the Preferences dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
-}
-
-var prefPaneCheckCallback = function(controller) {
-  // Check if the Privacy pane is retained
-  var privElem = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(privElem, gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
   controller.sleep(gDelay);
 
   // Close the Preferences dialog
-  controller.keypress(null, 'VK_ESCAPE', {});
+  PrefsAPI.preferencesDialog.close(controller);
+}
+
+/**
+ * The Privacy pane should still be selected
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+var prefPaneCheckCallback = function(controller) {
+  controller.assertJS('panePrivacy' == PrefsAPI.preferencesDialog.getPane(controller));
+  controller.sleep(gDelay);
+
+  // Close the Preferences dialog
+  PrefsAPI.preferencesDialog.close(controller);
 }

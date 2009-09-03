@@ -72,7 +72,7 @@ var testDisableSSL = function() {
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 
   controller.open("https://www.verisign.com");
   controller.waitForPageLoad(1000);
@@ -104,12 +104,13 @@ var testDisableSSL = function() {
 }
 
 /**
- * Call-back handler for preferences dialog
+ * Disable SSL 3.0 and TLS for secure connections
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  // Get the Advanced Pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneAdvanced"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneAdvanced');
   controller.sleep(gDelay);
 
   // Get the Encryption tab
@@ -131,11 +132,5 @@ var prefDialogCallback = function(controller) {
     controller.click(tlsPref);
   }
 
-  // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }

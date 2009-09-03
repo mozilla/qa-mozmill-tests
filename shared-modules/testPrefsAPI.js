@@ -48,49 +48,113 @@ var MODULE_NAME = 'PrefsAPI';
 const RELATIVE_ROOT = '.'
 const MODULE_REQUIRES = ['ModalDialogAPI'];
 
+const gTimeout = 5000;
+
 /**
- * Preferences Function for access to the dialog
- *
- * @param {function} callback
- *        The callback handler to use to interact with the preference dialog
- * @param {function} launcher
- *        (Optional) A callback handler to launch the preference dialog
+ * Preferences dialog object to simplify the access to this dialog
  */
-function handlePreferencesDialog(callback, launcher) {
-  var prefCtrl = null;
+var preferencesDialog = {
 
-  if(!callback)
-    throw "No callback given for Preferences Dialog";
+  /**
+   * Open the preferences dialog and call the given handler
+   *
+   * @param {function} callback
+   *        The callback handler to use to interact with the preference dialog
+   * @param {function} launcher
+   *        (Optional) A callback handler to launch the preference dialog
+   */
+  open : function preferencesDialog_open(callback, launcher) {
+    var prefCtrl = null;
 
-  if (mozmill.isWindows) {
-    // Preference dialog is modal on windows, set up our callback
-    var md = collector.getModule('ModalDialogAPI');
-    var prefModal = new md.modalDialog(callback);
-    prefModal.start();
-  }
+    if(!callback)
+      throw "No callback given for Preferences Dialog";
 
-  // Launch the preference dialog
-  if (launcher) {
-    launcher();
+    if (mozmill.isWindows) {
+      // Preference dialog is modal on windows, set up our callback
+      var md = collector.getModule('ModalDialogAPI');
+      var prefModal = new md.modalDialog(callback);
+      prefModal.start();
+    }
 
-    // Now that we've launched the dialog, wait a bit for the window
+    // Launch the preference dialog
+    if (launcher) {
+      launcher();
+
+      // Now that we've launched the dialog, wait a bit for the window
+      mozmill.controller.sleep(500);
+      var win = Cc["@mozilla.org/appshell/window-mediator;1"]
+                   .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
+      prefCtrl = new mozmill.controller.MozMillController(win);
+    } else {
+      prefCtrl = new mozmill.getPreferencesController();
+    }
+
+    // If the dialog is not modal, run the callback directly
+    if (!mozmill.isWindows) {
+      prefCtrl.sleep(500);
+      callback(prefCtrl);
+    }
+
+    // Wait a bit to make sure window has been closed
     mozmill.controller.sleep(500);
-    var win = Cc["@mozilla.org/appshell/window-mediator;1"]
-                 .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
-    prefCtrl = new mozmill.controller.MozMillController(win);
-  } else {
-    prefCtrl = new mozmill.getPreferencesController();
-  }
 
-  // If the dialog is not modal, run the callback directly
-  if (!mozmill.isWindows) {
-    prefCtrl.sleep(500);
-    callback(prefCtrl);
-  }
+  },
 
-  // Wait a bit to make sure window has been closed
-  mozmill.controller.sleep(500);
-}
+  /**
+   * Close the preferences dialog
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @param {boolean} saveChanges
+   *        (Optional) If true the OK button is clicked on Windows which saves
+   *        the changes. On OS X and Linux changes are applied immediately
+   */
+  close : function preferencesDialog_close(controller, saveChanges) {
+    saveChanges = (saveChanges == undefined) ? false : saveChanges;
+
+    if (mozmill.isWindows) {
+      var template = '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"%s"}';
+      var button = template.replace("%s", (saveChanges? "accept" : "cancel"));
+      controller.click(new elementslib.Lookup(controller.window.document, button));
+    } else {
+      controller.keypress(null, 'VK_ESCAPE', {});
+    }
+  },
+
+  /**
+   * Retrieve the currently selected pane
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @returns Id of the currently selected pane
+   * @type string
+   */
+  getPane: function preferencesDialog_getPane(controller) {
+    var buttonString = '/id("BrowserPreferences")/anon({"orient":"vertical"})' +
+                      '/anon({"anonid":"selector"})';
+    var button = new elementslib.Lookup(controller.window.document, buttonString);
+
+    return button.getNode().focusedItem.getAttribute('pane');
+  },
+
+  /**
+   * Select the given pane
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @param {string} Id of the pane
+   */
+  setPane: function preferencesDialog_setPane(controller, paneId) {
+    var buttonString = '/id("BrowserPreferences")/anon({"orient":"vertical"})' +
+                       '/anon({"anonid":"selector"})/{"pane":"%s"}';
+    var button = new elementslib.Lookup(controller.window.document,
+                                        buttonString.replace("%s", paneId));
+    controller.waitThenClick(button, gTimeout);
+
+    var pane = new elementslib.ID(controller.window.document, paneId);
+    controller.waitForElement(pane, gTimeout);
+  }
+};
 
 /**
  * Preferences object to simplify the access to the nsIPrefBranch.

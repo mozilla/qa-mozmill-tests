@@ -56,9 +56,14 @@ var teardownModule = function(module) {
   } catch(e) {}
 }
 
+/**
+ * Choose your preferred language for display
+ */
 var testSetLanguages = function () {
+  controller.open("about:blank");
+
   // Call preferences dialog and set primary language to Italian
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 
   // Open the Google Home page
   controller.open('http://www.google.com/');
@@ -70,11 +75,14 @@ var testSetLanguages = function () {
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
 }
 
+/**
+ * Open preferences dialog to switch the primary language
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var prefDialogCallback = function(controller) {
-  // Go to the Choose Language Section in the Contents pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-  controller.sleep(gDelay);
+  PrefsAPI.preferencesDialog.setPane(controller, "paneContent");
 
   // Call language dialog and set Italian as primary language
   var md = new ModalDialogAPI.modalDialog(langHandler);
@@ -83,15 +91,15 @@ var prefDialogCallback = function(controller) {
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
   controller.waitThenClick(language, gTimeout);
 
-  // Close the Preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }
 
+/**
+ * Callback handler for languages dialog
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
 var langHandler = function(controller) {
   // Add the Italian Language
   var langDropDown = new elementslib.ID(controller.window.document, "availableLanguages");

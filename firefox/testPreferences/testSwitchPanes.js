@@ -43,43 +43,39 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+const gDelay = 10;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
+/**
+ * Switching through all panes of the preferences dialog
+ */
 var testPreferencesPanes = function() {
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 }
 
 /**
- * Call-back handler for preferences dialog
+ * Callback handler for preferences window
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
   // List of all available panes inside the Preferences window
   var panes = [
-               {button: '{"pane":"paneMain"}', panel: 'paneMain'},
-               {button: '{"pane":"paneTabs"}', panel: 'paneTabs'},
-               {button: '{"pane":"paneContent"}', panel: 'paneContent'},
-               {button: '{"pane":"paneApplications"}', panel: 'paneApplications'},
-               {button: '{"pane":"panePrivacy"}', panel: 'panePrivacy'},
-               {button: '{"pane":"paneSecurity"}', panel: 'paneSecurity'},
-               {button: '{"pane":"paneAdvanced"}', panel: 'paneAdvanced'}
+               "paneMain", "paneTabs", "paneContent", "paneApplications",
+               "panePrivacy", "paneSecurity", "paneAdvanced"
               ];
 
   // Step through each of the panes
   for each (pane in panes) {
-    var button = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/' + pane.button;
-    controller.click(new elementslib.Lookup(controller.window.document, button));
+    PrefsAPI.preferencesDialog.setPane(controller, pane);
     controller.sleep(gDelay);
-
-    // Check if the panel has been shown
-    var node = new elementslib.ID(controller.window.document, pane.panel);
-    controller.waitForElement(node, gTimeout);
   }
 
   // Close the Preferences window
-  controller.keypress(null, 'VK_ESCAPE', {});
+  PrefsAPI.preferencesDialog.close(controller);
 }

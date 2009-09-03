@@ -49,16 +49,14 @@ const gTimeout = 5000;
 
 var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   module.pm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
   pm.removeAllLogins();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   // Just in case the test fails remove all passwords
   pm.removeAllLogins();
 }
@@ -66,8 +64,7 @@ var teardownModule = function(module)
 /**
  * Test the password post-submit bar
  */
-var testPasswordNotificationBar = function()
-{
+var testPasswordNotificationBar = function() {
   // Go to the sample login page and perform a test log-in with input fields
   controller.open(testSite);
   controller.waitForPageLoad();
@@ -80,8 +77,8 @@ var testPasswordNotificationBar = function()
   controller.type(passField, "foo");
 
   // After logging in, close the notification bar
-  var xButton = UtilsAPI.createNotificationBarElement(controller,
-                         '/{"value":"password-save"}/anon({"type":"info"})/{"class":"messageCloseButton tabbable"}');
+  var xButtonLookup = '/{"value":"password-save"}/anon({"type":"info"})/{"class":"messageCloseButton tabbable"}';
+  var xButton = UtilsAPI.createNotificationBarElement(controller, xButtonLookup);
 
   // The notification bar should not be visible before submitting the credentials
   controller.assertNodeNotExist(xButton);
@@ -111,7 +108,7 @@ var testPasswordNotSaved = function()
   controller.assertValue(passField, "");
 
   // Call preferences dialog and check that no password has been saved
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 }
 
 /**
@@ -122,9 +119,7 @@ var testPasswordNotSaved = function()
  */
 var prefDialogCallback = function(controller)
 {
-  var pane = new elementslib.Lookup(controller.window.document,
-'/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneSecurity"}');
-  controller.waitThenClick(pane, gTimeout);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
 
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showPasswords"), gTimeout);
   controller.sleep(500);
@@ -142,11 +137,5 @@ var prefDialogCallback = function(controller)
   // Close the password manager and preferences dialog
   pwdController.keypress(null, "W", {accelKey: true});
 
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document,
-                           '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}')
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }

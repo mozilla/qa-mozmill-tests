@@ -47,8 +47,6 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-
-  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -73,7 +71,7 @@ var teardownModule = function(module) {
 var testPopUpAllowed = function() {
   var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
 
-  PrefsAPI.handlePreferencesDialog(prefDialogCallback);
+  PrefsAPI.preferencesDialog.open(prefDialogCallback);
 
   // Get the window count
   var windowCount = mozmill.utils.getWindows().length;
@@ -83,7 +81,8 @@ var testPopUpAllowed = function() {
   controller.waitForPageLoad();
 
   // A notification bar always exists in the DOM so check the visibility of the X button
-  var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"popup-blocked"}/anon({"type":"warning"})/{"class":"messageCloseButton tabbable"}');
+  var xButtonLookup = '/{"value":"popup-blocked"}/anon({"type":"warning"})/{"class":"messageCloseButton tabbable"}';
+  var xButton = UtilsAPI.createNotificationBarElement(controller, xButtonLookup);
   controller.assertNodeNotExist(xButton);
 
   // Check for the status bar icon
@@ -100,12 +99,12 @@ var testPopUpAllowed = function() {
 
 /**
  * Call-back handler for preferences dialog
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  // Get the Content Pane
-  var pane = '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}';
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document, pane), gTimeout);
-  controller.sleep(gDelay);
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneContent');
 
   // Make sure the pref is unchecked
   var pref = new elementslib.ID(controller.window.document, "popupPolicy");
@@ -115,11 +114,5 @@ var prefDialogCallback = function(controller) {
     controller.sleep(gDelay);
   }
 
-  // Close the preferences dialog
-  if (mozmill.isWindows) {
-    var okButton = new elementslib.Lookup(controller.window.document, '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}');
-    controller.click(okButton);
-  } else {
-    controller.keypress(null, 'VK_ESCAPE', {});
-  }
+  PrefsAPI.preferencesDialog.close(controller, true);
 }
