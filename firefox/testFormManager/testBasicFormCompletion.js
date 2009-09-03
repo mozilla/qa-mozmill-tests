@@ -68,7 +68,7 @@ var testFormCompletion = function() {
   controller.type(searchField, searchText);
   controller.sleep(gDelay);
 
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "submit"));
+  controller.click(new elementslib.ID(controller.tabs.activeTab, "quick-search-btn"));
   controller.waitForPageLoad();
 
   // Go to a filler site
