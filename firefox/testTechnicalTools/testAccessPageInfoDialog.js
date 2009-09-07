@@ -85,4 +85,7 @@ var testAccessPageInfo = function () {
 
   // Close the Page Info window by pressing Escape
   piController.keypress(null, 'VK_ESCAPE', {});
+
+  // Wait a bit to make sure the page info window has been closed
+  controller.sleep(200);
 }

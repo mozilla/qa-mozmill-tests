@@ -86,4 +86,7 @@ var testSecurityInfoViaPadlock = function()
 
   // Press ESC to close the Page Info dialog
   pageInfoController.keypress(null, 'VK_ESCAPE', {});
+
+  // Wait a bit to make sure the page info window has been closed
+  controller.sleep(200);
 }
