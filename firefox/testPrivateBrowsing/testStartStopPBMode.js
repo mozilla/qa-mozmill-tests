@@ -38,7 +38,6 @@
  *  Litmus test #7394: Enable Private Browsing Mode
  *  Litmus test #7395: Stop Private Browsing Mode
  *  Litmus test #7443: Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
- *  Litmus test #7463: Verify about:privatebrowsing in private browsing mode
  */
 
 var RELATIVE_ROOT = '../../shared-modules';
@@ -47,88 +46,116 @@ var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
+const websites = [
+                  {url: 'http://www.mozilla.org', id: 'q'},
+                  {url: 'about:', id: 'aboutPageList'}
+                 ];
+
 var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  UtilsAPI.closeAllTabs(controller);
+  module.controller = mozmill.getBrowserController();
+  module.modifier = controller.window.document.documentElement
+                              .getAttribute("titlemodifier_privatebrowsing");
 
   // Create Private Browsing instance and set handler
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
-  pb.handler = pbStartHandler;
+  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  module.pb.handler = pbStartHandler;
 }
 
 var teardownModule = function(module) {
-  // Reset Private Browsing options
   pb.showPrompt = true;
   pb.enabled = false;
 }
 
 /**
- * Test start and stop of Private Browsing mode
+ * Enable Private Browsing Mode
  */
-var testEnterPrivateBrowsingMode = function() {
-  // Make sure PB mode is not active and a prompt will be shown
+var testEnablePrivateBrowsingMode = function()
+{
+  // Make sure we are not in PB mode and show a prompt
   pb.enabled = false;
   pb.showPrompt = true;
 
-  // Run twice to check with and without prompt
-  for (var ii = 0; ii < 2; ii++) {
-    // First iteration uses shortcut, the second one the menu entry
-    pb.start(ii);
-    controller.sleep(gDelay);
-
-    if (!pb.enabled)
-      throw "Private Browsing mode hasn't been started";
-
-    // Only one tab with the about:privatebrowsing page should be visible
-    if (controller.tabs.length != 1)
-      throw "Expected one open tab with about:privatebrowsing page displayed";
-
-    // Check for the more info link in the about:privatebrowsing page
-    var link = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-    controller.waitForElement(link);
-
-    pb.stop(ii);
-    controller.sleep(gDelay);
-
-    if (pb.enabled)
-      throw "Private Browsing mode hasn't been stopped";
+  // Open websites in separate tabs after closing existing tabs
+  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
+  UtilsAPI.closeAllTabs(controller);
+  for (var ii = 0; ii < websites.length; ii++) {
+    controller.open(websites[ii].url);
+    controller.click(newTab);
   }
-}
 
-/**
- * Test that "(Private Browsing)" identifier is shown in the window title
- */
-var testWindowTitle = function() {
-  var doc = controller.window.document;
-  var modifier = doc.documentElement.getAttribute("titlemodifier_privatebrowsing");
+  // Wait until all tabs have been finished loading
+  for (var ii = 0; ii < websites.length; ii++) {
+    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
+    controller.waitForElement(elem, gTimeout);
+  }
 
-  // Make sure we are not in PB mode and don't show a prompt
-  pb.enabled = false;
-  pb.showPrompt = false;
-
+  // Start the Private Browsing mode
   pb.start();
-  controller.sleep(gDelay);
+
+  // Check that only one tab is open
+  controller.assertJS(controller.tabs.length == 1);
 
   // Title modifier should have been set
-  if (doc.title.indexOf(modifier) == -1)
-    throw "Private Browsing identifier not found in window title";
+  controller.assertJS(controller.window.document.title.indexOf(modifier) != -1);
 
-  pb.stop();
-  controller.sleep(gDelay);
+  // Check descriptions on the about:privatebrowsing page
+  // XXX: Bug 504635 needs to be implemented so we can get the entities from the DTD
+  var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText")
+  var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
 
-  // Title modifier should have been removed
-  if (doc.title.indexOf(modifier) != -1)
-    throw "Private Browsing identifier is still visible in window title";
+  controller.assertNode(longDescElem);
+  controller.assertNode(moreInfoElem);
 }
 
 /**
- * Handler for modal dialog
+ * Stop the Private Browsing mode
+ */
+var testStopPrivateBrowsingMode = function()
+{
+  // Force enable Private Browsing mode
+  pb.enabled = true;
+
+  // Stop Private Browsing mode
+  pb.stop();
+
+  // All tabs should be restored
+  controller.assertJS(controller.tabs.length == websites.length + 1);
+
+  for (var ii = 0; ii < websites.length; ii++) {
+    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
+    controller.waitForElement(elem, gTimeout);
+  }
+
+  // No title modifier should have been set
+  controller.assertJS(controller.window.document.title.indexOf(modifier) == -1);
+}
+
+/**
+ * Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
+ */
+var testKeyboardShortcut = function()
+{
+  // Make sure we are not in PB mode and show a prompt
+  pb.enabled = false;
+  pb.showPrompt = true;
+
+  // Start the Private Browsing mode via the keyboard shortcut
+  pb.start(true);
+
+  // Stop the Private Browsing mode via the keyboard shortcut
+  pb.stop(true);
+}
+
+/**
+ * Handle the modal dialog to enter the Private Browsing mode
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
 var pbStartHandler = function(controller) {
   // Check to not ask anymore for entering Private Browsing mode
   var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
-  controller.waitThenClick(checkbox, 5000);
-  controller.sleep(gDelay);
+  controller.waitThenClick(checkbox, gTimeout);
 
   controller.click(new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
 }

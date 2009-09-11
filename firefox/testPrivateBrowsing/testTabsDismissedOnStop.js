@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #7643: Verify SSL sites load after switching back to regular browsing from Private Browsing
+ * Litmus test #7714: Verify no private browsing content shown when switching browsing modes
  */
 
 var RELATIVE_ROOT = '../../shared-modules';
@@ -45,8 +45,8 @@ const gDelay = 0;
 const gTimeout = 5000;
 
 var websites = [
-                {url: 'https://addons.mozilla.org/', id: 'search-query'},
-                {url: 'https://bugzilla.mozilla.org', id: 'content'}
+                {url: 'http://www.mozilla.org', id: 'q'},
+                {url: 'about:', id: 'aboutPageList'}
                ];
 
 var setupModule = function(module)
@@ -65,17 +65,23 @@ var teardownModule = function(module)
 }
 
 /**
- * Test that the content of all tabs (https) is reloaded when leaving PB mode
+ * Test that the content of all tabs (http, https, about), which were loaded
+ * before the transistion into PB mode, is re-loaded when leaving PB mode
  */
-var testTabRestoration = function()
+var testAllTabsClosedOnStop = function()
 {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
 
-  // Open websites in separate tabs after closing existing tabs
-  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
+  // Leave only one blank tab open
   UtilsAPI.closeAllTabs(controller);
+
+  // Start Private Browsing
+  pb.start();
+
+  // Open websites in separate tabs
+  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
   for (var ii = 0; ii < websites.length; ii++) {
     controller.open(websites[ii].url);
     controller.click(newTab);
@@ -87,19 +93,8 @@ var testTabRestoration = function()
     controller.waitForElement(elem, gTimeout);
   }
 
-  // Start Private Browsing
-  pb.start();
-
-  // Stop Private Browsing
   pb.stop();
-  controller.waitForPageLoad();
 
-  // All tabs should be restored
-  controller.assertJS(controller.tabs.length == websites.length + 1);
-
-  // Check if all pages were re-loaded and show their content
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
-  }
+  // All tabs should have been removed
+  controller.assertJS(controller.tabs.length == 1);
 }
