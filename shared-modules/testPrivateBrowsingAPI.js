@@ -96,10 +96,10 @@ privateBrowsing.prototype = {
   /**
    * Start the Private Browsing mode
    *
-   * @param {boolean} useMenu
-   *        Use the menu entry if true otherwise the keyboard shortcut is used
+   * @param {boolean} useShortcut
+   *        Use the keyboard shortcut if true otherwise the menu entry is used
    */
-  start: function privateBrowsing_start(useMenu)
+  start: function privateBrowsing_start(useShortcut)
   {
     if (this.enabled)
       return;
@@ -114,35 +114,37 @@ privateBrowsing.prototype = {
       dialog.start();
     }
 
-    if (useMenu) {
-      this._controller.click(this._pbMenuItem);
-    } else {
+    if (useShortcut) {
       this._controller.keypress(null, 'p', {accelKey: true, shiftKey: true});
+    } else {
+      this._controller.click(this._pbMenuItem);
     }
 
-    // We have to wait a bit until the transition happened
+    // We have to wait a bit before checking the state
     this._controller.sleep(200);
+    this._controller.assertJS(this.enabled);
   },
 
   /**
    * Stop the Private Browsing mode
    *
-   * @param {boolean} useMenu
-   *        Use the menu entry if true otherwise the keyboard shortcut is used
+   * @param {boolean} useShortcut
+   *        Use the keyboard shortcut if true otherwise the menu entry is used
    */
-  stop: function privateBrowsing_stop(useMenu)
+  stop: function privateBrowsing_stop(useShortcut)
   {
     if (!this.enabled)
       return;
 
-    if (useMenu) {
-      this._controller.click(this._pbMenuItem);
-    } else {
+    if (useShortcut) {
       this._controller.keypress(null, 'p', {accelKey: true, shiftKey: true});
+    } else {
+      this._controller.click(this._pbMenuItem);
     }
 
-    // We have to wait a bit until the transition happened
+    // We have to wait a bit before checking the state
     this._controller.sleep(200);
+    this._controller.assertJS(!this.enabled);
   }
 }
 

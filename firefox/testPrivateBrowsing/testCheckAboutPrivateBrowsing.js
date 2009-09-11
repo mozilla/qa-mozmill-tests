@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #9265: Verify SSL sites load after switching back to regular browsing from Private Browsing
+ *  Litmus test #9203: Verify about:privatebrowsing in private browsing mode
  */
 
 var RELATIVE_ROOT = '../../shared-modules';
@@ -44,62 +44,46 @@ var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var websites = [
-                {url: 'https://addons.mozilla.org/', id: 'search-query'},
-                {url: 'https://bugzilla.mozilla.org', id: 'content'}
-               ];
+var setupModule = function(module) {
+  module.controller = mozmill.getBrowserController();
 
-var setupModule = function(module)
-{
-  controller = mozmill.getBrowserController();
-
-  // Create Private Browsing instance
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  // Create Private Browsing instance and set handler
+  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module)
-{
-  // Reset Private Browsing options
+var teardownModule = function(module) {
   pb.showPrompt = true;
   pb.enabled = false;
 }
 
 /**
- * Test that the content of all tabs (https) is reloaded when leaving PB mode
+ * Verify about:privatebrowsing in private browsing mode
  */
-var testTabRestoration = function()
+var testCheckAboutPrivateBrowsing = function()
 {
+  var targetURL = "http://support.mozilla.com/kb/Private+Browsing?style_mode=inproduct";
+
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
 
-  // Open websites in separate tabs after closing existing tabs
-  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  UtilsAPI.closeAllTabs(controller);
-  for (var ii = 0; ii < websites.length; ii++) {
-    controller.open(websites[ii].url);
-    controller.click(newTab);
-  }
-
-  // Wait until all tabs have been finished loading
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
-  }
-
-  // Start Private Browsing
+  // Start the Private Browsing mode
   pb.start();
 
-  // Stop Private Browsing
-  pb.stop();
+  var moreInfo = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
+  controller.waitThenClick(moreInfo, gTimeout);
+
+  // Clicking on the more info link opens a new tab with a page on SUMO
+  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
   controller.waitForPageLoad();
 
-  // All tabs should be restored
-  controller.assertJS(controller.tabs.length == websites.length + 1);
+  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
+  var pbUrl = locationBar.getNode().value;
 
-  // Check if all pages were re-loaded and show their content
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
-  }
+  // Check that the correct page has been loaded
+  controller.open(targetURL);
+  controller.waitForPageLoad();
+  controller.assertValue(locationBar, pbUrl);
+
+  pb.stop();
 }
