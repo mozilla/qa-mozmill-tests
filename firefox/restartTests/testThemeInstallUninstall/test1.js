@@ -83,7 +83,7 @@ var testInstallTheme = function() {
   addonsController.waitForEval("subject.selected == true", 10000, 100, installPane.getNode());
 
   // Check if the installed theme is visible in the Add-ons Manager
-  var theme = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/[1]/anon({"flex":"1"})/[0]/[1]/{"class":"addon-name-version","xbl:inherits":"name, version=newVersion"}/anon({"value":"' + gThemeName + '"})');
+  var theme = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"name":"' + gThemeName + '"})');
   addonsController.waitForElement(theme, gTimeout);
 
   // Check if restart button is present
@@ -96,7 +96,7 @@ var testInstallTheme = function() {
  */
 var handleTriggerDialog = function(controller) {
   // Get list of themes which should be installed
-  var itemElem = controller.window.document.getElementById("itemElem");
+  var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
   controller.waitForElement(itemList, gTimeout);
 
