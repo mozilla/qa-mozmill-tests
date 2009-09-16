@@ -37,7 +37,7 @@
 /**
  * Testcase ID #6276 -  Set Master Password
  * Testcase ID #6066 -  Invoke Master Password
- * Testcase ID #6227 -  Resetting a Master Password
+ * Testcase ID #6277 -  Resetting a Master Password
  */
 
 // Include necessary modules
