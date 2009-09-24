@@ -35,7 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #7397 - Verify various permissions are disabled when in Private Browsing mode
  * Litmus test #9157 - Verify various permissions are disabled when in Private Browsing mode
  */
 
