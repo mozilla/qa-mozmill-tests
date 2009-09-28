@@ -36,8 +36,8 @@
 
 /**
  * @fileoverview
- * The DownloadAPI adds support for download related functions. It gives access
- * to the Download Manager
+ * The DownloadsAPI adds support for download related functions. It also gives
+ * access to the Download Manager.
  *
  * @version 1.0.1
  */
@@ -51,12 +51,65 @@ const gTimeout = 5000;
  */
 function downloadManager()
 {
+  this._dms = Cc["@mozilla.org/download-manager;1"]
+                 .getService(Ci.nsIDownloadManager);
+
+  this._controller = null;
 }
 
 /**
  * Download Manager class
  */
 downloadManager.prototype = {
+  get controller() { return this._controller; },
+
+  /**
+   * Returns the number of currently active downloads
+   *
+   * @returns Number of active downloads
+   * @type number
+   */
+  get activeDownloadCount()
+  {
+    return this._dms.activeDownloadCount;
+  },
+
+  /**
+   * Remove all downloads from the database
+   */
+  cleanUp : function downloadmanager_cleanUp()
+  {
+    this._dms.cleanUp();
+  },
+
+  /**
+   * Close the download manager
+   */
+  close : function downloadmanager_close()
+  {
+    var windowCount = mozmill.utils.getWindows().length;
+
+    this._controller.keypress(null, 'w', {accelKey: true});
+    this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
+                         gTimeout, 100, mozmill.utils);
+  },
+
+  /**
+   * Delete all downloads from the local drive
+   *
+   * @param {download} downloads
+   *        List of downloaded files
+   */
+  deleteDownloadedFiles : function downloadmanager_deleteDownloadedFiles(downloads)
+  {
+    downloads.forEach(function(download) {
+      try {
+        var file = getLocalFileFromNativePathOrUrl(download.target);
+        file.remove(false);
+      } catch (ex) {
+      }
+    });
+  },
 
   /**
    * Open the Download Manager
@@ -85,19 +138,100 @@ downloadManager.prototype = {
 
     var window = mozmill.wm.getMostRecentWindow('Download:Manager');
     this._controller = new mozmill.controller.MozMillController(window);
-
-    return this._controller;
   },
 
   /**
-   * Close the download manager
+   * Get the list of all downloaded files in the database
+   *
+   * @returns List of downloads
+   * @type download
    */
-  close : function downloadmanager_close()
+  getAllDownloads : function downloadmanager_getAllDownloads()
   {
-    var windowCount = mozmill.utils.getWindows().length;
+    var dbConn = this._dms.DBConnection;
+    var stmt = null;
 
-    this._controller.keypress(null, 'w', {accelKey: true});
-    this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
-                         gTimeout, 100, mozmill.utils);
+    if (dbConn.schemaVersion < 3)
+      return new Array();
+
+    // Run a SQL query and iterate through all results which have been found
+    var downloads = [];
+    stmt = dbConn.createStatement("SELECT * FROM moz_downloads");
+    while (stmt.executeStep()) {
+      downloads.push({
+        id: stmt.row.id, name: stmt.row.name, target: stmt.row.target,
+        tempPath: stmt.row.tempPath, startTime: stmt.row.startTime,
+        endTime: stmt.row.endTime, state: stmt.row.state,
+        referrer: stmt.row.referrer, entityID: stmt.row.entityID,
+        currBytes: stmt.row.currBytes, maxBytes: stmt.row.maxBytes,
+        mimeType : stmt.row.mimeType, autoResume: stmt.row.autoResume,
+        preferredApplication: stmt.row.preferredApplication,
+        preferredAction: stmt.row.preferredAction
+      });
+    };
+    stmt.reset();
+
+    return downloads;
   }
 };
+
+/**
+ * Download the file of unkown type from the given location by saving it
+ * automatically to disk
+ *
+ * @param {MozMilldmController} controller
+ *        MozMillController of the browser window
+ * @param {string} url
+ *        URL of the file which has to be downloaded
+ */
+var downloadFileOfUnknownType = function(controller, url)
+{
+  controller.open(url);
+
+  // Wait until the unknown content type dialog has been opened
+  controller.sleep(500);
+  controller.waitForEval("subject.getMostRecentWindow('').document.documentElement.id == 'unknownContentType'",
+                             gTimeout, 100, mozmill.wm);
+
+  var window = mozmill.wm.getMostRecentWindow('');
+  var utController = new mozmill.controller.MozMillController(window);
+  utController.sleep(500);
+
+  // Select to save the file directly
+  var saveFile = new elementslib.ID(utController.window.document, "save");
+  utController.waitThenClick(saveFile, gTimeout);
+  utController.waitForEval("subject.selected == true", gTimeout, 100,
+                         saveFile.getNode());
+
+  // The OK button is lazily updated. So wait a bit.
+  var button = new elementslib.Lookup(utController.window.document, '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  utController.waitThenClick(button);
+
+  utController.waitForEval("subject.getMostRecentWindow('') != this.window",
+                         gTimeout, 100, mozmill.wm);
+}
+
+/**
+ * Get a local file from a native path or URL
+ *
+ * @param {string} aPathOrUrl
+ *        Native path or URL of the file
+ * @see http://mxr.mozilla.org/mozilla-central/source/toolkit/mozapps/downloads/content/downloads.js#1309
+ */
+function getLocalFileFromNativePathOrUrl(aPathOrUrl)
+{
+  if (aPathOrUrl.substring(0,7) == "file://") {
+    // if this is a URL, get the file from that
+    let ioSvc = Cc["@mozilla.org/network/io-service;1"]
+                   .getService(Ci.nsIIOService);
+
+    // XXX it's possible that using a null char-set here is bad
+    const fileUrl = ioSvc.newURI(aPathOrUrl, null, null)
+                         .QueryInterface(Ci.nsIFileURL);
+    return fileUrl.file.clone().QueryInterface(Ci.nsILocalFile);
+  } else {
+    // if it's a pathname, create the nsILocalFile directly
+    var f = new nsLocalFile(aPathOrUrl);
+    return f;
+  }
+}
