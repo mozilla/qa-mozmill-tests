@@ -35,15 +35,18 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6199: Use mouse to focus search bar and start a search
- * Litmus test #6200: Keyboard shortcuts to focus search bar and start a search
+ * Litmus test #6193 - Add a MozSearch search engine
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
 const gDelay = 0;
+const gTimeout = 5000;
+
+const searchEngine = {name: "MDC",
+                      url : "https://litmus.mozilla.org/testcase_files/firefox/search/mozsearch.html"};
 
 var setupModule = function(module)
 {
@@ -51,22 +54,50 @@ var setupModule = function(module)
   engine = new SearchAPI.searchEngine(controller);
 }
 
-/**
- * Use the mouse to focus the search bar and start a search
- */
-var testClickAndSearch = function()
+var teardownModule = function(module)
 {
-  engine.focus(true);
-  engine.search("Firefox");
   engine.clear();
+  engine.remove(searchEngine.name);
 }
 
 /**
- * Use the keyboard shortcut to focus the search bar and start a search
+ * Add a MozSearch Search plugin
  */
-var testShortcutAndSearch = function()
+var testAddMozSearchPlugin = function()
 {
-  engine.focus();
-  engine.search("Mozilla");
-  engine.clear();
+  // Open the web page with the test MozSearch plugin
+  controller.open(searchEngine.url);
+  controller.waitForPageLoad();
+
+  // Create a modal dialog instance to handle the security dialog
+  var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
+  md.start();
+
+  // Add the search plugin
+  controller.click(new elementslib.Name(controller.tabs.activeTab, "add"));
+  controller.waitForEval("subject.isInstalled('" + searchEngine.name + "') == true",
+                         gTimeout, 100, engine);
+
+  engine.select(searchEngine.name);
+  engine.search("Firefox");
+}
+
+/**
+ * Handle the modal security dialog when installing a new search engine
+ */
+var handleSearchInstall = function(controller)
+{
+  // Installation successful?
+  var confirmTitle = UtilsAPI.getProperty("chrome://global/locale/search/search.properties",
+                                          "addEngineConfirmTitle");
+  var addEngineTitle = controller.window.document.getElementById("info.title");
+  controller.assertJS(addEngineTitle.textContent == confirmTitle);
+
+  // Check that litmus.mozilla.org is shown as domain
+  var infoBody = controller.window.document.getElementById("info.body");
+  controller.waitForEval("subject.textContent.indexOf('litmus.mozilla.org') != -1",
+                         gTimeout, 100, infoBody);
+
+  var addButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
+  controller.click(addButton);
 }
