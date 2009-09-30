@@ -43,6 +43,11 @@
 
 var MODULE_NAME = 'SearchAPI';
 
+// Include necessary modules
+var RELATIVE_ROOT = '.';
+var MODULE_REQUIRES = ['ModalDialogAPI'];
+
+// Helpful constants
 const searchEngineButton = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/' +
                            'id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/' +
                            'anon({"anonid":"searchbar-engine-button"})';
@@ -86,7 +91,7 @@ searchEngine.prototype = {
   /**
    * Clear the search field
    */
-  clear : function searchengine_clear()
+  clear : function searchEngine_clear()
   {
     var activeElement = this._controller.window.document.activeElement;
 
@@ -99,12 +104,41 @@ searchEngine.prototype = {
   },
 
   /**
+   * Click on the given entry in the search engine popup menu
+   *
+   * @param {string} elementLookup
+   *        Lookup string for the element to click in the popup menu
+   */
+  clickPopupEntry : function searchEngine_clickPopupEntry(elementLookup)
+  {
+    var popupEntry = new elementslib.Lookup(this._controller.window.document,
+                                            searchEnginePopup + elementLookup);
+    this._controller.click(popupEntry);
+
+    // Temporarily needed to propagate the event
+    this._controller.sleep(0);
+  },
+
+  /**
+   * Open the search engine drop down
+   */
+  clickEngineButton : function searchEngine_clickEngineButton()
+  {
+    var button = new elementslib.Lookup(this._controller.window.document,
+                                        searchEngineButton);
+    this._controller.click(button);
+
+    // Temporarily needed to propagate the event
+    this._controller.sleep(0);
+  },
+
+  /**
    * Focus the search bar text field
    *
    * @param {boolean} useMouse
    *        If true use the mouse to focus the text field otherwise the shortcut
    */
-  focus : function searchengine_focus(useMouse)
+  focus : function searchEngine_focus(useMouse)
   {
     var searchInput = new elementslib.Lookup(this._controller.window.document, searchEngineInput);
 
@@ -126,7 +160,7 @@ searchEngine.prototype = {
    * @param {string} name
    *        Name of the search engine to check
    */
-  isInstalled : function searchengine_isInstalled(name)
+  isInstalled : function searchEngine_isInstalled(name)
   {
     var engine = this._bss.getEngineByName(name);
     return (engine != null);
@@ -138,11 +172,28 @@ searchEngine.prototype = {
    * @param {string} name
    *        Name of the search engine to check
    */
-  isSelected : function searchengine_isSelected(name)
+  isSelected : function searchEngine_isSelected(name)
   {
     var selectedEntry = new elementslib.Lookup(this._controller.window.document,
                                                searchEnginePopup + '/anon({"selected":"true"})');
     return name == selectedEntry.getNode().label;
+  },
+
+  /**
+   * Open the Engine Manager
+   *
+   * @param {function} handler
+   *        Callback function for Engine Manager
+   */
+  openManager : function searchEngine_openManager(handler)
+  {
+    // Setup the modal dialog handler
+    var mdAPI = collector.getModule('ModalDialogAPI');
+    md = new mdAPI.modalDialog(handler);
+    md.start();
+
+    this.clickEngineButton();
+    this.clickPopupEntry('/anon({"anonid":"open-engine-manager"})');
   },
 
   /**
@@ -151,10 +202,18 @@ searchEngine.prototype = {
    * @param {string} name
    *        Name of the search engine to remove
    */
-  remove : function searchengine_remove(name)
+  remove : function searchEngine_remove(name)
   {
     var engine = this._bss.getEngineByName(name);
     this._bss.removeEngine(engine);
+  },
+
+  /**
+   * Restore the default set of search engines
+   */
+  restoreDefaultEngines : function searchEngine_restoreDefaults()
+  {
+    this._bss.restoreDefaultEngines();
   },
 
   /**
@@ -164,7 +223,7 @@ searchEngine.prototype = {
    * @param {string} searchTerm
    *        Text which should be searched for
    */
-  search : function searchengine_search(searchTerm)
+  search : function searchEngine_search(searchTerm)
   {
     var searchBar = new elementslib.ID(this._controller.window.document, 'searchbar');
     var locationBar = new elementslib.ID(this._controller.window.document, 'urlbar');
@@ -195,20 +254,9 @@ searchEngine.prototype = {
    * @param {string} name
    *        Name of the search engine to select
    */
-  select : function searchengine_select(name)
+  select : function searchEngine_select(name)
   {
-    var engineDropDown = new elementslib.Lookup(this._controller.window.document,
-                                                searchEngineButton);
-    this._controller.click(engineDropDown);
-
-    // Temporarily needed to propagate the event
-    this._controller.sleep(0);
-
-    var popupEntry = new elementslib.Lookup(this._controller.window.document,
-                                            searchEnginePopup + '/id("' + name + '")');
-    this._controller.click(popupEntry);
-
-    // Temporarily needed to propagate the event
-    this._controller.sleep(0);
+    this.clickEngineButton();
+    this.clickPopupEntry('/id("' + name + '")');
  }
 };

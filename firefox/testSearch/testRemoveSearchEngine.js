@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #6195 - Autodiscovery of OpenSearch search engines
+ * Litmus test #6198 - Manage search engine (Remove)
  */
 
 // Include necessary modules
@@ -45,9 +45,6 @@ var MODULE_REQUIRES = ['SearchAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-const searchEngine = {name: "Technorati Search",
-                      url : "http://technorati.com/"};
-
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
@@ -56,35 +53,60 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  search.remove(searchEngine.name);
+  search.restoreDefaultEngines();
 }
 
 /**
- * Autodiscovery of OpenSearch search engines
+ * Manage search engine (Remove)
  */
-var testOpenSearchAutodiscovery = function()
+var testRemoveEngine = function()
 {
-  // Open the web page with the test MozSearch plugin
-  controller.open(searchEngine.url);
-  controller.waitForPageLoad();
-
-  // Check that the drop down icon glows
-  var engineButton = new elementslib.Lookup(controller.window.document,
-                                            SearchAPI.searchEngineButton);
-  controller.assertJS(engineButton.getNode().getAttribute('addengines') == 'true');
-
-  // Open search engine drop down and add Open Search engine
+  // We have to open the popup to update the list of engines
   search.clickEngineButton();
-  search.clickPopupEntry('/anon({"title":"' + searchEngine.name + '"})');
-  controller.waitForEval("subject.isSelected('" + searchEngine.name + "') == true",
-                         gTimeout, 100, search);
 
-  // Check if a search redirects to the Technorati website
-  search.search("Firefox");
+  // Get the name of the 2nd engine we want to remove
+  var engine = new elementslib.Lookup(controller.window.document,
+                                      SearchAPI.searchEnginePopup +
+                                      '/[1]');
+  var name = engine.getNode().label;
 
-  // Clear search term and check the empty text
-  var searchField = new elementslib.Lookup(controller.window.document,
-                                           SearchAPI.searchEngineInput);
-  search.clear();
-  controller.assertValue(searchField, searchEngine.name);
+  // Close the popup
+  search.clickEngineButton();
+
+  // Remove the 2nd engine in the list
+  search.openManager(handleEngines);
+
+  // Check that the 2nd engine isn't listed anymore
+  search.clickEngineButton();
+
+  engine = new elementslib.Lookup(controller.window.document,
+                                      SearchAPI.searchEnginePopup +
+                                      '/anon({"title":"' + name + '"})');
+  controller.assertNodeNotExist(engine);
+
+  // Close the popup
+  search.clickEngineButton();
+}
+
+/**
+ * Remove a search engine from the list of available search engines
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+var handleEngines = function(controller)
+{
+  var engineList = controller.window.document.getElementById("engineList");
+
+  // Wait until the view has been created
+  controller.waitForEval("subject.view != undefined", gTimeout, 100,
+                         engineList);
+
+  // Select the 2nd search engine and remove it
+  engineList.view.selection.select(1);
+  controller.click(new elementslib.ID(controller.window.document, "remove"));
+  controller.sleep(gDelay);
+
+  var okButton = new elementslib.Lookup(controller.window.document, '/id("engineManager")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.click(okButton);
 }

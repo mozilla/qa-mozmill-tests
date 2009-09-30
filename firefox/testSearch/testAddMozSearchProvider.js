@@ -51,13 +51,13 @@ const searchEngine = {name: "MDC",
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  engine = new SearchAPI.searchEngine(controller);
+  search = new SearchAPI.searchEngine(controller);
 }
 
 var teardownModule = function(module)
 {
-  engine.clear();
-  engine.remove(searchEngine.name);
+  search.clear();
+  search.remove(searchEngine.name);
 }
 
 /**
@@ -76,10 +76,10 @@ var testAddMozSearchPlugin = function()
   // Add the search plugin
   controller.click(new elementslib.Name(controller.tabs.activeTab, "add"));
   controller.waitForEval("subject.isInstalled('" + searchEngine.name + "') == true",
-                         gTimeout, 100, engine);
+                         gTimeout, 100, search);
 
-  engine.select(searchEngine.name);
-  engine.search("Firefox");
+  search.select(searchEngine.name);
+  search.search("Firefox");
 }
 
 /**
