@@ -104,6 +104,19 @@ searchEngine.prototype = {
   },
 
   /**
+   * Open the search engine drop down
+   */
+  clickEngineButton : function searchEngine_clickEngineButton()
+  {
+    var button = new elementslib.Lookup(this._controller.window.document,
+                                        searchEngineButton);
+    this._controller.click(button);
+
+    // Temporarily needed to propagate the event
+    this._controller.sleep(0);
+  },
+
+  /**
    * Click on the given entry in the search engine popup menu
    *
    * @param {string} elementLookup
@@ -113,20 +126,7 @@ searchEngine.prototype = {
   {
     var popupEntry = new elementslib.Lookup(this._controller.window.document,
                                             searchEnginePopup + elementLookup);
-    this._controller.click(popupEntry);
-
-    // Temporarily needed to propagate the event
-    this._controller.sleep(0);
-  },
-
-  /**
-   * Open the search engine drop down
-   */
-  clickEngineButton : function searchEngine_clickEngineButton()
-  {
-    var button = new elementslib.Lookup(this._controller.window.document,
-                                        searchEngineButton);
-    this._controller.click(button);
+    this._controller.waitThenClick(popupEntry, gTimeout);
 
     // Temporarily needed to propagate the event
     this._controller.sleep(0);
@@ -152,6 +152,11 @@ searchEngine.prototype = {
     // Check if the search bar has the focus
     var activeElement = this._controller.window.document.activeElement;
     this._controller.assertJS(searchInput.getNode() == activeElement);
+  },
+
+  getVisibleEngines : function searchEngine_getVisibleEngines()
+  {
+    return this._bss.getVisibleEngines({});
   },
 
   /**
