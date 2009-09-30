@@ -35,18 +35,15 @@
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #8235 - Add a MozSearch search engine
+ * Litmus test #8240 - Manage search engine (Remove)
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['SearchAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
-
-const searchEngine = {name: "MDC",
-                      url : "https://litmus.mozilla.org/testcase_files/firefox/search/mozsearch.html"};
 
 var setupModule = function(module)
 {
@@ -56,53 +53,60 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  search.clear();
-  search.remove(searchEngine.name);
+  search.restoreDefaultEngines();
 }
 
 /**
- * Add a MozSearch Search plugin
+ * Manage search engine (Remove)
  */
-var testAddMozSearchPlugin = function()
+var testRemoveEngine = function()
 {
-  // Open the web page with the test MozSearch plugin
-  controller.open(searchEngine.url);
-  controller.waitForPageLoad();
+  // We have to open the popup to update the list of engines
+  search.clickEngineButton();
 
-  // Create a modal dialog instance to handle the security dialog
-  var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
-  md.start();
+  // Get the name of the 2nd engine we want to remove
+  var engine = new elementslib.Lookup(controller.window.document,
+                                      SearchAPI.searchEnginePopup +
+                                      '/[1]');
+  var name = engine.getNode().label;
 
-  // Add the search plugin
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "add"));
-  controller.waitForEval("subject.isInstalled('" + searchEngine.name + "') == true",
-                         gTimeout, 100, search);
+  // Close the popup
+  search.clickEngineButton();
 
-  search.select(searchEngine.name);
-  search.search("Firefox");
+  // Remove the 2nd engine in the list
+  search.openManager(handleEngines);
+
+  // Check that the 2nd engine isn't listed anymore
+  search.clickEngineButton();
+
+  engine = new elementslib.Lookup(controller.window.document,
+                                      SearchAPI.searchEnginePopup +
+                                      '/anon({"title":"' + name + '"})');
+  controller.assertNodeNotExist(engine);
+
+  // Close the popup
+  search.clickEngineButton();
 }
 
 /**
- * Handle the modal security dialog when installing a new search engine
+ * Remove a search engine from the list of available search engines
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
-var handleSearchInstall = function(controller)
+var handleEngines = function(controller)
 {
-  // Installation successful?
-  var confirmTitle = UtilsAPI.getProperty("chrome://global/locale/search/search.properties",
-                                          "addEngineConfirmTitle");
+  var engineList = controller.window.document.getElementById("engineList");
 
-  if (mozmill.isMac)
-    var title = controller.window.document.getElementById("info.title").textContent;
-  else
-    var title = controller.window.document.title;
+  // Wait until the view has been created
+  controller.waitForEval("subject.view != undefined", gTimeout, 100,
+                         engineList);
 
-  controller.assertJS(title == confirmTitle);
+  // Select the 2nd search engine and remove it
+  engineList.view.selection.select(1);
+  controller.click(new elementslib.ID(controller.window.document, "remove"));
+  controller.sleep(gDelay);
 
-  // Check that litmus.mozilla.org is shown as domain
-  var infoBody = controller.window.document.getElementById("info.body");
-  controller.waitForEval("subject.textContent.indexOf('litmus.mozilla.org') != -1",
-                         gTimeout, 100, infoBody);
-
-  var addButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
-  controller.click(addButton);
+  var okButton = new elementslib.Lookup(controller.window.document, '/id("engineManager")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.click(okButton);
 }

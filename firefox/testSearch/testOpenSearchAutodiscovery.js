@@ -51,12 +51,12 @@ const searchEngine = {name: "Technorati Search",
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  engine = new SearchAPI.searchEngine(controller);
+  search = new SearchAPI.searchEngine(controller);
 }
 
 var teardownModule = function(module)
 {
-  engine.remove(searchEngine.name);
+  search.remove(searchEngine.name);
 }
 
 /**
@@ -73,26 +73,18 @@ var testOpenSearchAutodiscovery = function()
                                             SearchAPI.searchEngineButton);
   controller.assertJS(engineButton.getNode().getAttribute('addengines') == 'true');
 
-  // Open search engine drop down
-  var enginePopup = new elementslib.Lookup(controller.window.document,
-                                           SearchAPI.searchEnginePopup);
-  controller.click(enginePopup);
-  controller.sleep(gDelay);
-
-  // Add Open Search engine and check if it is selected by default
-  var addEngine = new elementslib.Lookup(controller.window.document,
-                                  SearchAPI.searchEnginePopup +
-                                  '/anon({"title":"' + searchEngine.name + '"})');
-  controller.click(addEngine);
+  // Open search engine drop down and add Open Search engine
+  search.clickEngineButton();
+  search.clickPopupEntry('/anon({"title":"' + searchEngine.name + '"})');
   controller.waitForEval("subject.isSelected('" + searchEngine.name + "') == true",
-                         gTimeout, 100, engine);
+                         gTimeout, 100, search);
 
   // Check if a search redirects to the Technorati website
-  engine.search("Firefox");
+  search.search("Firefox");
 
   // Clear search term and check the empty text
   var searchField = new elementslib.Lookup(controller.window.document,
                                            SearchAPI.searchEngineInput);
-  engine.clear();
+  search.clear();
   controller.assertValue(searchField, searchEngine.name);
 }
