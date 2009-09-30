@@ -133,6 +133,19 @@ searchEngine.prototype = {
   },
 
   /**
+   * Check if a search engine is selected
+   *
+   * @param {string} name
+   *        Name of the search engine to check
+   */
+  isSelected : function searchengine_isSelected(name)
+  {
+    var selectedEntry = new elementslib.Lookup(this._controller.window.document,
+                                               searchEnginePopup + '/anon({"selected":"true"})');
+    return name == selectedEntry.getNode().label;
+  },
+
+  /**
    * Remove the search engine with the given name
    *
    * @param {string} name
