@@ -90,8 +90,13 @@ var handleSearchInstall = function(controller)
   // Installation successful?
   var confirmTitle = UtilsAPI.getProperty("chrome://global/locale/search/search.properties",
                                           "addEngineConfirmTitle");
-  var addEngineTitle = controller.window.document.getElementById("info.title");
-  controller.assertJS(addEngineTitle.textContent == confirmTitle);
+
+  if (mozmill.isMac)
+    var title = controller.window.document.getElementById("info.title").textContent;
+  else
+    var title = controller.window.document.title;
+
+  controller.assertJS(title == confirmTitle);
 
   // Check that litmus.mozilla.org is shown as domain
   var infoBody = controller.window.document.getElementById("info.body");
