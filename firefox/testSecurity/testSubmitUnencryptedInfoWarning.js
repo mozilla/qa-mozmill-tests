@@ -19,7 +19,6 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
- *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,7 +35,7 @@
  * **** END LICENSE BLOCK ***** */
 
 /**
- * Litmus test #9292: Encrypted page warning
+ * Litmus test #9295: Submit unencrypted info warning
  */
 
 var RELATIVE_ROOT = '../../shared-modules';
@@ -45,7 +44,7 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-// Used to indicate that the modal encryption warning has been shown
+// Used to indicate the modal warning dialog has been shown
 var modalWarningShown = false;
 
 var setupModule = function(module)
@@ -55,13 +54,12 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
+  // Reset the warning prefs
   var prefs = new Array("security.warn_entering_secure",
                         "security.warn_entering_weak",
                         "security.warn_leaving_secure",
                         "security.warn_submit_insecure",
                         "security.warn_viewing_mixed");
-
-  // Reset the warning blocking prefs
   for each (p in prefs) {
     try {
       PrefsAPI.preferences.branch.clearUserPref(p);
@@ -70,12 +68,11 @@ var teardownModule = function(module)
 }
 
 /**
- * Test warning about viewing an encrypted page
+ * Test warning about submitting unencrypted information
  */
-var testEncryptedPageWarning = function()
+var testSubmitUnencryptedInfoWarning = function()
 {
-  // Make sure the test starts from a blank page because
-  // the warnings don't appear if you are on the page
+  // Close the page because the warnings don't appear if you are on the page
   // where the warning was triggered
   UtilsAPI.closeAllTabs(controller);
 
@@ -86,20 +83,37 @@ var testEncryptedPageWarning = function()
   var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
   md.start();
 
-  // Load an encrypted page
-  controller.open("https://www.verisign.com");
+  // Load an unencrypted page
+  controller.open("http://www.verisign.com");
+  controller.waitForPageLoad();
+
+  // Get the web page's search box
+  var searchbox = new elementslib.ID(controller.tabs.activeTab, "searchtext");
+  controller.waitForElement(searchbox, gTimeout);
+
+  // Use the web page search box to submit information
+  controller.type(searchbox, "mozilla");
+
+  // Click the search button
+  var searchButton = new elementslib.ID(controller.tabs.activeTab, "searchbutton");
+  controller.waitThenClick(searchButton, gTimeout);
 
   // Prevent the test from ending before the warning can appear
   controller.waitForPageLoad();
 
-  // Test if the the modal dialog has been shown
+  // Wait for the search button on the bottom of the results page to load
+  // This will be our indicator of "results"
+  var searchButton3 = new elementslib.ID(controller.tabs.activeTab, "searchbutton3");
+  controller.waitForElement(searchButton3, gTimeout);
+
+  // Test if the modal dialog has been shown
   controller.assertJS(modalWarningShown == true);
 }
 
 /**
  * Call-back handler for preferences dialog
  *
- * @param {MozMillController} controller
+ * @param {MozmMillController} controller
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller)
@@ -116,6 +130,7 @@ var prefDialogCallback = function(controller)
   var md = new ModalDialogAPI.modalDialog(handleSecurityWarningSettingsDialog);
   md.start(500);
 
+  // Click the Warning Messages Settings button
   controller.click(warningSettingsButton);
 
   // Close the preferences dialog
@@ -131,6 +146,7 @@ var prefDialogCallback = function(controller)
  */
 var handleSecurityWarningSettingsDialog = function(controller)
 {
+  // All the prefs in the dialog
   var prefs = new Array("warn_entering_secure",
                         "warn_entering_weak",
                         "warn_leaving_secure",
@@ -142,8 +158,8 @@ var handleSecurityWarningSettingsDialog = function(controller)
     var element = new elementslib.ID(controller.window.document, p);
     controller.waitForElement(element, gTimeout);
 
-    // Check the "encrypted page" pref if it isn't already checked
-    if (p == "warn_entering_secure") {
+    // Check the "submit unencrypted info" pref if it isn't already
+    if (p == "warn_submit_insecure") {
       if (!element.getNode().checked) {
         controller.click(element);
       }
@@ -165,20 +181,28 @@ var handleSecurityWarningSettingsDialog = function(controller)
 
 /**
  * Helper function to handle interaction with the Security Warning modal dialog
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
 var handleSecurityWarningDialog = function(controller)
 {
   modalWarningShown = true;
 
-  var enterSecureMessage = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
-                                                "EnterSecureMessage");
+  // Get the message text
+  var message = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
+                                     "PostToInsecureFromInsecureMessage");
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
   controller.waitForElement(infoBody, gTimeout);
 
+  // The message string contains "##" instead of \n for newlines.
+  // There are two instances in the string. Replace them both.
+  message = message.replace(/##/g, "\n\n");
+
   // Verify the message text
-  controller.assertProperty(infoBody, "textContent", enterSecureMessage);
+  controller.assertProperty(infoBody, "textContent", message);
 
   // Verify the "Alert me whenever" checkbox is checked by default
   var checkbox = new elementslib.ID(controller.window.document, "checkbox");
@@ -189,5 +213,5 @@ var handleSecurityWarningDialog = function(controller)
                                         '/id("commonDialog")' +
                                         '/anon({"anonid":"buttons"})' +
                                         '/{"dlgtype":"accept"}');
-  controller.waitThenClick(okButton, gTimeout);
+  controller.click(okButton);
 }
