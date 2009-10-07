@@ -40,7 +40,9 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI', 'UtilsAPI'];
+
+const gDelay = 0;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -57,22 +59,28 @@ var testVerifyDefaultBookmarks = function() {
   toolbarNodes.containerOpen = true;
 
   // For a default profile there should be exactly 3 items
-  if (toolbarNodes.childCount != 3) {
-    throw "Expected exactly 3 items on the Bookmarks Toolbar but found " + toolbarNode.childCount;
-  }
+  if (toolbarNodes.childCount != 3)
+    throw new Error("Expected 3 items on the Bookmarks Toolbar but found " +
+                    toolbarNodes.childCount);
 
   // Check if the Most Visited folder is visible and has the correct title
-  var mostVisited = new elementslib.XPath(controller.window.document, elemString.replace("%1", "1"));
+  var mostVisited = new elementslib.XPath(controller.window.document,
+                                          elemString.replace("%1", "1"));
   controller.assertProperty(mostVisited, "label", toolbarNodes.getChild(0).title);
 
   // Check Getting Started bookmarks title and URI
-  var gettingStarted = new elementslib.XPath(controller.window.document, elemString.replace("%1", "2"));
+  var gettingStarted = new elementslib.XPath(controller.window.document,
+                                             elemString.replace("%1", "2"));
   controller.assertProperty(gettingStarted, "label", toolbarNodes.getChild(1).title);
 
-  var urlBar = new elementslib.ID(controller.window.document, "urlbar");
-  controller.click(gettingStarted, 5, 5);
+  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
+  controller.click(gettingStarted);
   controller.waitForPageLoad();
-  controller.assertValue(urlBar, toolbarNodes.getChild(1).uri);
+
+  // Check for the correct path in the URL which also includes the locale
+  var uriSource = UtilsAPI.createURI(toolbarNodes.getChild(1).uri, null, null);
+  var uriTarget = UtilsAPI.createURI(locationBar.getNode().value, null, null);
+  controller.assertJS(uriSource.path == uriTarget.path);
 
   // Check the title of the default RSS feed toolbar button
   var RSS = new elementslib.XPath(controller.window.document, elemString.replace("%1", "3"));
