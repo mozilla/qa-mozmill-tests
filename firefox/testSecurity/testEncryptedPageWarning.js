@@ -137,22 +137,11 @@ var handleSecurityWarningSettingsDialog = function(controller)
                         "warn_submit_insecure",
                         "warn_viewing_mixed");
 
-  // Make sure the "encrypted page" pref is checked
+  // Make sure only the "encrypted page" checkbox is set
   for each (p in prefs) {
     var element = new elementslib.ID(controller.window.document, p);
     controller.waitForElement(element, gTimeout);
-
-    // Check the "encrypted page" pref if it isn't already checked
-    if (p == "warn_entering_secure") {
-      if (!element.getNode().checked) {
-        controller.click(element);
-      }
-    // Uncheck all other prefs
-    } else {
-      if (element.getNode().checked) {
-        controller.click(element);
-      }
-    }
+    controller.check(element, (p == "warn_entering_secure"));
   }
 
   // Click OK on the Security window
@@ -175,7 +164,7 @@ var handleSecurityWarningDialog = function(controller)
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
-  controller.waitForElement(infoBody, gTimeout);
+  controller.waitForElement(infoBody);
 
   // Verify the message text
   controller.assertProperty(infoBody, "textContent", enterSecureMessage);
@@ -189,5 +178,5 @@ var handleSecurityWarningDialog = function(controller)
                                         '/id("commonDialog")' +
                                         '/anon({"anonid":"buttons"})' +
                                         '/{"dlgtype":"accept"}');
-  controller.waitThenClick(okButton, gTimeout);
+  controller.waitThenClick(okButton);
 }
