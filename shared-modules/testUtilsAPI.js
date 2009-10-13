@@ -84,6 +84,107 @@ var closeAllTabs = function(controller)
 }
 
 /**
+ * Get application specific informations
+ * @see http://mxr.mozilla.org/mozilla-central/source/xpcom/system/nsIXULAppInfo.idl
+ */
+var appInfo = {
+  _service: null,
+
+  /**
+   * Get the application info service
+   * @returns XUL runtime object
+   * @type nsiXULRuntime
+   */
+  get appInfo() {
+    if (!this._appInfo) {
+      this._service = Cc["@mozilla.org/xre/app-info;1"]
+                        .getService(Ci.nsIXULAppInfo)
+                        .QueryInterface(Ci.nsIXULRuntime);
+    }
+    return this._service;
+  },
+
+  /**
+   * Get the build id
+   * @returns Build id
+   * @type string
+   */
+  get buildID() this.appInfo.appBuildID,
+
+  /**
+   * Get the application id
+   * @returns Application id
+   * @type string
+   */
+  get ID() this.appInfo.ID,
+
+  /**
+   * Get the application name
+   * @returns Application name
+   * @type string
+   */
+  get name() this.appInfo.name,
+
+  /**
+   * Get the operation system
+   * @returns Operation system name
+   * @type string
+   */
+  get os() this.appInfo.OS,
+
+  /**
+   * Get the product vendor
+   * @returns Vendor name
+   * @type string
+   */
+  get vendor() this.appInfo.vendor,
+
+  /**
+   * Get the application version
+   * @returns Application version
+   * @type string
+   */
+  get version() this.appInfo.version,
+
+  /**
+   * Get the build id of the Gecko platform
+   * @returns Platform build id
+   * @type string
+   */
+  get platformBuildID() this.appInfo.platformBuildID,
+
+  /**
+   * Get the version of the Gecko platform
+   * @returns Platform version
+   * @type string
+   */
+  get platformVersion() this.appInfo.platformVersion,
+
+  /**
+   * Get the currently used locale
+   * @returns Current locale
+   * @type string
+   */
+  get locale() {
+    var registry = Cc["@mozilla.org/chrome/chrome-registry;1"]
+                     .getService(Ci.nsIXULChromeRegistry);
+    return registry.getSelectedLocale("global");
+  },
+
+  /**
+   * Get the user agent string
+   * @returns User agent
+   * @type string
+   */
+  get userAgent() {
+    var window = mozmill.wm.getMostRecentWindow("navigator:browser");
+    if (window)
+      return window.navigator.userAgent;
+    return "";
+  }
+};
+
+/**
  * Called to get the value of an individual property.
  *
  * @param {string} url
