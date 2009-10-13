@@ -109,10 +109,7 @@ var prefDialogCallback = function(controller) {
   // Make sure the pref is checked
   var pref = new elementslib.ID(controller.window.document, "popupPolicy");
   controller.waitForElement(pref, gTimeout);
-  if (!pref.getNode().checked) {
-    controller.click(pref);
-    controller.sleep(gDelay);
-  }
+  controller.check(pref, true);
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }

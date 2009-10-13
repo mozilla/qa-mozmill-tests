@@ -153,22 +153,11 @@ var handleSecurityWarningSettingsDialog = function(controller)
                         "warn_submit_insecure",
                         "warn_viewing_mixed");
 
-  // Make sure the "encrypted page" pref is checked
+  // Make sure only the "encrypted page" pref is checked
   for each (p in prefs) {
     var element = new elementslib.ID(controller.window.document, p);
     controller.waitForElement(element, gTimeout);
-
-    // Check the "submit unencrypted info" pref if it isn't already
-    if (p == "warn_submit_insecure") {
-      if (!element.getNode().checked) {
-        controller.click(element);
-      }
-    // Uncheck all other prefs
-    } else {
-      if (element.getNode().checked) {
-        controller.click(element);
-      }
-    }
+    controller.check(element, (p == "warn_submit_insecure"));
   }
 
   // Click OK on the Security window

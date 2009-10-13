@@ -95,9 +95,9 @@ var prefDisableCookieDialogCallback = function(controller)
   controller.select(historyMode, null, null, "custom");
   controller.sleep(gDelay);
 
+  // Disable cookies
   var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
-  if (acceptCookiesPref.getNode().checked)
-    controller.click(acceptCookiesPref);
+  controller.check(acceptCookiesPref, false);
 
   // Close the preferences dialog
   PrefsAPI.preferencesDialog.close(controller, true);

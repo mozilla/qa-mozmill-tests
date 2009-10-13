@@ -121,16 +121,12 @@ var prefDialogCallback = function(controller) {
   // Make sure the Use SSL pref is not checked
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
   controller.waitForElement(sslPref, gTimeout);
-  if (sslPref.getNode().checked) {
-    controller.click(sslPref);
-  }
+  controller.check(sslPref, false);
 
   // Make sure the Use TLS pref is not checked
   var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
   controller.waitForElement(tlsPref, gTimeout);
-  if (tlsPref.getNode().checked) {
-    controller.click(tlsPref);
-  }
+  controller.check(tlsPref, false);
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
