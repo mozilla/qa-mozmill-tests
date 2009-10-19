@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,6 +39,10 @@
  * Litmus test #8083: Test XMLHttpRequest to provide suggested search terms
  */
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
 const gTimeout = 5000;
 
 var setupModule = function(module) {
@@ -53,9 +58,16 @@ var testGoogleSuggestedTerms = function() {
   var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.type(searchField, "area");
 
+  // The auto-complete box has a different markup for nightly builds
+  // Official releases will not have the 'pre' suffix in the version number
+  if (UtilsAPI.appInfo.platformVersion.indexOf("pre") == -1) {
+    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[@id='main']/center/span[@id='body']/center/form/table[2]/tbody/tr[2]/td");
+  } else {
+    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[1]/tbody/tr/td[2]");
+  }
+
   // Click the first element in the pop-down autocomplete
-  var autocomplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[@id='main']/center/span[@id='body']/center/form/table[2]/tbody/tr[2]/td");
-  controller.waitThenClick(autocomplete, gTimeout);
+  controller.waitThenClick(autoComplete, gTimeout);
 
   // Start the search
   controller.click(new elementslib.Name(controller.tabs.activeTab, "btnG"));
