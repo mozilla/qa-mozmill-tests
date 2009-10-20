@@ -71,7 +71,7 @@ var testSetLanguages = function () {
 
   // Verify the site is Italian oriented
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
-  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Preferenze"));
+  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Gruppi"));
   controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
 }
 
