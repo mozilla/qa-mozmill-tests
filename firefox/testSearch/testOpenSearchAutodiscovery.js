@@ -45,8 +45,8 @@ var MODULE_REQUIRES = ['SearchAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-const searchEngine = {name: "Technorati Search",
-                      url : "http://technorati.com/"};
+const searchEngine = {name: "YouTube Video Search",
+                      url : "http://www.youtube.com/"};
 
 var setupModule = function(module)
 {
@@ -56,7 +56,8 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  search.remove(searchEngine.name);
+  if (search.isInstalled(searchEngine.name))
+    search.remove(searchEngine.name);
 }
 
 /**
@@ -64,7 +65,7 @@ var teardownModule = function(module)
  */
 var testOpenSearchAutodiscovery = function()
 {
-  // Open the web page with the test MozSearch plugin
+  // Open the web page with the test OpenSearch plugin
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
 
