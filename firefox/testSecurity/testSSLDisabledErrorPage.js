@@ -51,12 +51,9 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  try {
-    // Reset the SSL and TLS prefs
-    PrefsAPI.preferences.branch.clearUserPref("security.enable_ssl3");
-    PrefsAPI.preferences.branch.clearUserPref("security.enable_tls");
-  } catch (ex) {
-  }
+  // Reset the SSL and TLS pref
+  PrefsAPI.preferences.clearUserPref("security.enable_ssl3");
+  PrefsAPI.preferences.clearUserPref("security.enable_tls");
 }
 
 /**

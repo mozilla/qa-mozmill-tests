@@ -60,11 +60,8 @@ var teardownModule = function(module)
                         "security.warn_leaving_secure",
                         "security.warn_submit_insecure",
                         "security.warn_viewing_mixed");
-  for each (p in prefs) {
-    try {
-      PrefsAPI.preferences.branch.clearUserPref(p);
-    } catch(e) {}
-  }
+  for each (p in prefs)
+    PrefsAPI.preferences.clearUserPref(p);
 }
 
 /**

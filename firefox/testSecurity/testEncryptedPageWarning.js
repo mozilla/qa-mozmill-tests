@@ -62,11 +62,8 @@ var teardownModule = function(module)
                         "security.warn_viewing_mixed");
 
   // Reset the warning blocking prefs
-  for each (p in prefs) {
-    try {
-      PrefsAPI.preferences.branch.clearUserPref(p);
-    } catch(e) {}
-  }
+  for each (p in prefs)
+    PrefsAPI.preferences.clearUserPref(p);
 }
 
 /**

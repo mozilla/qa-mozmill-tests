@@ -56,10 +56,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("browser.formfill.enable");
-  } catch (ex) {
-  }
+  PrefsAPI.preferences.clearUserPref("browser.formfill.enable");
 }
 
 var testToggleFormManager = function() {

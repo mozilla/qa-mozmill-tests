@@ -174,6 +174,23 @@ var preferences = {
   },
 
   /**
+   * Clear a user set preference
+   *
+   * @param {string} prefName
+   *        The user-set preference to clear
+   * @return False if the preference had the default value
+   * @type boolean
+   **/
+  clearUserPref : function preferences_clearUserPref(prefName) {
+    try {
+      this._branch.clearUserPref(prefName);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  /**
    * Retrieve the value of an individual preference.
    *
    * @param {string} prefName
