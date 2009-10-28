@@ -65,10 +65,7 @@ var teardownModule = function(module)
   pb.enabled = false;
 
   // Reset the user cookie pref
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("network.cookie.lifetimePolicy");
-  } catch (ex) {
-  }
+  PrefsAPI.preferences.clearUserPref("network.cookie.lifetimePolicy");
 }
 
 /**

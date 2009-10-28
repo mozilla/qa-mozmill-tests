@@ -52,9 +52,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("browser.startup.homepage");
-  } catch(e) {}
+  PrefsAPI.preferences.clearUserPref("browser.startup.homepage");
 }
 
 var testSetHomePage = function() {

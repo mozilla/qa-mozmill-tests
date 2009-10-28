@@ -56,11 +56,7 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("network.cookie.cookieBehavior");
-  } catch (ex) {
-  }
-
+  PrefsAPI.preferences.clearUserPref("network.cookie.cookieBehavior");
   cm.removeAll();
 }
 

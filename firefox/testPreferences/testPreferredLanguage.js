@@ -51,9 +51,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("intl.accept_languages");
-  } catch(e) {}
+  PrefsAPI.preferences.clearUserPref("intl.accept_languages");
 }
 
 /**

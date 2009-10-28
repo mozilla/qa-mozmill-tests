@@ -50,11 +50,8 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  try {
-    // Reset the pop-up blocking pref
-    PrefsAPI.preferences.branch.clearUserPref("dom.disable_open_during_load");
-  } catch (ex) {
-  }
+  // Reset the pop-up blocking pref
+  PrefsAPI.preferences.clearUserPref("dom.disable_open_during_load");
 
   for each (window in mozmill.utils.getWindows("navigator:browser")) {
     if (!window.toolbar.visible)

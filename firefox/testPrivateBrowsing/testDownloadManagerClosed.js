@@ -77,10 +77,7 @@ var teardownModule = function(module)
   module.pb.showPrompt = true;
   module.pb.enabled = false;
 
-  try {
-    PrefsAPI.preferences.branch.clearUserPref("browser.download.manager.showWhenStarting");
-  } catch (ex) {
-  }
+  PrefsAPI.preferences.clearUserPref("browser.download.manager.showWhenStarting");
 }
 
 /**
