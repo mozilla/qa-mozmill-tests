@@ -42,7 +42,7 @@ const gTimeout = 5000;
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  locationBar = new elementslib.ID(controller.window.document, 'urlbar');
+  module.locationBar = new elementslib.ID(controller.window.document, 'urlbar');
 }
 
 /**
@@ -53,14 +53,15 @@ var testLocationBarSearches = function () {
   /**
    * Part 1 - Check unmatched string search
    */
-  var randomTestString = "oau45rtdgsh34nf";
+  var randomTestString = "oau45rtdgsh34nfr";
 
   // Open a blank page to ensure test page is not already loaded
   controller.open("about:blank");
   controller.waitForPageLoad();
 
   // Enter test string into Awesome Bar
-  controller.open(randomTestString);
+  controller.type(locationBar, randomTestString);
+  controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
   // Check if search term is listed in URL
@@ -79,7 +80,8 @@ var testLocationBarSearches = function () {
   controller.waitForPageLoad();
 
   // Enter test string into Awesome Bar
-  controller.open("personas");
+  controller.type(locationBar, "personas");
+  controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
   // Check if lucky match to getpersonas.org is produced
@@ -99,7 +101,8 @@ var testLocationBarSearches = function () {
   controller.waitForPageLoad();
 
   // Enter the test string into Awesome Bar
-  controller.open(resultsTestString);
+  controller.type(locationBar, resultsTestString);
+  controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
   // Check if search term is listed in URL
