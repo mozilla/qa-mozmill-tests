@@ -45,11 +45,15 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-var testBackandForward = function() {
-  var pageElements = ['guser', 'cnnHeadSrchTxt', 'f1'];
+/**
+ * Test the back and forward buttons
+ */
+var testBackandForward = function()
+{
+  var pageElements = ['guser', 'sb_form_q', 'i'];
   var websites = ['http://www.google.com/webhp?hl=en&complete=1',
-                  'http://www.cnn.com/',
-                  'http://www.msn.com/'];
+                  'http://www.bing.com/',
+                  'http://www.wolframalpha.com/'];
 
   // Open up the list of websites statically assigned in the array
   for (var k = 0; k < websites.length; k++) {
