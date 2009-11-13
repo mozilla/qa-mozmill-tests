@@ -50,23 +50,30 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-var testStopAndReload = function() {
+/**
+ * Test the stop and reload buttons
+ */
+var testStopAndReload = function()
+{
+  var url = "http://www.mozilla.com/en-US/";
+
   // Make sure we have a blank page
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  // Go to the NYPost front page and start loading for some milliseconds
-  controller.open("http://www.nypost.com/");
-  controller.sleep(750);
+  // Go to the URL and start loading for some milliseconds
+  controller.open(url);
+  controller.sleep(100);
   controller.click(new elementslib.ID(controller.window.document, "stop-button"));
 
-  // The link at the bottom of the page should not exist when hitting the stop button
-  var elem = new elementslib.Link(controller.tabs.activeTab, "subscribe");
+  // Even an element at the top of a page shouldn't exist when we hit the stop
+  // button extremely fast
+  var elem = new elementslib.ID(controller.tabs.activeTab, "query");
   controller.assertNodeNotExist(elem);
   controller.sleep(gDelay);
 
   // Reload, wait for it to completely loading and test again
-  controller.refresh();
+  controller.open(url);
   controller.waitForPageLoad();
 
   controller.waitForElement(elem, gTimeout);
