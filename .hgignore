@@ -1,3 +1,4 @@
 # Filenames that should be ignored wherever they appear
 ~$
 \.DS_Store$
+.pyc$
