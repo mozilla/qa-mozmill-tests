@@ -19,7 +19,8 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
-*
+ *   Aakash Desai <adesai@mozilla.com>
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -40,21 +41,20 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
-// Shared variable
-var gExtensionName = "Adblock Plus";
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-}
 
-var testCheckInstalledExtension = function() {
   // Check if Add-ons Manager is opened after restart
   var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-  var addonsController = new mozmill.controller.MozMillController(window);
+  module.addonsController = new mozmill.controller.MozMillController(window);
+}
 
+var testCheckInstalledExtension = function() 
+{
   // Extensions pane should be selected
   var extensionsPane = new elementslib.ID(addonsController.window.document, "extensions-view");
   addonsController.waitForEval("subject.selected == true", gTimeout, 100, extensionsPane.getNode());
@@ -67,6 +67,41 @@ var testCheckInstalledExtension = function() {
   // We can find it by the attribute "newAddon"
   // XXX: Use a hard-coded name to access the entry directly until we can pass the info
   // between restart test files (bug 500987)
-  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + gExtensionName + '"})');
+  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + persisted.extensionName + '"})');
   addonsController.assertNode(extension);
+}
+
+/*
+ * Tests the uninstallation of the extension
+ */
+var testUninstallExtension = function() 
+{
+  // Confirm the installed extension and click on it
+  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + persisted.extensionName + '"})');
+  addonsController.click(extension);
+
+  // Create a modal dialog instance to handle the software uninstallation dialog
+  var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
+  md.start();
+
+  var uninstallExtensionButton = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"newAddon":"true"})/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"selectedButtons"})/{"command":"cmd_uninstall"}');
+  addonsController.waitThenClick(uninstallExtensionButton);
+ 
+  // Wait for the restart button
+  var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]");
+  addonsController.waitForElement(restartButton, gTimeout);
+}
+
+/**
+ * Handle the Software Un-installation dialog
+ */
+var handleTriggerDialog = function(controller) 
+{
+  var cancelButton = new elementslib.Lookup(controller.window.document, '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
+  var uninstallButton = new elementslib.Lookup(controller.window.document, '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+
+  controller.waitForElement(cancelButton, gTimeout);
+
+  controller.waitForEval("subject.disabled != true", 7000, 100, uninstallButton.getNode());
+  controller.waitThenClick(uninstallButton, gTimeout);
 }

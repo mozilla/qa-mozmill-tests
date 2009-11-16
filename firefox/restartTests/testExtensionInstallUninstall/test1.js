@@ -42,8 +42,6 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
-// Shared variable
-var gExtensionName = "Adblock Plus";
 const gTimeout = 5000;
 
 var setupModule = function(module) {
@@ -51,6 +49,8 @@ var setupModule = function(module) {
   module.addonsController = mozmill.getAddonsController();
 
   UtilsAPI.closeAllTabs(controller);
+  module.persisted.extensionName = "Adblock Plus";
+  module.persisted.extensionId = "{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}";
 }
 
 var testInstallExtension = function() {
@@ -84,7 +84,7 @@ var testInstallExtension = function() {
   addonsController.waitForEval("subject.selected == true", 10000, 100, installPane.getNode());
 
   // Check if the installed extension is visible in the Add-ons Manager
-  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/[1]/anon({"flex":"1"})/[0]/[1]/{"class":"addon-name-version","xbl:inherits":"name, version=newVersion"}/anon({"value":"' + gExtensionName + '"})');
+  var extension = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.extensionId + '")/anon({"flex":"1"})/[0]/[1]/{"class":"addon-name-version","xbl:inherits":"name, version=newVersion"}/anon({"value":"' + persisted.extensionName + '"})');
   addonsController.waitForElement(extension, gTimeout);
 
   // Check if restart button is present
@@ -107,7 +107,7 @@ var handleTriggerDialog = function(controller) {
   }
 
   // Check if the extension name is shown
-  if (itemElem.childNodes[0].name != gExtensionName) {
+  if (itemElem.childNodes[0].name != persisted.extensionName) {
     throw "Visible extension name doesn't match target extension";
   }
 
