@@ -82,23 +82,17 @@ var testWarningPages = function() {
 /**
  * Check that the getMeOutButton sends the user to the firefox's default home page
  */
-var checkGetMeOutOfHereButton = function() {
+var checkGetMeOutOfHereButton = function()
+{
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutButton");
 
   // Wait for the getMeOutOfHereButton to be safely loaded on the warning page and click it
   controller.waitThenClick(getMeOutOfHereButton, gTimeout);
   controller.waitForPageLoad();
 
-  // Safe URL of current web page
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var pageURL = locationBar.getNode().value;
-
-  // Open the default home page
+  // Check that the default home page has been opened
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
-  controller.open(defaultHomePage);
-  controller.waitForPageLoad();
-
-  controller.assertValue(locationBar, pageURL);
+  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);
 }
 
 /*
@@ -137,13 +131,7 @@ var checkReportButton = function(type, badUrl) {
     controller.assertNode(malwareElement);
   }
 
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var pageURL = locationBar.getNode().value;
-
-  controller.open(url);
-  controller.waitForPageLoad();
-
-  controller.assertValue(locationBar, pageURL);
+  UtilsAPI.assertLoadedUrlEqual(controller, url);
 }
 
 /*

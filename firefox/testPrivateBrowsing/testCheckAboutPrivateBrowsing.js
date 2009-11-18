@@ -76,14 +76,7 @@ var testCheckAboutPrivateBrowsing = function()
   // Clicking on the more info link opens a new tab with a page on SUMO
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
   controller.waitForPageLoad();
-
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var pbUrl = locationBar.getNode().value;
-
-  // Check that the correct page has been loaded
-  controller.open(targetURL);
-  controller.waitForPageLoad();
-  controller.assertValue(locationBar, pbUrl);
+  UtilsAPI.assertLoadedUrlEqual(controller, targetURL);
 
   pb.stop();
 }
