@@ -121,12 +121,19 @@ var testGetAddonsTab = function()
   // Verify certain elements perform the proper action
 
   // Check if the see all recommended addons link is the same as the one in prefs
+  // XXX: Bug 529412 - Mozmill cannot operate on XUL elements which are outside of the view
+  // So we can only compare the URLs for now.
   var recommendedUrl = PrefsAPI.preferences.getPref("extensions.getAddons.recommended.browseURL", "");
-
   recommendedUrl = recommendedUrl.replace(/%LOCALE%/g, UtilsAPI.appInfo.locale);
   recommendedUrl = recommendedUrl.replace(/%APP%/g, UtilsAPI.appInfo.name.toLowerCase());
 
-  addonsController.assertJS(footerField.getNode().getAttribute('link') == recommendedUrl);
+  addonsController.assertJS("subject.getAttribute('link') == '" + recommendedUrl + "'",
+                            footerField.getNode());
+
+  // Check if the browse all addons link is the same as the one in prefs
+  var browseAddonUrl = PrefsAPI.preferences.getPref("extensions.getAddons.browseAddons", "");
+  browseAddonUrl = browseAddonUrl.replace(/%LOCALE%/g, UtilsAPI.appInfo.locale);
+  browseAddonUrl = browseAddonUrl.replace(/%APP%/g, UtilsAPI.appInfo.name.toLowerCase());
 
   // Wait for the Browse All Add-ons link and click on it
   addonsController.waitThenClick(browseAllAddons, gTimeout);
@@ -134,18 +141,7 @@ var testGetAddonsTab = function()
   // The target web page is loaded lazily so wait for the newly created tab first
   controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
   controller.waitForPageLoad();
-
-  var browseAddonUrl = PrefsAPI.preferences.getPref("extensions.getAddons.browseAddons", "");
-
-  browseAddonUrl = browseAddonUrl.replace(/%LOCALE%/g, UtilsAPI.appInfo.locale);
-  browseAddonUrl = browseAddonUrl.replace(/%APP%/g, UtilsAPI.appInfo.name.toLowerCase());
-
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var pageUrl = locationBar.getNode().value;
-
-  controller.assertJS(pageUrl.indexOf("addons.mozilla.org") != -1);
-  controller.assertJS(pageUrl.indexOf(UtilsAPI.appInfo.locale) != -1);
-  controller.assertJS(pageUrl.indexOf(UtilsAPI.appInfo.name.toLowerCase()) != -1);
+  UtilsAPI.assertLoadedUrlEqual(controller, browseAddonUrl);
 
   // Close the addons manager and wait a bit to make sure the focus is set to
   // the next window

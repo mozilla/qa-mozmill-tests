@@ -150,16 +150,8 @@ var checkGetMeOutOfHereButton = function() {
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
 
-  // Safe URL of current web page
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var pageURL = locationBar.getNode().value;
-
-  // Open the default home page
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
-  controller.open(defaultHomePage);
-  controller.waitForPageLoad();
-
-  controller.assertValue(locationBar, pageURL);
+  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);  
 }
 
 /**

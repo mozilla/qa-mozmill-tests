@@ -249,11 +249,33 @@ function assertElementVisible(controller, element, visibility)
 
   if (visibility) {
     if (state != 'visible')
-      throw "Element is hidden but should be visible";
+      throw new Error("Element is hidden but should be visible");
   } else {
     if (state == 'visible')
-      throw "Element is visible but should be hidden";
+      throw new Error("Element is visible but should be hidden");
   }
+}
+
+/**
+ * Assert if the current URL is identical to the target URL.
+ * With this function also redirects can be tested.
+ *
+ * @param {MozmillController} controller
+ *        MozMillController of the window to operate on
+ * @param {string} targetURL
+ *        URL to check
+ */
+function assertLoadedUrlEqual(controller, targetUrl)
+{
+  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
+  var currentUrl = locationBar.getNode().value;
+
+  // Load the target URL
+  controller.open(targetUrl);
+  controller.waitForPageLoad();
+
+  // Check the same web page has been opened
+  controller.assertValue(locationBar, currentUrl);
 }
 
 /**
