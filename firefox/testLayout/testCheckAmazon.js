@@ -60,9 +60,9 @@ var testCheckAmazonCom = function () {
   controller.open("http://www.amazon.com");
   controller.waitForPageLoad();
 
-  // Check sign-in link
-  var signIn = new elementslib.Link(controller.tabs.activeTab, "personalized recommendations");
-  controller.waitForElement(signIn, gTimeout);
+  // Check the logo
+  var logo = new elementslib.ID(controller.tabs.activeTab, "navLogoPrimary");
+  controller.waitForElement(logo, gTimeout);
 
   // Check your account link
   var account = new elementslib.Link(controller.tabs.activeTab, "Your Account");
