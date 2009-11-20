@@ -45,33 +45,40 @@ var MODULE_REQUIRES = ['UtilsAPI'];
 
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
 }
 
-var testYahoo = function () {
-  var url = 'http://us.yahoo.com/';
+var testYahoo = function ()
+{
+  var url = 'http://m.www.yahoo.com/';
   var searchTerm = "Mozilla";
 
   // Open the web page.
   controller.open(url);
   controller.waitForPageLoad();
 
+  // Users will get redirected to a local Yahoo page. We have to click the
+  // Yahoo.com link to really enter the US website
+  var usLink = new elementslib.Link(controller.tabs.activeTab, "Yahoo.com");
+  if (usLink.getNode()) {
+    controller.click(usLink);
+    controller.waitForPageLoad();
+  }
+
   // Check for the Yahoo logo
-  var yahooLogo = new elementslib.ID(controller.tabs.activeTab, 'ylogo');
+  var yahooLogo = new elementslib.ID(controller.tabs.activeTab, 'l_logo');
   controller.waitForElement(yahooLogo, gTimeout);
 
   // Check the location bar has the correct URL
   var locationBar = new elementslib.ID(controller.window.document, 'urlbar');
-  controller.assertValue(locationBar, url);
-
-  // Check existance of More Yahoo! Services button
-  var servicesButton = new elementslib.ID(controller.tabs.activeTab, "allyservices")
-  controller.waitForElement(servicesButton, gTimeout);
+  controller.assertJS("subject.indexOf('" + url + "') != -1",
+                      locationBar.getNode().value);
 
   // Check search field
-  var searchField = new elementslib.ID(controller.tabs.activeTab, 'p');
-  var searchSubmit = new elementslib.ID(controller.tabs.activeTab, "searchsubmit");
+  var searchField = new elementslib.ID(controller.tabs.activeTab, 'p_13838465-p');
+  var searchSubmit = new elementslib.ID(controller.tabs.activeTab, "search-submit");
   UtilsAPI.checkSearchField(controller, searchField, searchTerm, searchSubmit);
   controller.waitForPageLoad();
 
