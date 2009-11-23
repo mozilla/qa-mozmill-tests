@@ -42,18 +42,24 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
-// Shared variable
-var gThemeName = "Walnut for Firefox";
 const gTimeout = 5000;
+const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.addonsController = mozmill.getAddonsController();
 
   UtilsAPI.closeAllTabs(controller);
+  module.persisted.themeName = "Walnut for Firefox";
+  module.persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
+  module.persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
 }
 
-var testInstallTheme = function() {
+/*
+ * Tests theme installation
+ */
+var testInstallTheme = function() 
+{
   // Make sure the Get Add-ons pane is visible
   var getAddonsPane = new elementslib.ID(addonsController.window.document, "search-view");
   addonsController.waitThenClick(getAddonsPane, gTimeout);
@@ -78,13 +84,15 @@ var testInstallTheme = function() {
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
-  // Wait that the Installation pane is shown while the theme is installed
+  // Wait that the Installation pane is shown
   var installPane = new elementslib.ID(addonsController.window.document, "installs-view");
-  addonsController.waitForEval("subject.selected == true", 10000, 100, installPane.getNode());
+  addonsController.waitForEval("subject.selected == true", gTimeout, 100, installPane.getNode());
 
-  // Check if the installed theme is visible in the Add-ons Manager
-  var theme = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"name":"' + gThemeName + '"})');
-  addonsController.waitForElement(theme, gTimeout);
+  // Wait until the Theme has been installed. Note that the id of the element is
+  // added when the download has been finished. We don't know the extension id before.
+  var theme = new elementslib.ID(addonsController.window.document, "urn:mozilla:item:" + persisted.themeId);
+  addonsController.waitForElement(theme, gDownloadTimeout);
+  addonsController.assertJS("subject.getAttribute('state') == 'success'", theme.getNode());
 
   // Check if restart button is present
   var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
@@ -94,7 +102,8 @@ var testInstallTheme = function() {
 /**
  * Handle the Software Installation dialog
  */
-var handleTriggerDialog = function(controller) {
+var handleTriggerDialog = function(controller) 
+{
   // Get list of themes which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
@@ -102,18 +111,16 @@ var handleTriggerDialog = function(controller) {
 
   // There should be one theme for installation
   if (itemElem.childNodes.length != 1) {
-    throw "Expected one theme for installation";
+    throw new Error("Expected one theme for installation");
   }
 
   // Check if the correct theme name is shown
-  if (itemElem.childNodes[0].name != gThemeName) {
-    throw "Visible theme name doesn't match target theme";
-  }
+  controller.assertJS("subject.name == '" + persisted.themeName + "'",
+                      itemElem.childNodes[0]);
 
   // Will the theme be installed from https://addons.mozilla.org/?
-  if (itemElem.childNodes[0].url.indexOf("https://addons.mozilla.org/") == -1) {
-    throw "Theme location doesn't contain https://addons.mozilla.org/";
-  }
+  controller.assertJS("subject.url.indexOf('https://addons.mozilla.org/') != -1",
+                      itemElem.childNodes[0]);
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
@@ -121,6 +128,6 @@ var handleTriggerDialog = function(controller) {
 
   // Wait for the install button is enabled before clicking on it
   var installButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", gTimeout, 100, installButton.getNode());
+  controller.waitForEval("subject.disabled != true", undefined, 100, installButton.getNode());
   controller.click(installButton);
 }

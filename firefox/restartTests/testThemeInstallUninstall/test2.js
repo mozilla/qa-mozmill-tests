@@ -19,7 +19,8 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
-*
+ *   Aakash Desai <adesai@mozilla.com>
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -36,35 +37,62 @@
 
 /**
  * Litmus test #5930: Install a theme
+ * Litmus test #6126: Change theme
  */
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
 
-// Shared variable
-var gThemeName = "Walnut for Firefox";
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  // The Add-ons Manager is not opened automatically as what happens for new extensions
   module.controller = mozmill.getAddonsController();
 }
 
-var testCheckInstalledTheme = function() {
+/*
+ * Verifies the theme has been installed
+ */
+var testCheckInstalledTheme = function() 
+{
   // Select the Themes pane
   var themesPane = new elementslib.ID(controller.window.document, "themes-view");
   controller.sleep(100);
   controller.waitThenClick(themesPane, gTimeout);
 
   // The installed theme should be the current theme in the list
-  // XXX: Use the add-on uuid to access the entry directly until we can pass the info
-  // between restart test files (bug 500987)
-  var item = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}")');
-  controller.waitThenClick(item, gTimeout);
+  var item = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.themeId + '")');
 
-  // Check if the Walnut Theme is the current theme
-  if (!item.getNode().getAttribute('current')) {
-    throw gThemeName + " is not the currently enabled theme."
-  }
+  controller.assertJS("subject.getAttribute('current') == 'true'", item.getNode());
+
+  var currentTheme = PrefsAPI.preferences.getPref("general.skins.selectedSkin", "");
+  controller.waitThenClick(item, gTimeout);
+  controller.assertJS("subject.themeName.toLowerCase().indexOf('" + currentTheme + "') != -1",
+                      persisted);
+}
+
+/*
+ * Tests changing the theme back to default
+ */
+var testThemeChange = function() 
+{
+  // Select the default theme and click the use theme button
+  var defaultTheme = new elementslib.ID(controller.window.document, "urn:mozilla:item:"+ persisted.defaultThemeId);
+  controller.waitThenClick(defaultTheme, gTimeout);
+
+  var useThemeButton = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:'+ persisted.defaultThemeId +'")/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"selectedButtons"})/{"command":"cmd_useTheme"}');
+  controller.waitThenClick(useThemeButton, gTimeout);
+
+  // Wait for the restart button
+  var restartButton = new elementslib.XPath(controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  controller.waitForElement(restartButton, gTimeout);
+
+  // Verify useThemeButton is not visible and theme description has changed
+  controller.assertProperty(useThemeButton, "disabled", "true");
+  controller.assertJS("subject.getAttribute('description').indexOf('Restart') != -1",
+                      defaultTheme.getNode());
+
+  // Verify the theme that will be changed to is the default theme
+  nextTheme = PrefsAPI.preferences.getPref("extensions.lastSelectedSkin", "");
+  controller.assertJS(nextTheme.indexOf("classic") != -1);
 }
