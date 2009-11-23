@@ -88,11 +88,11 @@ var testInstallTheme = function()
   var installPane = new elementslib.ID(addonsController.window.document, "installs-view");
   addonsController.waitForEval("subject.selected == true", gTimeout, 100, installPane.getNode());
 
-  // Wait until the Theme has been installed
-  var theme = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.themeId + '")');
-  addonsController.waitForElement(theme, gTimeout);
-  addonsController.waitForEval("subject.getAttribute('state') == 'success'",
-                               gDownloadTimeout, 100, theme.getNode());
+  // Wait until the Theme has been installed. Note that the id of the element is
+  // added when the download has been finished. We don't know the extension id before.
+  var theme = new elementslib.ID(addonsController.window.document, "urn:mozilla:item:" + persisted.themeId);
+  addonsController.waitForElement(theme, gDownloadTimeout);
+  addonsController.assertJS("subject.getAttribute('state') == 'success'", theme.getNode());
 
   // Check if restart button is present
   var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
