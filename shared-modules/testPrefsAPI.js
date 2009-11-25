@@ -113,7 +113,7 @@ var preferencesDialog = {
     saveChanges = (saveChanges == undefined) ? false : saveChanges;
 
     if (mozmill.isWindows) {
-      var template = '/id("BrowserPreferences")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"%s"}';
+      var template = '/{"type":"prefwindow"}/anon({"anonid":"dlg-buttons"})/{"dlgtype":"%s"}';
       var button = template.replace("%s", (saveChanges? "accept" : "cancel"));
       controller.click(new elementslib.Lookup(controller.window.document, button));
     } else {
@@ -130,7 +130,7 @@ var preferencesDialog = {
    * @type string
    */
   getPane: function preferencesDialog_getPane(controller) {
-    var buttonString = '/id("BrowserPreferences")/anon({"orient":"vertical"})' +
+    var buttonString = '/{"type":"prefwindow"}/anon({"orient":"vertical"})' +
                       '/anon({"anonid":"selector"})';
     var button = new elementslib.Lookup(controller.window.document, buttonString);
 
@@ -145,7 +145,7 @@ var preferencesDialog = {
    * @param {string} Id of the pane
    */
   setPane: function preferencesDialog_setPane(controller, paneId) {
-    var buttonString = '/id("BrowserPreferences")/anon({"orient":"vertical"})' +
+    var buttonString = '/{"type":"prefwindow"}/anon({"orient":"vertical"})' +
                        '/anon({"anonid":"selector"})/{"pane":"%s"}';
     var button = new elementslib.Lookup(controller.window.document,
                                         buttonString.replace("%s", paneId));

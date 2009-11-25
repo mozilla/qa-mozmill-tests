@@ -97,7 +97,7 @@ function launchPrefsWithKeys() {
  * where you'd interact with the preference dialog
  */
 function doPref(prefcontrol) {
-  prefcontrol.click(new elementslib.Lookup(prefcontrol.window.document, '/id("BrowserPreferences")/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}'));
+  prefcontrol.click(new elementslib.Lookup(prefcontrol.window.document, '/{"type":"prefwindow"}/anon({"orient":"vertical"})/anon({"anonid":"selector"})/{"pane":"paneContent"}'));
   prefcontrol.sleep(500);
 
   prefcontrol.click(new elementslib.ID(prefcontrol.window.document, "enableJava"));
