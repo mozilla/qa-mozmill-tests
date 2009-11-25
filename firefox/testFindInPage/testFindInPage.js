@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Tobias Markus <tobbi.bugs@googlemail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,6 +45,18 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+
+  containerString = '/id("main-window")/id("browser-bottombox")/id("FindToolbar")' +
+                    '/anon({"anonid":"findbar-container"})';
+  findBar = new elementslib.Lookup(controller.window.document, containerString);
+  findBarTextField = new elementslib.Lookup(controller.window.document,
+                                            containerString + '/anon({"anonid":"findbar-textbox"})');
+  findBarNextButton = new elementslib.Lookup(controller.window.document,
+                                             containerString + '/anon({"anonid":"find-next"})');
+  findBarPrevButton = new elementslib.Lookup(controller.window.document,
+                                             containerString + '/anon({"anonid":"find-previous"})');
+  findBarCloseButton = new elementslib.Lookup(controller.window.document,
+                                              containerString + '/anon({"anonid":"find-closebutton"})');
 }
 
 var teardownModule = function(module) {
@@ -52,11 +65,10 @@ var teardownModule = function(module) {
     controller.keypress(null, "f", {accelKey:true});
 
     // Clear search text from the text field
-    var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');
     controller.keypress(findBarTextField, 'VK_DELETE', {});
 
     // Make sure the find bar is closed by click the X button
-    controller.click(new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-closebutton"})'));
+    controller.click(findBarCloseButton);
   } catch(e) {
   }
 }
@@ -80,11 +92,9 @@ var testFindInPage = function() {
   controller.sleep(gDelay);
 
   // Check that the find bar is visible
-  var findBar = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})');
   controller.waitForElement(findBar, gTimeout);
 
   // Type "mozilla" into the find bar text field and press return to start the search
-  var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');
   controller.type(findBarTextField, searchTerm);
   controller.keypress(null, "VK_RETURN", {});
   controller.sleep(gDelay);
@@ -100,7 +110,6 @@ var testFindInPage = function() {
   var range = selectedText.getRangeAt(0);
 
   // Click the next button and check the strings again
-  var findBarNextButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-next"})');
   controller.click(findBarNextButton);
   controller.sleep(gDelay);
 
@@ -115,7 +124,6 @@ var testFindInPage = function() {
   }
 
   // Click the prev button and check the strings again
-  var findBarPrevButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-previous"})');
   controller.click(findBarPrevButton);
   controller.sleep(gDelay);
 
