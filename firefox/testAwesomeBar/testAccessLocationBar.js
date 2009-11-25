@@ -36,7 +36,7 @@
  * **** END LICENSE BLOCK *****/
 
 /**
- * Litmus test #8024 & 5981: Access the Location Bar with drop down list
+ * Litmus test #5981: Access the Location Bar with drop down list
  */
 const gTimeout = 5000;
 const gDelay = 100;
