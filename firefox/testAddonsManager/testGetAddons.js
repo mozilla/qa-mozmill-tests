@@ -79,6 +79,7 @@ var testLaunchAddonsManager = function()
     var buttonCheck = new elementslib.ID(addonsController.window.document, pane.button);
 
     UtilsAPI.assertElementVisible(addonsController, buttonCheck, true);
+    //XXX: This will not work for localized versions (bug 531163 - DTD entities)
     addonsController.assertProperty(buttonCheck, "label", pane.label);
   }
 
