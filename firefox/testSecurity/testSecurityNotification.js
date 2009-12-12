@@ -57,16 +57,16 @@ var setupModule = function(module)
  */
 var testSecNotification = function()
 {
-  // Go to the secure HTTPS Verisign site
-  controller.open('https://www.verisign.com/');
+  // Go to a secure HTTPS site
+  controller.open("https://addons.mozilla.org/");
   controller.waitForPageLoad();
 
-  var aboutVer = new elementslib.Link(controller.tabs.activeTab, "About VeriSign");
-  controller.assertNode(aboutVer);
+  var query = new elementslib.ID(controller.tabs.activeTab, "query");
+  controller.assertNode(query);
 
-  // Verify Verisign label
+  // Verify Mozilla label
   var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  controller.assertValue(identLabel, 'VeriSign, Inc. (US)');
+  controller.assertValue(identLabel, 'Mozilla Corporation (US)');
 
   // The security button should be visible in the status bar
   var securityButton = controller.window.document.getElementById("security-button");
@@ -77,11 +77,12 @@ var testSecNotification = function()
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertProperty(identityBox, "className", "verifiedIdentity");
 
-  // Go to the unsecure HTTP Verisign site
-  controller.open('http://www.verisign.com');
+  // Go to an unsecure (HTTP) site
+  controller.open("http://www.mozilla.org/");
   controller.waitForPageLoad();
 
-  controller.assertNode(aboutVer);
+  var projects = new elementslib.Link(controller.tabs.activeTab, "Our Projects");
+  controller.assertNode(projects);
 
   // Security button should not be visible
   controller.assertJS(cssSecButton.getPropertyValue('list-style-image') == 'none');
@@ -89,14 +90,14 @@ var testSecNotification = function()
   // Identity box should have a gray background
   controller.assertProperty(identityBox, "className", "unknownIdentity");
 
-  // Go to a Verisign page which does not have a valid cert
-  controller.open('https://verisign.com');
+  // Go to a website which does not have a valid cert
+  controller.open("https://mozilla.org/");
   controller.waitForPageLoad(1000);
 
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
   controller.waitForElement(link, gTimeout);
-  controller.assertProperty(link, "textContent", "www.verisign.com");
+  controller.assertProperty(link, "textContent", "*.mozilla.org");
 
   // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
