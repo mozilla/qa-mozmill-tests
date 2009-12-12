@@ -93,18 +93,19 @@ var testEnablePrivateBrowsingMode = function()
   pb.start();
 
   // Check that only one tab is open
-  controller.assertJS(controller.tabs.length == 1);
+  controller.assertJS("subject.tabs.length == 1", controller);
 
   // Title modifier should have been set
-  controller.assertJS(controller.window.document.title.indexOf(modifier) != -1);
+  controller.assertJS("subject.title.indexOf('" + modifier + "') != -1",
+                      controller.window.document);
 
   // Check descriptions on the about:privatebrowsing page
   // XXX: Bug 504635 needs to be implemented so we can get the entities from the DTD
   var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText")
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
 
-  controller.assertNode(longDescElem);
-  controller.assertNode(moreInfoElem);
+  controller.waitForElement(longDescElem, gTimeout);
+  controller.waitForElement(moreInfoElem, gTimeout);
 }
 
 /**
@@ -119,7 +120,8 @@ var testStopPrivateBrowsingMode = function()
   pb.stop();
 
   // All tabs should be restored
-  controller.assertJS(controller.tabs.length == websites.length + 1);
+  controller.assertJS("subject.tabs.length == " + (websites.length + 1),
+                      controller);
 
   for (var ii = 0; ii < websites.length; ii++) {
     var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
@@ -127,7 +129,8 @@ var testStopPrivateBrowsingMode = function()
   }
 
   // No title modifier should have been set
-  controller.assertJS(controller.window.document.title.indexOf(modifier) == -1);
+  controller.assertJS("subject.title.indexOf('" + modifier + "') == -1",
+                      controller.window.document);
 }
 
 /**
@@ -152,10 +155,12 @@ var testKeyboardShortcut = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var pbStartHandler = function(controller) {
+var pbStartHandler = function(controller)
+{
   // Check to not ask anymore for entering Private Browsing mode
   var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
   controller.waitThenClick(checkbox, gTimeout);
 
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
+  var okButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.click(okButton);
 }

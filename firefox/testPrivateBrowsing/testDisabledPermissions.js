@@ -46,7 +46,7 @@ const gTimeout = 5000;
 
 var websites = [
                 "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html",
-                "http://www.cnn.com",
+                "http://www.google.com",
                 "https://litmus.mozilla.org/testcase_files/firefox/cookies/cookie_single.html"
                ];
 
@@ -102,8 +102,7 @@ var testPermissionsDisabled = function()
   controller.open(websites[1]);
   controller.waitForPageLoad();
 
-  var image = new elementslib.XPath(controller.tabs.activeTab,
-                                    "/html/body[@id='cnnMainPage']/div[@id='cnnHeader']/div/div/a/img");
+  var image = new elementslib.ID(controller.tabs.activeTab, "logo");
   var blockImages = new elementslib.ID(controller.window.document, "context-blockimage");
 
   controller.rightClick(image);

@@ -96,5 +96,5 @@ var testAllTabsClosedOnStop = function()
   pb.stop();
 
   // All tabs should have been removed
-  controller.assertJS(controller.tabs.length == 1);
+  controller.assertJS("subject.tabs.length == 1", controller);
 }

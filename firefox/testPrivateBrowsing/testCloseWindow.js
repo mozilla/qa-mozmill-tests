@@ -46,7 +46,7 @@ const gTimeout = 5000;
 
 var websites = [
                 {url: 'https://addons.mozilla.org/', id: 'search-query'},
-                {url: 'https://bugzilla.mozilla.org', id: 'content'}
+                {url: 'https://bugzilla.mozilla.org', id: 'quicksearch_top'}
                ];
 
 var setupModule = function(module)
@@ -113,7 +113,8 @@ var testCloseWindow = function()
   controller = new mozmill.controller.MozMillController(window);
 
   // All tabs should be restored
-  controller.assertJS(controller.tabs.length == websites.length + 1);
+  controller.assertJS("subject.tabs.length == " + (websites.length + 1),
+                      controller);
 
   // Check if all pages were re-loaded and show their content
   for (var ii = 0; ii < websites.length; ii++) {

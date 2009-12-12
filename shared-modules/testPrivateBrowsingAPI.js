@@ -49,6 +49,8 @@ const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI'];
 // Preference for confirmation dialog when entering Private Browsing mode
 const PB_NO_PROMPT_PREF = 'browser.privatebrowsing.dont_prompt_on_enter';
 
+const gTimeout = 5000;
+
 /**
  * Create a new privateBrowsing instance.
  *
@@ -107,7 +109,7 @@ privateBrowsing.prototype = {
     if (this.showPrompt) {
       // Check if handler is set to prevent a hang when the modal dialog is opened
       if (!this._handler)
-        throw "Private Browsing mode not enabled due to missing handler";
+        throw new Error("Private Browsing mode not enabled due to missing callback handler");
 
       var md = collector.getModule('ModalDialogAPI');
       dialog = new md.modalDialog(this._handler);
@@ -122,7 +124,7 @@ privateBrowsing.prototype = {
 
     // We have to wait a bit before checking the state
     this._controller.sleep(200);
-    this._controller.assertJS(this.enabled);
+    this._controller.assertJS("subject.enabled == true", this);
   },
 
   /**
@@ -144,7 +146,7 @@ privateBrowsing.prototype = {
 
     // We have to wait a bit before checking the state
     this._controller.sleep(200);
-    this._controller.assertJS(!this.enabled);
+    this._controller.assertJS("subject.enabled == false", this);
   }
 }
 
