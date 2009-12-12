@@ -46,7 +46,7 @@ const gTimeout = 5000;
 
 const downloads = [
                    "http://www.adobe.com/education/pdf/etd/etd_lesson2.pdf",
-                   "http://garr.dl.sourceforge.net/sourceforge/rarexpander/rar_expander_v085_beta3.dmg"
+                   "http://switch.dl.sourceforge.net/project/rarexpander/RAR%20Expander/0.8.4/rar_expander_v084.dmg"
                   ];
 
 const downloadsPB = [
@@ -135,7 +135,8 @@ var testDownloadManagerClosed = function()
 
   for (var ii = 0; ii < downloads.length; ii++) {
     var item = new elementslib.ID(dm.controller.window.document, "dl" + (ii + 1));
-    dm.controller.assertJS(item.getNode().getAttribute('uri') == downloads[ii]);
+    dm.controller.assertJS("subject.getAttribute('uri') == '" + downloads[ii] + "'",
+                           item.getNode());
   }
 
   dm.close();
