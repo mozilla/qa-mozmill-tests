@@ -125,3 +125,8 @@ var handleTriggerDialog = function(controller) {
   controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
   controller.click(installButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testInstallExtension.meta = {litmusids : [7972]};

@@ -35,11 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7973: Install a theme
- * Litmus test #8168: Change theme
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
@@ -96,3 +91,9 @@ var testThemeChange = function()
   nextTheme = PrefsAPI.preferences.getPref("extensions.lastSelectedSkin", "");
   controller.assertJS(nextTheme.indexOf("classic") != -1);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckInstalledTheme.meta = {litmusids : [7973]};
+testThemeChange.meta = {litmusids : [8168]};

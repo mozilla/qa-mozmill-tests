@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8696: Apply software update should display Restart Confirmation
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
@@ -85,3 +81,8 @@ var testDirectUpdate_Download = function()
   // We should be ready for restart
   update.assertUpdateStep('finished');
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testDirectUpdate_Download.meta = {litmusids : [8696]};

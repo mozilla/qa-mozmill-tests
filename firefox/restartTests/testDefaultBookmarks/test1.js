@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8751: Verify default bookmarks with a fresh profile
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI', 'UtilsAPI'];
@@ -142,3 +138,8 @@ function getBookmarkToolbarItems() {
 
   return hs.executeQuery(query, options).root;
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testVerifyDefaultBookmarks.meta = {litmusids : [8751]};

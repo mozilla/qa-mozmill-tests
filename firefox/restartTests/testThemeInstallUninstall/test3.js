@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8168: Change theme
- */
- 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
@@ -53,7 +49,7 @@ var setupModule = function(module)
 /*
  * Verifies theme change back to the default theme
  */
-var testCheckThemeChange = function()
+var testCheckThemeChanged = function()
 {
   // Check that the default theme is selected and highlighted
   var changedTheme = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:'+ persisted.defaultThemeId +'")');
@@ -65,3 +61,8 @@ var testCheckThemeChange = function()
   currentTheme = PrefsAPI.preferences.getPref("general.skins.selectedSkin", "");
   controller.assertJS("subject.indexOf('classic') != -1", currentTheme);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckThemeChanged.meta = {litmusids : [8168]};

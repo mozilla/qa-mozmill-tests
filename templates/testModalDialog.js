@@ -35,27 +35,32 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
-* Litmus test #0000: Sample testcase description
-*/
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI'];
 
 const gDelay = 0;
+const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
-var testSampleTestcase = function() {
+var testSampleTestcase = function()
+{
   var md = new ModalDialogAPI.modalDialog(callbackHandler);
   md.start();
 
   // Code that opens a modal dialog, e.g. click or keypress
 }
 
-var callbackHandler = function(controller) {
+var callbackHandler = function(controller)
+{
   // Code to be executed in the modal dialog
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSampleTestcase.meta = {litmusids : [0000]};

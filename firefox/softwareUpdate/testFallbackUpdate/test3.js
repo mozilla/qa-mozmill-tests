@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8187: No Updates Found
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
@@ -85,3 +81,8 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
   if (!persisted.success)
     throw new Error("Software update failed.");
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testFallbackUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [8187]};

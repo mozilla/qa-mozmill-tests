@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8164: Uninstall extension
- */
-
 const gTimeout = 5000;
 
 var setupModule = function(module)
@@ -58,3 +54,8 @@ var testCheckUninstalledExtension = function()
   var extension = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.extensionId + '")/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + persisted.extensionName + '"})');
   controller.assertNodeNotExist(extension);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testUninstallExtension.meta = {litmusids : [8164]};

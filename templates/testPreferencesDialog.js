@@ -44,15 +44,29 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
+const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
-var testSampleTestcase = function() {
-  PrefsAPI.handlePreferencesDialog(callbackHandler);
+var testSampleTestcase = function()
+{
+  PrefsAPI.preferencesDialog.open(callbackHandler);
 }
 
-var callbackHandler = function(controller) {
+var callbackHandler = function(controller)
+{
   // Code to be executed in the preferences dialog
+  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
+  controller.sleep(gDelay);
+
+  // Close the Preferences dialog
+  PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSampleTestcase.meta = {litmusids : [0000]};

@@ -34,12 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #8316-  Set Master Password
- * Testcase ID #8108 -  Invoke Master Password
- * Testcase ID #8317 -  Resetting a Master Password
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'UtilsAPI'];
@@ -273,5 +267,12 @@ var removeMasterHandler = function(controller)
   md.start(200);
 
   controller.click(new elementslib.Lookup(controller.window.document,
-                         '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
+                   '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSetMasterPassword.meta = {litmusids : [8316]};
+testInvokeMasterPassword.meta = {litmusids : [8108]};
+testRemoveMasterPassword.meta = {litmusids : [8317]};
