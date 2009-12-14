@@ -42,10 +42,10 @@ var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
+const homepage = 'http://www.mozilla.org/';
+
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  var homepage = 'http://www.mozilla.org/';
 }
 
 var teardownModule = function(module) {
