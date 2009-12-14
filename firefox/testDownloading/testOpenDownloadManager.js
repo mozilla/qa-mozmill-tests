@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Litmus test ID #7979 - Opening the Downloads dialog
- */
-
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['DownloadsAPI', 'UtilsAPI'];
 
@@ -64,3 +60,8 @@ var testOpenDownloadManager = function()
   dm.open(controller, true);
   dm.close();
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testOpenDownloadManager.meta = {litmusids : [7979]};

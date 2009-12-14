@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7965: Basic Form Completion
- */
-
 const gDelay = 0;
 
 var setupModule = function(module) {
@@ -92,3 +88,8 @@ var testFormCompletion = function() {
   // Verify the field element and the text in it
   controller.assertValue(searchField, searchText);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testFormCompletion.meta = {litmusids : [7965]};

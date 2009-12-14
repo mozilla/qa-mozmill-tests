@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus Test 8205: Page Info Security Tab via status bar padlock
- */
-
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -90,3 +86,8 @@ var testSecurityInfoViaPadlock = function()
   // Wait a bit to make sure the page info window has been closed
   controller.sleep(200);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSecurityInfoViaPadlock.meta = {litmusids : [8205]};

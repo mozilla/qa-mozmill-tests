@@ -107,3 +107,8 @@ var testLarryGrey = function()
   // Wait a bit to make sure the page info window has been closed
   controller.sleep(200);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testLarryGrey.meta = {litmusids : [8806]};

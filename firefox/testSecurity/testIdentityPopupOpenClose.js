@@ -74,3 +74,8 @@ var testIdentityPopupOpenClose = function() {
   // Check the popup state again
   controller.waitForEval("subject.state == 'closed'", gTimeout, 100, popup.getNode());
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testIdentityPopupOpenClose.meta = {litmusids : [8579]};

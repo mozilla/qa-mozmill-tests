@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Testcase ID #8322 - Choose your preferred language for display
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
@@ -127,3 +123,8 @@ var langHandler = function(controller) {
   // Save and close the languages dialog window
   controller.click(new elementslib.Lookup(controller.window.document, '/id("LanguagesDialog")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}'));
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSetLanguages.meta = {litmusids : [8322]};

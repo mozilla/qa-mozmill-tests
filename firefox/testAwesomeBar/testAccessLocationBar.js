@@ -35,15 +35,12 @@
  *
  * **** END LICENSE BLOCK *****/
 
-/**
- * Litmus test #5981: Access the Location Bar with drop down list
- */
-const gTimeout = 5000;
-const gDelay = 100;
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI'];
+
+const gTimeout = 5000;
+const gDelay = 100;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -106,5 +103,9 @@ var testAccessLocationBarHistory = function () {
   controller.assertJS("subject.value.indexOf('getpersonas') !== -1", locationBar.getNode());
 }
 
+/**
+ * Map test functions to litmus tests
+ */
+testAccessLocationBarHistory.meta = {litmusids : [5981]};
 
 

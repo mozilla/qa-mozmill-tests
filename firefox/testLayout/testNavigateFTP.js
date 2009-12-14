@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7962: Navigate FTP
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -64,3 +60,8 @@ var testNavigateFTP = function () {
   var latestLink = new elementslib.Link(controller.tabs.activeTab, 'latest-trunk');
   controller.waitForElement(latestLink, gTimeout);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testNavigateFTP.meta = {litmusids : [7962]};

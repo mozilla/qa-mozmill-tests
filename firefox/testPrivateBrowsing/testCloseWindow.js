@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #9267 - Verify when closing window in private browsing that regular session is restored
- */
-
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -122,3 +118,8 @@ var testCloseWindow = function()
     controller.waitForElement(elem, gTimeout);
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCloseWindow.meta = {litmusids : [9267]};

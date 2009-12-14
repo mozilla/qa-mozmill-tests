@@ -34,11 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8241: Use mouse to focus search bar and start a search
- * Litmus test #8242: Keyboard shortcuts to focus search bar and start a search
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['SearchAPI'];
@@ -70,3 +65,9 @@ var testShortcutAndSearch = function()
   engine.search("Mozilla");
   engine.clear();
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testClickAndSearch.meta = {litmusids : [8241]};
+testShortcutAndSearch.meta = {litmusids : [8242]};

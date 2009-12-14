@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7959: Top Site - MSN.com
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -80,3 +76,8 @@ var testCheckMSNCom = function () {
   var f1Submit = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='wrapper']/div[@id='head']/div[@id='header']/div[@id='livesearch']/div[@id='srchfrmheader']/div[2]/form[@id='srchfrm']/div[1]/input[3]");
   UtilsAPI.checkSearchField(controller, f1, "MSN", f1Submit);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckMSNCom.meta = {litmusids : [7959]};

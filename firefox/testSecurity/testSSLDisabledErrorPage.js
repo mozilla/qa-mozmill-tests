@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #9345: Disable SSL
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -127,3 +123,8 @@ var prefDialogCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testDisableSSL.meta = {litmusids : [9345]};

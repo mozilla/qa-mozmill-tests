@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8083: Test XMLHttpRequest to provide suggested search terms
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -79,3 +75,8 @@ var testGoogleSuggestedTerms = function() {
   controller.waitForElement(searchField, gTimeout);
   controller.waitForElement(nextField, gTimeout);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testGoogleSuggestedTerms.meta = {litmusids : [8083]};

@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7960: Top Site - Amazon.com
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -99,3 +95,8 @@ var testCheckAmazonCom = function () {
   controller.waitForElement(quantity, gTimeout);
   controller.assertValue(quantity, "1");
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckAmazonCom.meta = {litmusids : [7960]};

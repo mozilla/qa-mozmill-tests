@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #8055 - Clearing Cookies/Individual Cookies
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -114,3 +110,8 @@ var prefDialogCallback = function(controller)
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testRemoveCookie.meta = {litmusids : [8055]};

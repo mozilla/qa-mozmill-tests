@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7957: location Field and Go button
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -116,3 +112,9 @@ var testClickLocationBarAndGo = function() {
   // Check if the URL bar matches the expected domain name
   controller.assertValue(locationBar, "http://www.google.com/webhp?complete=1&hl=en");
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testGoButtonOnTypeOnly.meta = {litmusids : [7957]};
+

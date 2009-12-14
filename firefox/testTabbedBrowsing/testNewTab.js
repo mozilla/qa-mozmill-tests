@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8086: Open a New Tab
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -94,3 +90,8 @@ var checkNewTab = function() {
   controller.keypress(null, "w", {accelKey: true});
   controller.waitForEval("subject.length == 1", gTimeout, 100, controller.tabs);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testNewTab.meta = {litmusids : [8086]};

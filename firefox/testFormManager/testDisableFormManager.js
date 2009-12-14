@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8050: Verify saving form information can be turned off
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -115,3 +111,8 @@ var prefDialogFormCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testToggleFormManager.meta = {litmusids : [8050]};

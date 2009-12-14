@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #9067: Form AutoComplete respects source for autocomplete="off"
- */
-
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -75,3 +71,8 @@ var testAutoCompleteOff = function() {
   var popupAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
   controller.assertProperty(popupAutoCompList, "popupOpen", false);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testAutoCompleteOff.meta = {litmusids : [9067]};

@@ -34,12 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Litmus test #9154: Enable Private Browsing Mode
- *  Litmus test #9155: Stop Private Browsing Mode
- *  Litmus test #9186: Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
- */
-
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -164,3 +158,10 @@ var pbStartHandler = function(controller)
   var okButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testEnablePrivateBrowsingMode.meta = {litmusids : [9154]};
+testStopPrivateBrowsingMode.meta = {litmusids : [9155]};
+testKeyboardShortcut.meta = {litmusids : [9186]};

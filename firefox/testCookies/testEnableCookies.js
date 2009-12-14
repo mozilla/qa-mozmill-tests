@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #8058 - Enable Cookies/All Sites/Allow Sites to Set Cookies
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -132,3 +128,8 @@ var prefCheckEnableDialogCallback = function(controller)
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testEnableCookies.meta = {litmusids : [8058]};

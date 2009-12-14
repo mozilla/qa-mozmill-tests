@@ -34,11 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #8154 - Launch Add-ons manager
- * Testcase ID #8155 - Get Add-ons Tab 
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
@@ -148,3 +143,9 @@ var testGetAddonsTab = function()
   addonsController.keypress(recommendedAddonsPane, "VK_ESCAPE", {});
   addonsController.sleep(200);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testLaunchAddonsManager.meta = {litmusids : [8154]};
+testGetAddonsTab.meta = {litmusids : [8155]};

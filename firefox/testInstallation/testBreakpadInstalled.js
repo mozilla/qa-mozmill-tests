@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7953: Breakpad installed
- */
-
 // File names for crash reporter application on all platforms
 const fileNames = {
                    "darwin" : "crashreporter.app",
@@ -84,3 +80,8 @@ var testBreakpadInstalled = function()
   // Do we have the correct server URL?
   controller.assertJS(crashReporter.serverURL.spec == states["ServerURL"]);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testBreakpadInstalled.meta = {litmusids : [7953]};

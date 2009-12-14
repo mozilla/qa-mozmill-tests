@@ -79,3 +79,8 @@ var prefDialogCallback = function(controller) {
   // Close the Preferences window
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testPreferencesPanes.meta = {litmusids : [8013]};

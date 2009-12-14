@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7954: Open a New Window
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -94,3 +90,8 @@ var testNewWindow = function () {
   controller2.waitForElement(locationBar, gTimeout);
   controller2.assertValue(locationBar, homePageURL);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testNewWindow.meta = {litmusids : [7954]};

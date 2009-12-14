@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #8060: Default Security Preferences
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -77,3 +73,8 @@ var prefDialogCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testDefaultSecurityPreferences.meta = {litmusids : [8060]};

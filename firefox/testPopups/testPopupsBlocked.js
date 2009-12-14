@@ -35,10 +35,7 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7961: Pop-up Blocked
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
@@ -110,3 +107,8 @@ var prefDialogCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testPopUpBlocked.meta = {litmusids : [7961]};

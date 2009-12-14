@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus Test 8900: Unknown Issuer error page
- */
-
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -73,3 +69,8 @@ var testUnknownIssuer = function() {
     throw "No sec_error_unknown_issuer error displayed!";
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testUnknownIssuer.meta = {litmusids : [8900]};

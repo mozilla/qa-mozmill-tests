@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus Test 8805: Green Larry
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -170,3 +166,8 @@ var testLarryGreen = function()
   // Wait a bit to make sure the page info window has been closed
   controller.sleep(200);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testLarryGreen.meta = {litmusids : [8805]};

@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #8825 - Get Addons: Search for addons
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI'];
@@ -91,3 +87,8 @@ var testSearchForAddons = function()
   controller.assertJS(resultsPane.getNode().itemCount > 0);
   controller.assertJS(resultsPane.getNode().itemCount <= maxResults );
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSearchForAddons.meta = {litmusids : [8825]};
