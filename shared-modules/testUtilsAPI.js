@@ -279,6 +279,18 @@ function assertLoadedUrlEqual(controller, targetUrl)
 }
 
 /**
+ * Close the context menu inside the content area of the currently open tab
+ *
+ * @param {MozmillController} controller
+ *        MozMillController of the window to operate on
+ */
+function closeContentAreaContextMenu(controller)
+{
+  var contextMenu = new elementslib.ID(controller.window.document, "contentAreaContextMenu");
+  controller.keypress(contextMenu, "VK_ESCAPE", {});
+}
+
+/**
  * Creates the child element of the tab's notification bar
  *
  * @param {MozMillController} controller

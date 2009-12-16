@@ -45,11 +45,18 @@ var MODULE_REQUIRES = ['UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
-var testAccessPageInfo = function () {
+var teardownModule = function(module)
+{
+  UtilsAPI.closeContentAreaContextMenu(controller);
+}
+
+var testAccessPageInfo = function ()
+{
   // List of all available panes inside the page info window
   var panes = [
                {button: 'generalTab', panel: 'generalPanel'},
