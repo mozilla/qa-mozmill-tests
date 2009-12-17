@@ -35,24 +35,27 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../../shared-modules';
+var MODULE_REQUIRES = ['AddonsAPI'];
+
 const gTimeout = 5000;
 
 var setupModule = function(module)
 {
-  module.controller = mozmill.getAddonsController();
+  module.addonsManager = new AddonsAPI.addonsManager();
 }
 
 var testCheckUninstalledExtension = function()
 {
-  var extensionsPane = new elementslib.ID(controller.window.document, "extensions-view");
-  var extensionsBox = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/anon({"anonid":"main-box"})/anon({"class":"box-inherit scrollbox-innerbox"})');
-
-  controller.waitForEval("subject.selected == true", 100, gTimeout, extensionsPane.getNode());
-  controller.waitForElement(extensionsBox, gTimeout);
+  addonsManager.open();
+  addonsManager.setPane("extensions");
 
   // Confirm the uninstalled extension is not shown and assert its not in the extensions box
-  var extension = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.extensionId + '")/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"addonNameVersion"})/anon({"value":"' + persisted.extensionName + '"})');
-  controller.assertNodeNotExist(extension);
+  var extension = new elementslib.Lookup(addonsManager.controller.window.document,
+                                         addonsManager.getListItem("addonID", persisted.extensionId));
+  addonsManager.controller.sleep(100);
+  addonsManager.controller.assertNodeNotExist(extension);
 }
 
 /**

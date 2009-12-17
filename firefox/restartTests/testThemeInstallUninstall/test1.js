@@ -36,14 +36,14 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
 const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  module.addonsController = mozmill.getAddonsController();
+  module.addonsManager = new AddonsAPI.addonsManager();
 
   UtilsAPI.closeAllTabs(controller);
   module.persisted.themeName = "Walnut for Firefox";
@@ -56,13 +56,12 @@ var setupModule = function(module) {
  */
 var testInstallTheme = function() 
 {
-  // Make sure the Get Add-ons pane is visible
-  var getAddonsPane = new elementslib.ID(addonsController.window.document, "search-view");
-  addonsController.waitThenClick(getAddonsPane, gTimeout);
+  addonsManager.open();
+  addonsManager.setPane("search");
 
   // Wait for the Browse All Add-ons link and click on it
-  var browseAddonsLink = new elementslib.ID(addonsController.window.document, "browseAddons");
-  addonsController.waitThenClick(browseAddonsLink, gTimeout);
+  var browseAddonsLink = new elementslib.ID(addonsManager.controller.window.document, "browseAddons");
+  addonsManager.controller.waitThenClick(browseAddonsLink, gTimeout);
 
   // The target web page is loaded lazily so wait for the newly created tab first
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
@@ -80,19 +79,19 @@ var testInstallTheme = function()
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
-  // Wait that the Installation pane is shown
-  var installPane = new elementslib.ID(addonsController.window.document, "installs-view");
-  addonsController.waitForEval("subject.selected == true", gTimeout, 100, installPane.getNode());
+  // Wait that the Installation pane is selected in the Add-ons Manager after the extension has been installed
+  addonsManager.controller.waitForEval("subject.getPane() == 'installs'", 10000, 100, addonsManager);
 
   // Wait until the Theme has been installed. Note that the id of the element is
   // added when the download has been finished. We don't know the extension id before.
-  var theme = new elementslib.ID(addonsController.window.document, "urn:mozilla:item:" + persisted.themeId);
-  addonsController.waitForElement(theme, gDownloadTimeout);
-  addonsController.assertJS("subject.getAttribute('state') == 'success'", theme.getNode());
+  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
+                                     addonsManager.getListItem("addonID", persisted.themeId));
+  addonsManager.controller.waitForElement(theme, gDownloadTimeout);
+  addonsManager.controller.assertJS("subject.getAttribute('state') == 'success'", theme.getNode());
 
   // Check if restart button is present
-  var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
-  addonsController.waitForElement(restartButton, gTimeout);
+  var restartButton = new elementslib.XPath(addonsManager.controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  addonsManager.controller.waitForElement(restartButton, gTimeout);
 }
 
 /**
