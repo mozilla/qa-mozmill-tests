@@ -37,26 +37,30 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI','UtilsAPI'];
 
 const gTimeout = 5000;
 
 var setupModule = function(module)
 {
-  module.controller = mozmill.getAddonsController();
+  module.controller = mozmill.getBrowserController();
+  module.addonsManager = new AddonsAPI.addonsManager();
 }
 
 /*
  * Verifies theme change back to the default theme
  */
-var testCheckThemeChanged = function()
+var testCheckThemeChange = function()
 {
-  // Check that the default theme is selected and highlighted
-  var changedTheme = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:'+ persisted.defaultThemeId +'")');
+  addonsManager.open();
+  addonsManager.setPane("themes");
 
-  controller.waitForElement(changedTheme, gTimeout);
-  controller.waitForEval("subject.getAttribute('current') == 'true'",
-                         gTimeout, 100, changedTheme.getNode());
+  // Check that the default theme is selected and highlighted
+  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
+                                     addonsManager.getListItem("addonID", persisted.defaultThemeId));
+  addonsManager.controller.waitForElement(theme, gTimeout);
+  addonsManager.controller.assertJS("subject.getAttribute('current') == 'true'",
+                                    theme.getNode());
 
   currentTheme = PrefsAPI.preferences.getPref("general.skins.selectedSkin", "");
   controller.assertJS("subject.indexOf('classic') != -1", currentTheme);

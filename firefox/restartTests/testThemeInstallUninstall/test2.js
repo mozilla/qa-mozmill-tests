@@ -37,33 +37,31 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getAddonsController();
+  module.controller = mozmill.getBrowserController();
+  module.addonsManager = new AddonsAPI.addonsManager();
 }
 
 /*
  * Verifies the theme has been installed
  */
-var testCheckInstalledTheme = function() 
+var testCheckInstalledTheme = function()
 {
-  // Select the Themes pane
-  var themesPane = new elementslib.ID(controller.window.document, "themes-view");
-  controller.sleep(100);
-  controller.waitThenClick(themesPane, gTimeout);
+  addonsManager.open();
+  addonsManager.setPane("themes");
 
   // The installed theme should be the current theme in the list
-  var item = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:' + persisted.themeId + '")');
+  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
+                                     addonsManager.getListItem("addonID", persisted.themeId));
+  addonsManager.controller.waitThenClick(theme, gTimeout);
+  addonsManager.controller.assertJS("subject.getAttribute('current') == 'true'",
+                                    theme.getNode());
 
-  controller.assertJS("subject.getAttribute('current') == 'true'", item.getNode());
-
-  var currentTheme = PrefsAPI.preferences.getPref("general.skins.selectedSkin", "");
-  controller.waitThenClick(item, gTimeout);
-  controller.assertJS("subject.themeName.toLowerCase().indexOf('" + currentTheme + "') != -1",
-                      persisted);
+  addonsManager.close();
 }
 
 /*
@@ -71,25 +69,32 @@ var testCheckInstalledTheme = function()
  */
 var testThemeChange = function() 
 {
-  // Select the default theme and click the use theme button
-  var defaultTheme = new elementslib.ID(controller.window.document, "urn:mozilla:item:"+ persisted.defaultThemeId);
-  controller.waitThenClick(defaultTheme, gTimeout);
+  addonsManager.open();
+  addonsManager.setPane("themes");
 
-  var useThemeButton = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/[1]/id("extensionsView")/id("urn:mozilla:item:'+ persisted.defaultThemeId +'")/anon({"flex":"1"})/{"class":"addonTextBox"}/anon({"anonid":"selectedButtons"})/{"command":"cmd_useTheme"}');
-  controller.waitThenClick(useThemeButton, gTimeout);
+  // Select the default theme and click the use theme button
+  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
+                                     addonsManager.getListItem("addonID", persisted.defaultThemeId));
+  addonsManager.controller.waitThenClick(theme, gTimeout);
+
+  var useThemeButton = new elementslib.Lookup(addonsManager.controller.window.document,
+                                              addonsManager.getListItem("addonID", persisted.defaultThemeId) +
+                                              '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
+                                              '/anon({"anonid":"selectedButtons"})/{"command":"cmd_useTheme"}');
+  addonsManager.controller.waitThenClick(useThemeButton, gTimeout);
 
   // Wait for the restart button
-  var restartButton = new elementslib.XPath(controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
-  controller.waitForElement(restartButton, gTimeout);
+  var restartButton = new elementslib.XPath(addonsManager.controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  addonsManager.controller.waitForElement(restartButton, gTimeout);
 
   // Verify useThemeButton is not visible and theme description has changed
-  controller.assertProperty(useThemeButton, "disabled", "true");
-  controller.assertJS("subject.getAttribute('description').indexOf('Restart') != -1",
-                      defaultTheme.getNode());
+  addonsManager.controller.assertProperty(useThemeButton, "disabled", "true");
+  addonsManager.controller.assertJS("subject.getAttribute('description').indexOf('Restart') != -1",
+                                    theme.getNode());
 
   // Verify the theme that will be changed to is the default theme
   nextTheme = PrefsAPI.preferences.getPref("extensions.lastSelectedSkin", "");
-  controller.assertJS(nextTheme.indexOf("classic") != -1);
+  addonsManager.controller.assertJS(nextTheme.indexOf("classic") != -1);
 }
 
 /**

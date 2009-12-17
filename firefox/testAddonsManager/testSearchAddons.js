@@ -36,13 +36,14 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
-  controller = mozmill.getAddonsController();
+var setupModule = function(module)
+{
+  module.addonsManager = new AddonsAPI.addonsManager();
 }
 
 /**
@@ -50,42 +51,38 @@ var setupModule = function(module) {
  */
 var testSearchForAddons = function() 
 {
+  addonsManager.open();
+  controller = addonsManager.controller;
+
   // Verify elements of the get addons pane are visible
-  var getAddonsPane = new elementslib.ID(controller.window.document, "search-view");
-  controller.waitThenClick(getAddonsPane, gTimeout);
-
-  var searchField = new elementslib.ID(controller.window.document, "searchfield");
-  controller.waitForElement(searchField, gTimeout);
-
-  controller.type(searchField, "rss");
-  controller.keypress(searchField, "VK_RETURN", {});
+  addonsManager.search("rss");
 
   // Wait for search results to populate and verify elements of search functionality
-  var searchFieldButton = new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/id("searchPanel")/id("searchfield")/anon({"class":"textbox-input-box"})/anon({"anonid":"search-icons"})');
-
   var footerField = new elementslib.ID(controller.window.document, "urn:mozilla:addons:search:status:footer");
 
   controller.waitForElement(footerField, 30000);  
   controller.assertProperty(footerField, "hidden", false);
-  controller.assertJS(searchFieldButton.getNode().selectedPanel.getAttribute('class') == "textbox-search-clear");
+  controller.assertJS("subject.selectedPanel.getAttribute('class') == 'textbox-search-clear'",
+                      addonsManager.searchFieldButton.getNode());
 
   // Verify the number of addons is in-between 0 and the maxResults pref
   var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
-  var resultsPane = new elementslib.ID(controller.window.document, "extensionsView");
+  var listBox = new elementslib.ID(controller.window.document, "extensionsView");
 
-  controller.assertJS(resultsPane.getNode().itemCount > 0);
-  controller.assertJS(resultsPane.getNode().itemCount <= maxResults );
+  controller.assertJS("subject.itemCount > 0", listBox.getNode());
+  controller.assertJS("subject.itemCount <= " + maxResults, listBox.getNode());
 
   // Clear the search field and verify elements of that functionality
-  controller.keypress(searchField, "VK_ESCAPE", {});
+  controller.keypress(addonsManager.searchField, "VK_ESCAPE", {});
   controller.waitForElement(footerField, 30000);
   controller.assertProperty(footerField, "hidden", false);
-  controller.assertJS(searchFieldButton.getNode().selectedPanel.getAttribute('class') != "textbox-search-clear");
-  controller.assertValue(searchField, "");
+  controller.assertJS("subject.selectedPanel.getAttribute('class') != 'textbox-search-clear'",
+                      addonsManager.searchFieldButton.getNode());
+  controller.assertValue(addonsManager.searchField, "");
 
   // Verify the number of recommended addons is in-between 0 and the maxResults pref
-  controller.assertJS(resultsPane.getNode().itemCount > 0);
-  controller.assertJS(resultsPane.getNode().itemCount <= maxResults );
+  controller.assertJS("subject.itemCount > 0", listBox.getNode());
+  controller.assertJS("subject.itemCount <= " + maxResults, listBox.getNode());
 }
 
 /**

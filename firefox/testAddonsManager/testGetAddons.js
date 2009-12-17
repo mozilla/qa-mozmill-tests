@@ -36,15 +36,22 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI','UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
-  
+  module.addonsManager = new AddonsAPI.addonsManager();
+
   UtilsAPI.closeAllTabs(controller);
+}
+
+var teardownModule = function(module)
+{
+  module.addonsManager.close();
 }
 
 /**
@@ -52,35 +59,20 @@ var setupModule = function(module) {
  */
 var testLaunchAddonsManager = function()
 {
-  // Open the addons manager
-  controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openAddons));
-  controller.sleep(500);
+  // Open the addons manager via the menu entry
+  addonsManager.open(controller);
 
-  var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-  var addonsController = new mozmill.controller.MozMillController(window);  
+  // Verify that panes are visible and can be selected
+  for each (pane in ["search", "extensions", "themes", "plugins"]) {
+    addonsManager.setPane(pane);
 
-  addonsController.sleep(500);
-
-  // Verify elements of the addon manager are visible
-  var panes = [
-               {button: "search-view", label:"Get Add-ons"}, 
-               {button: "extensions-view", label:"Extensions"},
-               {button: "themes-view", label:"Themes"},
-               {button: "plugins-view", label:"Plugins"}
-              ];
-
-  for each (pane in panes) 
-  {
-    var buttonCheck = new elementslib.ID(addonsController.window.document, pane.button);
-
-    UtilsAPI.assertElementVisible(addonsController, buttonCheck, true);
-    //XXX: This will not work for localized versions (bug 531163 - DTD entities)
-    addonsController.assertProperty(buttonCheck, "label", pane.label);
+    // Verify the update button is visible for extensions and themes
+    if (pane == "extensions" || pane == "themes") {
+      var updatesButton = new elementslib.ID(addonsManager.controller.window.document,
+                                             "checkUpdatesAllButton");
+      UtilsAPI.assertElementVisible(addonsManager.controller, updatesButton, true);
+    }
   }
-
-  // Verify the updates button is visible in the extensions pane
-  var updatesButton = new elementslib.ID(addonsController.window.document, "checkUpdatesAllButton");
-  UtilsAPI.assertElementVisible(addonsController, updatesButton, true);
 }
 
 /**
@@ -88,30 +80,27 @@ var testLaunchAddonsManager = function()
  */
 var testGetAddonsTab = function()
 {
-  var addonsController = mozmill.getAddonsController();
+  var addonsController = addonsManager.controller;
 
   // Verify elements of the get addons pane are visible
-  var getAddonsPane = new elementslib.ID(addonsController.window.document, "search-view");
-  addonsController.waitThenClick(getAddonsPane, gTimeout);
+  addonsManager.setPane("search");
 
   var searchField = new elementslib.ID(addonsController.window.document, "searchfield");
-  addonsController.waitForElement(searchField, gTimeout);
-  addonsController.assertProperty(searchField, "hidden", false);
+  addonsController.waitForEval("subject.hidden == false", gTimeout, 100, searchField.getNode());
 
-  var browseAllAddons = new elementslib.ID(addonsController.window.document, "browseAddons");  
-  addonsController.assertProperty(browseAllAddons, "hidden", false);
+  var browseAllAddons = new elementslib.ID(addonsController.window.document, "browseAddons");
+  addonsController.waitForEval("subject.hidden == false", gTimeout, 100, browseAllAddons.getNode());
 
-  // Verify recommended addons are shown within a nominal amount of time
   var footerField = new elementslib.ID(addonsController.window.document, "urn:mozilla:addons:search:status:footer");
   addonsController.waitForElement(footerField, 30000);
   addonsController.assertProperty(footerField, "hidden", false);
 
   // Verify the number of addons is in-between 0 and the maxResults pref
   var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
-  var recommendedAddonsPane = new elementslib.ID(addonsController.window.document, "extensionsView");
+  var listBox = new elementslib.ID(addonsController.window.document, "extensionsView");
 
-  addonsController.assertJS(recommendedAddonsPane.getNode().itemCount > 0);
-  addonsController.assertJS(recommendedAddonsPane.getNode().itemCount <= maxResults );
+  addonsController.assertJS("subject.itemCount > 0", listBox.getNode());
+  addonsController.assertJS("subject.itemCount <= " + maxResults, listBox.getNode());
 
   // Verify certain elements perform the proper action
 
@@ -137,11 +126,6 @@ var testGetAddonsTab = function()
   controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
   controller.waitForPageLoad();
   UtilsAPI.assertLoadedUrlEqual(controller, browseAddonUrl);
-
-  // Close the addons manager and wait a bit to make sure the focus is set to
-  // the next window
-  addonsController.keypress(recommendedAddonsPane, "VK_ESCAPE", {});
-  addonsController.sleep(200);
 }
 
 /**
