@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5915: Top Site - Yahoo
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -86,3 +82,8 @@ var testYahoo = function ()
   var resultSearchField = new elementslib.ID(controller.tabs.activeTab, "yschsp");
   controller.assertValue(resultSearchField, searchTerm);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testYahoo.meta = {litmusids : [5915]};

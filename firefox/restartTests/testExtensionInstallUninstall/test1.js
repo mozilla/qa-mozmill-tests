@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5929: Install an extension
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
@@ -125,3 +121,8 @@ var handleTriggerDialog = function(controller) {
   controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
   controller.click(installButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testInstallExtension.meta = {litmusids : [5929]};

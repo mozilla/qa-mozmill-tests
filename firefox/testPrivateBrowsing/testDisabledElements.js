@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Litmus test #7541 - Verify "Import" is disabled during Private Browsing mode
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI'];
 
@@ -95,3 +92,8 @@ var testCheckAboutPrivateBrowsing = function()
 
   pb.stop();
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckAboutPrivateBrowsing.meta = {litmusids : [7541]};

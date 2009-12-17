@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus Test 6544: Display and close Larry
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -74,3 +70,8 @@ var testIdentityPopupOpenClose = function() {
   // Check the popup state again
   controller.waitForEval("subject.state == 'closed'", gTimeout, 100, popup.getNode());
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testIdentityPopupOpenClose.meta = {litmusids : [6544]};

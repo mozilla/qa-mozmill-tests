@@ -35,11 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #6486 - Password Manager post-submit bar
- * Testcase ID #6132 - Verify passwords are not saved when we select not to save them
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
@@ -139,3 +134,9 @@ var prefDialogCallback = function(controller)
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testPasswordNotificationBar.meta = {litmusids : [6486]};
+testPasswordNotSaved.meta = {litmusids : [6132]};

@@ -35,19 +35,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
-* Litmus test #0000: Sample testcase description
-*/
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
 const gDelay = 0;
+const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
-var testSampleTestcase = function() {
+var testSampleTestcase = function()
+{
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSampleTestcase.meta = {litmusids : [0000]};

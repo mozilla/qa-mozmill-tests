@@ -34,10 +34,7 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7678: Submit unencrypted info warning
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
 
@@ -201,3 +198,8 @@ var handleSecurityWarningDialog = function(controller)
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSubmitUnencryptedInfoWarning.meta = {litmusids : [7678]};

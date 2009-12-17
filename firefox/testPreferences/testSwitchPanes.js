@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5970: Main Menu of Options (Preferences)
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -79,3 +75,8 @@ var prefDialogCallback = function(controller) {
   // Close the Preferences window
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testPreferencesPanes.meta = {litmusids : [5970]};

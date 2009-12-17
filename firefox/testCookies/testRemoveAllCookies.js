@@ -106,3 +106,8 @@ var prefDialogCallback = function(controller)
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testRemoveAllCookies.meta = {litmusids : [6012]};

@@ -34,11 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #6130 - Verify saving of a password
- * Testcase ID #6131 - Verify deletion of a password
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI','UtilsAPI'];
@@ -155,3 +150,9 @@ var confirmHandler = function(controller)
   controller.waitThenClick(new elementslib.Lookup(controller.window.document,
                            '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'), gTimeout);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSavePassword.meta = {litmusids : [6130]};
+testDeletePassword.meta = {litmusids : [6131]};

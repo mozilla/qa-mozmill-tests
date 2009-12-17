@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6287: Restore Home Page to default
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -111,3 +107,8 @@ var prefDialogDefHomePageCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testRestoreHomeToDefault.meta = {litmusids : [6287]};

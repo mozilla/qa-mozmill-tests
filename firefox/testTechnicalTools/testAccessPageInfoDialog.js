@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6375: Access "View Page Info" from Context Menu
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -96,3 +92,8 @@ var testAccessPageInfo = function ()
   // Wait a bit to make sure the page info window has been closed
   controller.sleep(200);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testAccessPageInfo.meta = {litmusids : [6375]};

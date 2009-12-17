@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5954: Add a bookmark via Main Menu
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
@@ -83,3 +79,8 @@ var testAddBookmarkToBookmarksMenu = function() {
   if (!PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarksService.bookmarksMenuFolder))
     throw "Failed: Bookmark for " + uri.spec + " not added to Bookmarks Menu";
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testAddBookmarkToBookmarksMenu.meta = {litmusids : [5954]};

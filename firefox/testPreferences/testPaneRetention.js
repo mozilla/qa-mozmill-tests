@@ -35,11 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5971: Options (Preferences) dialog state retention
- * Litmus test #5972: Open and dismiss the Options (Preferences) dialog
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -52,12 +47,18 @@ var setupModule = function(module) {
 }
 
 /**
+ * Open and dismiss the preferences dialog
+ */
+var testOpenCloseOptionsDialog = function()
+{
+  // Reset pane to the main pane before starting the test
+  PrefsAPI.preferencesDialog.open(prefPaneResetCallback);
+}
+
+/**
  * Panes of preferences dialog should retain state when opened next time
  */
 var testOptionsDialogRetention = function() {
-  // Reset pane to the main pane before starting the test
-  PrefsAPI.preferencesDialog.open(prefPaneResetCallback);
-
   // Choose the Privacy pane
   PrefsAPI.preferencesDialog.open(prefPaneSetCallback);
 
@@ -111,3 +112,9 @@ var prefPaneCheckCallback = function(controller) {
   // Close the Preferences dialog
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testOpenCloseOptionsDialog.meta = {litmusids : [5972]}
+testOptionsDialogRetention.meta = {litmusids : [5971]};

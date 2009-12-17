@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #6988 - Test the safebrowsing warning page
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -154,3 +150,8 @@ var checkIgnoreWarningButton = function(url) {
   controller.assertNodeNotExist(ignoreWarningButton);
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testWarningPages.meta = {litmusids : [6988]};

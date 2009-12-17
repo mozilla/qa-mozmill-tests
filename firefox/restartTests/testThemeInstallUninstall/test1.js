@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5930: Install a theme
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
@@ -131,3 +127,8 @@ var handleTriggerDialog = function(controller)
   controller.waitForEval("subject.disabled != true", undefined, 100, installButton.getNode());
   controller.click(installButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testInstallTheme.meta = {litmusids : [5930]};

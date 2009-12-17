@@ -35,17 +35,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5921: Set Home Page to current page
- * Litmus test #5989: Home button
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
+
+var homepage = 'http://www.mozilla.org/';
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -55,9 +52,10 @@ var teardownModule = function(module) {
   PrefsAPI.preferences.clearUserPref("browser.startup.homepage");
 }
 
+/**
+ * Set homepage to current page
+ */
 var testSetHomePage = function() {
-  var homepage = 'http://www.mozilla.org/';
-
   // Go to the Mozilla.org website and verify the correct page has loaded
   controller.open(homepage);
   controller.waitForPageLoad();
@@ -67,7 +65,9 @@ var testSetHomePage = function() {
 
   // Call Prefs Dialog and set Home Page
   PrefsAPI.preferencesDialog.open(prefDialogHomePageCallback);
+}
 
+var testHomeButton = function() {
   // Open another page before going to the home page
   controller.open('http://www.yahoo.com/');
   controller.waitForPageLoad();
@@ -97,3 +97,9 @@ var prefDialogHomePageCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSetHomePage.meta = {litmusids : [5921]};
+testHomeButton.meta = {litmusids : [5989]}

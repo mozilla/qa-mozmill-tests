@@ -34,9 +34,6 @@
  *
  * **** END LICENSE BLOCK *****/
 
-/**
- * Litmus test #6040: Location Bar Search
- */
 const gTimeout = 5000;
 
 var setupModule = function(module) {
@@ -113,3 +110,8 @@ var testLocationBarSearches = function () {
   var resultsStringCheck = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='gsr']/div[@id='cnt']/div[@id='ssb']/p/b[4]");
   controller.assertText(resultsStringCheck, resultsTestString);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testLocationBarSearches.meta = {litmusids : [6040]};

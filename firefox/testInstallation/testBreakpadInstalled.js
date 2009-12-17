@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5910: Breakpad installed
- */
-
 // File names for crash reporter application on all platforms
 const fileNames = {
                    "darwin" : "crashreporter.app",
@@ -98,3 +94,8 @@ var testBreakpadInstalled = function()
     }
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testBreakpadInstalled.meta = {litmusids : [5910]};

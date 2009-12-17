@@ -34,11 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6009: Verify clearing form and search history
- * Litmus test #6010: Verify saving and filling in form information
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI','UtilsAPI'];
@@ -143,3 +138,9 @@ var clearHistoryHandler = function(controller)
   var clearButton = new elementslib.Lookup(controller.window.document, '/id("SanitizeDialog")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}');
   controller.waitThenClick(clearButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSaveFormInformation.meta = {litmusids : [6010]};
+testClearFormHistory.meta = {litmusids : [6009]};

@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6195 - Autodiscovery of OpenSearch search engines
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['SearchAPI'];
@@ -89,3 +85,8 @@ var testOpenSearchAutodiscovery = function()
   search.clear();
   controller.assertValue(searchField, searchEngine.name);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testOpenSearchAutodiscovery.meta = {litmusids : [6195]};

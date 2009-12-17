@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5988: Stop and Reload buttons
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -78,3 +74,8 @@ var testStopAndReload = function()
 
   controller.waitForElement(elem, gTimeout);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testStopAndReload.meta = {litmusids : [5988]};

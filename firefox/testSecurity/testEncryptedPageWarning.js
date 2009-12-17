@@ -35,10 +35,7 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7675: Encrypted page warning
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
 
@@ -177,3 +174,8 @@ var handleSecurityWarningDialog = function(controller)
                                         '/{"dlgtype":"accept"}');
   controller.waitThenClick(okButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testEncryptedPageWarning.meta = {litmusids : [7675]};

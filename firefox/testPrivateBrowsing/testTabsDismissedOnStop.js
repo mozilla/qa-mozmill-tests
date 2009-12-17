@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7714: Verify no private browsing content shown when switching browsing modes
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -98,3 +95,8 @@ var testAllTabsClosedOnStop = function()
   // All tabs should have been removed
   controller.assertJS("subject.tabs.length == 1", controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testAllTabsClosedOnStop.meta = {litmusids : [7714]};

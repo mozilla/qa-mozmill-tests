@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*
- *  Testcase ID #6248 - Anti-Phishing feature enabled by default
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
@@ -77,3 +73,8 @@ var prefPaneSetCallback = function(controller) {
 
   PrefsAPI.preferencesDialog.close(controller);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testDefaultPhishingEnabled.meta = {litmusids : [6248]};

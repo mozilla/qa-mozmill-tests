@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Litmus test #7463: Verify about:privatebrowsing in private browsing mode
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -80,3 +77,8 @@ var testCheckAboutPrivateBrowsing = function()
 
   pb.stop();
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testCheckAboutPrivateBrowsing.meta = {litmusids : [7463]};

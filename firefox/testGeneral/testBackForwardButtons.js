@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5990: Back and Forward buttons
- */
-
 const gTimeout = 5000;
 
 var setupModule = function(module) {
@@ -82,3 +78,8 @@ var testBackandForward = function()
     controller.waitForElement(element, gTimeout);
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testBackandForward.meta = {litmusids : [5990]};

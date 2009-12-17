@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7643: Verify SSL sites load after switching back to regular browsing from Private Browsing
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -104,3 +101,8 @@ var testTabRestoration = function()
     controller.waitForElement(elem, gTimeout);
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testTabRestoration.meta = {litmusids : [7643]};

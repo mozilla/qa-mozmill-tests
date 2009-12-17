@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6198 - Manage search engine (Remove)
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['SearchAPI'];
@@ -110,3 +106,8 @@ var handleEngines = function(controller)
   var okButton = new elementslib.Lookup(controller.window.document, '/id("engineManager")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testRemoveEngine.meta = {litmusids : [6198]};

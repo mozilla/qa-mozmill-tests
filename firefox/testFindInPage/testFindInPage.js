@@ -35,10 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5927: Find in page
- */
-
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -129,3 +125,8 @@ var testFindInPage = function() {
     throw "Previous search result has not been highlighted."
   }
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testFindInPage.meta = {litmusids : [5927]};

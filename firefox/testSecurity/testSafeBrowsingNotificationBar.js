@@ -36,10 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #7804 - Test the safebrowsing drop-down bar
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
@@ -164,3 +160,8 @@ var checkXButton = function() {
   controller.sleep(1000);
   controller.assertNodeNotExist(xButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testNotificationBar.meta = {litmusids : [7804]};

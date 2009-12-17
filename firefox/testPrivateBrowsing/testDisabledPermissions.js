@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #7397 - Verify various permissions are disabled when in Private Browsing mode
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -158,3 +155,8 @@ var cookieHandler = function(controller)
   var button = new elementslib.ID(controller.window.document, "ok");
   controller.assertNodeNotExist(button);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testPermissionsDisabled.meta = {litmusids : [7397]};

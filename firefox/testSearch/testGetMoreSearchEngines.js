@@ -34,10 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #6196 - Get more search engines
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
@@ -142,3 +138,8 @@ var handleSearchInstall = function(controller)
   var addButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
   controller.click(addButton);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testGetMoreEngines.meta = {litmusids : [6196]};

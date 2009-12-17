@@ -36,10 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Litmus test #5920: Security notification
- */
-
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI','PrefsAPI'];
@@ -110,3 +106,8 @@ var testSecNotification = function()
   controller.waitForElement(text, gTimeout);
   controller.assertJS(text.getNode().textContent.indexOf("ssl_error_bad_cert_domain") != -1);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testSecNotification.meta = {litmusids : [5920]};

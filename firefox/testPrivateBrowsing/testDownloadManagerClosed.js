@@ -34,10 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- *  Litmus test ID #7434 - No downloads visible when switching in/out of Private Browsing mode (window closed)
- */
-
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['DownloadsAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 'UtilsAPI'];
 
@@ -160,3 +157,8 @@ var handlePrefDialog = function(controller)
   controller.sleep(1000);
   PrefsAPI.preferencesDialog.close(controller, true);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+testDownloadManagerClosed.meta = {litmusids : [7434]};
