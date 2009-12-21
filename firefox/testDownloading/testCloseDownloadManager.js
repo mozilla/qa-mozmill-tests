@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -56,20 +57,53 @@ var teardownModule = function(module)
 }
 
 /**
- * Test opening the Download Manager
+ * Test closing the Download Manager
  */
-var testOpenDownloadManager = function()
+var testCloseDownloadManager = function()
 {
-  // Use the main menu
+  // Get the initial window count
+  var windowCount = mozmill.utils.getWindows().length;
+
+  // Test ESC
+  dm.open(controller, false);
+  dm._controller.keypress(null, "VK_ESCAPE", {});
+  controller.waitForEval("subject.getWindows().length == " + windowCount,
+                         gTimeout, 100, mozmill.utils);
+
+  // Test ACCEL+W
+  // This is tested by dm.close()
+  // L10N: Entity cmd.close.commandKey in downloads.dtd#35
+  //       All locales use 'w' so harcoded is locale-safe
+  //       Use DTD Helper once it becomes available (Bug 504635)
   dm.open(controller, false);
   dm.close();
+  
+  // Test ACCEL+SHIFT+Y
+  // NOTE: This test is only performed on Linux
+  // L10N: Entity cmd.close2Unix.commandKey in downloads.dtd#35
+  //       All locales use 'y' so harcoded is locale-safe
+  //       Use DTD Helper once it becomes available (Bug 504635)
+  if (mozmill.isLinux) {
+    dm.open(controller, false);
+    dm._controller.keypress(null, 'y', {shiftKey:true, accelKey:true});
+    controller.waitForEval("subject.getWindows().length == " + windowCount,
+                           gTimeout, 100, mozmill.utils); 
+  }
 
-  // Use the keyboard shortcuts
-  dm.open(controller, true);
-  dm.close();
+  // Test ACCEL+J
+  // NOTE: This test is only performed on Windows and Mac
+  // L10N: Entity cmd.close2.commandKey in downloads.dtd#35
+  //       All locales use 'j' so harcoded is locale-safe
+  //       Use DTD Helper once it becomes available (Bug 504635)
+  if (!mozmill.isLinux) {
+    dm.open(controller, false);
+    dm._controller.keypress(null, 'j', {accelKey:true});
+    controller.waitForEval("subject.getWindows().length == " + windowCount,
+                           gTimeout, 100, mozmill.utils); 
+  }
 }
 
 /**
  * Map test functions to litmus tests
  */
-testOpenDownloadManager.meta = {litmusids : [7979]};
+testCloseDownloadManager.meta = {litmusids : [7980]};
