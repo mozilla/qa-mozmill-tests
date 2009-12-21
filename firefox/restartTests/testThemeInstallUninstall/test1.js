@@ -46,8 +46,8 @@ var setupModule = function(module) {
   module.addonsManager = new AddonsAPI.addonsManager();
 
   UtilsAPI.closeAllTabs(controller);
-  module.persisted.themeName = "Walnut for Firefox";
-  module.persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
+  module.persisted.themeName = "Curacao";
+  module.persisted.themeId = "{cc6ef5ab-35be-4300-bd07-d12850fc97ff}";
   module.persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
 }
 
@@ -68,7 +68,7 @@ var testInstallTheme = function()
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
-  controller.open("https://addons.mozilla.org/en-US/firefox/addon/122");
+  controller.open("https://addons.mozilla.org/en-US/firefox/addon/3663");
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
