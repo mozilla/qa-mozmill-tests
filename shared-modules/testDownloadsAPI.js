@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -75,6 +76,20 @@ downloadManager.prototype = {
   },
 
   /**
+   * Cancel any active downloads
+   */
+  cancelActiveDownloads : function downloadmanager_cancelActiveDownloads() {
+    // Get a list of all active downloads (nsISimpleEnumerator)
+    var downloads = this._dms.activeDownloads;
+    
+    // Iterate through each active download and cancel it
+    while (downloads.hasMoreElements()) {
+      var download = downloads.getNext().QueryInterface(Ci.nsIDownload);
+      this._dms.cancelDownload(download.id);
+    }
+  },
+
+  /**
    * Remove all downloads from the database
    */
   cleanUp : function downloadmanager_cleanUp()
@@ -112,35 +127,6 @@ downloadManager.prototype = {
   },
 
   /**
-   * Open the Download Manager
-   *
-   * @param {MozMillController} controller
-   *        MozMillController of the window to operate on
-   * @param {boolean} shortcut
-   *        If true the keyboard shortcut is used
-   */
-  open : function downloadmanager_open(controller, shortcut)
-  {
-    if (shortcut) {
-      // XXX: Cannot extract commandKeys from DTD until bug 504635 is fixed
-      if (mozmill.isLinux)
-        controller.keypress(null, "y", {ctrlKey: true, shiftKey: true});
-      else
-        controller.keypress(null, "j", {accelKey: true});
-    } else {
-      controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openDownloads));
-    }
-
-    // Wait until the window has been opened
-    controller.sleep(500);
-    controller.waitForEval("subject.getMostRecentWindow('Download:Manager') != null",
-                           gTimeout, 100, mozmill.wm);
-
-    var window = mozmill.wm.getMostRecentWindow('Download:Manager');
-    this._controller = new mozmill.controller.MozMillController(window);
-  },
-
-  /**
    * Get the list of all downloaded files in the database
    *
    * @returns List of downloads
@@ -172,6 +158,35 @@ downloadManager.prototype = {
     stmt.reset();
 
     return downloads;
+  },
+
+  /**
+   * Open the Download Manager
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @param {boolean} shortcut
+   *        If true the keyboard shortcut is used
+   */
+  open : function downloadmanager_open(controller, shortcut)
+  {
+    if (shortcut) {
+      // XXX: Cannot extract commandKeys from DTD until bug 504635 is fixed
+      if (mozmill.isLinux)
+        controller.keypress(null, "y", {ctrlKey: true, shiftKey: true});
+      else
+        controller.keypress(null, "j", {accelKey: true});
+    } else {
+      controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openDownloads));
+    }
+
+    // Wait until the window has been opened
+    controller.sleep(500);
+    controller.waitForEval("subject.getMostRecentWindow('Download:Manager') != null",
+                           gTimeout, 100, mozmill.wm);
+
+    var window = mozmill.wm.getMostRecentWindow('Download:Manager');
+    this._controller = new mozmill.controller.MozMillController(window);
   }
 };
 
