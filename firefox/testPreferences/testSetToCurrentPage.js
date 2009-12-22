@@ -46,6 +46,8 @@ const homepage = 'http://www.mozilla.org/';
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {

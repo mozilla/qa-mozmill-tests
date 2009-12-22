@@ -44,6 +44,8 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  UtilsAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
