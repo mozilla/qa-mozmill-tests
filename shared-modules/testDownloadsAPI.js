@@ -48,20 +48,42 @@ var MODULE_NAME = 'DownloadsAPI';
 const gTimeout = 5000;
 
 /**
+ * List of possible download states
+ */
+const downloadState = {
+  notStarted      : -1,
+  downloading     : 0,
+  finished        : 1,
+  failed          : 2,
+  canceled        : 3,
+  paused          : 4,
+  queued          : 5,
+  blockedParental : 6,
+  scanning        : 7,
+  dirty           : 8,
+  blockedPolicy   : 9
+}
+
+/**
  * Constructor
  */
 function downloadManager()
 {
+  this._controller = null;
   this._dms = Cc["@mozilla.org/download-manager;1"]
                  .getService(Ci.nsIDownloadManager);
 
-  this._controller = null;
+  this.downloadState = downloadState;
 }
 
 /**
  * Download Manager class
  */
 downloadManager.prototype = {
+  // Constants for elements inside the Download Manager
+  DOWNLOAD            : 0x0100,
+  DOWNLOAD_BUTTON     : 0x0101,
+
   get controller() { return this._controller; },
 
   /**
@@ -70,15 +92,22 @@ downloadManager.prototype = {
    * @returns Number of active downloads
    * @type number
    */
-  get activeDownloadCount()
-  {
+  get activeDownloadCount() {
     return this._dms.activeDownloadCount;
+  },
+
+  /**
+   * Assert if the download state is the same as the expected state
+   */
+  assertDownloadState : function downloadManager_assertDownloadState(download, state) {
+    this._controller.waitForEval("subject.getAttribute('state') == " + state,
+                                 gTimeout, 100, download.getNode());
   },
 
   /**
    * Cancel any active downloads
    */
-  cancelActiveDownloads : function downloadmanager_cancelActiveDownloads() {
+  cancelActiveDownloads : function downloadManager_cancelActiveDownloads() {
     // Get a list of all active downloads (nsISimpleEnumerator)
     var downloads = this._dms.activeDownloads;
     
@@ -92,7 +121,7 @@ downloadManager.prototype = {
   /**
    * Remove all downloads from the database
    */
-  cleanUp : function downloadmanager_cleanUp()
+  cleanUp : function downloadManager_cleanUp()
   {
     this._dms.cleanUp();
   },
@@ -100,7 +129,7 @@ downloadManager.prototype = {
   /**
    * Close the download manager
    */
-  close : function downloadmanager_close()
+  close : function downloadManager_close()
   {
     var windowCount = mozmill.utils.getWindows().length;
 
@@ -115,7 +144,7 @@ downloadManager.prototype = {
    * @param {download} downloads
    *        List of downloaded files
    */
-  deleteDownloadedFiles : function downloadmanager_deleteDownloadedFiles(downloads)
+  deleteDownloadedFiles : function downloadManager_deleteDownloadedFiles(downloads)
   {
     downloads.forEach(function(download) {
       try {
@@ -132,7 +161,7 @@ downloadManager.prototype = {
    * @returns List of downloads
    * @type download
    */
-  getAllDownloads : function downloadmanager_getAllDownloads()
+  getAllDownloads : function downloadManager_getAllDownloads()
   {
     var dbConn = this._dms.DBConnection;
     var stmt = null;
@@ -161,6 +190,51 @@ downloadManager.prototype = {
   },
 
   /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        name: Specific element or property name
+   *        value: Value of the element or property
+   * @returns Element which has been created
+   * @type ElemBase
+   */
+  getElement : function downloadManager_getElement(spec) {
+    var elem = null;
+
+    switch(spec.type) {
+      /**
+       * name:  name of property to match
+       * value: value of property to match
+       */
+      case this.DOWNLOAD:
+        // Use a temporary lookup to get the download item
+        var download = new elementslib.Lookup(this._controller.window.document,
+                                              '/id("downloadManager")/id("downloadView")/' +
+                                              '{"' + spec.name + '":"' + spec.value + '"}');
+        this._controller.waitForElement(download, gTimeout);
+
+        // Use its download id to construct the real lookup expression
+        elem = new elementslib.Lookup(this._controller.window.document,
+                                      '/id("downloadManager")/id("downloadView")/' +
+                                      'id("' + download.getNode().getAttribute('id') + '")');
+        break;
+
+      /**
+       * name:  Identifier of the specified download button (cancel, pause, resume, retry)
+       * value: Entry (download) of the download list
+       */
+      case this.DOWNLOAD_BUTTON:
+        elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
+                                      '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + spec.name + '"}');
+        break;
+    }
+
+    return elem;
+  },
+
+  /**
    * Open the Download Manager
    *
    * @param {MozMillController} controller
@@ -168,8 +242,7 @@ downloadManager.prototype = {
    * @param {boolean} shortcut
    *        If true the keyboard shortcut is used
    */
-  open : function downloadmanager_open(controller, shortcut)
-  {
+  open : function downloadManager_open(controller, shortcut) {
     if (shortcut) {
       // XXX: Cannot extract commandKeys from DTD until bug 504635 is fixed
       if (mozmill.isLinux)
@@ -180,8 +253,14 @@ downloadManager.prototype = {
       controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openDownloads));
     }
 
-    // Wait until the window has been opened
     controller.sleep(500);
+    this.waitForOpened(controller);
+  },
+
+  /**
+   * Wait until the Download Manager has been opened
+   */
+  waitForOpened : function downloadManager_waitForOpened(controller) {
     controller.waitForEval("subject.getMostRecentWindow('Download:Manager') != null",
                            gTimeout, 100, mozmill.wm);
 
