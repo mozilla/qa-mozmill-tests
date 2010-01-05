@@ -198,7 +198,7 @@ addonsManager.prototype = {
     var itemString = this.getListItem("name", name);
     var plugin = new elementslib.Lookup(this._controller.window.document,
                                         itemString);
-    controller.click(plugin);
+    this._controller.click(plugin);
 
     var button = new elementslib.Lookup(this._controller.window.document,
                                         itemString + '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
