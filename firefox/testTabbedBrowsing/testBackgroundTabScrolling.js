@@ -67,11 +67,11 @@ var testScrollBackgroundTabIntoView = function()
   var scrollButtonUp = new elementslib.Lookup(controller.window.document, containerString +
                                               '/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbutton-up"})');
   var allTabsButton = new elementslib.Lookup(controller.window.document,
-                                             containerString + '/{"pack":"end"}/anon({"anonid":"alltabs-button"})');
+                                             containerString + '/[3]/anon({"anonid":"alltabs-button"})');
   var animateBox = new elementslib.Lookup(controller.window.document,
-                                          containerString + '/{"pack":"end"}/anon({"anonid":"alltabs-box-animate"})');
+                                          containerString + '/[3]/anon({"anonid":"alltabs-box-animate"})');
   var allTabsPopup = new elementslib.Lookup(controller.window.document,
-                                     containerString + '/{"pack":"end"}/anon({"anonid":"alltabs-button"})' +
+                                     containerString + '/[3]/anon({"anonid":"alltabs-button"})' +
                                      '/anon({"anonid":"alltabs-popup"})');
 
   // Check that we open new tabs in the background
