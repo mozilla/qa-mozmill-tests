@@ -57,7 +57,8 @@ var setupModule = function(module) {
 /**
  * Check acces to the location bar drop down list via autocomplete
  */
-var testAccessLocationBarHistory = function () {
+var testAccessLocationBarHistory = function ()
+{
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
   var websites = ['http://www.google.com/',
                   'http://www.mozilla.org/',
@@ -72,6 +73,9 @@ var testAccessLocationBarHistory = function () {
     controller.keypress(null, "VK_RETURN", {});
     controller.waitForPageLoad();
   }
+
+  // Wait about 4s so the history gets populated
+  controller.sleep(4000);
 
   // Open the autocomplete list from the location bar
 
