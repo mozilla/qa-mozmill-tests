@@ -48,15 +48,6 @@ var setupModule = function(module)
   module.persisted.postLocale = UtilsAPI.appInfo.locale;
   module.persisted.postUserAgent = UtilsAPI.appInfo.userAgent;
   module.persisted.postVersion = UtilsAPI.appInfo.version;
-
-  // The current version should be identical with the listed version by
-  // the updater, we shouldn't have downgraded the version, and the
-  // locale should be the same as before the update
-  if ((module.persisted.postVersion == module.persisted.updateVersion) &
-     (module.persisted.preLocale == module.persisted.postLocale))
-    persisted.success = true;
-  else
-    persisted.success = false;
 }
 
 /**
@@ -78,8 +69,26 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
       throw new Error("Another " + persisted.type + " update has been offered.");
   }
 
-  if (!persisted.success)
-    throw new Error("Software update failed.");
+  // The upgraded version should be identical with the version given by
+  // the update and we shouldn't have run a downgrade
+  var vc = Cc["@mozilla.org/xpcom/version-comparator;1"]
+              .getService(Ci.nsIVersionComparator);
+  var check = vc.compare(persisted.preVersion, persisted.postVersion);
+
+  if (check > 0) {
+    throw new Error("The applied update has caused a downgrade of Firefox.");
+  } else if (check == 0 &
+             persisted.preBuildI <= persisted.postBuildId) {
+    throw new Error("No update has been applied.");
+  }
+
+  // An upgrade should not change the builds locale
+  if (persisted.preLocale != persisted.postLocale) {
+    throw new Error("The upgrade has been caused a change of the builds locale.");
+  }
+
+  // Update was successful
+  persisted.success = true;
 }
 
 
