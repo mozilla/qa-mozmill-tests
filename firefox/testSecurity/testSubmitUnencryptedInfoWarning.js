@@ -82,23 +82,18 @@ var testSubmitUnencryptedInfoWarning = function()
   controller.waitForPageLoad();
 
   // Get the web page's search box
-  var searchbox = new elementslib.ID(controller.tabs.activeTab, "searchtext");
+  var searchbox = new elementslib.ID(controller.tabs.activeTab, "s");
   controller.waitForElement(searchbox, gTimeout);
 
   // Use the web page search box to submit information
   controller.type(searchbox, "mozilla");
-
-  // Click the search button
-  var searchButton = new elementslib.ID(controller.tabs.activeTab, "searchbutton");
-  controller.waitThenClick(searchButton, gTimeout);
+  controller.keypress(searchbox, "VK_RETURN", {});
 
   // Prevent the test from ending before the warning can appear
   controller.waitForPageLoad();
 
-  // Wait for the search button on the bottom of the results page to load
-  // This will be our indicator of "results"
-  var searchButton3 = new elementslib.ID(controller.tabs.activeTab, "searchbutton3");
-  controller.waitForElement(searchButton3, gTimeout);
+  // Check that the search field is not shown anymore
+  controller.assertNodeNotExist(searchbox);
 
   // Test if the modal dialog has been shown
   controller.assertJS(modalWarningShown == true);
