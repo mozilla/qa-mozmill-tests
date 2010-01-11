@@ -229,7 +229,7 @@ softwareUpdate.prototype = {
                       .createInstance(Ci.nsIFileOutputStream);
 
     foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
-    foStream.write("failed:6\n", 9);
+    foStream.write("failed: 6\n", 9);
     foStream.close();
   },
 
