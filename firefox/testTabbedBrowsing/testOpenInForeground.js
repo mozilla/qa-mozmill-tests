@@ -20,7 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *
+ *  Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -40,8 +40,16 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
+const localTestFolder = collector.addHttpResource('./files');
+
 const gDelay = 0;
 const gTimeout = 5000;
+
+var gTabOrder = [
+  {index: 1, linkid: 3},
+  {index: 2, linkid: 2},
+  {index: 3, linkid: 1}
+];
 
 var setupModule = function(module)
 {
@@ -60,35 +68,56 @@ var testOpenInForegroundTab = function()
 {
   PrefsAPI.preferencesDialog.open(prefDialogCallback);
 
-  // Open a website
-  controller.open('http://www.google.com/webhp?complete=1&hl=en');
+  // Open the HTML testcase:
+  controller.open(localTestFolder + "openinnewtab.html");
   controller.waitForPageLoad();
 
-  var googleImagesLink = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='gbar']/nobr/a[1]");
+  for(var i = 0; i < 3; i++) {
+    // Switch to the first tab:
+    controller.tabs.selectTabIndex(0);
 
-  // Open link via context menu
-  var contextMenuItem = new elementslib.ID(controller.window.document, "context-openlinkintab");
-  controller.rightClick(googleImagesLink);
-  controller.click(contextMenuItem);
+    // Reference to the current link in the testcase:
+    var currentLink = new elementslib.Name(controller.tabs.activeTab, "link_" + (i + 1));
+    var contextMenuItem = new elementslib.ID(controller.window.document, "context-openlinkintab");
 
-  // Check that two tabs are open and the second is selected
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
-  controller.waitForEval("subject.activeTabIndex == 1", gTimeout, 100, controller.tabs);
+    if(i == 2) {
+      // Open another tab by middle-clicking on the link
+      // XXX: Can be changed to middleClick once bug 535018 is fixed
+      controller.mouseDown(currentLink, 1);
+      controller.mouseUp(currentLink, 1);
+    } else {
+      // Open the context menu and open a new tab
+      controller.rightClick(currentLink);
+      controller.click(contextMenuItem);
+      UtilsAPI.closeContentAreaContextMenu(controller);
+    }
 
-  // Open link via middle click
-  // XXX: Can be changed to middleClick once bug 535018 is fixed
-  controller.mouseDown(googleImagesLink, 1);
-  controller.mouseUp(googleImagesLink, 1);
+    // Let's see if we have the right number of tabs open and that the first opened tab is selected
+    controller.waitForEval("subject.length == " + (i + 2), gTimeout, 100, controller.tabs);
+    controller.waitForEval("subject.activeTabIndex == 1", gTimeout, 100, controller.tabs);
+  }
 
-  // Check that three tabs are open and the second is selected
+  // Verify that the order of tabs is correct
+  for each(tab in gTabOrder) {
+    var linkId = new elementslib.ID(controller.tabs.getTab(tab.index), "id");
+    controller.waitForElement(linkId);
+    controller.assertText(linkId, tab.linkid);
+  }
+
+  // Click the close button of the second tab
+  var tabs = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})');
+  var secondTabCloseButton = new elementslib.Elem(tabs.getNode().getItemAtIndex(1).boxObject.lastChild);
+  controller.click(secondTabCloseButton);
+
+  // Verify that we have 3 tabs now and the first tab is selected:
   controller.waitForEval("subject.length == 3", gTimeout, 100, controller.tabs);
-  controller.waitForEval("subject.activeTabIndex == 2", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.activeTabIndex == 0", gTimeout, 100, controller.tabs);
 }
 
 var prefDialogCallback = function(controller) {
   PrefsAPI.preferencesDialog.setPane(controller, 'paneTabs');
 
-  //Ensure that 'Switch to tabs immediately' is checked:
+  // Ensure that 'Switch to tabs immediately' is checked:
   var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
   controller.waitForElement(switchToTabsPref, gTimeout);
   controller.check(switchToTabsPref, true);
