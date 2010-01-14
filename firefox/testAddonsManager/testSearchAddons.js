@@ -47,6 +47,11 @@ var setupModule = function(module)
   module.addonsManager = new AddonsAPI.addonsManager();
 }
 
+var teardownModule = function(module)
+{
+  module.addonsManager.close();
+}
+
 /**
  * Test the search for Add-ons
  */
