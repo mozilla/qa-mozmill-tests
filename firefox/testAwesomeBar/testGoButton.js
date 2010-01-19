@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,81 +37,66 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['ToolbarAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
+  module.locationBar = new ToolbarAPI.locationBar(controller);
+
+  module.goButton = locationBar.getElement({type: "goButton"});
 }
 
 /**
  * Test to make sure the GO button only appears while typing.
  */
-var testGoButtonOnTypeOnly = function() {
+var testGoButtonOnTypeOnly = function()
+{
   // Start from a web page
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
 
   // Verify GO button is hidden
-  var goButton = new elementslib.ID(controller.window.document, "go-button");
   UtilsAPI.assertElementVisible(controller, goButton, false);
 
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-
-  // Focus and type a single character into the location bar
-  controller.keypress(null, "l", {accelKey: true});
-  controller.sleep(gDelay);
-  controller.keypress(locationBar, "w", {});
-  controller.sleep(gDelay);
-
-  // Verify GO button visible and continue if TRUE
+  // Typing a single character should show the GO button
+  locationBar.focus({type: "shortcut"});
+  locationBar.type("w");
   UtilsAPI.assertElementVisible(controller, goButton, true);
 
-  // Press Backspace to delete the typed character
-  controller.keypress(locationBar, "VK_BACK_SPACE", {});
-  controller.sleep(gDelay);
-
-  // Press ESC to clear focus
-  controller.keypress(locationBar, "VK_ESCAPE", {});
-  controller.sleep(gDelay);
-
-  // Verify the GO button is hidden again
+  // Removing content and focus should hide the Go button
+  locationBar.clear();
+  controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
   UtilsAPI.assertElementVisible(controller, goButton, false);
 }
 
 /**
  * Test clicking location bar, typing a URL and clicking the GO button
  */
-var testClickLocationBarAndGo = function() {
+var testClickLocationBarAndGo = function()
+{
+  var url = "http://www.google.com/webhp?complete=1&hl=en";
+
   // Start from a web page
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
 
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-
   // Focus and type a URL into the location bar
-  controller.keypress(null, "l", {accelKey: true});
-  controller.sleep(gDelay);
-  controller.type(locationBar, "http://www.google.com/webhp?complete=1&hl=en");
-  controller.sleep(gDelay);
+  locationBar.focus({type: "shortcut"});
+  locationBar.type(url);
 
   // Click the GO button
-  var goButton = new elementslib.ID(controller.window.document, "go-button");
   controller.click(goButton);
-  controller.sleep(gDelay);
-
-  // Wait for the page to load
   controller.waitForPageLoad();
 
-  // Check if the Google logo exists
+  // Check if the Google logo exists and the Go button is hidden
   controller.assertNode(new elementslib.Name(controller.tabs.activeTab, "q"));
-
-  // Verify the GO button is hidden
   UtilsAPI.assertElementVisible(controller, goButton, false);
 
   // Check if the URL bar matches the expected domain name
-  controller.assertValue(locationBar, "http://www.google.com/webhp?complete=1&hl=en");
+  controller.assertValue(locationBar.urlbar, url);
 }
 
 /**
