@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
 
 const localTestFolder = collector.addHttpResource('./files');
 
@@ -47,33 +47,25 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
+
+  container = tabBrowser.getElement({type: "tabs_container"});
+  animateBox = tabBrowser.getElement({type: "tabs_animateBox"});
+  allTabsButton = tabBrowser.getElement({type: "tabs_allTabsButton"});
+  allTabsPopup = tabBrowser.getElement({type: "tabs_allTabsPopup"});
 }
 
 var teardownModule = function()
 {
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
-  
-  
+
+  // Just in case the popup hasn't been closed yet
+  allTabsPopup.getNode().hidePopup();
 }
 
 var testScrollBackgroundTabIntoView = function()
 {
-  var containerString = '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"class":"tabs-stack"})/{"class":"tabs-container"}';
-
-  var container = new elementslib.Lookup(controller.window.document, containerString);
-  var scrollButtonDown = new elementslib.Lookup(controller.window.document, containerString +
-                                                '/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbutton-down"})');
-  var scrollButtonUp = new elementslib.Lookup(controller.window.document, containerString +
-                                              '/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbutton-up"})');
-  var allTabsButton = new elementslib.Lookup(controller.window.document,
-                                             containerString + '/[3]/anon({"anonid":"alltabs-button"})');
-  var animateBox = new elementslib.Lookup(controller.window.document,
-                                          containerString + '/[3]/anon({"anonid":"alltabs-box-animate"})');
-  var allTabsPopup = new elementslib.Lookup(controller.window.document,
-                                     containerString + '/[3]/anon({"anonid":"alltabs-button"})' +
-                                     '/anon({"anonid":"alltabs-popup"})');
-
   // Check that we open new tabs in the background
   PrefsAPI.preferencesDialog.open(prefDialogCallback);
 
@@ -87,11 +79,12 @@ var testScrollBackgroundTabIntoView = function()
   // Open new background tabs until the scroll arrows appear
   var count = 1;
   do {
+    // XXX: Can be changed to middleClick once bug 535018 is fixed
     controller.mouseDown(link1, 1);
     controller.mouseUp(link1, 1);
 
     // Wait until the new tab has been opened
-    controller.waitForEval("subject.length == " + (++count), gTimeout, 100, controller.tabs);
+    controller.waitForEval("subject.length == " + (++count), gTimeout, 100, tabBrowser);
   } while ((container.getNode().getAttribute("overflow") != 'true') || count > 50)
 
   // Scroll arrows will be shown when the overflow attribute has been added
@@ -109,23 +102,23 @@ var testScrollBackgroundTabIntoView = function()
                          gTimeout, 100, {window : controller.window, animateBox: animateBox.getNode()});
 
   // Check that the correct link has been loaded in the last tab
-  var tabCount = controller.tabs.length -1;
-  var linkId = new elementslib.ID(controller.tabs.getTab(tabCount), "id");
+  var lastIndex = controller.tabs.length - 1;
+  var linkId = new elementslib.ID(controller.tabs.getTab(lastIndex), "id");
   controller.assertText(linkId, "2");
 
   // and is displayed inside the all tabs popup menu
   controller.click(allTabsButton);
   controller.waitForEval("subject.state == 'open'", gTimeout, 100, allTabsPopup.getNode());
 
-  for (var ii = 0; ii <= tabCount; ii++) {
-    if (ii < tabCount)
+  for (var ii = 0; ii <= lastIndex; ii++) {
+    if (ii < lastIndex)
       controller.assertJS("subject.childNodes[" + ii + "].label != '2'",
                           allTabsPopup.getNode());
     else
       controller.assertJS("subject.childNodes[" + ii + "].label == '2'",
                           allTabsPopup.getNode());
   }
-  
+
   controller.click(allTabsButton);
   controller.waitForEval("subject.state == 'closed'", gTimeout, 100, allTabsPopup.getNode());
 }

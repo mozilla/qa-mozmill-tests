@@ -36,7 +36,8 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI',
+                       'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -68,7 +69,7 @@ var testSubmitUnencryptedInfoWarning = function()
 {
   // Close the page because the warnings don't appear if you are on the page
   // where the warning was triggered
-  UtilsAPI.closeAllTabs(controller);
+  TabbedBrowsingAPI.closeAllTabs(controller);
 
   // Make sure the prefs are set
   PrefsAPI.preferencesDialog.open(prefDialogCallback);

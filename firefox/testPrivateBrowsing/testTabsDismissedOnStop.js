@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -49,9 +49,9 @@ var websites = [
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-
-  // Create Private Browsing instance
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module)
@@ -70,9 +70,6 @@ var testAllTabsClosedOnStop = function()
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
-
-  // Leave only one blank tab open
-  UtilsAPI.closeAllTabs(controller);
 
   // Start Private Browsing
   pb.start();

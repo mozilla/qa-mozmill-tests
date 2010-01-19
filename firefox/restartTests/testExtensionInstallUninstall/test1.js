@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'TabbedBrowsingAPI'];
 
 const gTimeout = 5000;
 
@@ -45,9 +45,10 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
   module.addonsManager = new AddonsAPI.addonsManager();
 
-  UtilsAPI.closeAllTabs(controller);
   module.persisted.extensionName = "Adblock Plus";
   module.persisted.extensionId = "{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}";
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var testInstallExtension = function()

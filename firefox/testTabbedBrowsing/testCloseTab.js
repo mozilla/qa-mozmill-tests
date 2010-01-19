@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *  Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,7 +38,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,43 +47,36 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var testCloseTab = function()
 {
-  // Let's have 5 tabs open:
+  // Let's have 5 tabs open
   for(var i = 0; i < 4; i++) {
-    var fileNewTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-    controller.click(fileNewTab);
+    tabBrowser.openTab({type: "menu"});
   }
 
-  controller.waitForEval("subject.length == 5",  gTimeout,   100, controller.tabs);
+  controller.waitForEval("subject.length == 5",  gTimeout,   100, tabBrowser);
 
   // Close a tab by pressing the keyboard shortcut:
-  controller.keypress(null, 'w', {accelKey:true});
-  controller.waitForEval("subject.length == 4", gTimeout, 100, controller.tabs);
+  tabBrowser.closeTab({type: "shortcut"});
+  controller.waitForEval("subject.length == 4", gTimeout, 100, tabBrowser);
 
-  //Close a tab via File > Close tab:
-  var fileCloseTab = new elementslib.Elem(controller.menus['file-menu'].menu_close);
-  controller.click(fileCloseTab);
-  controller.waitForEval("subject.length == 3", gTimeout, 100, controller.tabs);
-
-  var tabs = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})');
-  var firstTab = new elementslib.Elem(tabs.getNode().getItemAtIndex(0));
+  // Close a tab via File > Close tab
+  tabBrowser.closeTab({type: "menu"});
+  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
 
   // Close an inactive tab via middle click
   // XXX: Can be changed to middleClick once bug 535018 is fixed
-  controller.mouseDown(firstTab, 1);
-  controller.mouseUp(firstTab, 1);
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  tabBrowser.closeTab({type: "middleClick", index: 0});
+  controller.waitForEval("subject.length == 2", gTimeout, 100, tabBrowser);
 
   // Close a tab via the close button on the tab itself:
-  var secondTabCloseButton = new elementslib.Elem(tabs.getNode().getItemAtIndex(1).boxObject.lastChild);
-  controller.click(secondTabCloseButton);
-  controller.waitForEval("subject.length == 1", gTimeout, 100, controller.tabs);
+  tabBrowser.closeTab({type: "closeButton"});
+  controller.waitForEval("subject.length == 1", gTimeout, 100, tabBrowser);
 }
-
 
 /**
  * Map test functions to litmus tests

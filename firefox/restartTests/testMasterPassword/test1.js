@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,7 +37,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -44,6 +45,7 @@ const gTimeout = 5000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 }
 
 var teardownModule = function(module)
@@ -77,13 +79,13 @@ var testSetMasterPassword = function()
   // After logging in, remember the login information
   var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties",
                                    "notifyBarRememberButtonText");
-  var rememberButton = UtilsAPI.createNotificationBarElement(controller,
-                                '/{"value":"password-save"}/{"label":"' + label + '"}');
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"password-save"}/{"label":"' + label + '"}');
 
-  UtilsAPI.assertElementVisible(controller, rememberButton, true);
-  controller.waitThenClick(rememberButton, gTimeout);
+  UtilsAPI.assertElementVisible(controller, button, true);
+  controller.waitThenClick(button, gTimeout);
   controller.sleep(500);
-  controller.assertNodeNotExist(rememberButton);
+  controller.assertNodeNotExist(button);
 
   // Call preferences dialog and invoke master password functionality
   PrefsAPI.preferencesDialog.open(prefDialogSetMasterPasswordCallback);

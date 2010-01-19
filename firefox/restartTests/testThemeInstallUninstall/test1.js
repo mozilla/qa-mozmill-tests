@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'TabbedBrowsingAPI'];
 
 const gTimeout = 5000;
 const gDownloadTimeout = 60000;
@@ -45,10 +45,11 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.addonsManager = new AddonsAPI.addonsManager();
 
-  UtilsAPI.closeAllTabs(controller);
   module.persisted.themeName = "Curacao";
   module.persisted.themeId = "{cc6ef5ab-35be-4300-bd07-d12850fc97ff}";
   module.persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 /*

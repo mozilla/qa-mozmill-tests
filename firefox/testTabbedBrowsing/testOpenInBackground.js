@@ -38,7 +38,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -47,7 +47,8 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function()
@@ -72,8 +73,8 @@ var testOpenInBackgroundTab = function()
   controller.click(contextMenuItem);
 
   // Check that two tabs are open and the first is selected
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
-  controller.waitForEval("subject.activeTabIndex == 0", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.length == 2", gTimeout, 100, tabBrowser);
+  controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, tabBrowser);
 
   // Open link via middle click
   // XXX: Can be changed to middleClick once bug 535018 is fixed
@@ -81,13 +82,13 @@ var testOpenInBackgroundTab = function()
   controller.mouseUp(googleImagesLink, 1);
 
   // Check that three tabs are open and the first is selected
-  controller.waitForEval("subject.length == 3", gTimeout, 100, controller.tabs);
-  controller.waitForEval("subject.activeTabIndex == 0", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
+  controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, tabBrowser);
 }
 
 var prefDialogCallback = function(controller) {
   PrefsAPI.preferencesDialog.setPane(controller, 'paneTabs');
-
+  
   //Ensure that 'Switch to tabs immediately' is unchecked:
   var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
   controller.waitForElement(switchToTabsPref, gTimeout);

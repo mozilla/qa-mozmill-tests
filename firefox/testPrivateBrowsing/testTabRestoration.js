@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -49,9 +49,9 @@ var websites = [
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-
-  // Create Private Browsing instance
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module)
@@ -72,7 +72,7 @@ var testTabRestoration = function()
 
   // Open websites in separate tabs after closing existing tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  UtilsAPI.closeAllTabs(controller);
+
   for (var ii = 0; ii < websites.length; ii++) {
     controller.open(websites[ii].url);
     controller.click(newTab);
