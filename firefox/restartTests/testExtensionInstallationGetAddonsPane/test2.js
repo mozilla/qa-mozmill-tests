@@ -76,4 +76,4 @@ var testCheckExtensionInstalled = function()
 /**
  * Map test functions to litmus tests
  */
-testCheckInstallExtensionGetAddonsPane.meta = {litmusids : [8828]};
+testCheckExtensionInstalled.meta = {litmusids : [8828]};
