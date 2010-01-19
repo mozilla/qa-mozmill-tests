@@ -67,23 +67,6 @@ function createURI(spec, originCharset, baseURI)
 }
 
 /**
- * Close all tabs of the controllers window except the last one and open a blank
- * page.
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var closeAllTabs = function(controller)
-{
-  while (controller.tabs.length > 1) {
-    controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_close));
-  }
-
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-}
-
-/**
  * Get application specific informations
  * @see http://mxr.mozilla.org/mozilla-central/source/xpcom/system/nsIXULAppInfo.idl
  */
@@ -288,31 +271,4 @@ function closeContentAreaContextMenu(controller)
 {
   var contextMenu = new elementslib.ID(controller.window.document, "contentAreaContextMenu");
   controller.keypress(contextMenu, "VK_ESCAPE", {});
-}
-
-/**
- * Creates the child element of the tab's notification bar
- *
- * @param {MozMillController} controller
- *        Controller of the window to operate on
- * @param {string} elemString
- *        (Optional) Lookup string of the notification bar's child element
- * @param {number} tabIndex
- *        (Optional) Index of the tab to check
- * @return The created child element
- * @type ElemBase
- */
-function createNotificationBarElement(controller, elemString, tabIndex)
-{
-  const containerString = '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})';
-
-  var index = tabIndex ? tabIndex : controller.tabs.activeTabIndex;
-  var elemStr = elemString ? elemString : "";
-
-  // Get the panel so we can fetch the panel id
-  var container = new elementslib.Lookup(controller.window.document, containerString);
-  controller.waitForElement(container, 500);
-
-  var expression = containerString + '/{"id":"' + container.getNode().childNodes[index].id + '"}' + elemStr;
-  return new elementslib.Lookup(controller.window.document, expression);
 }

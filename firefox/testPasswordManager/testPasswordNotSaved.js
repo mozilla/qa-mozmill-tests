@@ -37,15 +37,17 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI','UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
   module.pm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
   pm.removeAllLogins();
@@ -72,18 +74,19 @@ var testPasswordNotificationBar = function() {
   controller.type(passField, "foo");
 
   // After logging in, close the notification bar
-  var xButtonLookup = '/{"value":"password-save"}/anon({"type":"info"})/{"class":"messageCloseButton tabbable"}';
-  var xButton = UtilsAPI.createNotificationBarElement(controller, xButtonLookup);
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"password-save"}/anon({"type":"info"})' +
+                                             '/{"class":"messageCloseButton tabbable"}');
 
   // The notification bar should not be visible before submitting the credentials
-  controller.assertNodeNotExist(xButton);
+  controller.assertNodeNotExist(button);
 
   controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
   controller.waitForPageLoad();
 
-  controller.waitThenClick(xButton, gTimeout);
+  controller.waitThenClick(button, gTimeout);
   controller.sleep(500);
-  controller.assertNodeNotExist(xButton);
+  controller.assertNodeNotExist(button);
 }
 
 /**

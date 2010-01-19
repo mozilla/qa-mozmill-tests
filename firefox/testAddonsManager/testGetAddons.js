@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI','UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,7 +46,7 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
   module.addonsManager = new AddonsAPI.addonsManager();
 
-  UtilsAPI.closeAllTabs(controller);
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module)

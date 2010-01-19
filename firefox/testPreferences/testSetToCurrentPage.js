@@ -37,7 +37,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -47,7 +47,7 @@ const homepage = 'http://www.mozilla.org/';
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {

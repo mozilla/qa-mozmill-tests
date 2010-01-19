@@ -37,57 +37,57 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
-
-  // Build the element for a blank untitled tab
-  module.untitled = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties", "tabs.untitled");
-  module.tabTitle = new elementslib.Lookup(controller.window.document,'/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/{"label":"'+ module.untitled +'"}/anon({"class":"tab-text"})');
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
-var testNewTab = function () {
+var testNewTab = function()
+{
   // Ensure current tab does not have blank page loaded
+  var section = new elementslib.ID(controller.tabs.activeTab, "sub");
+
   controller.open('http://www.mozilla.org');
   controller.waitForPageLoad();
+  controller.waitForElement(section, gTimeout);
 
-  controller.assertNodeNotExist(tabTitle);
-  controller.sleep(gDelay);
-
-  // Open a new tab via the menu (by default it should open with an a blank (Untitled) page)
-  controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab));
-  checkNewTab();
-  controller.sleep(gDelay);
-
-  // Use the shortcut to open a new tab
-  controller.keypress(null, "t", {accelKey:true});
-  checkNewTab();
-  controller.sleep(gDelay);
-
-  // Double click the empty tab strip left of the all tabs button to open a new tab
-  var tabStrip = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})/anon({"class":"tabs-stack"})/{"class":"tabs-container"}/anon({"anonid":"arrowscrollbox"})/anon({"anonid":"scrollbox"})/anon({"class":"box-inherit scrollbox-innerbox"})');
-  controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
-  checkNewTab();
+  // Test all different ways to open a tab
+  checkOpenTab({type: "menu"});
+  checkOpenTab({type: "shortcut"});
+  checkOpenTab({type: "tabStrip"});
+  checkOpenTab({type: "newTabButton"});
 }
 
 /**
  * Check if a new tab has been opened, has a title and can be closed
+ *
+ * @param {object} event
+ *        Object which specifies how to open the new tab
  */
-var checkNewTab = function() {
-  // Check that two tabs are open and wait until the document has been finished loading
+var checkOpenTab = function(event)
+{
+  // Open a new tab and check that 'about:blank' has been opened
+  tabBrowser.openTab(event);
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
-  controller.waitForPageLoad();
+  controller.assertJS("subject.activeTab.location == 'about:blank'",
+                      controller.tabs);
 
-  controller.assertNode(tabTitle);
+  // The tabs title should be 'Untitled'
+  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties",
+                                   "tabs.untitled");
+  var tab = tabBrowser.getTab();
+  controller.assertJS("subject.label == '" + title + "'", tab.getNode());
 
   // Close the tab again
-  controller.keypress(null, "w", {accelKey: true});
+  tabBrowser.closeTab({type: "shortcut"});
   controller.waitForEval("subject.length == 1", gTimeout, 100, controller.tabs);
 }
 

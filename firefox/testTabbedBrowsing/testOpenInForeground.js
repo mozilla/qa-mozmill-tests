@@ -38,7 +38,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const localTestFolder = collector.addHttpResource('./files');
 
@@ -55,7 +55,8 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function()
@@ -74,7 +75,7 @@ var testOpenInForegroundTab = function()
 
   for(var i = 0; i < 3; i++) {
     // Switch to the first tab:
-    controller.tabs.selectTabIndex(0);
+    tabBrowser.selectedIndex = 0;
 
     // Reference to the current link in the testcase:
     var currentLink = new elementslib.Name(controller.tabs.activeTab, "link_" + (i + 1));
@@ -93,8 +94,8 @@ var testOpenInForegroundTab = function()
     }
 
     // Let's see if we have the right number of tabs open and that the first opened tab is selected
-    controller.waitForEval("subject.length == " + (i + 2), gTimeout, 100, controller.tabs);
-    controller.waitForEval("subject.activeTabIndex == 1", gTimeout, 100, controller.tabs);
+    controller.waitForEval("subject.length == " + (i + 2), gTimeout, 100, tabBrowser);
+    controller.waitForEval("subject.selectedIndex == 1", gTimeout, 100, tabBrowser);
   }
 
   // Verify that the order of tabs is correct
@@ -105,13 +106,12 @@ var testOpenInForegroundTab = function()
   }
 
   // Click the close button of the second tab
-  var tabs = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser")/id("appcontent")/id("content")/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})/anon({"anonid":"tabcontainer"})');
-  var secondTabCloseButton = new elementslib.Elem(tabs.getNode().getItemAtIndex(1).boxObject.lastChild);
-  controller.click(secondTabCloseButton);
-
+  tabBrowser.selectedIndex = 1;
+  tabBrowser.closeTab({type: "closeButton"});
+  
   // Verify that we have 3 tabs now and the first tab is selected:
-  controller.waitForEval("subject.length == 3", gTimeout, 100, controller.tabs);
-  controller.waitForEval("subject.activeTabIndex == 0", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
+  controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, tabBrowser);
 }
 
 var prefDialogCallback = function(controller) {

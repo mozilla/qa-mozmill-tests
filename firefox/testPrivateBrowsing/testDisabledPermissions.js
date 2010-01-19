@@ -35,7 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI',
+                       'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -73,7 +74,7 @@ var testPermissionsDisabled = function()
   pb.enabled = false;
   pb.showPrompt = false;
 
-  UtilsAPI.closeAllTabs(controller);
+  TabbedBrowsingAPI.closeAllTabs(controller);
 
   pb.start();
 

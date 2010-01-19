@@ -38,15 +38,17 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
 
-  UtilsAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var testNotificationBar = function() {
@@ -107,9 +109,11 @@ var checkIgnoreWarningButton = function(badUrl) {
 var checkNoPhishingButton = function(badUrl) {
   if (badUrl == 'http://www.mozilla.com/firefox/its-a-trap.html' ) {
     // Click on the web forgery report button
-    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAForgeryButton.label");
-    var notWebForgeryButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-    controller.waitThenClick(notWebForgeryButton, gTimeout);
+    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
+                                     "safebrowsing.notAForgeryButton.label");
+    var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                               '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
+    controller.waitThenClick(button, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-a-web-forgery report page is loaded
@@ -119,9 +123,10 @@ var checkNoPhishingButton = function(badUrl) {
 
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
     // Click on the attack site report button
-    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.notAnAttackButton.label");
-    var notAttackSiteButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-
+    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
+                                     "safebrowsing.notAnAttackButton.label");
+    var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                               '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
     controller.waitThenClick(notAttackSiteButton, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
@@ -131,7 +136,7 @@ var checkNoPhishingButton = function(badUrl) {
       throw "Expected that www.stopbadware.org has been loaded but got " + locationBar.getNode().value;
   }
 
-  UtilsAPI.closeAllTabs(controller);
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 /**
@@ -139,14 +144,17 @@ var checkNoPhishingButton = function(badUrl) {
  */
 var checkGetMeOutOfHereButton = function() {
   // Click on the get me out of here button
-  var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", "safebrowsing.getMeOutOfHereButton.label");
-  var getMeOutForgeryOfHereButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-  controller.waitThenClick(getMeOutForgeryOfHereButton, gTimeout);
+  var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
+                                   "safebrowsing.getMeOutOfHereButton.label");
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
+  controller.waitThenClick(button, gTimeout);
 
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
 
-  var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
+  var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties",
+                                             "browser.startup.homepage");
   UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);  
 }
 
@@ -155,10 +163,12 @@ var checkGetMeOutOfHereButton = function() {
  */
 var checkXButton = function() {
   // Click on the x button and verify the notification bar dissapears
-  var xButton = UtilsAPI.createNotificationBarElement(controller, '/{"value":"blocked-badware-page"}/anon({"type":"critical"})/{"class":"messageCloseButton tabbable"}');
-  controller.waitThenClick(xButton, gTimeout);
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +
+                                             '/{"class":"messageCloseButton tabbable"}');
+  controller.waitThenClick(button, gTimeout);
   controller.sleep(1000);
-  controller.assertNodeNotExist(xButton);
+  controller.assertNodeNotExist(button);
 }
 
 /**

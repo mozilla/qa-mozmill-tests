@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -53,6 +53,8 @@ var setupModule = function(module) {
   // Create Private Browsing instance and set handler
   module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
   module.pb.handler = pbStartHandler;
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -69,9 +71,8 @@ var testEnablePrivateBrowsingMode = function()
   pb.enabled = false;
   pb.showPrompt = true;
 
-  // Open websites in separate tabs after closing existing tabs
+  // Open websites in separate tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  UtilsAPI.closeAllTabs(controller);
   for (var ii = 0; ii < websites.length; ii++) {
     controller.open(websites[ii].url);
     controller.click(newTab);

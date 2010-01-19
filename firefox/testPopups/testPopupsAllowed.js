@@ -36,16 +36,19 @@
  * ***** END LICENSE BLOCK ***** */
 
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(module)
+{
   // Reset the pop-up blocking pref
   PrefsAPI.preferences.clearUserPref("dom.disable_open_during_load");
 
@@ -61,7 +64,8 @@ var teardownModule = function(module) {
  * @throws Pop-ups were blocked
  * @throws Status bar icon is visible
  */
-var testPopUpAllowed = function() {
+var testPopUpAllowed = function()
+{
   var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
 
   PrefsAPI.preferencesDialog.open(prefDialogCallback);
@@ -74,9 +78,10 @@ var testPopUpAllowed = function() {
   controller.waitForPageLoad();
 
   // A notification bar always exists in the DOM so check the visibility of the X button
-  var xButtonLookup = '/{"value":"popup-blocked"}/anon({"type":"warning"})/{"class":"messageCloseButton tabbable"}';
-  var xButton = UtilsAPI.createNotificationBarElement(controller, xButtonLookup);
-  controller.assertNodeNotExist(xButton);
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
+                                             '/{"class":"messageCloseButton tabbable"}');
+  controller.assertNodeNotExist(button);
 
   // Check for the status bar icon
   var cssInfo = controller.window.getComputedStyle(controller.window.document.getElementById("page-report-button"), "");

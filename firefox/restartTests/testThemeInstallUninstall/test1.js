@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'TabbedBrowsingAPI'];
 
 const gTimeout = 5000;
 const gDownloadTimeout = 60000;
@@ -45,10 +45,11 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.addonsManager = new AddonsAPI.addonsManager();
 
-  UtilsAPI.closeAllTabs(controller);
   module.persisted.themeName = "Walnut for Firefox";
   module.persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
   module.persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
+
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 /*
