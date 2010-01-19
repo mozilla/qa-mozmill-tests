@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,80 +35,75 @@
  *
  * **** END LICENSE BLOCK *****/
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['ToolbarAPI'];
+
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-
-  module.locationBar = new elementslib.ID(controller.window.document, 'urlbar');
+  module.locationBar =  new ToolbarAPI.locationBar(controller);
 }
 
 /**
- * There are three parts to this test as follows
+ * Test three different ways to search in the location bar
  */
-var testLocationBarSearches = function () {
+var testLocationBarSearches = function ()
+{
+  controller.open("about:blank");
+  controller.waitForPageLoad();
 
   /**
    * Part 1 - Check unmatched string search
    */
   var randomTestString = "oau45rtdgsh34nfr";
 
-  // Open a blank page to ensure test page is not already loaded
-  controller.open("about:blank");
+  // Check if random test string is listed in the URL
+  locationBar.loadURL(randomTestString);
   controller.waitForPageLoad();
-
-  // Enter test string into Awesome Bar
-  controller.type(locationBar, randomTestString);
-  controller.keypress(null, "VK_RETURN", {});
-  controller.waitForPageLoad();
-
-  // Check if search term is listed in URL
-  controller.assertJS(locationBar.getNode().value.indexOf(randomTestString) !== -1);
+  controller.assertJS("subject.contains('" + randomTestString + "') == true", locationBar);
 
   // Check for presense of Your search message containing search string
-  var yourSearchString = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='gsr']/div[@id='cnt']/div[@id='res']/div/p[1]/b");
+  var yourSearchString = new elementslib.XPath(controller.tabs.activeTab,
+                                               "/html/body[@id='gsr']/div[@id='cnt']/div[@id='res']/div/p[1]/b");
   controller.assertText(yourSearchString, randomTestString);
+
+  controller.open("about:blank");
+  controller.waitForPageLoad();
 
   /**
    * Part 2 - Check lucky match
    */
 
-  // Open a blank page to ensure test page is not already loaded
-  controller.open("about:blank");
+  // Check if lucky match to getpersonas.com is produced
+  locationBar.loadURL("personas");
   controller.waitForPageLoad();
-
-  // Enter test string into Awesome Bar
-  controller.type(locationBar, "personas");
-  controller.keypress(null, "VK_RETURN", {});
-  controller.waitForPageLoad();
-
-  // Check if lucky match to getpersonas.org is produced
-  controller.assertJS(locationBar.getNode().value.indexOf("getpersonas") !== -1);
+  controller.assertJS("subject.contains('getpersonas') == true", locationBar);
 
   // Check for presense of Personsas image
-  var personasImage = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='outer-wrapper']/div[@id='inner-wrapper']/div[@id='nav']/h1/a/img");
+  var personasImage = new elementslib.XPath(controller.tabs.activeTab,
+                                            "/html/body/div[@id='outer-wrapper']/div[@id='inner-wrapper']/div[@id='nav']/h1/a/img");
   controller.waitForElement(personasImage, gTimeout);
+
+  controller.open("about:blank");
+  controller.waitForPageLoad();
 
   /**
    * Part 3 - Check results list match
    */
   var resultsTestString = "lotr";
 
-  // Open a blank page to ensure test page is not already loaded
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-
-  // Enter the test string into Awesome Bar
-  controller.type(locationBar, resultsTestString);
-  controller.keypress(null, "VK_RETURN", {});
-  controller.waitForPageLoad();
-
   // Check if search term is listed in URL
-  controller.assertJS(locationBar.getNode().value.indexOf(resultsTestString) !== -1);
+  locationBar.loadURL(resultsTestString);
+  controller.waitForPageLoad();
+  controller.assertJS("subject.contains('" + resultsTestString + "') == true",
+                      locationBar);
 
   // Check for presense of search term in return results count
   // That section of the Google results page is unique from the unmtached results page
-  var resultsStringCheck = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='gsr']/div[@id='cnt']/div[@id='ssb']/p/b[4]");
+  var resultsStringCheck = new elementslib.XPath(controller.tabs.activeTab,
+                                                 "/html/body[@id='gsr']/div[@id='cnt']/div[@id='ssb']/p/b[4]");
   controller.assertText(resultsStringCheck, resultsTestString);
 }
 

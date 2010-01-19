@@ -37,14 +37,20 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI'];
+var MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
 
 const gTimeout = 5000;
 const gDelay = 100;
 
+const websites = ['http://www.google.com/',
+                  'http://www.mozilla.org/',
+                  'http://www.getpersonas.com/',
+                  'about:blank'];
+
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  
+  controller = mozmill.getBrowserController();
+  locationBar = new ToolbarAPI.locationBar(controller);
+
   // Clear complete history so we don't get interference from previous entries
   try {
     var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].
@@ -57,44 +63,32 @@ var setupModule = function(module) {
 /**
  * Check acces to the location bar drop down list via autocomplete
  */
-var testAccessLocationBarHistory = function ()
+var testAccessLocationBarHistory = function()
 {
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var websites = ['http://www.google.com/',
-                  'http://www.mozilla.org/',
-                  'http://www.getpersonas.com/',
-                  'about:blank'];
-
   // Open a few different sites to create a small history (about:blank doesn't
   // appear in history and clears the page for clean test arena
-  for (var k = 0; k < websites.length; k++) {
-    controller.keypress(null, "l", {accelKey: true});
-    controller.type(null, websites[k]);
-    controller.keypress(null, "VK_RETURN", {});
+  for each (website in websites) {
+    locationBar.loadURL(website);
     controller.waitForPageLoad();
   }
 
   // Wait about 4s so the history gets populated
   controller.sleep(4000);
 
-  // Open the autocomplete list from the location bar
-
   // First - Focus the locationbar then delete any contents there
-  controller.keypress(null, "l", {accelKey: true});
-  controller.keypress(null, "VK_DELETE", {});
+  locationBar.clear();
 
-  // Second - Arrow down to open the history list (displays most recent visit first),
+  // Second - Arrow down to open the autocomplete list (displays most recent visit first),
   // then arrow down again to the first entry, in this case www.getpersonas.com;
-  controller.keypress(null, "VK_DOWN", {});
+  controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   controller.sleep(gDelay);
-  controller.keypress(null, "VK_DOWN", {});
+  controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   controller.sleep(gDelay);
 
   // checks that the first item in the drop down list is selected.
-  var richlistbox = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")/anon({"anonid":"richlistbox"})');
-  controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, richlistbox.getNode());
-
-  controller.assertJS("subject.value.indexOf('getpersonas') !== -1", locationBar.getNode());
+  controller.waitForEval("subject.selectedIndex == 0",
+                         gTimeout, 100, locationBar.autoCompleteResults);
+  locationBar.contains("getpersonas");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
@@ -104,12 +98,10 @@ var testAccessLocationBarHistory = function ()
   controller.waitForElement(personasImage, gTimeout, 100);
 
   // Check that getpersonas is in the url bar
-  controller.assertJS("subject.value.indexOf('getpersonas') !== -1", locationBar.getNode());
+  locationBar.contains("getpersonas");
 }
 
 /**
  * Map test functions to litmus tests
  */
 testAccessLocationBarHistory.meta = {litmusids : [5981]};
-
-
