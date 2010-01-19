@@ -48,7 +48,7 @@ var MODULE_NAME = 'DownloadsAPI';
 const gTimeout = 5000;
 
 /**
- * List of possible download states
+ * List of available download states
  */
 const downloadState = {
   notStarted      : -1,
@@ -80,17 +80,21 @@ function downloadManager()
  * Download Manager class
  */
 downloadManager.prototype = {
-  // Constants for elements inside the Download Manager
-  DOWNLOAD            : 0x0100,
-  DOWNLOAD_BUTTON     : 0x0101,
-
-  get controller() { return this._controller; },
+  /**
+   * Returns the controller of the current window
+   *
+   * @returns Mozmill Controller
+   * @type {MozMillController}
+   */
+  get controller() {
+    return this._controller;
+  },
 
   /**
    * Returns the number of currently active downloads
    *
    * @returns Number of active downloads
-   * @type number
+   * @type {number}
    */
   get activeDownloadCount() {
     return this._dms.activeDownloadCount;
@@ -98,6 +102,11 @@ downloadManager.prototype = {
 
   /**
    * Assert if the download state is the same as the expected state
+   *
+   * @param {ElemBase} download
+   *        Download which state should be checked
+   * @param {downloadState} state
+   *        Expected state of the download
    */
   assertDownloadState : function downloadManager_assertDownloadState(download, state) {
     this._controller.waitForEval("subject.getAttribute('state') == " + state,
@@ -105,7 +114,7 @@ downloadManager.prototype = {
   },
 
   /**
-   * Cancel any active downloads
+   * Cancel all active downloads
    */
   cancelActiveDownloads : function downloadManager_cancelActiveDownloads() {
     // Get a list of all active downloads (nsISimpleEnumerator)
@@ -128,14 +137,26 @@ downloadManager.prototype = {
 
   /**
    * Close the download manager
+   *
+   * @param {boolean} force
+   *        Force the closing of the DM window
    */
-  close : function downloadManager_close()
+  close : function downloadManager_close(force)
   {
     var windowCount = mozmill.utils.getWindows().length;
 
-    this._controller.keypress(null, 'w', {accelKey: true});
-    this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
-                         gTimeout, 100, mozmill.utils);
+    if (this._controller) {
+      // Check if we should force the closing of the DM window
+      if (force) {
+        this._controller.window.close();
+      } else {
+        this._controller.keypress(null, 'w', {accelKey: true});
+      }
+
+      this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
+                                   gTimeout, 100, mozmill.utils);
+      this._controller = null;
+    }
   },
 
   /**
@@ -159,7 +180,7 @@ downloadManager.prototype = {
    * Get the list of all downloaded files in the database
    *
    * @returns List of downloads
-   * @type download
+   * @type {Array of download}
    */
   getAllDownloads : function downloadManager_getAllDownloads()
   {
@@ -195,24 +216,24 @@ downloadManager.prototype = {
    * @param {object} spec
    *        Information of the UI element which should be retrieved
    *        type: General type information
-   *        name: Specific element or property name
+   *        subtype: Specific element or property
    *        value: Value of the element or property
    * @returns Element which has been created
-   * @type ElemBase
+   * @type {ElemBase}
    */
   getElement : function downloadManager_getElement(spec) {
     var elem = null;
 
     switch(spec.type) {
       /**
-       * name:  name of property to match
+       * subtype: subtype of property to match
        * value: value of property to match
        */
-      case this.DOWNLOAD:
+      case "download":
         // Use a temporary lookup to get the download item
         var download = new elementslib.Lookup(this._controller.window.document,
                                               '/id("downloadManager")/id("downloadView")/' +
-                                              '{"' + spec.name + '":"' + spec.value + '"}');
+                                              '{"' + spec.subtype + '":"' + spec.value + '"}');
         this._controller.waitForElement(download, gTimeout);
 
         // Use its download id to construct the real lookup expression
@@ -222,13 +243,15 @@ downloadManager.prototype = {
         break;
 
       /**
-       * name:  Identifier of the specified download button (cancel, pause, resume, retry)
+       * subtype: Identifier of the specified download button (cancel, pause, resume, retry)
        * value: Entry (download) of the download list
        */
-      case this.DOWNLOAD_BUTTON:
+      case "download_button":
         elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
-                                      '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + spec.name + '"}');
+                                      '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + spec.subtype + '"}');
         break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -259,6 +282,9 @@ downloadManager.prototype = {
 
   /**
    * Wait until the Download Manager has been opened
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
    */
   waitForOpened : function downloadManager_waitForOpened(controller) {
     controller.waitForEval("subject.getMostRecentWindow('Download:Manager') != null",
@@ -273,7 +299,7 @@ downloadManager.prototype = {
  * Download the file of unkown type from the given location by saving it
  * automatically to disk
  *
- * @param {MozMilldmController} controller
+ * @param {MozMillController} controller
  *        MozMillController of the browser window
  * @param {string} url
  *        URL of the file which has to be downloaded
@@ -285,7 +311,7 @@ var downloadFileOfUnknownType = function(controller, url)
   // Wait until the unknown content type dialog has been opened
   controller.sleep(500);
   controller.waitForEval("subject.getMostRecentWindow('').document.documentElement.id == 'unknownContentType'",
-                             gTimeout, 100, mozmill.wm);
+                         gTimeout, 100, mozmill.wm);
 
   var window = mozmill.wm.getMostRecentWindow('');
   var utController = new mozmill.controller.MozMillController(window);
