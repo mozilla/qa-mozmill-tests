@@ -50,9 +50,8 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  // If we failed in closing the Download Manager window do it now
-  if (dm.controller.window)
-    dm.controller.window.close();
+  // If we failed in closing the Download Manager window force it now
+  dm.close(true);
 }
 
 /**
