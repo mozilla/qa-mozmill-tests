@@ -127,7 +127,7 @@ var checkNoPhishingButton = function(badUrl) {
                                      "safebrowsing.notAnAttackButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-    controller.waitThenClick(notAttackSiteButton, gTimeout);
+    controller.waitThenClick(button, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-an-attack-site report page is loaded
