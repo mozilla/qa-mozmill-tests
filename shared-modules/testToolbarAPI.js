@@ -136,33 +136,42 @@ autoCompleteResults.prototype = {
   },
 
   /**
-   * Assert that the given result has underlined the correct parts of the text and URL
+   * Assert that the given result has underlined the correct parts of the text or URL
    *
    * @param {ElemBase} result
    *        Autocomplete result which has to be checked
+   * @param {string} type
+   *        Type of element to check (text or url)
+   * @param {string} text
+   *        Text which should be underlined
    */
-  assertTextUnderlined : function autoCompleteResults_assertTextUnderlined(result, text) {
+  assertTextUnderlined : function autoCompleteResults_assertTextUnderlined(result, type, text) {
     if (!result.getNode())
-      throw new Error(arguments.callee.name + ": Result node is undefined.")
+      throw new Error(arguments.callee.name + ": Result node is undefined.");
 
-    // Get the description element of the given title and url
-    var descriptions = [];
-    descriptions.push(result.getNode().boxObject.firstChild.childNodes[1].childNodes[0]);
-    descriptions.push(result.getNode().boxObject.lastChild.childNodes[1].childNodes[0]);
+    // Get the description element of the given title or url
+    var description = null;
+    switch (type) {
+      case "title":
+        description = result.getNode().boxObject.firstChild.childNodes[1].childNodes[0];
+        break;
+      case "url":
+        description = result.getNode().boxObject.lastChild.childNodes[1].childNodes[0];
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Type unknown - " + type);
+    }
 
-    for each (desc in descriptions) {
-      // Check all children of the description node
-      for each (node in desc.childNodes) {
-        switch (node.nodeName) {
-          case "span":
-            this._controller.assertJS("subject.toLowerCase() == '" + text + "'",
-                                      node.innerHTML);
-            break;
-          case "#text":
-            this._controller.assertJS("subject.toLowerCase().indexOf('" + text + "') == -1",
-                                      node.textContent);
-            break;
-        }
+    for each (node in description.childNodes) {
+      switch (node.nodeName) {
+        case "span":
+          this._controller.assertJS("subject.toLowerCase() == '" + text + "'",
+                                    node.innerHTML);
+          break;
+        case "#text":
+          this._controller.assertJS("subject.toLowerCase().indexOf('" + text + "') == -1",
+                                    node.textContent);
+          break;
       }
     }
   },
