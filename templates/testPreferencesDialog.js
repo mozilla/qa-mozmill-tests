@@ -16,7 +16,7 @@
  * The Initial Developer of the Original Code is
  * John Doe <johndoe@example.com>.
  *
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
