@@ -14,6 +14,8 @@
  * The Original Code is Google toolbar mozmill test suite.
  *
  * The Initial Developer of the Original Code is Google.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
  *   Ankush Kalkote <ankush@google.com>
@@ -53,15 +55,15 @@ const gtbTimeout = 5000;
  * Sets up the test module by acquiring a browser controller.
  * @param {module} module object for the test used by Mozmill.
  */
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
 /**
  * This test just verified the element with ID 'gtbToolbar' can be found.
- * @param {module} module object for the test used by Mozmill.
  */
-var testGoogleToolbarInstalled = function() {
+var testGoogleToolbarInstalled = function()
+{
   controller.waitForElement(new elementslib.ID(controller.window.document, GTB_ID), gtbTimeout);
 }
-
