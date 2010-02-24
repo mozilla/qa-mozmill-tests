@@ -80,9 +80,7 @@ var testOpenInBackgroundTab = function()
     
     if(i == 2) {
       // Open another tab by middle-clicking on the link
-      // XXX: Can be changed to middleClick once bug 535018 is fixed
-      controller.mouseDown(currentLink, 1);
-      controller.mouseUp(currentLink, 1);
+      controller.middleClick(currentLink);
     } else {
       // Open the first link via context menu in a new tab:
       controller.rightClick(currentLink);

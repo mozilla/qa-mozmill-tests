@@ -79,9 +79,7 @@ var testScrollBackgroundTabIntoView = function()
   // Open new background tabs until the scroll arrows appear
   var count = 1;
   do {
-    // XXX: Can be changed to middleClick once bug 535018 is fixed
-    controller.mouseDown(link1, 1);
-    controller.mouseUp(link1, 1);
+    controller.middleClick(link1);
 
     // Wait until the new tab has been opened
     controller.waitForEval("subject.length == " + (++count), gTimeout, 100, tabBrowser);
@@ -92,8 +90,7 @@ var testScrollBackgroundTabIntoView = function()
                       container.getNode())
 
   // Open one more tab but with another link for later verification
-  controller.mouseDown(link2, 1);
-  controller.mouseUp(link2, 1);
+  controller.middleClick(link2);
 
   // Check that the List all Tabs button flashes
   controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity != 0",

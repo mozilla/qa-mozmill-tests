@@ -151,10 +151,8 @@ tabBrowser.prototype = {
         this._controller.click(menuitem);
         break;
       case "middleClick":
-        // XXX: Can be changed to middleClick once bug 535018 is fixed
         var tab = this.getTab(event.index);
-        this._controller.mouseDown(tab, 1);
-        this._controller.mouseUp(tab, 1);
+        this._controller.middleClick(tab);
         break;
       case "shortcut":
         this._controller.keypress(null, "w", {accelKey: true});
