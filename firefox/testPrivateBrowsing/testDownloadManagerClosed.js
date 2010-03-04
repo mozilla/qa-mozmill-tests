@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -52,8 +53,11 @@ const downloadsPB = [
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
+
+  // Make sure there are no active downloads, downloaded files
+  // or data in the Download Manager database before beginning
   module.dm = new DownloadsAPI.downloadManager();
-  module.dm.cleanUp();
+  module.dm.cleanAll();
 
   // Array for downloaded files
   module.curDownloads = [];
@@ -66,8 +70,9 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  // Remove all the downloaded files
-  module.dm.deleteDownloadedFiles(module.curDownloads);
+  // Make sure there are no active downloads, downloaded files
+  // or data in the Download Manager database
+  module.dm.cleanAll();
 
   // Reset Private Browsing prefs/state
   module.pb.showPrompt = true;
