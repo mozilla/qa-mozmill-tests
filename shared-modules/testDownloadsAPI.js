@@ -136,6 +136,23 @@ downloadManager.prototype = {
   },
 
   /**
+   * Cancel any active downloads, remove the files, and clean
+   * up the Download Manager database
+   */
+  cleanAll : function downloadManager_cleanAll()
+  {
+    // Cancel any active downloads
+    this.cancelActiveDownloads();
+
+    // Delete all files referred to in the Download Manager
+    var downloads = this.getAllDownloads();
+    this.deleteDownloadedFiles(downloads);
+
+    // Clean any entries from the Download Manager database
+    this.cleanUp();
+  },
+
+  /**
    * Close the download manager
    *
    * @param {boolean} force
