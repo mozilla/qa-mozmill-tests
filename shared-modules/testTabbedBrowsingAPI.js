@@ -298,6 +298,10 @@ tabBrowser.prototype = {
         break;
       case "tabStrip":
         var tabStrip = this.getElement({type: "tabs_strip"});
+
+        // XXX: Workaround until bug 537968 has been fixed
+        this._controller.click(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+
         // Todo: Calculate the correct x position
         this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
         break;
