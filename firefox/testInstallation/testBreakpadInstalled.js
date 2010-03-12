@@ -72,13 +72,15 @@ var testBreakpadInstalled = function()
   execFile.initWithPath(appDir.path);
   execFile.append(fileNames[mozmill.platform]);
 
-  controller.assertJS(execFile.exists() == true);
+  controller.assertJS("subject.exists() == true", execFile);
 
   // Is the crash reporter enabled?
-  controller.assertJS(crashReporter.enabled == states["Enabled"]);
+  controller.assertJS("subject.reporter.enabled == subject.stateEnabled",
+                      {reporter: crashReporter, stateEnabled: states['Enabled']});
 
   // Do we have the correct server URL?
-  controller.assertJS(crashReporter.serverURL.spec == states["ServerURL"]);
+  controller.assertJS("subject.reporter.serverURL.spec == subject.stateServerURL",
+                      {reporter: crashReporter, stateServerURL: states['ServerURL']});
 }
 
 /**

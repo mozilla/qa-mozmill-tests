@@ -151,7 +151,8 @@ searchEngine.prototype = {
 
     // Check if the search bar has the focus
     var activeElement = this._controller.window.document.activeElement;
-    this._controller.assertJS(searchInput.getNode() == activeElement);
+    this._controller.assertJS("subject.searchBar == subject.activeElement",
+	                           {searchBar: searchInput.getNode(), activeElement: activeElement});
   },
 
   getVisibleEngines : function searchEngine_getVisibleEngines()

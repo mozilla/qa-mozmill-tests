@@ -101,8 +101,9 @@ var prefDialogCallback = function(controller)
 
   cmController.click(new elementslib.ID(cmController.window.document, "removeCookie"));
 
-  cmController.assertJS(cm.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == false);
-  cmController.assertJS(cookiesList.view.rowCount == origNumCookies - 1);
+  cmController.assertJS("subject.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == false", cm);
+  cmController.assertJS("subject.list.view.rowCount == subject.numberCookies",
+                        {list: cookiesList, numberCookies: origNumCookies - 1});
 
   // Close the cookies manager and the preferences dialog
   cmController.keypress(null, "w", {accelKey: true});

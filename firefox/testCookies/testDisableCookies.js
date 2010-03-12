@@ -122,7 +122,7 @@ var prefCheckDisableDialogCallback = function(controller)
 
   // XXX: Bug 513820 - Remove Cookies button is not cleared when cookie list is cleared
   //cmController.assertProperty(removeCookieButton, "disabled", true);
-  cmController.assertJS(cm.countCookiesFromHost('.mozilla.org') == 0);
+  cmController.assertJS("subject.countCookiesFromHost('.mozilla.org') == 0", cm);
 
   // Close the cookies manager and the preferences dialog
   cmController.keypress(null, "w", {accelKey: true});

@@ -76,7 +76,8 @@ var testVerifyDefaultBookmarks = function() {
   // Check for the correct path in the URL which also includes the locale
   var uriSource = UtilsAPI.createURI(toolbarNodes.getChild(1).uri, null, null);
   var uriTarget = UtilsAPI.createURI(locationBar.getNode().value, null, null);
-  controller.assertJS(uriSource.path == uriTarget.path);
+  controller.assertJS("subject.source.path == subject.target.path",
+                      {source: uriSource, target: uriTarget});
 
   // Check the title of the default RSS feed toolbar button
   var RSS = new elementslib.XPath(controller.window.document, elemString.replace("%1", "3"));

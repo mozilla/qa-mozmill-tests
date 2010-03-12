@@ -96,7 +96,8 @@ var testSubmitUnencryptedInfoWarning = function()
   controller.assertNodeNotExist(searchbox);
 
   // Test if the modal dialog has been shown
-  controller.assertJS(modalWarningShown == true);
+  controller.assertJS("subject.isModalWarningShown == true",
+                      {isModalWarningShown: modalWarningShown});
 }
 
 /**

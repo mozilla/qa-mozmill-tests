@@ -90,7 +90,7 @@ var testLarryGreen = function()
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
   var cssInfoLockImage = controller.window.getComputedStyle(lockIcon.getNode(), "");
-  controller.assertJS(cssInfoLockImage.getPropertyValue('list-style-image') != "none");
+  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssInfoLockImage);
 
   // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService

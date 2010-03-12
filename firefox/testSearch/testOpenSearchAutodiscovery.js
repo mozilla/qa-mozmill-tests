@@ -68,7 +68,8 @@ var testOpenSearchAutodiscovery = function()
   // Check that the drop down icon glows
   var engineButton = new elementslib.Lookup(controller.window.document,
                                             SearchAPI.searchEngineButton);
-  controller.assertJS(engineButton.getNode().getAttribute('addengines') == 'true');
+  controller.assertJS("subject.getAttribute('addengines') == 'true'",
+                      engineButton.getNode());
 
   // Open search engine drop down and add Open Search engine
   search.clickEngineButton();

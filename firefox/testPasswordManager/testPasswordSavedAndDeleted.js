@@ -124,7 +124,7 @@ var prefDialogCallback = function(controller)
   var signOnsTree = pwdController.window.document.getElementById("signonsTree");
 
   // Verify there is at least one saved password
-  pwdController.assertJS(signOnsTree.view.rowCount == 1);
+  pwdController.assertJS("subject.view.rowCount == 1", signOnsTree);
 
   // Delete all passwords and accept the deletion of the saved passwords
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
@@ -132,7 +132,7 @@ var prefDialogCallback = function(controller)
 
   pwdController.click(new elementslib.ID(pwdController.window.document, "removeAllSignons"));
 
-  pwdController.assertJS(signOnsTree.view.rowCount == 0);
+  pwdController.assertJS("subject.view.rowCount == 0", signOnsTree);
 
   // Close the password manager
   pwdController.keypress(null, "w", {accelKey:true});

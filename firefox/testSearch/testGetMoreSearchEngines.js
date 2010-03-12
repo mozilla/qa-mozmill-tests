@@ -128,7 +128,8 @@ var handleSearchInstall = function(controller)
   else
     var title = controller.window.document.title;
 
-  controller.assertJS(title == confirmTitle);
+  controller.assertJS("subject.windowTitle == subject.addEngineTitle",
+                      {windowTitle: title, addEngineTitle: confirmTitle});
 
   // Check that litmus.mozilla.org is shown as domain
   var infoBody = controller.window.document.getElementById("info.body");
