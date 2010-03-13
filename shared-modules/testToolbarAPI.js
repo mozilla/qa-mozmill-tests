@@ -136,16 +136,17 @@ autoCompleteResults.prototype = {
   },
 
   /**
-   * Assert that the given result has underlined the correct parts of the text or URL
+   * Returns the underlined text of all results from the text or URL
    *
    * @param {ElemBase} result
    *        Autocomplete result which has to be checked
    * @param {string} type
    *        Type of element to check (text or url)
-   * @param {string} text
-   *        Text which should be underlined
+   *
+   * @returns An array of substrings which are underlined
+   * @type {Array of string}
    */
-  assertTextUnderlined : function autoCompleteResults_assertTextUnderlined(result, type, text) {
+  getUnderlinedText : function autoCompleteResults_getUnderlinedText(result, type) {
     if (!result.getNode())
       throw new Error(arguments.callee.name + ": Result node is undefined.");
 
@@ -162,16 +163,11 @@ autoCompleteResults.prototype = {
         throw new Error(arguments.callee.name + ": Type unknown - " + type);
     }
 
+    let values = [ ];
     for each (node in description.childNodes) {
-      switch (node.nodeName) {
-        case "span":
-          this._controller.assertJS("subject.toLowerCase() == '" + text + "'",
-                                    node.innerHTML);
-          break;
-        case "#text":
-          this._controller.assertJS("subject.toLowerCase().indexOf('" + text + "') == -1",
-                                    node.textContent);
-          break;
+      if (node.nodeName) {
+        // Only add underlined text to the results
+        values.push(node.innerHTML);
       }
     }
   },
@@ -185,7 +181,7 @@ autoCompleteResults.prototype = {
    *        subtype: Specific element or property
    *        value: Value of the element or property
    * @returns Element which has been created
-   * @type ElemBase
+   * @type {ElemBase}
    */
   getElement : function autoCompleteResults_getElement(spec) {
     var elem = null;
@@ -218,7 +214,7 @@ autoCompleteResults.prototype = {
    * @param {number} index
    *        Index of the result to return
    * @returns Autocomplete result element
-   * @type ElemBase
+   * @type {ElemBase}
    */
   getResult : function autoCompleteResults_getResult(index) {
     return this.getElement({type: "result", value: index});
