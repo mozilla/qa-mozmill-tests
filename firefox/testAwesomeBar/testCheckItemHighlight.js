@@ -78,21 +78,29 @@ var testCheckItemHighlight = function()
   
   // Focus the locationbar, delete any contents there, then type in a match string
   locationBar.clear();
-  
-  // Use type and sleep on each letter to allow the autocomplete to populate with results. 
+
+  // Use type and sleep on each letter to allow the autocomplete to populate with results.
   for (var i = 0; i < testString.length; i++) {
-  locationBar.type(testString[i]);
-  controller.sleep(gDelay);
+    locationBar.type(testString[i]);
+    controller.sleep(gDelay);
   }
-  
-  // defines the path to the (ElemBase) result used in assertTextUnderlined()
+
+  // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
-    
+
   // For the page title check matched text is underlined
-  locationBar.autoCompleteResults.assertTextUnderlined(richlistItem, "title", testString);
-   
+  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
+  for each (entry in entries) {
+    controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
+                        {enteredTitle: testString, underlinedTitle: entry});
+  }
+
   // For the url check matched text is underlined
-  locationBar.autoCompleteResults.assertTextUnderlined(richlistItem, "url", testString);
+  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "url");
+  for each (entry in entries) {
+    controller.assertJS("subject.enteredUrl == subject.underlinedUrl",
+                        {enteredUrl: testString, underlinedUrl: entry});
+  }
 }
 
 /**
