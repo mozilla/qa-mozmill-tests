@@ -57,7 +57,7 @@ var teardownModule = function(module) {
  */
 var testCheckAboutPrivateBrowsing = function()
 {
-  var targetURL = "http://support.mozilla.com/kb/Private+Browsing?style_mode=inproduct";
+  var targetURL = "http://support.mozilla.com/kb/Private+Browsing?style_mode=inproduct&as=u";
 
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
