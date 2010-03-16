@@ -57,7 +57,7 @@ var testLocationBarSearches = function ()
   /**
    * Part 1 - Check unmatched string search
    */
-  var randomTestString = "oau45rtdgsh34nfr";
+  var randomTestString = "oau45rtdgsh34nft";
 
   // Check if random test string is listed in the URL
   locationBar.loadURL(randomTestString);
