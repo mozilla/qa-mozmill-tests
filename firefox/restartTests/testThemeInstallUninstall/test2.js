@@ -96,7 +96,7 @@ var testThemeChange = function()
 
   // Verify the theme that will be changed to is the default theme
   nextTheme = PrefsAPI.preferences.getPref("extensions.lastSelectedSkin", "");
-  addonsManager.controller.assertJS(nextTheme.indexOf("classic") != -1);
+  addonsManager.controller.assertJS("subject.indexOf('classic') != -1", nextTheme);
 }
 
 /**

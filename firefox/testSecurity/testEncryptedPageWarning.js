@@ -88,7 +88,8 @@ var testEncryptedPageWarning = function()
   controller.waitForPageLoad();
 
   // Test if the the modal dialog has been shown
-  controller.assertJS(modalWarningShown == true);
+  controller.assertJS("subject.isModalWarningShown == true",
+                      {isModalWarningShown: modalWarningShown});
 }
 
 /**

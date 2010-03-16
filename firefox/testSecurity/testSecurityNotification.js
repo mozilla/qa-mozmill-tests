@@ -67,7 +67,7 @@ var testSecNotification = function()
   // The security button should be visible in the status bar
   var securityButton = controller.window.document.getElementById("security-button");
   var cssSecButton = controller.window.getComputedStyle(securityButton, "");
-  controller.assertJS(cssSecButton.getPropertyValue('list-style-image') != 'none');
+  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssSecButton);
 
   // Identity box should have a green background
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
@@ -81,7 +81,7 @@ var testSecNotification = function()
   controller.assertNode(projects);
 
   // Security button should not be visible
-  controller.assertJS(cssSecButton.getPropertyValue('list-style-image') == 'none');
+  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssSecButton);
 
   // Identity box should have a gray background
   controller.assertProperty(identityBox, "className", "unknownIdentity");
@@ -104,7 +104,7 @@ var testSecNotification = function()
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
   controller.waitForElement(text, gTimeout);
-  controller.assertJS(text.getNode().textContent.indexOf("ssl_error_bad_cert_domain") != -1);
+  controller.assertJS("subject.textContent.indexOf('ssl_error_bad_cert_domain') != -1", text.getNode());
 }
 
 /**

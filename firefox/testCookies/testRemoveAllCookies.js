@@ -94,11 +94,11 @@ var prefDialogCallback = function(controller)
 
   // Verify all cookies have been removed
   var cookiesList = cmController.window.document.getElementById("cookiesList");
-  cmController.assertJS(cookiesList.view.rowCount > 0);
+  cmController.assertJS("subject.view.rowCount > 0", cookiesList);
 
   cmController.waitThenClick(new elementslib.ID(cmController.window.document, "removeAllCookies"), gTimeout);
 
-  cmController.assertJS(cookiesList.view.rowCount == 0);
+  cmController.assertJS("subject.view.rowCount == 0", cookiesList);
 
   // Close the cookies manager and preferences dialog
   cmController.keypress(null, "w", {accelKey: true});

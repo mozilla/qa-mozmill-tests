@@ -119,8 +119,8 @@ var prefCheckEnableDialogCallback = function(controller)
   cmController.waitForElement(removeCookieButton, gTimeout);
   cmController.assertProperty(removeCookieButton, "disabled", false);
 
-  cmController.assertJS(cm.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == true);
-  cmController.assertJS(cm.countCookiesFromHost('.mozilla.org') > 0);
+  cmController.assertJS("subject.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == true", cm);
+  cmController.assertJS("subject.countCookiesFromHost('.mozilla.org') > 0", cm);
 
   // Close the cookies manager and the preferences dialog
   cmController.keypress(null, "w", {accelKey: true});

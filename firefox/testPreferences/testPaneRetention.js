@@ -106,7 +106,8 @@ var prefPaneSetCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 var prefPaneCheckCallback = function(controller) {
-  controller.assertJS('panePrivacy' == PrefsAPI.preferencesDialog.getPane(controller));
+  controller.assertJS("subject.getPane(controller) == 'panePrivacy'", 
+                      PrefsAPI.preferencesDialog);
   controller.sleep(gDelay);
 
   // Close the Preferences dialog

@@ -69,7 +69,7 @@ var testBreakpadInstalled = function()
   execFile.initWithPath(appDir.path);
   execFile.append(fileNames[mozmill.platform]);
 
-  controller.assertJS(execFile.exists() == true);
+  controller.assertJS("subject.file.exists() == true", {file: execFile});
 
   // Analyse the application.ini file and check that the crash reporter
   // is enabled and has the correct server URL
@@ -90,7 +90,8 @@ var testBreakpadInstalled = function()
 
     // If it is a valid key check the value for validity
     if (states[key] != undefined) {
-      controller.assertJS(states[key] == value);
+      controller.assertJS("subject.iniState == subject.iniValue",
+	                       {iniState: states[key], iniValue: value});
     }
   }
 }
