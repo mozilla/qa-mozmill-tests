@@ -99,16 +99,16 @@ aboutSessionRestore.prototype = {
         elem = new elementslib.ID(this._controller.tabs.activeTab, "errorTryAgain");
         break;
       case "error_longDesc":
-        elem = new elementslib.ID(controller.tabs.activeTab, "errorLongDesc");
+        elem = new elementslib.ID(this._controller.tabs.activeTab, "errorLongDesc");
         break;
       case "error_pageContainer":
-        elem = new elementslib.ID(controller.tabs.activeTab, "errorPageContainer");
+        elem = new elementslib.ID(this._controller.tabs.activeTab, "errorPageContainer");
         break;
       case "error_shortDesc":
-        elem = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
+        elem = new elementslib.ID(this._controller.tabs.activeTab, "errorShortDescText");
         break;
       case "error_title":
-        elem = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
+        elem = new elementslib.ID(this._controller.tabs.activeTab, "errorTitleText");
         break;
       case "tabList":
         elem = new elementslib.ID(this._controller.window.document, "tabList");
