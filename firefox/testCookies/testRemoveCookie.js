@@ -85,28 +85,35 @@ var prefDialogCallback = function(controller)
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
   controller.sleep(500);
 
-  // Grab the cookies manager window
-  var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-  var cmController = new mozmill.controller.MozMillController(window);
-
-  // Search for a cookie from mozilla.org and delete it
-  var filterField = new elementslib.ID(cmController.window.document, "filter");
-  cmController.waitForElement(filterField, gTimeout);
-  cmController.type(filterField, "__utmz");
-  cmController.sleep(500);
-
-  // Get the number of cookies in the file manager before removing a single cookie
-  var cookiesList = cmController.window.document.getElementById("cookiesList");
-  var origNumCookies = cookiesList.view.rowCount;
-
-  cmController.click(new elementslib.ID(cmController.window.document, "removeCookie"));
-
-  cmController.assertJS("subject.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == false", cm);
-  cmController.assertJS("subject.view.rowCount == origNumCookies - 1", cookiesList);
-
-  // Close the cookies manager and the preferences dialog
-  cmController.keypress(null, "w", {accelKey: true});
-  controller.sleep(200);
+  try {
+    // Grab the cookies manager window
+    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
+    var cmController = new mozmill.controller.MozMillController(window);
+  
+    // Search for a cookie from mozilla.org and delete it
+    var filterField = new elementslib.ID(cmController.window.document, "filter");
+    cmController.waitForElement(filterField, gTimeout);
+    cmController.type(filterField, "__utmz");
+    cmController.sleep(500);
+  
+    // Get the number of cookies in the file manager before removing a single cookie
+    var cookiesList = cmController.window.document.getElementById("cookiesList");
+    var origNumCookies = cookiesList.view.rowCount;
+  
+    cmController.click(new elementslib.ID(cmController.window.document, "removeCookie"));
+  
+    cmController.assertJS("subject.isCookieRemoved == true",
+                          {isCookieRemoved: !cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
+    cmController.assertJS("subject.list.view.rowCount == subject.numberCookies",
+                          {list: cookiesList, numberCookies: origNumCookies - 1});
+  
+  } catch (ex) {
+    throw ex;
+  } finally {
+    // Close the cookies manager
+    cmController.keypress(null, "w", {accelKey: true});
+    controller.sleep(200);
+  }
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
