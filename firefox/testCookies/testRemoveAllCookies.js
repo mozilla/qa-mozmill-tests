@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -88,21 +89,27 @@ var prefDialogCallback = function(controller)
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
   controller.sleep(500);
 
-  // Grab the cookies manager window
-  var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-  var cmController = new mozmill.controller.MozMillController(window);
+  try {
+    // Grab the cookies manager window
+    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
+    var cmController = new mozmill.controller.MozMillController(window);
 
-  // Verify all cookies have been removed
-  var cookiesList = cmController.window.document.getElementById("cookiesList");
-  cmController.assertJS("subject.view.rowCount > 0", cookiesList);
+    // Get the amount of current cookies
+    var cookiesList = cmController.window.document.getElementById("cookiesList");
+    cmController.assertJS("subject.cookieCount > 0",
+                          {cookieCount : cookiesList.view.rowCount});
 
-  cmController.waitThenClick(new elementslib.ID(cmController.window.document, "removeAllCookies"), gTimeout);
-
-  cmController.assertJS("subject.view.rowCount == 0", cookiesList);
-
-  // Close the cookies manager and preferences dialog
-  cmController.keypress(null, "w", {accelKey: true});
-  controller.sleep(200);
+    // Verify all cookies have been removed
+    cmController.waitThenClick(new elementslib.ID(cmController.window.document, "removeAllCookies"), gTimeout);
+    cmController.assertJS("subject.cookieCount == 0",
+                          {cookieCount : cookiesList.view.rowCount});
+  } catch (ex) {
+    throw ex;
+  } finally {
+    // Close the cookies manager
+    cmController.keypress(null, "w", {accelKey: true});
+    controller.sleep(200);
+  }
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
