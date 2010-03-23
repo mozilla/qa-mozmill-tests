@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -110,21 +111,27 @@ var prefCheckEnableDialogCallback = function(controller)
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
   controller.sleep(500);
 
-  // Grab the cookies manager window
-  var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-  var cmController = new mozmill.controller.MozMillController(window);
-
-  // Search for cookies from mozilla.org and verify cookies are saved
-  var removeCookieButton = new elementslib.ID(cmController.window.document, "removeCookie");
-  cmController.waitForElement(removeCookieButton, gTimeout);
-  cmController.assertProperty(removeCookieButton, "disabled", false);
-
-  cmController.assertJS("subject.cookieExists({host: '.mozilla.org', name: '__utmz', path: '/'}) == true", cm);
-  cmController.assertJS("subject.countCookiesFromHost('.mozilla.org') > 0", cm);
-
-  // Close the cookies manager and the preferences dialog
-  cmController.keypress(null, "w", {accelKey: true});
-  controller.sleep(200);
+  try {
+    // Grab the cookies manager window
+    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
+    var cmController = new mozmill.controller.MozMillController(window);
+  
+    // Search for cookies from mozilla.org and verify cookies are saved
+    var removeCookieButton = new elementslib.ID(cmController.window.document, "removeCookie");
+    cmController.waitForElement(removeCookieButton, gTimeout);
+    cmController.assertProperty(removeCookieButton, "disabled", false);
+  
+    cmController.assertJS("subject.cookieExists == true",
+                          {cookieExists: cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
+    cmController.assertJS("subject.cookieCount > 0",
+                          {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
+  } catch (ex) {
+    throw ex;
+  } finally {
+    // Close the cookies manager
+    cmController.keypress(null, "w", {accelKey: true});
+    controller.sleep(200);
+  }
 
   PrefsAPI.preferencesDialog.close(controller, true);
 }
