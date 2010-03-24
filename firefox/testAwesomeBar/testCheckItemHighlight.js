@@ -90,16 +90,20 @@ var testCheckItemHighlight = function()
 
   // For the page title check matched text is underlined
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
+  controller.assertJS("subject.underlinedTextCount == 1",
+                      {underlinedTextCount: entries.length})
   for each (entry in entries) {
     controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: testString, underlinedTitle: entry});
+                        {enteredTitle: testString, underlinedTitle: entry.toLowerCase()});
   }
 
   // For the url check matched text is underlined
-  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "url");
+  entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "url");
+  controller.assertJS("subject.underlinedUrlCount == 1",
+                      {underlinedUrlCount: entries.length})
   for each (entry in entries) {
     controller.assertJS("subject.enteredUrl == subject.underlinedUrl",
-                        {enteredUrl: testString, underlinedUrl: entry});
+                        {enteredUrl: testString, underlinedUrl: entry.toLowerCase()});
   }
 }
 
