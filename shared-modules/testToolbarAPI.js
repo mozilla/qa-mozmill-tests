@@ -165,11 +165,13 @@ autoCompleteResults.prototype = {
 
     let values = [ ];
     for each (node in description.childNodes) {
-      if (node.nodeName) {
+      if (node.nodeName == 'span') {
         // Only add underlined text to the results
         values.push(node.innerHTML);
       }
     }
+
+    return values;
   },
 
   /**
