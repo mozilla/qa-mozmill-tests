@@ -256,17 +256,17 @@ function createURI(spec, originCharset, baseURI)
 /**
  * Format a URL by replacing all placeholders
  *
- * @param {string} preference
+ * @param {string} prefName
  *        The preference name which contains the URL
  * @return The formatted URL
  * @type string
  */
-function formatUrlPref(preference)
+function formatUrlPref(prefName)
 {
   var formatter = Cc["@mozilla.org/toolkit/URLFormatterService;1"]
                      .getService(Ci.nsIURLFormatter);
 
-  return formatter.formatURLPref(preference);
+  return formatter.formatURLPref(prefName);
 }
 
 /**
