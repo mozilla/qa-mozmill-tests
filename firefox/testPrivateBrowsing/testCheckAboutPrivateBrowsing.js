@@ -57,8 +57,6 @@ var teardownModule = function(module) {
  */
 var testCheckAboutPrivateBrowsing = function()
 {
-  var targetURL = "http://support.mozilla.com/kb/Private+Browsing?style_mode=inproduct&as=u";
-
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
@@ -70,9 +68,11 @@ var testCheckAboutPrivateBrowsing = function()
   controller.waitThenClick(moreInfo, gTimeout);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
+  var targetUrl = UtilsAPI.formatUrlPref("app.support.baseURL") + "private-browsing";
+
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
   controller.waitForPageLoad();
-  UtilsAPI.assertLoadedUrlEqual(controller, targetURL);
+  UtilsAPI.assertLoadedUrlEqual(controller, targetUrl);
 
   pb.stop();
 }

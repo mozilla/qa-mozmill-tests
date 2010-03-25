@@ -46,27 +46,6 @@
 var MODULE_NAME = 'UtilsAPI';
 
 /**
- * Create a new URI
- *
- * @param {string} spec
- *        The URI string in UTF-8 encoding.
- * @param {string} originCharset
- *        The charset of the document from which this URI string originated.
- * @param {string} baseURI
- *        If null, spec must specify an absolute URI. Otherwise, spec may be
- *        resolved relative to baseURI, depending on the protocol.
- * @return A URI object
- * @type nsIURI
- */
-function createURI(spec, originCharset, baseURI)
-{
-  let iosvc = Cc["@mozilla.org/network/io-service;1"].
-              getService(Ci.nsIIOService);
-
-  return iosvc.newURI(spec, originCharset, baseURI);
-}
-
-/**
  * Get application specific informations
  * @see http://mxr.mozilla.org/mozilla-central/source/xpcom/system/nsIXULAppInfo.idl
  */
@@ -168,50 +147,6 @@ var appInfo = {
 };
 
 /**
- * Called to get the value of an individual property.
- *
- * @param {string} url
- *        URL of the string bundle.
- * @param {string} prefName
- *        The property to get the value of.
- *
- * @return The value of the requested property
- * @type string
- */
-function getProperty(url, prefName)
-{
-  var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"].
-                       getService(Components.interfaces.nsIStringBundleService);
-  var bundle = sbs.createBundle(url);
-
-  return bundle.GetStringFromName(prefName);
-}
-
-/**
- * Run tests against a given search form
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- * @param {ElemBase} searchField
- *        The HTML input form element to test
- * @param {string} searchTerm
- *        The search term for the test
- * @param {ElemBase} submitButton
- *        (Optional) The forms submit button
- * @param {number} timeout
- *        The timeout value for the single tests
- */
-function checkSearchField(controller, searchField, searchTerm, submitButton, timeout)
-{
-  controller.waitThenClick(searchField, timeout);
-  controller.type(searchField, searchTerm);
-
-  if (submitButton != undefined) {
-    controller.waitThenClick(submitButton, timeout);
-  }
-}
-
-/**
  * Checks the visibility of an element.
  * XXX: Mozmill doesn't check if an element is visible and also operates on
  * elements which are invisible. (Bug 490548)
@@ -271,4 +206,85 @@ function closeContentAreaContextMenu(controller)
 {
   var contextMenu = new elementslib.ID(controller.window.document, "contentAreaContextMenu");
   controller.keypress(contextMenu, "VK_ESCAPE", {});
+}
+
+/**
+ * Run tests against a given search form
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ * @param {ElemBase} searchField
+ *        The HTML input form element to test
+ * @param {string} searchTerm
+ *        The search term for the test
+ * @param {ElemBase} submitButton
+ *        (Optional) The forms submit button
+ * @param {number} timeout
+ *        The timeout value for the single tests
+ */
+function checkSearchField(controller, searchField, searchTerm, submitButton, timeout)
+{
+  controller.waitThenClick(searchField, timeout);
+  controller.type(searchField, searchTerm);
+
+  if (submitButton != undefined) {
+    controller.waitThenClick(submitButton, timeout);
+  }
+}
+
+/**
+ * Create a new URI
+ *
+ * @param {string} spec
+ *        The URI string in UTF-8 encoding.
+ * @param {string} originCharset
+ *        The charset of the document from which this URI string originated.
+ * @param {string} baseURI
+ *        If null, spec must specify an absolute URI. Otherwise, spec may be
+ *        resolved relative to baseURI, depending on the protocol.
+ * @return A URI object
+ * @type nsIURI
+ */
+function createURI(spec, originCharset, baseURI)
+{
+  let iosvc = Cc["@mozilla.org/network/io-service;1"].
+              getService(Ci.nsIIOService);
+
+  return iosvc.newURI(spec, originCharset, baseURI);
+}
+
+/**
+ * Format a URL by replacing all placeholders
+ *
+ * @param {string} preference
+ *        The preference name which contains the URL
+ * @return The formatted URL
+ * @type string
+ */
+function formatUrlPref(preference)
+{
+  var formatter = Cc["@mozilla.org/toolkit/URLFormatterService;1"]
+                     .getService(Ci.nsIURLFormatter);
+
+  return formatter.formatURLPref(preference);
+}
+
+/**
+ * Called to get the value of an individual property.
+ *
+ * @param {string} url
+ *        URL of the string bundle.
+ * @param {string} prefName
+ *        The property to get the value of.
+ *
+ * @return The value of the requested property
+ * @type string
+ */
+function getProperty(url, prefName)
+{
+  var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"].
+                       getService(Components.interfaces.nsIStringBundleService);
+  var bundle = sbs.createBundle(url);
+
+  return bundle.GetStringFromName(prefName);
 }
