@@ -60,7 +60,6 @@ const gTimeout = 5000;
 function aboutSessionRestore(controller)
 {
   this._controller = controller;
-  this._tabList = this.getElement({type: "tabList"});
 }
 
 /**
@@ -75,6 +74,16 @@ aboutSessionRestore.prototype = {
    */
   get controller() {
     return this._controller;
+  },
+
+  /**
+   * Returns the tree which contains the windows and tabs
+   *
+   * @returns Tree with windows and tabs to restore
+   * @type {ElemBase}
+   */
+  get tabList() {
+    return this.getElement({type: "tabList"});
   },
 
   /**
@@ -130,7 +139,7 @@ aboutSessionRestore.prototype = {
    *
    */
   getRestoreState : function aboutSessionRestore_getRestoreState(element) {
-    var tree = this._tabList.getNode();
+    var tree = this.tabList.getNode();
 
     return tree.view.getCellValue(element.listIndex, tree.columns.getColumnAt(0));
   },
@@ -145,7 +154,7 @@ aboutSessionRestore.prototype = {
    */
   getTabs : function aboutSessionRestore_getTabs(window) {
     var tabs = [ ];
-    var tree = this._tabList.getNode();
+    var tree = this.tabList.getNode();
 
     // Add entries when they are tabs (no container)
     var ii = window.listIndex + 1;
@@ -170,7 +179,7 @@ aboutSessionRestore.prototype = {
    */
   getWindows : function aboutSessionRestore_getWindows() {
     var windows = [ ];
-    var tree = this._tabList.getNode();
+    var tree = this.tabList.getNode();
 
     for (var ii = 0; ii < tree.view.rowCount; ii++) {
       if (tree.view.isContainer(ii)) {
@@ -196,7 +205,7 @@ aboutSessionRestore.prototype = {
   toggleRestoreState : function aboutSessionRestore_toggleRestoreState(element) {
     var state = this.getRestoreState(element);
 
-    clickTreeCell(this._tabList.getNode(), element.listIndex, 0, {});
+    clickTreeCell(this.tabList.getNode(), element.listIndex, 0, {});
     this._controller.sleep(0);
 
     this._controller.assertJS("subject.newState != subject.oldState",
