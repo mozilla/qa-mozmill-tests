@@ -45,6 +45,10 @@ const gTimeout = 5000;
 
 const localTestFolder = collector.addHttpResource('./files');
 
+var plugins = {"darwin": "DefaultPlugin.plugin",
+               "winnt": "npnul32.dll",
+               "linux": "libnullplugin.so"};
+
 var setupModule = function(module) 
 {
   module.controller = mozmill.getBrowserController();
@@ -62,7 +66,7 @@ var teardownModule = function(module)
  */
 var testDisableEnablePlugin = function()
 {
-  var pluginId = "DefaultPlugin.plugin";
+  var pluginId = plugins[mozmill.platform];
 
   // Open Add-ons Manager and go to the themes pane
   addonsManager.open(controller);
