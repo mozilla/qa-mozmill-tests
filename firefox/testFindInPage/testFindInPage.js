@@ -72,7 +72,6 @@ var teardownModule = function(module) {
 /**
  * Test find in page functionality
  *
- * @throws Searched string does not match Selected string!
  */
 var testFindInPage = function() {
   var searchTerm = "mozilla";
@@ -98,9 +97,8 @@ var testFindInPage = function() {
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
   var selectedText = tabContent.getSelection();
-  if (selectedText.toString().toLowerCase() != searchTerm) {
-    throw "Searched string does not match selected string."
-  }
+  controller.assertJS("subject.selectedText == subject.searchTerm",
+                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
 
   // Remember DOM range of first search result
   var range = selectedText.getRangeAt(0);
@@ -110,28 +108,24 @@ var testFindInPage = function() {
   controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
-  if (selectedText.toString().toLowerCase() != searchTerm) {
-    throw "Searched string does not match selected string."
-  }
+  controller.assertJS("subject.selectedText == subject.searchTerm",
+                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
 
   // Check that the next result has been selected
-  if (selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0) {
-    throw "Next search result has not been highlighted."
-  }
+  controller.assertJS("subject.isNextResult == true",
+                      {isNextResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) != 0});
 
   // Click the prev button and check the strings again
   controller.click(findBarPrevButton);
   controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
-  if (selectedText.toString().toLowerCase() != searchTerm) {
-    throw "Searched string does not match selected string."
-  }
+  controller.assertJS("subject.selectedText == subject.searchTerm",
+                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
 
   // Check that the first result has been selected again
-  if (selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) != 0) {
-    throw "Previous search result has not been highlighted."
-  }
+  controller.assertJS("subject.isFirstResult == true",
+                      {isFirstResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0});
 }
 
 /**

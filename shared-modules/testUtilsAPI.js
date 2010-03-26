@@ -157,8 +157,6 @@ var appInfo = {
  *        Element to check its visibility
  * @param {boolean} visibility
  *        Expected visibility state of the element
- * @throws Error Element is visible but should be hidden
- * @throws Error Element is hidden but should be visible
  */
 function assertElementVisible(controller, element, visibility)
 {
@@ -166,11 +164,11 @@ function assertElementVisible(controller, element, visibility)
   var state = style.getPropertyValue("visibility");
 
   if (visibility) {
-    if (state != 'visible')
-      throw new Error("Element is hidden but should be visible");
+    controller.assertJS("subject.visibilityState == 'visible'",
+                        {visibilityState: state});
   } else {
-    if (state == 'visible')
-      throw new Error("Element is visible but should be hidden");
+    controller.assertJS("subject.visibilityState != 'visible'",
+                        {visibilityState: state});
   }
 }
 

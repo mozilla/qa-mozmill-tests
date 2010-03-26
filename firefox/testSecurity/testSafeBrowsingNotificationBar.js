@@ -132,8 +132,8 @@ var checkNoPhishingButton = function(badUrl) {
 
     // Verify the not-an-attack-site report page is loaded
     var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-    if (locationBar.getNode().value.indexOf("http://www.stopbadware.org/") == -1)
-      throw "Expected that www.stopbadware.org has been loaded but got " + locationBar.getNode().value;
+	controller.assertJS("subject.urlbar.indexOf('http://www.stopbadware.org/') != -1",
+	                    {urlbar: locationBar.getNode().value});
   }
 
   TabbedBrowsingAPI.closeAllTabs(controller);

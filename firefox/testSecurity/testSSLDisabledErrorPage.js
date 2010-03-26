@@ -55,10 +55,6 @@ var teardownModule = function(module) {
 /**
  * Test that SSL and TLS are checked by default
  *
- * @throws Expected error title 'Secure Connection Failed'!
- * @throws Expected error code ssl_error_ssl_disabled!
- * @throws Expected domain www.verisign.com!
- * @throws Expected SSL Disabled error message!
  */
 var testDisableSSL = function() {
   // Open a blank page so we don't have any error page shown
@@ -73,9 +69,8 @@ var testDisableSSL = function() {
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title, gTimeout);
-  if (title.getNode().textContent != "Secure Connection Failed") {
-      throw "Expected error title 'Secure Connection Failed'!";
-  }
+  controller.assertJS("subject.errorTitle == 'Secure Connection Failed'",
+                      {errorTitle: title.getNode().textContent});
 
   // Verify "Try Again" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "errorTryAgain"));
@@ -83,17 +78,14 @@ var testDisableSSL = function() {
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text, gTimeout);
-  if (text.getNode().textContent.indexOf("ssl_error_ssl_disabled") == -1) {
-    throw "Expected error code ssl_error_ssl_disabled!";
-  }
+  controller.assertJS("subject.errorMessage.indexOf('ssl_error_ssl_disabled') != -1",
+                      {errorMessage: text.getNode().textContent});
 
-  if (text.getNode().textContent.indexOf("www.verisign.com") == -1) {
-    throw "Expected domain www.verisign.com!";
-  }
+  controller.assertJS("subject.errorMessage.indexOf('www.verisign.com') != -1",
+                      {errorMessage: text.getNode().textContent});
 
-  if (text.getNode().textContent.indexOf("SSL protocol has been disabled") == -1) {
-    throw "Expected SSL Disabled error message!";
-  }
+  controller.assertJS("subject.errorMessage.indexOf('SSL protocol has been disabled') != -1",
+                      {errorMessage: text.getNode().textContent});
 }
 
 /**

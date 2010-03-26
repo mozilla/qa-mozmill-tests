@@ -81,9 +81,8 @@ var testNewWindow = function () {
 
   // Get the post test window count
   var windowCountAfterTest = mozmill.utils.getWindows().length;
-  if (windowCountAfterTest !=  windowCountBeforeTest + 1) {
-    throw "A new window did not open";
-  }
+  controller.assertJS("subject.countAfter == subject.countBefore",
+                      {countAfter: windowCountAfterTest, countBefore: windowCountBeforeTest + 1});
 
   // Checks that the new window contains the default home page.
   var locationBar = new elementslib.ID(controller2.window.document, "urlbar");

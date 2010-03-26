@@ -44,7 +44,6 @@ var setupModule = function(module) {
 /**
  * Test to see if the Unknown Issuer error page appears
  *
- * @throws No sec_error_unknown_issuer error displayed!
  */
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
@@ -65,9 +64,8 @@ var testUnknownIssuer = function() {
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
   controller.waitForElement(text, gTimeout);
-  if (text.getNode().textContent.indexOf("sec_error_unknown_issuer") == -1) {
-    throw "No sec_error_unknown_issuer error displayed!";
-  }
+  controller.assertJS("subject.errorMessage.indexOf('sec_error_unknown_issuer') != -1",
+                      {errorMessage: text.getNode().textContent});
 }
 
 /**

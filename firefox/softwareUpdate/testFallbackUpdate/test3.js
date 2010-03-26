@@ -65,8 +65,8 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
     update.assertUpdateStep('noupdatesfound');
   } catch (ex) {
     // If a major update is offered we shouldn't fail
-    if (update.updateType == persisted.type)
-      throw new Error("Another " + persisted.type + " update has been offered.");
+    controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
+                        {newUpdateType: update.updateType, lastUpdateType: persisted.type});
   }
 
   // The upgraded version should be identical with the version given by
@@ -75,17 +75,15 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
               .getService(Ci.nsIVersionComparator);
   var check = vc.compare(persisted.preVersion, persisted.postVersion);
 
-  if (check > 0) {
-    throw new Error("The applied update has caused a downgrade of Firefox.");
-  } else if (check == 0 &
-             persisted.preBuildI <= persisted.postBuildId) {
-    throw new Error("No update has been applied.");
-  }
+  controller.assertJS("subject.versionNumberCheck <= 0",
+                      {versionNumberCheck: check});
+
+  controller.assertJS("subject.preBuildId > subject.postBuildId",
+                      {preBuildId: persisted.preBuildId, postBuildId: persisted.postBuildId});
 
  // An upgrade should not change the builds locale
-  if (persisted.preLocale != persisted.postLocale) {
-    throw new Error("The upgrade has been caused a change of the builds locale.");
-  }
+  controller.assertJS("subject.preLocale == subject.postLocale",
+                      {preLocale: persisted.preLocale, postLocale: persisted.postLocale});
 
   // Update was successful
   persisted.success = true;

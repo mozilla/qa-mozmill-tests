@@ -106,9 +106,8 @@ var handleTriggerDialog = function(controller)
   controller.waitForElement(itemList, gTimeout);
 
   // There should be one theme for installation
-  if (itemElem.childNodes.length != 1) {
-    throw new Error("Expected one theme for installation");
-  }
+  controller.assertJS("subject.themes.length == 1",
+                      {themes: itemElem.childNodes});
 
   // Check if the correct theme name is shown
   controller.assertJS("subject.name == '" + persisted.themeName + "'",
