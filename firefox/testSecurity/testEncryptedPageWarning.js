@@ -74,7 +74,7 @@ var testEncryptedPageWarning = function()
   TabbedBrowsingAPI.closeAllTabs(controller);
 
   // Make sure the prefs are set
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Create a listener for the warning dialog
   var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
@@ -99,8 +99,8 @@ var testEncryptedPageWarning = function()
  */
 var prefDialogCallback = function(controller)
 {
-  // Get the Security Pane
-  PrefsAPI.preferencesDialog.setPane(controller, "paneSecurity");
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneSecurity';
 
   // Click the Warning Messages Settings button
   var warningSettingsButton = new elementslib.ID(controller.window.document,
@@ -114,7 +114,7 @@ var prefDialogCallback = function(controller)
   controller.click(warningSettingsButton);
 
   // Close the preferences dialog
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

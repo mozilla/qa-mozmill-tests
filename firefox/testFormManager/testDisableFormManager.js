@@ -57,7 +57,7 @@ var teardownModule = function(module) {
 
 var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
-  PrefsAPI.preferencesDialog.open(prefDialogFormCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogFormCallback);
 
   var url = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
 
@@ -98,7 +98,8 @@ var testToggleFormManager = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogFormCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'panePrivacy';
 
   // Select custom settings for history and uncheck remember search and form history
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -109,7 +110,7 @@ var prefDialogFormCallback = function(controller) {
   controller.waitThenClick(rememberForms);
   controller.sleep(gDelay);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

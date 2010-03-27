@@ -50,54 +50,73 @@ const MODULE_REQUIRES = ['ModalDialogAPI'];
 
 const gTimeout = 5000;
 
+// Preferences dialog element templates
+const PREF_DIALOG_BUTTONS  = '/{"type":"prefwindow"}/anon({"anonid":"dlg-buttons"})';
+const PREF_DIALOG_DECK     = '/{"type":"prefwindow"}/anon({"class":"paneDeckContainer"})/anon({"anonid":"paneDeck"})';
+const PREF_DIALOG_SELECTOR = '/{"type":"prefwindow"}/anon({"orient":"vertical"})/anon({"anonid":"selector"})';
+
+/**
+ * Constructor
+ * 
+ * @param {MozMillController} controller
+ *        MozMill controller of the browser window to operate on.
+ */
+function preferencesDialog(controller)
+{
+  this._controller = controller;
+}
+
 /**
  * Preferences dialog object to simplify the access to this dialog
  */
-var preferencesDialog = {
+preferencesDialog.prototype = {
+  /**
+   * Returns the MozMill controller
+   *
+   * @returns Mozmill controller
+   * @type {MozMillController}
+   */
+  get controller() {
+    return this._controller;
+  },
 
   /**
-   * Open the preferences dialog and call the given handler
+   * Retrieve the currently selected panel
    *
-   * @param {function} callback
-   *        The callback handler to use to interact with the preference dialog
-   * @param {function} launcher
-   *        (Optional) A callback handler to launch the preference dialog
+   * @returns The panel element
+   * @type {ElemBase}
    */
-  open : function preferencesDialog_open(callback, launcher) {
-    var prefCtrl = null;
+  get selectedPane() {
+    return this.getElement({type: "deck_pane"});
+  },
 
-    if(!callback)
-      throw "No callback given for Preferences Dialog";
+  /**
+   * Get the given pane id
+   */
+  get paneId() {
+    // Check if the selector and the pane are consistent
+    var selector = this.getElement({type: "selector"});
 
-    if (mozmill.isWindows) {
-      // Preference dialog is modal on windows, set up our callback
-      var md = collector.getModule('ModalDialogAPI');
-      var prefModal = new md.modalDialog(callback);
-      prefModal.start();
-    }
+    this._controller.waitForEval("subject.selector.getAttribute('pane') == subject.dlg.selectedPane.getNode().id", gTimeout, 100,
+                                 {selector: selector.getNode().selectedItem, dlg: this});
 
-    // Launch the preference dialog
-    if (launcher) {
-      launcher();
+    return this.selectedPane.getNode().id;
+  },
 
-      // Now that we've launched the dialog, wait a bit for the window
-      mozmill.controller.sleep(500);
-      var win = Cc["@mozilla.org/appshell/window-mediator;1"]
-                   .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
-      prefCtrl = new mozmill.controller.MozMillController(win);
-    } else {
-      prefCtrl = new mozmill.getPreferencesController();
-    }
+  /**
+   * Set the given pane by id
+   *
+   * @param {string} id of the pane
+   */
+  set paneId(id) {
+    var button = this.getElement({type: "selector_button", value: id});
+    this._controller.waitThenClick(button, gTimeout);
 
-    // If the dialog is not modal, run the callback directly
-    if (!mozmill.isWindows) {
-      prefCtrl.sleep(500);
-      callback(prefCtrl);
-    }
-
-    // Wait a bit to make sure window has been closed
-    mozmill.controller.sleep(500);
-
+    // Check if the correct selector is selected
+    var selector = this.getElement({type: "selector"});
+    this._controller.waitForEval("subject.selector.getAttribute('pane') == subject.newPane", gTimeout, 100,
+                                 {selector: selector.getNode().selectedItem, newPane: id});
+    return this.paneId;
   },
 
   /**
@@ -109,50 +128,61 @@ var preferencesDialog = {
    *        (Optional) If true the OK button is clicked on Windows which saves
    *        the changes. On OS X and Linux changes are applied immediately
    */
-  close : function preferencesDialog_close(controller, saveChanges) {
+  close : function preferencesDialog_close(saveChanges) {
     saveChanges = (saveChanges == undefined) ? false : saveChanges;
 
     if (mozmill.isWindows) {
-      var template = '/{"type":"prefwindow"}/anon({"anonid":"dlg-buttons"})/{"dlgtype":"%s"}';
-      var button = template.replace("%s", (saveChanges? "accept" : "cancel"));
-      controller.click(new elementslib.Lookup(controller.window.document, button));
+      var button = this.getElement({type: "button", subtype: (saveChanges ? "accept" : "cancel")});
+      this._controller.click(button);
     } else {
-      controller.keypress(null, 'VK_ESCAPE', {});
+      this._controller.keypress(null, 'VK_ESCAPE', {});
     }
   },
 
   /**
-   * Retrieve the currently selected pane
+   * Retrieve an UI element based on the given spec
    *
-   * @param {MozMillController} controller
-   *        MozMillController of the window to operate on
-   * @returns Id of the currently selected pane
-   * @type string
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        subtype: Specific element or property
+   *        value: Value of the element or property
+   * @returns Element which has been created  
+   * @type {ElemBase}
    */
-  getPane: function preferencesDialog_getPane(controller) {
-    var buttonString = '/{"type":"prefwindow"}/anon({"orient":"vertical"})' +
-                      '/anon({"anonid":"selector"})';
-    var button = new elementslib.Lookup(controller.window.document, buttonString);
+  getElement : function aboutSessionRestore_getElement(spec) {
+    var elem = null;
 
-    return button.getNode().focusedItem.getAttribute('pane');
-  },
+    switch(spec.type) {
+      case "button":
+        elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_BUTTONS +
+                                      '/{"dlgtype":"' + spec.subtype + '"}');
+        break;
+      case "deck":
+        elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_DECK);
+        break;
+      case "deck_pane":
+        var deck = this.getElement({type: "deck"}).getNode();
 
-  /**
-   * Select the given pane
-   *
-   * @param {MozMillController} controller
-   *        MozMillController of the window to operate on
-   * @param {string} Id of the pane
-   */
-  setPane: function preferencesDialog_setPane(controller, paneId) {
-    var buttonString = '/{"type":"prefwindow"}/anon({"orient":"vertical"})' +
-                       '/anon({"anonid":"selector"})/{"pane":"%s"}';
-    var button = new elementslib.Lookup(controller.window.document,
-                                        buttonString.replace("%s", paneId));
-    controller.waitThenClick(button, gTimeout);
+        // XXX: Bug 390724 - selectedPane is broken. So iterate through all elements
+        var panel = deck.boxObject.firstChild;
+        for (var ii = 0; ii < deck.selectedIndex; ii++)
+          panel = panel.nextSibling;
 
-    var pane = new elementslib.ID(controller.window.document, paneId);
-    controller.waitForElement(pane, gTimeout);
+        elem = new elementslib.Elem(panel);
+        break;
+      case "selector":
+        elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_SELECTOR);
+        break;
+      case "selector_button":
+        elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_SELECTOR +
+                                      '/{"pane":"' + spec.value + '"}');
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+    }
+
+    return elem;
   }
 };
 
@@ -250,3 +280,48 @@ var preferences = {
     return true;
   }
 };
+
+/**
+ * Open the preferences dialog and call the given handler
+ *
+ * @param {function} callback
+ *        The callback handler to use to interact with the preference dialog
+ * @param {function} launcher
+ *        (Optional) A callback handler to launch the preference dialog
+ */
+function openPreferencesDialog(callback, launcher)
+{
+  var prefCtrl = null;
+
+  if(!callback)
+    throw new Error("No callback given for Preferences Dialog");
+
+  if (mozmill.isWindows) {
+    // Preference dialog is modal on windows, set up our callback
+    var md = collector.getModule('ModalDialogAPI');
+    var prefModal = new md.modalDialog(callback);
+    prefModal.start();
+  }
+
+  // Launch the preference dialog
+  if (launcher) {
+    launcher();
+
+    // Now that we've launched the dialog, wait a bit for the window
+    mozmill.controller.sleep(500);
+    var win = Cc["@mozilla.org/appshell/window-mediator;1"]
+                 .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
+    prefCtrl = new mozmill.controller.MozMillController(win);
+  } else {
+    prefCtrl = new mozmill.getPreferencesController();
+  }
+
+  // If the dialog is not modal, run the callback directly
+  if (!mozmill.isWindows) {
+    prefCtrl.sleep(500);
+    callback(prefCtrl);
+  }
+
+  // Wait a bit to make sure window has been closed
+  mozmill.controller.sleep(500);
+}

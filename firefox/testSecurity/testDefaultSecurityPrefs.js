@@ -50,14 +50,15 @@ var setupModule = function(module) {
  * Test that SSL and TLS are checked by default
  */
 var testDefaultSecurityPreferences = function() {
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
  * Call-back handler for preferences dialog
  */
 var prefDialogCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneAdvanced');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneAdvanced';
 
   // Get the Encryption tab
   var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
@@ -71,7 +72,7 @@ var prefDialogCallback = function(controller) {
   controller.assertChecked(sslPref);
   controller.assertChecked(tlsPref);
 
-  PrefsAPI.preferencesDialog.close(controller);
+  prefDialog.close();
 }
 
 /**

@@ -103,7 +103,7 @@ var testSavePassword = function()
 var testDeletePassword = function()
 {
   // Call preferences dialog and delete the saved password
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -113,7 +113,8 @@ var testDeletePassword = function()
  */
 var prefDialogCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneSecurity';
 
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showPasswords"), gTimeout);
   controller.sleep(500);
@@ -139,7 +140,7 @@ var prefDialogCallback = function(controller)
   controller.sleep(200);
 
   // Close the preferences dialog
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

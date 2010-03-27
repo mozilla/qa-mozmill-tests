@@ -63,14 +63,14 @@ var teardownModule = function(module)
 var testDisableCookies = function()
 {
   // Call preferences dialog and disable cookies
-  PrefsAPI.preferencesDialog.open(prefDisableCookieDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDisableCookieDialogCallback);
 
   // Go to mozilla.org to build a list of cookies
   controller.open("http://www.mozilla.org/");
   controller.waitForPageLoad();
 
   // Call preferences dialog and check cookies
-  PrefsAPI.preferencesDialog.open(prefCheckDisableDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefCheckDisableDialogCallback);
 }
 
 /**
@@ -80,7 +80,8 @@ var testDisableCookies = function()
  */
 var prefDisableCookieDialogCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -93,7 +94,7 @@ var prefDisableCookieDialogCallback = function(controller)
   controller.check(acceptCookiesPref, false);
 
   // Close the preferences dialog
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**
@@ -103,6 +104,8 @@ var prefDisableCookieDialogCallback = function(controller)
  */
 var prefCheckDisableDialogCallback = function(controller)
 {
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode, gTimeout);
@@ -134,7 +137,7 @@ var prefCheckDisableDialogCallback = function(controller)
     controller.sleep(200);
   }
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

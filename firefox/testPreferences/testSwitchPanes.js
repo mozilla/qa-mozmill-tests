@@ -43,7 +43,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 10;
+const gDelay = 100;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
@@ -54,7 +54,7 @@ var setupModule = function(module) {
  * Switching through all panes of the preferences dialog
  */
 var testPreferencesPanes = function() {
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -64,6 +64,8 @@ var testPreferencesPanes = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+
   // List of all available panes inside the Preferences window
   var panes = [
                "paneMain", "paneTabs", "paneContent", "paneApplications",
@@ -72,12 +74,12 @@ var prefDialogCallback = function(controller) {
 
   // Step through each of the panes
   for each (pane in panes) {
-    PrefsAPI.preferencesDialog.setPane(controller, pane);
+    prefDialog.paneId = pane;
     controller.sleep(gDelay);
   }
 
   // Close the Preferences window
-  PrefsAPI.preferencesDialog.close(controller);
+  prefDialog.close();
 }
 
 /**

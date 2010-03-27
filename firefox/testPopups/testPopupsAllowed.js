@@ -66,7 +66,7 @@ var testPopUpAllowed = function()
 {
   var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
 
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Get the window count
   var windowCount = mozmill.utils.getWindows().length;
@@ -98,14 +98,15 @@ var testPopUpAllowed = function()
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneContent');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneContent';
 
   // Make sure the pref is unchecked
   var pref = new elementslib.ID(controller.window.document, "popupPolicy");
   controller.waitForElement(pref, gTimeout);
   controller.check(pref, false);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**
