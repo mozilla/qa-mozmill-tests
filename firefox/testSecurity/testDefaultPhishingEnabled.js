@@ -41,15 +41,17 @@ var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 }
 
 /**
  * Verify phishing detection is enabled
  */
-var testDefaultPhishingEnabled = function() {
-  PrefsAPI.preferencesDialog.open(prefPaneSetCallback);
+var testDefaultPhishingEnabled = function()
+{
+  PrefsAPI.openPreferencesDialog(prefPaneSetCallback);
 }
 
 /**
@@ -58,8 +60,10 @@ var testDefaultPhishingEnabled = function() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefPaneSetCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+var prefPaneSetCallback = function(controller)
+{
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneSecurity';
 
   // Check if the Security pane is active
   var attackElem = new elementslib.ID(controller.window.document, "blockAttackSites");
@@ -71,7 +75,7 @@ var prefPaneSetCallback = function(controller) {
   controller.assertChecked(forgeryElem);
   controller.sleep(gDelay);
 
-  PrefsAPI.preferencesDialog.close(controller);
+  prefDialog.close();
 }
 
 /**

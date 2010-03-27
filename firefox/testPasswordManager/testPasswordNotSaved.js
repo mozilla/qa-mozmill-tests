@@ -106,7 +106,7 @@ var testPasswordNotSaved = function()
   controller.assertValue(passField, "");
 
   // Call preferences dialog and check that no password has been saved
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -117,7 +117,8 @@ var testPasswordNotSaved = function()
  */
 var prefDialogCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneSecurity';
 
   controller.waitThenClick(new elementslib.ID(controller.window.document, "showPasswords"), gTimeout);
   controller.sleep(500);
@@ -135,7 +136,7 @@ var prefDialogCallback = function(controller)
   // Close the password manager and preferences dialog
   pwdController.keypress(null, "W", {accelKey: true});
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

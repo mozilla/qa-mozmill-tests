@@ -57,7 +57,7 @@ var testSetLanguages = function () {
   controller.open("about:blank");
 
   // Call preferences dialog and set primary language to Italian
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Open the Google Home page
   controller.open('http://www.google.com/');
@@ -76,7 +76,8 @@ var testSetLanguages = function () {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, "paneContent");
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneContent';
 
   // Call language dialog and set Italian as primary language
   var md = new ModalDialogAPI.modalDialog(langHandler);
@@ -85,7 +86,7 @@ var prefDialogCallback = function(controller) {
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
   controller.waitThenClick(language, gTimeout);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

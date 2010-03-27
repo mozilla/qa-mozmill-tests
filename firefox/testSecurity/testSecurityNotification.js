@@ -38,7 +38,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI','PrefsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;

@@ -70,7 +70,7 @@ var teardownModule = function(module)
  */
 var testOpenInBackgroundTab = function()
 {
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Open the HTML testcase
   controller.open(localTestFolder + "openinnewtab.html");
@@ -129,14 +129,15 @@ var testOpenInBackgroundTab = function()
  */
 var prefDialogCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneTabs');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneTabs';
 
   // Ensure that 'Switch to tabs immediately' is unchecked
   var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
   controller.waitForElement(switchToTabsPref, gTimeout);
   controller.check(switchToTabsPref, false);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

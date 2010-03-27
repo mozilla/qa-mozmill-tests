@@ -88,7 +88,7 @@ var testSetMasterPassword = function()
   controller.assertNodeNotExist(button);
 
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.preferencesDialog.open(prefDialogSetMasterPasswordCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogSetMasterPasswordCallback);
 }
 
 /**
@@ -97,7 +97,7 @@ var testSetMasterPassword = function()
 var testInvokeMasterPassword = function()
 {
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.preferencesDialog.open(prefDialogInvokeMasterPasswordCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogInvokeMasterPasswordCallback);
 }
 
 /**
@@ -106,7 +106,7 @@ var testInvokeMasterPassword = function()
 var testRemoveMasterPassword = function()
 {
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.preferencesDialog.open(prefDialogDeleteMasterPasswordCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogDeleteMasterPasswordCallback);
 }
 
 /**
@@ -116,7 +116,8 @@ var testRemoveMasterPassword = function()
  */
 var prefDialogSetMasterPasswordCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneSecurity';
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
   controller.waitForElement(masterPasswordCheck, gTimeout);
@@ -129,7 +130,7 @@ var prefDialogSetMasterPasswordCallback = function(controller)
   controller.click(masterPasswordCheck);
 
   // Close the Preferences dialog
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**
@@ -175,7 +176,7 @@ var confirmHandler = function(controller)
  */
 var prefDialogInvokeMasterPasswordCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   var showPasswordButton = new elementslib.ID(controller.window.document, "showPasswords");
   controller.waitForElement(showPasswordButton, gTimeout);
@@ -210,7 +211,7 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
   pwdController.keypress(null, "w", {accelKey: true});
   pwdController.sleep(200);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**
@@ -237,7 +238,7 @@ var checkMasterHandler = function(controller)
  */
 var prefDialogDeleteMasterPasswordCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneSecurity');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
   controller.waitForElement(masterPasswordCheck, gTimeout);
@@ -249,7 +250,7 @@ var prefDialogDeleteMasterPasswordCallback = function(controller)
   controller.click(masterPasswordCheck);
 
   // Close the Preferences dialog
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

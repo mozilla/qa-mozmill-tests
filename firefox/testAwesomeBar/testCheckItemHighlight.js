@@ -61,21 +61,21 @@ var setupModule = function(module)
 var testCheckItemHighlight = function()
 {
   // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
-  PrefsAPI.preferencesDialog.open(prefDialogSuggestsCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
 
-  var websites = ['http://www.google.com/', 'about:blank'];                 
+  var websites = ['http://www.google.com/', 'about:blank'];
 
   // Open the test page then about:blank to set up the test test environment
   for (var k = 0; k < websites.length; k++) {
     locationBar.loadURL(websites[k]);
     controller.waitForPageLoad();
   }
-  
+
   // wait for 4 seconds to work around Firefox LAZY ADD of items to the db
   controller.sleep(4000);
-  
+
   var testString = "google";
-  
+
   // Focus the locationbar, delete any contents there, then type in a match string
   locationBar.clear();
 
@@ -115,12 +115,15 @@ var testCheckItemHighlight = function()
  */
 var prefDialogSuggestsCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'panePrivacy';
+
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
   controller.waitForElement(suggests);
   controller.select(suggests, null, null, 0);
   controller.sleep(gDelay);
-  PrefsAPI.preferencesDialog.close(controller, true);
+
+  prefDialog.close(true);
 }
 
 /**

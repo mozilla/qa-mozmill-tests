@@ -42,20 +42,23 @@ var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(module)
+{
   PrefsAPI.preferences.clearUserPref("browser.startup.homepage");
 }
 
 /**
  * Restore home page to default
  */
-var testRestoreHomeToDefault = function() {
+var testRestoreHomeToDefault = function()
+{
   // Open a web page for the temporary home page
   controller.open('http://www.mozilla.org/');
   controller.waitForPageLoad();
@@ -64,7 +67,7 @@ var testRestoreHomeToDefault = function() {
   controller.assertNode(link);
 
   // Call Preferences dialog and set home page
-  PrefsAPI.preferencesDialog.open(prefDialogHomePageCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogHomePageCallback);
 
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
@@ -72,7 +75,7 @@ var testRestoreHomeToDefault = function() {
   controller.assertNode(link);
 
   // Open Preferences dialog and reset home page to default
-  PrefsAPI.preferencesDialog.open(prefDialogDefHomePageCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogDefHomePageCallback);
 }
 
 /**
@@ -81,33 +84,33 @@ var testRestoreHomeToDefault = function() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogHomePageCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
-  controller.sleep(gDelay);
+var prefDialogHomePageCallback = function(controller)
+{
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneMain';
 
   // Set home page to the current page
   var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
   controller.waitThenClick(useCurrent);
   controller.sleep(gDelay);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 var prefDialogDefHomePageCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   // Reset home page to the default page
   var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
   controller.waitForElement(useDefault, gTimeout);
   controller.click(useDefault);
-  controller.sleep(gDelay);
 
   // Check the browserconfig file to get the get default homepage
   var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
   var browserHomePage = new elementslib.ID(controller.window.document, "browserHomePage");
   controller.assertValue(browserHomePage, defaultHomePage);
 
-  PrefsAPI.preferencesDialog.close(controller);
+  prefDialog.close();
 }
 
 /**

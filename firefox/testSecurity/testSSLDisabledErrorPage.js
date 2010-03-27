@@ -65,7 +65,7 @@ var testDisableSSL = function() {
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   controller.open("https://www.verisign.com");
   controller.waitForPageLoad(1000);
@@ -103,13 +103,12 @@ var testDisableSSL = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneAdvanced');
-  controller.sleep(gDelay);
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneAdvanced';
 
   // Get the Encryption tab
   var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
   controller.waitThenClick(encryption, gTimeout);
-  controller.sleep(gDelay);
 
   // Make sure the Use SSL pref is not checked
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
@@ -121,7 +120,7 @@ var prefDialogCallback = function(controller) {
   controller.waitForElement(tlsPref, gTimeout);
   controller.check(tlsPref, false);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

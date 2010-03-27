@@ -44,20 +44,23 @@ const gTimeout = 5000;
 
 var homepage = 'http://www.mozilla.org/';
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(module)
+{
   PrefsAPI.preferences.clearUserPref("browser.startup.homepage");
 }
 
 /**
  * Set homepage to current page
  */
-var testSetHomePage = function() {
+var testSetHomePage = function()
+{
   // Go to the Mozilla.org website and verify the correct page has loaded
   controller.open(homepage);
   controller.waitForPageLoad();
@@ -66,10 +69,11 @@ var testSetHomePage = function() {
   controller.assertNode(link);
 
   // Call Prefs Dialog and set Home Page
-  PrefsAPI.preferencesDialog.open(prefDialogHomePageCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogHomePageCallback);
 }
 
-var testHomeButton = function() {
+var testHomeButton = function()
+{
   // Open another page before going to the home page
   controller.open('http://www.yahoo.com/');
   controller.waitForPageLoad();
@@ -89,15 +93,16 @@ var testHomeButton = function() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogHomePageCallback = function(controller) {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
-  controller.sleep(gDelay);
+var prefDialogHomePageCallback = function(controller)
+{
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneMain';
 
   // Set Home Page to the current page
   var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
   controller.click(useCurrent);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

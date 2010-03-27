@@ -88,7 +88,7 @@ var teardownModule = function(module)
 var testDownloadManagerClosed = function()
 {
   // Disable the opening of the Downloads Manager when starting a download
-  PrefsAPI.preferencesDialog.open(handlePrefDialog);
+  PrefsAPI.openPreferencesDialog(handlePrefDialog);
 
   // Download a couple of files
   for (var ii = 0; ii < downloads.length; ii++)
@@ -152,15 +152,15 @@ var testDownloadManagerClosed = function()
  */
 var handlePrefDialog = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'paneMain');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'paneMain';
 
   // Don't show the download manager when a download starts
   var show = new elementslib.ID(controller.window.document, "showWhenDownloading");
   controller.waitForElement(show, gTimeout);
   controller.check(show, false);
 
-  controller.sleep(1000);
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

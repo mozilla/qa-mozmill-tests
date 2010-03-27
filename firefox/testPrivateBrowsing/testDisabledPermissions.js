@@ -107,7 +107,7 @@ var testPermissionsDisabled = function()
   controller.assertProperty(blockImages, "hidden", true);
 
   // Enable the "Ask me every time" cookie behavior
-  PrefsAPI.preferencesDialog.open(prefCookieHandler);
+  PrefsAPI.openPreferencesDialog(prefCookieHandler);
 
   // Just in case we fail we should handle the modal cookie dialog
   var md = new ModalDialogAPI.modalDialog(cookieHandler);
@@ -128,7 +128,8 @@ var testPermissionsDisabled = function()
  */
 var prefCookieHandler = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and select ask me every time for cookies
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -145,7 +146,7 @@ var prefCookieHandler = function(controller)
   controller.select(keepCookies, null, null, 1);
   controller.sleep(gDelay);
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**

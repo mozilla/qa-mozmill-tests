@@ -68,7 +68,7 @@ var testRemoveAllCookies = function()
   controller.waitForPageLoad();
 
   // Call preferences dialog and delete the created cookies
-  PrefsAPI.preferencesDialog.open(prefDialogCallback);
+  PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -78,7 +78,8 @@ var testRemoveAllCookies = function()
  */
 var prefDialogCallback = function(controller)
 {
-  PrefsAPI.preferencesDialog.setPane(controller, 'panePrivacy');
+  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -111,7 +112,7 @@ var prefDialogCallback = function(controller)
     controller.sleep(200);
   }
 
-  PrefsAPI.preferencesDialog.close(controller, true);
+  prefDialog.close(true);
 }
 
 /**
