@@ -147,8 +147,8 @@ autoCompleteResults.prototype = {
    * @type {Array of string}
    */
   getUnderlinedText : function autoCompleteResults_getUnderlinedText(result, type) {
-    if (!result.getNode())
-      throw new Error(arguments.callee.name + ": Result node is undefined.");
+    controller.assertJS("subject.resultNode != null",
+                        {resultNode: result.getNode()});
 
     // Get the description element of the given title or url
     var description = null;

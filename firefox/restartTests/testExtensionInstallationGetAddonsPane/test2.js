@@ -50,9 +50,8 @@ var testCheckExtensionInstalled = function()
 {
   // Check if Add-ons Manager is opened after restart
   var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-  if (!window) {
-    throw new Error("Addons Manager has not been opened automatically after the restart");
-  }
+  controller.assertJS("subject.extensionManager != null",
+                      {extensionManager: window});
 
   addonsManager.open();
   var addonsController = addonsManager.controller;

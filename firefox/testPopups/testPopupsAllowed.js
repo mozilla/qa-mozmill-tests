@@ -61,8 +61,6 @@ var teardownModule = function(module)
 /**
  * Test to make sure pop-ups are not blocked
  *
- * @throws Pop-ups were blocked
- * @throws Status bar icon is visible
  */
 var testPopUpAllowed = function()
 {
@@ -85,14 +83,12 @@ var testPopUpAllowed = function()
 
   // Check for the status bar icon
   var cssInfo = controller.window.getComputedStyle(controller.window.document.getElementById("page-report-button"), "");
-  if (cssInfo.getPropertyValue('display') != "none") {
-    throw "Status bar icon is visible";
-  }
+  controller.assertJS("subject.isReportButtonVisible == false",
+                      {isReportButtonVisible: cssInfo.getPropertyValue('display') != 'none'});
 
   // Check that the window count has not changed
-  if (windowCount == mozmill.utils.getWindows().length) {
-    throw "Pop-ups were blocked";
-  }
+  controller.assertJS("subject.preWindowCount != subject.postWindowCount",
+                      {preWindowCount: windowCount, postWindowCount: mozmill.utils.getWindows().length});
 }
 
 /**

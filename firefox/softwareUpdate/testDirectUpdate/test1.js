@@ -64,9 +64,8 @@ var teardownModule = function(module)
 var testDirectUpdate_Download = function()
 {
   // Check if the user has permissions to run the update
-  if (!update.allowed) {
-    throw new Error("User does not have permissions to run the software update.");
-  }
+  controller.assertJS("subject.isUpdateAllowed == true",
+                      {isUpdateAllowed: update.allowed});
 
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);

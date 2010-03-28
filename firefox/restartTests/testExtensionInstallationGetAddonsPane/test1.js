@@ -112,19 +112,16 @@ var handleTriggerDialog = function(controller)
   controller.waitForElement(itemList, gTimeout);
 
   // There should be listed only one extension
-  if (itemElem.childNodes.length != 1) {
-    throw new Error("Expected one extension for installation");
-  }
+  controller.assertJS("subject.extensions.length == 1",
+                      {extensions: itemElem.childNodes});
 
   // Check if the extension name is shown
-  if (itemElem.childNodes[0].name != persisted.extensionName) {
-    throw new Error("Visible extension name doesn't match target extension");
-  }
+  controller.assertJS("subject.extensions[0].name == controller.extensionName",
+                      {extensions: itemElem.childNodes, extensionName: persisted.extensionName});
 
   // Will the extension be installed from https://addons.mozilla.org/?
-  if (itemElem.childNodes[0].url.indexOf("https://addons.mozilla.org/") == -1) {
-    throw new Error("Extension location doesn't contain https://addons.mozilla.org/");
-  }
+  controller.assertJS("subject.isExtensionFromAMO == true",
+                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('https://addons.mozilla.org') != -1});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');

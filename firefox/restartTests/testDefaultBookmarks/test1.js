@@ -55,9 +55,8 @@ var testVerifyDefaultBookmarks = function() {
   toolbarNodes.containerOpen = true;
 
   // For a default profile there should be exactly 3 items
-  if (toolbarNodes.childCount != 3)
-    throw new Error("Expected 3 items on the Bookmarks Toolbar but found " +
-                    toolbarNodes.childCount);
+  controller.assertJS("subject.toolbarItemCount == 3",
+                      {toolbarItemCount: toolbarNodes.childCount});
 
   // Check if the Most Visited folder is visible and has the correct title
   var mostVisited = new elementslib.XPath(controller.window.document,
@@ -109,9 +108,8 @@ function feedHandler(controller) {
     var child = toolbarNodes.getChild(2);
 
     // Check if the child is a Livemark
-    if (!ls.isLivemark(child.itemId)) {
-      throw "Latest Headlines toolbar button is not a Livemark";
-    }
+    controller.assertJS("subject.isLivemark == true",
+                        {isLivemark: ls.isLivemark(child.itemId)});
 
     // Compare the site and feed URI's
     var siteLocation = new elementslib.ID(controller.window.document, "editBMPanel_siteLocationField");
