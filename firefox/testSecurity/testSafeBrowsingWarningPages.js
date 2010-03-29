@@ -111,17 +111,14 @@ var checkReportButton = function(type, badUrl) {
 
   if (type == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
-    url = PrefsAPI.preferences.getPref("browser.safebrowsing.warning.infoURL", "");
-    url = url.replace(/%LOCALE%/g, locale);
+    url = UtilsAPI.formatUrlPref("browser.safebrowsing.warning.infoURL");
 
     var phishingElement = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='phishing-protection']")
     controller.assertNode(phishingElement);
 
   } else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
-    url = PrefsAPI.preferences.getPref("browser.safebrowsing.malware.reportURL", "") + badUrl;
-    url = url.replace(/%LOCALE%/g, locale);
-    url = url.replace(/%NAME%/g, "Firefox");
+    url = UtilsAPI.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
 
     var malwareElement = new elementslib.ID(controller.tabs.activeTab, "date");
     controller.assertNode(malwareElement);
