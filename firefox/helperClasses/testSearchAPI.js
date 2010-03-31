@@ -36,64 +36,82 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
-
-const searchEngine = {name: "YouTube Video Search",
-                      url : "http://www.youtube.com/"};
 
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
+  search.clear();
 }
 
 var teardownModule = function(module)
 {
-  search.engineDropDownOpen = false;
-  search.removeEngine(searchEngine.name);
-}
-
-/**
- * Autodiscovery of OpenSearch search engines
- */
-var testOpenSearchAutodiscovery = function()
-{
-  // Open the web page with the test OpenSearch plugin
-  controller.open(searchEngine.url);
-  controller.waitForPageLoad();
-
-  // Check that the drop down icon glows
-  var engineButton = search.getElement({type: "searchBar_dropDown"});
-  controller.assertJS("subject.dropDownGlows == 'true'",
-                      {dropDownGlows: engineButton.getNode().getAttribute('addengines')});
-
-  // Open search engine drop down and check for installable engines
-  search.enginesDropDownOpen = true;
-  var addEngines = search.installableEngines;
-  controller.assertJS("subject.installableEngines.length == 1",
-                      {installableEngines: addEngines});
-
-  // Install the new search engine which gets automatically selected
-  var engine = search.getElement({type: "engine", subtype: "title", value: addEngines[0].name});
-  controller.waitThenClick(engine);
-
-  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", gTimeout, 100,
-                         {search: search, newEngine: searchEngine.name});
-
-  // Check if a search redirects to the YouTube website
-  search.search({text: "Firefox", action: "goButton"});
-
-  // Clear search term and check the empty text
-  var inputField = search.getElement({type: "searchBar_input"});
   search.clear();
-  controller.assertValue(inputField, searchEngine.name);
+  search.restoreDefaultEngines();
 }
 
 /**
- * Map test functions to litmus tests
+ * Add a MozSearch Search plugin
  */
-testOpenSearchAutodiscovery.meta = {litmusids : [8237]};
+var testSearchAPI = function()
+{
+  // Check if Google is installed and there is no Googl engine present
+  controller.assertJS("subject.isGoogleInstalled == true",
+                      {isGoogleInstalled: search.isEngineInstalled("Google")});
+  controller.assertJS("subject.isGooglInstalled == false",
+                      {isGooglInstalled: search.isEngineInstalled("Googl")});
+
+  // Do some stuff in the Search Engine Manager
+  search.openEngineManager(handlerManager);
+
+  // Select another engine and start search
+  search.selectedEngine = "Yahoo";
+  search.search({text: "Firefox", action: "returnKey"});
+}
+
+var handlerManager = function(controller)
+{
+  var manager = new SearchAPI.engineManager(controller);
+  var engines = manager.engines;
+
+  // Remove the first search engine
+  manager.removeEngine(engines[3].name);
+  manager.controller.sleep(500);
+
+  // Move engines down / up
+  manager.moveDownEngine(engines[0].name);
+  manager.moveUpEngine(engines[2].name);
+  manager.controller.sleep(500);
+
+  // Add a keyword for the first engine
+  manager.editKeyword(engines[0].name, handlerKeyword);
+  manager.controller.sleep(500);
+
+  // Restore the defaults
+  manager.restoreDefaults();
+  manager.controller.sleep(500);
+
+  // Disable suggestions
+  manager.suggestionsEnabled = false;
+  manager.controller.sleep(500);
+
+  manager.getMoreSearchEngines();
+
+  // Dialog closes automatically
+  //manager.close(true);
+}
+
+var handlerKeyword = function(controller)
+{
+  var textbox = new elementslib.ID(controller.window.document, "loginTextbox");
+  controller.type(textbox, "g");
+
+  var okButton = new elementslib.Lookup(controller.window.document,
+                                        '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.click(okButton);
+}

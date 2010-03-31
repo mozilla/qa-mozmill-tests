@@ -47,13 +47,17 @@ const searchEngine = {name: "MDC",
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  search = new SearchAPI.searchEngine(controller);
+
+  search = new SearchAPI.searchBar(controller);
+  search.clear();
 }
 
 var teardownModule = function(module)
 {
+  search.removeEngine(searchEngine.name);
+
+  search.engineDropDownOpen = false;
   search.clear();
-  search.remove(searchEngine.name);
 }
 
 /**
@@ -65,21 +69,31 @@ var testAddMozSearchPlugin = function()
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
 
-  // Create a modal dialog instance to handle the security dialog
+  // Create a modal dialog instance to handle the installation dialog
   var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
   md.start();
 
-  // Add the search plugin
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "add"));
-  controller.waitForEval("subject.isInstalled('" + searchEngine.name + "') == true",
-                         gTimeout, 100, search);
+  // Add the search engine
+  var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
+  controller.click(addButton);
 
-  search.select(searchEngine.name);
-  search.search("Firefox");
+  controller.waitForEval("subject.search.isEngineInstalled(subject.engine) == true", gTimeout, 100,
+                         {search: search, engine: searchEngine.name});
+
+  // The engine should not be selected by default
+  controller.assertJS("subject.newEngineNotSelected == true",
+                      {newEngineNotSelected: search.selectedEngine != searchEngine.name});
+
+  // Select search engine and start a search
+  search.selectedEngine = searchEngine.name;
+  search.search({text: "Firefox", action: "goButton"});
 }
 
 /**
  * Handle the modal security dialog when installing a new search engine
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the browser window to operate on
  */
 var handleSearchInstall = function(controller)
 {
@@ -100,7 +114,8 @@ var handleSearchInstall = function(controller)
   controller.waitForEval("subject.textContent.indexOf('litmus.mozilla.org') != -1",
                          gTimeout, 100, infoBody);
 
-  var addButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
+  var addButton = new elementslib.Lookup(controller.window.document,
+                                         '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.click(addButton);
 }
 

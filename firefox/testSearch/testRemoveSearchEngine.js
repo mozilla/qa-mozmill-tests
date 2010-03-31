@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+var MODULE_REQUIRES = ['SearchAPI', 'WidgetsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -44,11 +44,13 @@ const gTimeout = 5000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  search = new SearchAPI.searchEngine(controller);
+
+  search = new SearchAPI.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
+  search.engineDropDownOpen = false;
   search.restoreDefaultEngines();
 }
 
@@ -57,31 +59,13 @@ var teardownModule = function(module)
  */
 var testRemoveEngine = function()
 {
-  // We have to open the popup to update the list of engines
-  search.clickEngineButton();
+  var engine = search.visibleEngines[1];
 
-  // Get the name of the 2nd engine we want to remove
-  var engine = new elementslib.Lookup(controller.window.document,
-                                      SearchAPI.searchEnginePopup +
-                                      '/[1]');
-  var name = engine.getNode().label;
+  // Remove the first engine in the list
+  search.openEngineManager(handleEngines);
 
-  // Close the popup
-  search.clickEngineButton();
-
-  // Remove the 2nd engine in the list
-  search.openManager(handleEngines);
-
-  // Check that the 2nd engine isn't listed anymore
-  search.clickEngineButton();
-
-  engine = new elementslib.Lookup(controller.window.document,
-                                      SearchAPI.searchEnginePopup +
-                                      '/anon({"title":"' + name + '"})');
-  controller.assertNodeNotExist(engine);
-
-  // Close the popup
-  search.clickEngineButton();
+  controller.waitForEval("subject.oldEngine != subject.search.visibleEngines[1].name", gTimeout, 100,
+                         {oldEngine: engine.name, search: search});
 }
 
 /**
@@ -92,19 +76,15 @@ var testRemoveEngine = function()
  */
 var handleEngines = function(controller)
 {
-  var engineList = controller.window.document.getElementById("engineList");
+  var manager = new SearchAPI.engineManager(controller);
 
-  // Wait until the view has been created
-  controller.waitForEval("subject.view != undefined", gTimeout, 100,
-                         engineList);
+  // Remove the second search engine
+  var engines = manager.engines;
+  controller.assertJS("subject.enginesCount > 1",
+                      {enginesCount: engines.length});
+  manager.removeEngine(engines[1].name);
 
-  // Select the 2nd search engine and remove it
-  engineList.view.selection.select(1);
-  controller.click(new elementslib.ID(controller.window.document, "remove"));
-  controller.sleep(gDelay);
-
-  var okButton = new elementslib.Lookup(controller.window.document, '/id("engineManager")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.click(okButton);
+  manager.close(true);
 }
 
 /**

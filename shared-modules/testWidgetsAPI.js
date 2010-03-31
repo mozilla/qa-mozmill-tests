@@ -34,42 +34,47 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+/**
+ * @fileoverview
+ * The WidgetsAPI adds support for handling objects like trees.
+ */
 
-const gDelay = 0;
+var EventUtils = {}; Components.utils.import('resource://mozmill/modules/EventUtils.js', EventUtils);
 
-var setupModule = function(module)
-{
-  controller = mozmill.getBrowserController();
+var MODULE_NAME = 'WidgetsAPI';
 
-  search = new SearchAPI.searchBar(controller);
-  search.clear();
-}
+const gTimeout = 5000;
 
 /**
- * Use the mouse to focus the search bar and start a search
+ * Click the specified tree cell
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the browser window to operate on
+ * @param {tree} tree
+ *        Tree to operate on
+ * @param {number } rowIndex
+ *        Index of the row
+ * @param {number} columnIndex
+ *        Index of the column
+ * @param {object} eventDetails
+ *        Details about the mouse event
  */
-var testClickAndSearch = function()
+function clickTreeCell(controller, tree, rowIndex, columnIndex, eventDetails)
 {
-  search.focus({type: "click"});
-  search.search({text: "Firefox", action: "returnKey"});
-  search.clear();
-}
+  tree = tree.getNode();
 
-/**
- * Use the keyboard shortcut to focus the search bar and start a search
- */
-var testShortcutAndSearch = function()
-{
-  search.focus({type: "keypress"});
-  search.search({text: "Mozilla", action: "goButton"});
-  search.clear();
-}
+  var selection = tree.view.selection;
+  selection.select(rowIndex);
+  tree.treeBoxObject.ensureRowIsVisible(rowIndex);
 
-/**
- * Map test functions to litmus tests
- */
-testClickAndSearch.meta = {litmusids : [8241]};
-testShortcutAndSearch.meta = {litmusids : [8242]};
+  // get cell coordinates
+  var x = {}, y = {}, width = {}, height = {};
+  var column = tree.columns[columnIndex];
+  tree.treeBoxObject.getCoordsForCellItem(rowIndex, column, "text",
+                                           x, y, width, height);
+
+  controller.sleep(0);
+  EventUtils.synthesizeMouse(tree.body, x.value + 4, y.value + 4,
+                             eventDetails, tree.ownerDocument.defaultView);
+  controller.sleep(0);
+}
