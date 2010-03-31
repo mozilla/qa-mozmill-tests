@@ -64,7 +64,6 @@ class SoftwareUpdateCLI(mozmill.RestartCLI):
     parser_options.pop(("-s", "--shell"))
     parser_options.pop(("-t", "--test",))
     parser_options.pop(("-u", "--usecode"))
-    parser_options.pop(("-w", "--plugins"))
 
     parser_options[("-c", "--channel",)] = dict(dest="channel", default=None, 
                                            help="Update channel (betatest, beta, nightly, releasetest, release)")

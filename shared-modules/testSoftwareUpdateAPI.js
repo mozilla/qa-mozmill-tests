@@ -46,9 +46,9 @@ const MODULE_NAME = 'SoftwareUpdateAPI';
 const RELATIVE_ROOT = '.';
 const MODULE_REQUIRES = ['PrefsAPI'];
 
-const gTimeout = 5000;
-const gTimeoutUpdateCheck = 10000;
-const gTimeoutUpdateDownload = 360000;
+const gTimeout                = 5000;
+const gTimeoutUpdateCheck     = 10000;
+const gTimeoutUpdateDownload  = 360000;
 
 /**
  * Constructor for software update class
@@ -177,6 +177,7 @@ softwareUpdate.prototype = {
     if (this.currentStep == "updatesfound") {
       // Check if the correct channel has been set
       var prefs = collector.getModule('PrefsAPI').preferences;
+
       controller.assertJS("subject.channel == subject.expectedChannel",
                           {channel: currentChannel, expectedChannel: prefs.getPref('app.update.channel','')});
 
@@ -227,9 +228,9 @@ softwareUpdate.prototype = {
 
     var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);
-
+    var status = "failed: 6\n";
     foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
-    foStream.write("failed: 6\n", 9);
+    foStream.write(status, status.length);
     foStream.close();
   },
 
