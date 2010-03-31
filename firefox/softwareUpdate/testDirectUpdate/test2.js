@@ -65,25 +65,25 @@ var testDirectUpdate_AppliedAndNoUpdatesFound = function()
     update.assertUpdateStep('noupdatesfound');
   } catch (ex) {
     // If a major update is offered we shouldn't fail
-	controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
-	                    {newUpdateType: update.updateType, lastUpdateType: persisted.type});
+    controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
+                        {newUpdateType: update.updateType, lastUpdateType: persisted.type});
   }
 
   // The upgraded version should be identical with the version given by
   // the update and we shouldn't have run a downgrade
   var vc = Cc["@mozilla.org/xpcom/version-comparator;1"]
               .getService(Ci.nsIVersionComparator);
-  var check = vc.compare(persisted.preVersion, persisted.postVersion);
+  var check = vc.compare(persisted.postVersion, persisted.preVersion);
 
-  controller.assertJS("subject.versionNumberCheck <= 0",
-                      {versionNumberCheck: check});
+  controller.assertJS("subject.newVersionGreater == true",
+                      {newVersionGreater: check >= 0});
 
-  controller.assertJS("subject.preBuildId > subject.postBuildId",
-                      {preBuildId: persisted.preBuildId, postBuildId: persisted.postBuildId});
+  controller.assertJS("subject.postBuildId > subject.preBuildId",
+                      {postBuildId: persisted.postBuildId, preBuildId: persisted.preBuildId});
   
- // An upgrade should not change the builds locale
-  controller.assertJS("subject.preLocale == subject.postLocale",
-                      {preLocale: persisted.preLocale, postLocale: persisted.postLocale});
+  // An upgrade should not change the builds locale
+  controller.assertJS("subject.postLocale == subject.preLocale",
+                      {postLocale: persisted.postLocale, preLocale: persisted.preLocale});
 
   // Update was successful
   persisted.success = true;
