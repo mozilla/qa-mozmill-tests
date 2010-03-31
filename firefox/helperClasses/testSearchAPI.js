@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,48 +46,72 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
+  search.clear();
 }
 
 var teardownModule = function(module)
 {
-  search.engineDropDownOpen = false;
+  search.clear();
   search.restoreDefaultEngines();
 }
 
 /**
- * Manage search engine (Remove)
+ * Add a MozSearch Search plugin
  */
-var testRemoveEngine = function()
+var testSearchAPI = function()
 {
-  var engine = search.visibleEngines[1];
+  // Check if Google is installed and there is no Googl engine present
+  controller.assertJS("subject.isGoogleInstalled == true",
+                      {isGoogleInstalled: search.isEngineInstalled("Google")});
+  controller.assertJS("subject.isGooglInstalled == false",
+                      {isGooglInstalled: search.isEngineInstalled("Googl")});
 
-  // Remove the first engine in the list
-  search.openEngineManager(handleEngines);
+  // Do some stuff in the Search Engine Manager
+  search.openEngineManager(handlerManager);
 
-  controller.waitForEval("subject.oldEngine != subject.search.visibleEngines[1].name", gTimeout, 100,
-                         {oldEngine: engine.name, search: search});
+  // Select another engine and start search
+  search.selectedEngine = "Yahoo";
+  search.search({text: "Firefox", action: "returnKey"});
 }
 
-/**
- * Remove a search engine from the list of available search engines
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var handleEngines = function(controller)
+var handlerManager = function(controller)
 {
   var manager = new SearchAPI.engineManager(controller);
-
-  // Remove the second search engine
   var engines = manager.engines;
-  controller.assertJS("subject.enginesCount > 1",
-                      {enginesCount: engines.length});
-  manager.removeEngine(engines[1].name);
 
-  manager.close(true);
+  // Remove the first search engine
+  manager.removeEngine(engines[3].name);
+  manager.controller.sleep(500);
+
+  // Move engines down / up
+  manager.moveDownEngine(engines[0].name);
+  manager.moveUpEngine(engines[2].name);
+  manager.controller.sleep(500);
+
+  // Add a keyword for the first engine
+  manager.editKeyword(engines[0].name, handlerKeyword);
+  manager.controller.sleep(500);
+
+  // Restore the defaults
+  manager.restoreDefaults();
+  manager.controller.sleep(500);
+
+  // Disable suggestions
+  manager.suggestionsEnabled = false;
+  manager.controller.sleep(500);
+
+  manager.getMoreSearchEngines();
+
+  // Dialog closes automatically
+  //manager.close(true);
 }
 
-/**
- * Map test functions to litmus tests
- */
-testRemoveEngine.meta = {litmusids : [6198]};
+var handlerKeyword = function(controller)
+{
+  var textbox = new elementslib.ID(controller.window.document, "loginTextbox");
+  controller.type(textbox, "g");
+
+  var okButton = new elementslib.Lookup(controller.window.document,
+                                        '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.click(okButton);
+}

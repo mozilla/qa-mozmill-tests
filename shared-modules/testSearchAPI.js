@@ -37,8 +37,6 @@
 /**
  * @fileoverview
  * The SearchAPI adds support for search related functions like the search bar.
- *
- * @version 1.0.1
  */
 
 var MODULE_NAME = 'SearchAPI';
@@ -47,17 +45,315 @@ var MODULE_NAME = 'SearchAPI';
 var RELATIVE_ROOT = '.';
 var MODULE_REQUIRES = ['ModalDialogAPI'];
 
-// Helpful constants
-const searchEngineButton = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/' +
-                           'id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/' +
-                           'anon({"anonid":"searchbar-engine-button"})';
-const searchEnginePopup = searchEngineButton + '/anon({"anonid":"searchbar-popup"})';
-const searchEngineInput = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/' +
-                          'id("search-container")/id("searchbar")/anon({"anonid":"searchbar-textbox"})/' +
-                          'anon({"class":"autocomplete-textbox-container"})/' +
-                          'anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
-
 const gTimeout = 5000;
+
+// Helper lookup constants for the engine manager elements
+const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
+
+// Helper lookup constants for the search bar elements
+const SEARCH_BAR        = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")';
+const SEARCH_TEXTBOX    = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
+const SEARCH_DROPDOWN   = SEARCH_TEXTBOX  + '/anon({"anonid":"searchbar-engine-button"})';
+const SEARCH_POPUP      = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
+const SEARCH_INPUT      = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
+                                            '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
+const SEARCH_CONTEXT    = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
+                                            '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
+const SEARCH_GO_BUTTON  = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})/anon({"class":"search-go-button"})';
+
+/**
+ * Constructor
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the engine manager
+ */
+function engineManager(controller)
+{
+  this._controller = controller;
+
+  this._ModalDialogAPI = collector.getModule('ModalDialogAPI');
+  this._WidgetsAPI = collector.getModule('WidgetsAPI');
+}
+
+/**
+ * Search Manager class
+ */
+engineManager.prototype = {
+  /**
+   * Get the controller of the associated engine manager dialog
+   *
+   * @returns Controller of the browser window
+   * @type MozMillController
+   */
+  get controller()
+  {
+    return this._controller;
+  },
+
+  /**
+   * Gets the list of search engines
+   *
+   * @returns List of engines
+   * @type object
+   */
+  get engines() {
+    var engines = [ ];
+    var tree = this.getElement({type: "engine_list"}).getNode();
+
+    for (var ii = 0; ii < tree.view.rowCount; ii ++) {
+      engines.push({name: tree.view.getCellText(ii, tree.columns.getColumnAt(0)),
+                    keyword: tree.view.getCellText(ii, tree.columns.getColumnAt(1))});
+    }
+
+    return engines;
+  },
+
+  /**
+   * Gets the name of the selected search engine
+   *
+   * @returns Name of the selected search engine
+   * @type {string}
+   */
+  get selectedEngine() {
+    var treeNode = this.getElement({type: "engine_list"}).getNode();
+
+    if(this.selectedIndex != -1) {
+      return treeNode.view.getCellText(this.selectedIndex,
+                                       treeNode.columns.getColumnAt(0));
+    } else {
+      return null;
+    }
+  },
+
+  /**
+   * Select the engine with the given name
+   *
+   * @param {string} name
+   *        Name of the search engine to select
+   */
+  set selectedEngine(name) {
+    var treeNode = this.getElement({type: "engine_list"}).getNode();
+
+    for (var ii = 0; ii < treeNode.view.rowCount; ii ++) {
+      if (name == treeNode.view.getCellText(ii, treeNode.columns.getColumnAt(0))) {
+        this.selectedIndex = ii;
+        break;
+      }
+    }
+  },
+
+  /**
+   * Gets the index of the selected search engine
+   *
+   * @returns Index of the selected search engine
+   * @type {number}
+   */
+  get selectedIndex() {
+    var tree = this.getElement({type: "engine_list"});
+    var treeNode = tree.getNode();
+
+    return treeNode.view.selection.currentIndex;
+  },
+
+  /**
+   * Select the engine with the given index
+   *
+   * @param {number} index
+   *        Index of the search engine to select
+   */
+  set selectedIndex(index) {
+    var tree = this.getElement({type: "engine_list"});
+    var treeNode = tree.getNode();
+
+    if (index < treeNode.view.rowCount) {
+      this._WidgetsAPI.clickTreeCell(this._controller, tree, index, 0, {});
+    }
+
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", gTimeout, 100,
+                                 {manager: this, newIndex: index});
+  },
+
+  /**
+   * Gets the suggestions enabled state
+   */
+  get suggestionsEnabled() {
+    var checkbox = this.getElement({type: "suggest"});
+
+    return checkbox.getNode().checked;
+  },
+
+  /**
+   * Sets the suggestions enabled state
+   */
+  set suggestionsEnabled(state) {
+    var checkbox = this.getElement({type: "suggest"});
+    this._controller.check(checkbox, state);
+  },
+
+  /**
+   * Close the engine manager
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @param {boolean} saveChanges
+   *        (Optional) If true the OK button is clicked otherwise Cancel
+   */
+  close : function preferencesDialog_close(saveChanges) {
+    saveChanges = (saveChanges == undefined) ? false : saveChanges;
+
+    var button = this.getElement({type: "button", subtype: (saveChanges ? "accept" : "cancel")});
+    this._controller.click(button);
+  },
+
+  /**
+   * Edit the keyword accociated to a search engine
+   *
+   * @param {string} name
+   *        Name of the engine to remove
+   * @param {function} handler
+   *        Callback function for Engine Manager
+   */
+  editKeyword : function engineManager_editKeyword(name, handler)
+  {
+    if (!handler)
+      throw new Error(arguments.callee.name + ": No callback handler specified.");
+
+    // Select the search engine
+    this.selectedEngine = name;
+
+    // Setup the modal dialog handler
+    md = new this._ModalDialogAPI.modalDialog(handler);
+    md.start(200);
+
+    var button = this.getElement({type: "engine_button", subtype: "edit"});
+    this._controller.click(button);
+
+    // XXX: We have to wait a bit more, so the modal dialog handler can kick in. Otherwise
+    // we continue executing remaining tests too early.
+    this._controller.sleep(400);
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        subtype: Specific element or property
+   *        value: Value of the element or property
+   * @returns Element which has been created  
+   * @type {ElemBase}
+   */
+  getElement : function engineManager_getElement(spec) {
+    var elem = null;
+
+    switch(spec.type) {
+      /**
+       * subtype: subtype to match
+       * value: value to match
+       */
+      case "more_engines":
+        elem = new elementslib.ID(this._controller.window.document, "addEngines");
+        break;
+      case "button":
+        elem = new elementslib.Lookup(this._controller.window.document, MANAGER_BUTTONS +
+                                      '/{"dlgtype":"' + spec.subtype + '"}');
+        break;
+      case "engine_button":
+        switch(spec.subtype) {
+          case "down":
+            elem = new elementslib.ID(this._controller.window.document, "dn");
+            break;
+          case "edit":
+            elem = new elementslib.ID(this._controller.window.document, "edit");
+            break;
+          case "remove":
+            elem = new elementslib.ID(this._controller.window.document, "remove");
+            break;
+          case "up":
+            elem = new elementslib.ID(this._controller.window.document, "up");
+            break;
+        }
+        break;
+      case "engine_list":
+        elem = new elementslib.ID(this._controller.window.document, "engineList");
+        break;
+      case "suggest":
+        elem = new elementslib.ID(this._controller.window.document, "enableSuggest");
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+    }
+
+    return elem;
+  },
+
+  /**
+   * Clicks the "Get more search engines..." link
+   */
+  getMoreSearchEngines : function engineManager_getMoreSearchEngines() {
+    var link = this.getElement({type: "more_engines"});
+    this._controller.click(link);
+  },
+
+  /**
+   * Move down the engine with the given name
+   *
+   * @param {string} name
+   *        Name of the engine to remove
+   */
+  moveDownEngine : function engineManager_moveDownEngine(name) {
+    this.selectedEngine = name;
+    var index = this.selectedIndex;
+
+    var button = this.getElement({type: "engine_button", subtype: "down"});
+    this._controller.click(button);
+
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex + 1", gTimeout, 100,
+                                 {manager: this, oldIndex: index});
+  },
+
+  /**
+   * Move up the engine with the given name
+   *
+   * @param {string} name
+   *        Name of the engine to remove
+   */
+  moveUpEngine : function engineManager_moveUpEngine(name) {
+    this.selectedEngine = name;
+    var index = this.selectedIndex;
+
+    var button = this.getElement({type: "engine_button", subtype: "up"});
+    this._controller.click(button);
+
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex - 1", gTimeout, 100,
+                                 {manager: this, oldIndex: index});
+  },
+
+  /**
+   * Remove the engine with the given name
+   *
+   * @param {string} name
+   *        Name of the engine to remove
+   */
+  removeEngine : function engineManager_removeEngine(name) {
+    this.selectedEngine = name;
+
+    var button = this.getElement({type: "engine_button", subtype: "remove"});
+    this._controller.click(button);
+
+    this._controller.waitForEval("subject.manager.selectedEngine != subject.removedEngine", gTimeout, 100,
+                                 {manager: this, removedEngine: name});
+  },
+
+  /**
+   * Restores the defaults for search engines
+   */
+  restoreDefaults : function engineManager_restoreDefaults() {
+    var button = this.getElement({type: "button", subtype: "extra2"});
+    this._controller.click(button);
+  }
+};
 
 /**
  * Constructor
@@ -65,18 +361,19 @@ const gTimeout = 5000;
  * @param {MozMillController} controller
  *        MozMillController of the browser window to operate on
  */
-function searchEngine(controller)
+function searchBar(controller)
 {
+  this._controller = controller;
   this._bss = Cc["@mozilla.org/browser/search-service;1"]
                  .getService(Ci.nsIBrowserSearchService);
 
-  this._controller = controller;
+  this._ModalDialogAPI = collector.getModule('ModalDialogAPI');
 }
 
 /**
  * Search Manager class
  */
-searchEngine.prototype = {
+searchBar.prototype = {
   /**
    * Get the controller of the associated browser window
    *
@@ -89,13 +386,128 @@ searchEngine.prototype = {
   },
 
   /**
+   * Get the names of all installed engines
+   */
+  get engines()
+  {
+    var engines = [ ];
+    var popup = this.getElement({type: "searchBar_popup"});
+
+    for (var ii = 0; ii < popup.getNode().childNodes.length; ii++) {
+      var entry = popup.getNode().childNodes[ii];
+      if (entry.className.indexOf("searchbar-engine") != -1) {
+        engines.push({name: entry.id,
+                      selected: entry.selected,
+                      tooltipText: entry.getAttribute('tooltiptext')
+                    });
+      }
+    }
+
+    return engines;
+  },
+
+  /**
+   * Get the search engines drop down open state
+   */
+  get enginesDropDownOpen()
+  {
+    var popup = this.getElement({type: "searchBar_popup"});
+    return popup.getNode().state != "closed";
+  },
+
+  /**
+   * Set the search engines drop down open state
+   */
+  set enginesDropDownOpen(newState)
+  {
+    if (this.enginesDropDownOpen != newState) {
+      var button = this.getElement({type: "searchBar_dropDown"});
+      this._controller.click(button);
+
+      this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == subject.newState", gTimeout, 100,
+                                   {searchBar: this, newState: newState });
+      this._controller.sleep(0);
+    }
+  },
+
+  /**
+   * Get the names of all installable engines
+   */
+  get installableEngines()
+  {
+    var engines = [ ];
+    var popup = this.getElement({type: "searchBar_popup"});
+
+    for (var ii = 0; ii < popup.getNode().childNodes.length; ii++) {
+      var entry = popup.getNode().childNodes[ii];
+      if (entry.className.indexOf("addengine-item") != -1) {
+        engines.push({name: entry.getAttribute('title'),
+                      selected: entry.selected,
+                      tooltipText: entry.getAttribute('tooltiptext')
+                    });
+      }
+    }
+
+    return engines;
+  },
+
+  /**
+   * Returns the currently selected search engine
+   *
+   * @return Name of the currently selected engine
+   * @type {string}
+   */
+  get selectedEngine()
+  {
+    // Open drop down which updates the list of search engines
+    var state = this.enginesDropDownOpen;
+    this.enginesDropDownOpen = true;
+
+    var engine = this.getElement({type: "engine", subtype: "selected", value: "true"});
+    this._controller.waitForElement(engine, gTimeout);
+
+    this.enginesDropDownOpen = state;
+
+    return engine.getNode().id;
+  },
+
+  /**
+   * Select the search engine with the given name
+   *
+   * @param {string} name
+   *        Name of the search engine to select
+   */
+  set selectedEngine(name) {
+    // Open drop down and click on search engine
+    this.enginesDropDownOpen = true;
+
+    var engine = this.getElement({type: "engine", subtype: "id", value: name});
+    this._controller.waitThenClick(engine, gTimeout);
+
+    // Wait until the drop down has been closed
+    this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == false", gTimeout, 100,
+                                 {searchBar: this});
+
+    this._controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", gTimeout, 100,
+                                 {searchBar: this, newEngine: name});
+  },
+
+  /**
+   * Returns all the visible search engines (API call)
+   */
+  get visibleEngines()
+  {
+    return this._bss.getVisibleEngines({});
+  },
+
+  /**
    * Clear the search field
    */
-  clear : function searchEngine_clear()
+  clear : function searchBar_clear()
   {
     var activeElement = this._controller.window.document.activeElement;
 
-    var searchInput = new elementslib.Lookup(this._controller.window.document, searchEngineInput);
+    var searchInput = this.getElement({type: "searchBar_input"});
     this._controller.keypress(searchInput, 'a', {accelKey: true});
     this._controller.keypress(searchInput, 'VK_DELETE', {});
 
@@ -104,85 +516,118 @@ searchEngine.prototype = {
   },
 
   /**
-   * Open the search engine drop down
-   */
-  clickEngineButton : function searchEngine_clickEngineButton()
-  {
-    var button = new elementslib.Lookup(this._controller.window.document,
-                                        searchEngineButton);
-    this._controller.click(button);
-
-    // Temporarily needed to propagate the event
-    this._controller.sleep(0);
-  },
-
-  /**
-   * Click on the given entry in the search engine popup menu
-   *
-   * @param {string} elementLookup
-   *        Lookup string for the element to click in the popup menu
-   */
-  clickPopupEntry : function searchEngine_clickPopupEntry(elementLookup)
-  {
-    var popupEntry = new elementslib.Lookup(this._controller.window.document,
-                                            searchEnginePopup + elementLookup);
-    this._controller.waitThenClick(popupEntry, gTimeout);
-
-    // Temporarily needed to propagate the event
-    this._controller.sleep(0);
-  },
-
-  /**
    * Focus the search bar text field
    *
    * @param {boolean} useMouse
    *        If true use the mouse to focus the text field otherwise the shortcut
    */
-  focus : function searchEngine_focus(useMouse)
+  focus : function searchBar_focus(event)
   {
-    var searchInput = new elementslib.Lookup(this._controller.window.document, searchEngineInput);
+    var input = this.getElement({type: "searchBar_input"});
 
-    if (useMouse) {
-      // The engine button overlays the textbox so click 10px behind the button
-      this._controller.click(searchInput);
-    } else {
-      this._controller.keypress(null, 'k', {accelKey: true});
+    switch (event.type) {
+      case "click":
+        this._controller.click(input);
+        break;
+      case "keypress":
+        this._controller.keypress(null, 'k', {accelKey: true});
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + event.type);
     }
 
     // Check if the search bar has the focus
     var activeElement = this._controller.window.document.activeElement;
-    this._controller.assertJS("subject.searchBar == subject.activeElement",
-	                           {searchBar: searchInput.getNode(), activeElement: activeElement});
-  },
-
-  getVisibleEngines : function searchEngine_getVisibleEngines()
-  {
-    return this._bss.getVisibleEngines({});
+    this._controller.assertJS("subject.isFocused == true",
+                              {isFocused: input.getNode() == activeElement});
   },
 
   /**
-   * Check if a search engine is installed
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        subtype: Specific element or property
+   *        value: Value of the element or property
+   * @returns Element which has been created  
+   * @type {ElemBase}
+   */
+  getElement : function searchBar_getElement(spec) {
+    var elem = null;
+
+    switch(spec.type) {
+      /**
+       * subtype: subtype to match
+       * value: value to match
+       */
+      case "engine":
+        // XXX: bug 555938 - Mozmill can't fetch the element via a lookup here.
+        // That means we have to grab it temporarily by iterating through all childs.
+        var popup = this.getElement({type: "searchBar_popup"}).getNode();
+        for (var ii = 0; ii < popup.childNodes.length; ii++) {
+          var entry = popup.childNodes[ii];
+          if (entry.getAttribute(spec.subtype) == spec.value) {
+            elem = new elementslib.Elem(entry);
+            break;
+          }
+        }
+        //elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP +
+        //                              '/anon({"' + spec.subtype + '":"' + spec.value + '"})');
+        break;
+      case "engine_manager":
+        // XXX: bug 555938 - Mozmill can't fetch the element via a lookup here.
+        // That means we have to grab it temporarily by iterating through all childs.
+        var popup = this.getElement({type: "searchBar_popup"}).getNode();
+        for (var ii = popup.childNodes.length - 1; ii >= 0; ii--) {
+          var entry = popup.childNodes[ii];
+          if (entry.className == "open-engine-manager") {
+            elem = new elementslib.Elem(entry);
+            break;
+          }
+        }
+        //elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP +
+        //                              '/anon({"anonid":"open-engine-manager"})');
+        break;
+      case "searchBar":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_BAR);
+        break;
+      case "searchBar_contextMenu":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_CONTEXT);
+        break;
+      case "searchBar_dropDown":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_DROPDOWN);
+        break;
+      case "searchBar_goButton":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_GO_BUTTON);
+        break;
+      case "searchBar_input":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_INPUT);
+        break;
+      case "searchBar_popup":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP);
+        break;
+      case "searchBar_textBox":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_BAR +
+                                      '/anon({"anonid":"searchbar-textbox"})');
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+    }
+
+    return elem;
+  },
+
+  /**
+   * Check if a search engine is installed (API call)
    *
    * @param {string} name
    *        Name of the search engine to check
    */
-  isInstalled : function searchEngine_isInstalled(name)
+  isEngineInstalled : function searchBar_isEngineInstalled(name)
   {
     var engine = this._bss.getEngineByName(name);
     return (engine != null);
-  },
-
-  /**
-   * Check if a search engine is selected
-   *
-   * @param {string} name
-   *        Name of the search engine to check
-   */
-  isSelected : function searchEngine_isSelected(name)
-  {
-    var selectedEntry = new elementslib.Lookup(this._controller.window.document,
-                                               searchEnginePopup + '/anon({"selected":"true"})');
-    return name == selectedEntry.getNode().label;
   },
 
   /**
@@ -191,33 +636,49 @@ searchEngine.prototype = {
    * @param {function} handler
    *        Callback function for Engine Manager
    */
-  openManager : function searchEngine_openManager(handler)
+  openEngineManager : function searchBar_openEngineManager(handler)
   {
+    if (!handler)
+      throw new Error(arguments.callee.name + ": No callback handler specified.");
+
+    this.enginesDropDownOpen = true;
+    var engineManager = this.getElement({type: "engine_manager"});
+
     // Setup the modal dialog handler
-    var mdAPI = collector.getModule('ModalDialogAPI');
-    md = new mdAPI.modalDialog(handler);
+    md = new this._ModalDialogAPI.modalDialog(handler);
     md.start();
 
-    this.clickEngineButton();
-    this.clickPopupEntry('/anon({"anonid":"open-engine-manager"})');
+    // XXX: Bug 555347 - Process any outstanding events before clicking the entry
+    this._controller.sleep(0);
+    this._controller.click(engineManager);
+
+    // Wait until the drop down has been closed
+    this._controller.waitForEval("subject.search.enginesDropDownOpen == false", gTimeout, 100,
+                                 {search: this});
+
+    // XXX: We have to wait a bit more, so the modal dialog handler can kick in. Otherwise
+    // we continue executing remaining tests too early.
+    this._controller.sleep(200);
   },
 
   /**
-   * Remove the search engine with the given name
+   * Remove the search engine with the given name (API call)
    *
    * @param {string} name
    *        Name of the search engine to remove
    */
-  remove : function searchEngine_remove(name)
+  removeEngine : function searchBar_removeEngine(name)
   {
-    var engine = this._bss.getEngineByName(name);
-    this._bss.removeEngine(engine);
+    if (this.isEngineInstalled(name)) {
+      var engine = this._bss.getEngineByName(name);
+      this._bss.removeEngine(engine);
+    }
   },
 
   /**
-   * Restore the default set of search engines
+   * Restore the default set of search engines (API call)
    */
-  restoreDefaultEngines : function searchEngine_restoreDefaults()
+  restoreDefaultEngines : function searchBar_restoreDefaults()
   {
     this._bss.restoreDefaultEngines();
   },
@@ -229,40 +690,39 @@ searchEngine.prototype = {
    * @param {string} searchTerm
    *        Text which should be searched for
    */
-  search : function searchEngine_search(searchTerm)
+  search : function searchBar_search(data)
   {
-    var searchBar = new elementslib.ID(this._controller.window.document, 'searchbar');
-    var locationBar = new elementslib.ID(this._controller.window.document, 'urlbar');
+    var searchBar = this.getElement({type: "searchBar"});
 
-    // Enter search term in text field
-    this._controller.type(searchBar, searchTerm);
+    // Enter search term in text field and start search
+    this._controller.type(searchBar, data.text);
+    this._controller.sleep(1000);
 
-    // Start the search by pressing return
-    this._controller.keypress(searchBar, 'VK_RETURN', {});
+    switch (data.action) {
+      case "returnKey":
+        this._controller.keypress(searchBar, 'VK_RETURN', {});
+        break;
+      case "goButton":
+      default:
+        this._controller.click(this.getElement({type: "searchBar_goButton"}));
+        break;
+    }
+
     this._controller.waitForPageLoad();
 
     // Retrieve the URL which is used for the currently selected search engine
-    var targetURL = this._bss.currentEngine.getSubmission(searchTerm, null).uri;
+    var targetUrl = this._bss.currentEngine.getSubmission(data.text, null).uri;
+    var currentUrl = this._controller.tabs.activeTabWindow.document.location.href;
 
     // Check if pure domain names are identical
-    var domainName = targetURL.host.replace(/.+\.(\w+)\.\w+$/gi, "$1");
-    if(locationBar.getNode().value.indexOf(domainName) == -1)
-      throw "Expected domain name doesn't match the current one"
+    var domainName = targetUrl.host.replace(/.+\.(\w+)\.\w+$/gi, "$1");
+    var index = currentUrl.indexOf(domainName);
+    debugger;
+    this._controller.assertJS("subject.URLContainsDomain == true",
+                              {URLContainsDomain: currentUrl.indexOf(domainName) != -1});
 
     // Check if search term is listed in URL
-    if(locationBar.getNode().value.indexOf(searchTerm) == -1)
-      throw "Search term in URL expected but not found.";
-  },
-
-  /**
-   * Select the search engine with the given name
-   *
-   * @param {string} name
-   *        Name of the search engine to select
-   */
-  select : function searchEngine_select(name)
-  {
-    this.clickEngineButton();
-    this.clickPopupEntry('/id("' + name + '")');
- }
+    this._controller.assertJS("subject.URLContainsText == true",
+                              {URLContainsText: currentUrl.indexOf(data.text) != -1});
+  }
 };

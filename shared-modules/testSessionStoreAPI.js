@@ -43,7 +43,9 @@
 
 var MODULE_NAME = 'SessionStoreAPI';
 
-var EventUtils = {}; Components.utils.import('resource://mozmill/modules/EventUtils.js', EventUtils);
+// Include necessary modules
+var RELATIVE_ROOT = '.';
+var MODULE_REQUIRES = ['WidgetsAPI'];
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
@@ -60,6 +62,8 @@ const gTimeout = 5000;
 function aboutSessionRestore(controller)
 {
   this._controller = controller;
+
+  this._WidgetsAPI = collector.getModule('WidgetsAPI');
 }
 
 /**
@@ -205,39 +209,12 @@ aboutSessionRestore.prototype = {
   toggleRestoreState : function aboutSessionRestore_toggleRestoreState(element) {
     var state = this.getRestoreState(element);
 
-    clickTreeCell(this.tabList.getNode(), element.listIndex, 0, {});
+    this._WidgetsAPI.clickTreeCell(this._controller, this.tabList, element.listIndex, 0, {});
     this._controller.sleep(0);
 
     this._controller.assertJS("subject.newState != subject.oldState",
                               {newState : this.getRestoreState(element), oldState : state});
   }
-}
-
-/**
- * Click the specified tree cell
- *
- * @param {tree} tree
- *        Tree to operate on
- * @param {number } rowIndex
- *        Index of the row
- * @param {number} columnIndex
- *        Index of the column
- * @param {object} eventDetails
- *        Details about the mouse event
- */
-function clickTreeCell(tree, rowIndex, columnIndex, eventDetails)
-{
-  var selection = tree.view.selection;
-  selection.select(rowIndex);
-  tree.treeBoxObject.ensureRowIsVisible(rowIndex);
-
-  // get cell coordinates
-  var x = {}, y = {}, width = {}, height = {};
-  var column = tree.columns[columnIndex];
-  tree.treeBoxObject.getCoordsForCellItem(rowIndex, column, "text",
-                                           x, y, width, height);
-  EventUtils.synthesizeMouse(tree.body, x.value + 4, y.value + 4,
-                             eventDetails, tree.ownerDocument.defaultView);
 }
 
 /**

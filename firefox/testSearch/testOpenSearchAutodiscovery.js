@@ -47,13 +47,14 @@ const searchEngine = {name: "YouTube Video Search",
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  search = new SearchAPI.searchEngine(controller);
+
+  search = new SearchAPI.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  if (search.isInstalled(searchEngine.name))
-    search.remove(searchEngine.name);
+  search.engineDropDownOpen = false;
+  search.removeEngine(searchEngine.name);
 }
 
 /**
@@ -66,25 +67,30 @@ var testOpenSearchAutodiscovery = function()
   controller.waitForPageLoad();
 
   // Check that the drop down icon glows
-  var engineButton = new elementslib.Lookup(controller.window.document,
-                                            SearchAPI.searchEngineButton);
-  controller.assertJS("subject.getAttribute('addengines') == 'true'",
-                      engineButton.getNode());
+  var engineButton = search.getElement({type: "searchBar_dropDown"});
+  controller.assertJS("subject.dropDownGlows == 'true'",
+                      {dropDownGlows: engineButton.getNode().getAttribute('addengines')});
 
-  // Open search engine drop down and add Open Search engine
-  search.clickEngineButton();
-  search.clickPopupEntry('/anon({"title":"' + searchEngine.name + '"})');
-  controller.waitForEval("subject.isSelected('" + searchEngine.name + "') == true",
-                         gTimeout, 100, search);
+  // Open search engine drop down and check for installable engines
+  search.enginesDropDownOpen = true;
+  var addEngines = search.installableEngines;
+  controller.assertJS("subject.installableEngines.length == 1",
+                      {installableEngines: addEngines});
 
-  // Check if a search redirects to the Technorati website
-  search.search("Firefox");
+  // Install the new search engine which gets automatically selected
+  var engine = search.getElement({type: "engine", subtype: "title", value: addEngines[0].name});
+  controller.waitThenClick(engine);
+
+  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", gTimeout, 100,
+                         {search: search, newEngine: searchEngine.name});
+
+  // Check if a search redirects to the YouTube website
+  search.search({text: "Firefox", action: "goButton"});
 
   // Clear search term and check the empty text
-  var searchField = new elementslib.Lookup(controller.window.document,
-                                           SearchAPI.searchEngineInput);
+  var inputField = search.getElement({type: "searchBar_input"});
   search.clear();
-  controller.assertValue(searchField, searchEngine.name);
+  controller.assertValue(inputField, searchEngine.name);
 }
 
 /**

@@ -41,19 +41,22 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
+const searchEngine = {name: "SearchGeek",
+                      url : "https://addons.mozilla.org/en-US/firefox/addon/10772"};
+
+
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  search = new SearchAPI.searchEngine(controller);
 
-  // Variable for the new engine name
-  engineName = null;
+  search = new SearchAPI.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  if (engineName)
-    search.remove(engineName);
+  search.removeEngine(searchEngine.name);
+
+  search.engineDropDownOpen = false;
   search.clear();
 }
 
@@ -62,23 +65,20 @@ var teardownModule = function(module)
  */
 var testGetMoreEngines = function()
 {
-  // Get information about the current search engines
-  var preEngines = search.getVisibleEngines();
-  var preEngineCount = preEngines.length;
-  var preLastEngine = preEngines[preEngineCount - 1].QueryInterface(Ci.nsISearchEngine);
+  // Check that the search engine is not installed yet
+  controller.assertJS("subject.isEngineInstalled == false",
+                      {isEngineInstalled: search.isEngineInstalled(searchEngine.name)});
 
   // Open the engine manager to browse the search directory
   var tabCount = controller.tabs.length;
-  search.openManager(handleEngines);
-  controller.waitForEval("subject.length == " + (tabCount + 1), gTimeout, 100,
-                         controller.tabs);
-  controller.waitForPageLoad();
+  search.openEngineManager(enginesHandler);
 
-  // Open the search provider page before installing the engine
-  // XXX: Until bug 519690 isn't fixed we have to use a search engine without "/" in the name
-  //var detailsLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='browse']/div[2]/div[@id='addon-listing']/div[2]/a/img");
-  //controller.click(detailsLink);
-  controller.open("https://addons.mozilla.org/en-US/firefox/addon/10772");
+  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", gTimeout, 100,
+                         {tabs: controller.tabs, preCount: tabCount});
+  controller.waitForPageLoad();
+  
+  // Install the engine from the Open the search provider page before installing the engine
+  controller.open(searchEngine.url);
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the engine installation dialog
@@ -86,25 +86,25 @@ var testGetMoreEngines = function()
   md.start();
 
   // Install the search engine
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
+  var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
+                                          "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']" +
+                                          "/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
-  controller.waitForEval("subject.getVisibleEngines().length == " + (preEngineCount + 1),
-                         gTimeout, 100, search);
-  postLastEngine = search.getVisibleEngines()[preEngineCount].QueryInterface(Ci.nsISearchEngine);
-  engineName = postLastEngine.name;
+  controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", gTimeout, 100,
+                         {engine: search, name: searchEngine.name});
 
-  search.select(engineName);
-  search.search("amazon");
+  search.selectedEngine = searchEngine.name;
+  search.search({text: "Firefox", action: "returnKey"});
 }
 
 /**
- * Remove a search engine from the list of available search engines
+ * Click on "Get more search engines" link in the manager
  *
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var handleEngines = function(controller)
+var enginesHandler = function(controller)
 {
   // Click Browse link - dialog will close automatically
   var browseLink = new elementslib.ID(controller.window.document, "addEngines");
@@ -131,13 +131,14 @@ var handleSearchInstall = function(controller)
   controller.assertJS("subject.windowTitle == subject.addEngineTitle",
                       {windowTitle: title, addEngineTitle: confirmTitle});
 
-  // Check that litmus.mozilla.org is shown as domain
-  var infoBody = controller.window.document.getElementById("info.body");
+  // Check that addons.mozilla.org is shown as domain
+  var infoBody = new elementslib.ID(controller.window.document, "info.body");
   controller.waitForEval("subject.textContent.indexOf('addons.mozilla.org') != -1",
-                         gTimeout, 100, infoBody);
+                         gTimeout, 100, infoBody.getNode());
 
-  var addButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
-  controller.click(addButton);
+  var addButton = new elementslib.Lookup(controller.window.document,
+                                         '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  controller.waitThenClick(addButton);
 }
 
 /**

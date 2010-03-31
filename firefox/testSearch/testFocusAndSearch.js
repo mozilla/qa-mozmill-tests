@@ -43,7 +43,9 @@ const gDelay = 0;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  engine = new SearchAPI.searchEngine(controller);
+
+  search = new SearchAPI.searchBar(controller);
+  search.clear();
 }
 
 /**
@@ -51,9 +53,9 @@ var setupModule = function(module)
  */
 var testClickAndSearch = function()
 {
-  engine.focus(true);
-  engine.search("Firefox");
-  engine.clear();
+  search.focus({type: "click"});
+  search.search({text: "Firefox", action: "returnKey"});
+  search.clear();
 }
 
 /**
@@ -61,9 +63,9 @@ var testClickAndSearch = function()
  */
 var testShortcutAndSearch = function()
 {
-  engine.focus();
-  engine.search("Mozilla");
-  engine.clear();
+  search.focus({type: "keypress"});
+  search.search({text: "Mozilla", action: "goButton"});
+  search.clear();
 }
 
 /**

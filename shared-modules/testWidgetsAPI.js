@@ -34,60 +34,47 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+/**
+ * @fileoverview
+ * The WidgetsAPI adds support for handling objects like trees.
+ */
 
-const gDelay = 0;
+var EventUtils = {}; Components.utils.import('resource://mozmill/modules/EventUtils.js', EventUtils);
+
+var MODULE_NAME = 'WidgetsAPI';
+
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
-  controller = mozmill.getBrowserController();
-
-  search = new SearchAPI.searchBar(controller);
-}
-
-var teardownModule = function(module)
-{
-  search.engineDropDownOpen = false;
-  search.restoreDefaultEngines();
-}
-
 /**
- * Manage search engine (Remove)
- */
-var testRemoveEngine = function()
-{
-  var engine = search.visibleEngines[1];
-
-  // Remove the first engine in the list
-  search.openEngineManager(handleEngines);
-
-  controller.waitForEval("subject.oldEngine != subject.search.visibleEngines[1].name", gTimeout, 100,
-                         {oldEngine: engine.name, search: search});
-}
-
-/**
- * Remove a search engine from the list of available search engines
+ * Click the specified tree cell
  *
  * @param {MozMillController} controller
- *        MozMillController of the window to operate on
+ *        MozMillController of the browser window to operate on
+ * @param {tree} tree
+ *        Tree to operate on
+ * @param {number } rowIndex
+ *        Index of the row
+ * @param {number} columnIndex
+ *        Index of the column
+ * @param {object} eventDetails
+ *        Details about the mouse event
  */
-var handleEngines = function(controller)
+function clickTreeCell(controller, tree, rowIndex, columnIndex, eventDetails)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  tree = tree.getNode();
 
-  // Remove the second search engine
-  var engines = manager.engines;
-  controller.assertJS("subject.enginesCount > 1",
-                      {enginesCount: engines.length});
-  manager.removeEngine(engines[1].name);
+  var selection = tree.view.selection;
+  selection.select(rowIndex);
+  tree.treeBoxObject.ensureRowIsVisible(rowIndex);
 
-  manager.close(true);
+  // get cell coordinates
+  var x = {}, y = {}, width = {}, height = {};
+  var column = tree.columns[columnIndex];
+  tree.treeBoxObject.getCoordsForCellItem(rowIndex, column, "text",
+                                           x, y, width, height);
+
+  controller.sleep(0);
+  EventUtils.synthesizeMouse(tree.body, x.value + 4, y.value + 4,
+                             eventDetails, tree.ownerDocument.defaultView);
+  controller.sleep(0);
 }
-
-/**
- * Map test functions to litmus tests
- */
-testRemoveEngine.meta = {litmusids : [6198]};
