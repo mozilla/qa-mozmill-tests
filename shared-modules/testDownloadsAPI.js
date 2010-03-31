@@ -101,19 +101,6 @@ downloadManager.prototype = {
   },
 
   /**
-   * Assert if the download state is the same as the expected state
-   *
-   * @param {ElemBase} download
-   *        Download which state should be checked
-   * @param {downloadState} state
-   *        Expected state of the download
-   */
-  assertDownloadState : function downloadManager_assertDownloadState(download, state) {
-    this._controller.waitForEval("subject.getAttribute('state') == " + state,
-                                 gTimeout, 100, download.getNode());
-  },
-
-  /**
    * Cancel all active downloads
    */
   cancelActiveDownloads : function downloadManager_cancelActiveDownloads() {
@@ -228,6 +215,16 @@ downloadManager.prototype = {
   },
 
   /**
+   * Gets the download state of the given download
+   *
+   * @param {ElemBase} download
+   *        Download which state should be checked
+   */
+  getDownloadState : function downloadManager_getDownloadState(download) {
+    return download.getNode().getAttribute('state');
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -264,6 +261,9 @@ downloadManager.prototype = {
        * value: Entry (download) of the download list
        */
       case "download_button":
+        // XXX: Bug 555347 - There are outstanding events to process
+        this._controller.sleep(0);
+
         elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
                                       '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + spec.subtype + '"}');
         break;
@@ -295,6 +295,21 @@ downloadManager.prototype = {
 
     controller.sleep(500);
     this.waitForOpened(controller);
+  },
+
+  /**
+   * Wait for the given download state
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   * @param {downloadState} state
+   *        Expected state of the download
+   * @param {number} timeout
+   *        Timeout for waiting for the download state (optional)
+   */
+  waitForDownloadState : function downloadManager_waitForDownloadState(download, state, timeout) {
+    this._controller.waitForEval("subject.manager.getDownloadState(subject.download) == subject.state", timeout, 100,
+                                 {manager: this, download: download, state: state});
   },
 
   /**
