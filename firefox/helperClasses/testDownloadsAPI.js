@@ -40,39 +40,40 @@ var MODULE_REQUIRES = ['DownloadsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var url = "http://download.mozilla.org/?product=firefox-3.5.6&os=osx&lang=en-US";
-
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
   module.dm = new DownloadsAPI.downloadManager();
 }
 
+var teardownModule = function(module)
+{
+  // Cancel all downloads and close the download manager
+  dm.cancelActiveDownloads();
+  dm.close();
+}
+
 var testOpenDownloadManager = function()
 {
+  var url = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/mac/en-US/Firefox%203.6.dmg";
+
   DownloadsAPI.downloadFileOfUnknownType(controller, url);
 
   // Open the download manager
   dm.open(controller, true);
 
   // Get the Firefox download
-  var download = dm.getElement({type: dm.DOWNLOAD, name : "state", value : "0"});
+  var download = dm.getElement({type: "download", subtype: "state", value : "0"});
   dm.controller.waitForElement(download, gTimeout);
 
-  var pauseButton = dm.getElement({type: dm.DOWNLOAD_BUTTON, name: "pause", value: download});
-  var resumeButton = dm.getElement({type: dm.DOWNLOAD_BUTTON, name: "resume", value: download});
+  var pauseButton = dm.getElement({type: "download_button", subtype: "pause", value: download});
+  var resumeButton = dm.getElement({type: "download_button", subtype: "resume", value: download});
   
   // Pause the download
   dm.controller.click(pauseButton);
-  dm.assertDownloadState(download, dm.downloadState.paused);
-  dm.controller.sleep(1000);
+  dm.waitForDownloadState(download, DownloadsAPI.downloadState.paused);
 
   // Resume the download
   dm.controller.click(resumeButton);
-  dm.assertDownloadState(download, dm.downloadState.downloading);
-  dm.controller.sleep(1000);
-
-  // Cancel all downloads and close the download manager
-  dm.cancelActiveDownloads();
-  dm.close();
+  dm.waitForDownloadState(download, DownloadsAPI.downloadState.downloading);
 }
