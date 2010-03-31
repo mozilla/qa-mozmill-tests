@@ -34,8 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Used to check if the domain is displayed in the status bar
-var statusBarLabelHidden = false;
+const gTimeout = 5000;
 
 var setupModule = function(module)
 {
@@ -63,13 +62,10 @@ var testSSLDomainLabelInStatusBar = function()
                    '/id("security-button")' +
                    '/anon({"class":"statusbarpanel-text"})';
   var domainText = new elementslib.Lookup(controller.window.document, lookupPath);
-  controller.waitForElement(domainText);
+  controller.waitForElement(domainText, gTimeout);
   
   // Check the status bar label is NOT visible
   var cssInfo = controller.window.getComputedStyle(domainText.getNode(), "");
-  if (cssInfo.getPropertyValue('display') == 'none') {
-    statusBarLabelHidden = true;
-  }
   controller.assertJS("subject.isStatusBarLabelHidden == true",
-                      {isStatusBarLabelHidden: statusBarLabelHidden});
+                      {isStatusBarLabelHidden: cssInfo.getPropertyValue('display') == 'none'});
 }
