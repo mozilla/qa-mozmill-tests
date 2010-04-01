@@ -178,12 +178,12 @@ softwareUpdate.prototype = {
       // Check if the correct channel has been set
       var prefs = collector.getModule('PrefsAPI').preferences;
 
-      controller.assertJS("subject.channel == subject.expectedChannel",
-                          {channel: currentChannel, expectedChannel: prefs.getPref('app.update.channel','')});
+      this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
+                                {currentChannel: channel, expectedChannel: prefs.getPref('app.update.channel','')});
 
       // Only allow updates of the given type
-      controller.assertJS("subject.expectedUpdateType == subject.lastUpdateType",
-                          {expectedUpdateType: updateType, lastUpdateType: this.updateType});
+      this._controller.assertJS("subject.expectedUpdateType == subject.lastUpdateType",
+                                {expectedUpdateType: updateType, lastUpdateType: this.updateType});
     }
 
     // Click the next button
