@@ -39,7 +39,7 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
 
 const gTimeout = 5000;
-const gDelay = 100;
+const gDelay = 200;
 
 var setupModule = function(module)
 {
@@ -51,12 +51,12 @@ var setupModule = function(module)
     var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].
                      getService(Ci.nsINavHistoryService);
     historyService.removeAllPages();
-  } 
+  }
   catch (ex) {}
 }
 
 /**
- * Check matched awesomebar items are highlighted. 
+ * Check matched awesomebar items are highlighted.
  */
 var testCheckItemHighlight = function()
 {
@@ -89,6 +89,8 @@ var testCheckItemHighlight = function()
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // For the page title check matched text is underlined
+  controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
+  
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
   controller.assertJS("subject.underlinedTextCount == 1",
                       {underlinedTextCount: entries.length})
@@ -130,4 +132,3 @@ var prefDialogSuggestsCallback = function(controller)
  * Map test functions to litmus tests
  */
 testCheckItemHighlight.meta = {litmusids : [8774]};
-
