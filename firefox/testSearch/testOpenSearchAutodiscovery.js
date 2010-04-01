@@ -53,8 +53,8 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  search.engineDropDownOpen = false;
   search.removeEngine(searchEngine.name);
+  search.restoreDefaultEngines();
 }
 
 /**

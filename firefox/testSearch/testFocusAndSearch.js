@@ -45,6 +45,10 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
+}
+
+var teardownTest = function()
+{
   search.clear();
 }
 
@@ -55,7 +59,6 @@ var testClickAndSearch = function()
 {
   search.focus({type: "click"});
   search.search({text: "Firefox", action: "returnKey"});
-  search.clear();
 }
 
 /**
@@ -65,7 +68,6 @@ var testShortcutAndSearch = function()
 {
   search.focus({type: "keypress"});
   search.search({text: "Mozilla", action: "goButton"});
-  search.clear();
 }
 
 /**
