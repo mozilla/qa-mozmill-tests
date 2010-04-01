@@ -680,7 +680,22 @@ searchBar.prototype = {
    */
   restoreDefaultEngines : function searchBar_restoreDefaults()
   {
+    // XXX: Bug 556477 - Restore default sorting
+    this.openEngineManager(function(controller) {
+      var manager = new engineManager(controller);
+
+      // We have to do any action so the restore button gets enabled
+      manager.moveDownEngine(manager.engines[0].name);
+      manager.restoreDefaults();
+      manager.close(true);
+    });
+
+    // Update the visibility status for each engine and reset the default engine
     this._bss.restoreDefaultEngines();
+    this._bss.currentEngine = this._bss.defaultEngine;
+
+    // Clear any entered search term
+    this.clear();
   },
 
   /**

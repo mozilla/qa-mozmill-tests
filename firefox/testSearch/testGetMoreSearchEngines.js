@@ -55,9 +55,7 @@ var setupModule = function(module)
 var teardownModule = function(module)
 {
   search.removeEngine(searchEngine.name);
-
-  search.engineDropDownOpen = false;
-  search.clear();
+  search.restoreDefaultEngines();
 }
 
 /**

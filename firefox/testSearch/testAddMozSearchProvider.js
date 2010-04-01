@@ -49,15 +49,12 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
-  search.clear();
 }
 
 var teardownModule = function(module)
 {
   search.removeEngine(searchEngine.name);
-
-  search.engineDropDownOpen = false;
-  search.clear();
+  search.restoreDefaultEngines();
 }
 
 /**

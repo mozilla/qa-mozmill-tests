@@ -50,7 +50,6 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  search.engineDropDownOpen = false;
   search.restoreDefaultEngines();
 }
 
