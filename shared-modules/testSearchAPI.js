@@ -501,6 +501,29 @@ searchBar.prototype = {
   },
 
   /**
+   * Checks if the correct target URL has been opened for the search
+   *
+   * @param {string} searchTerm
+   *        Text which should be checked for
+   */
+  checkSearchResultPage : function(searchTerm) {
+    // Retrieve the URL which is used for the currently selected search engine
+    var targetUrl = this._bss.currentEngine.getSubmission(searchTerm, null).uri;
+    var currentUrl = this._controller.tabs.activeTabWindow.document.location.href;
+
+    // Check if pure domain names are identical
+    var domainName = targetUrl.host.replace(/.+\.(\w+)\.\w+$/gi, "$1");
+    var index = currentUrl.indexOf(domainName);
+
+    this._controller.assertJS("subject.URLContainsDomain == true",
+                              {URLContainsDomain: currentUrl.indexOf(domainName) != -1});
+
+    // Check if search term is listed in URL
+    this._controller.assertJS("subject.URLContainsText == true",
+                              {URLContainsText: currentUrl.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1});
+  },
+
+  /**
    * Clear the search field
    */
   clear : function searchBar_clear()
@@ -724,20 +747,6 @@ searchBar.prototype = {
     }
 
     this._controller.waitForPageLoad();
-
-    // Retrieve the URL which is used for the currently selected search engine
-    var targetUrl = this._bss.currentEngine.getSubmission(data.text, null).uri;
-    var currentUrl = this._controller.tabs.activeTabWindow.document.location.href;
-
-    // Check if pure domain names are identical
-    var domainName = targetUrl.host.replace(/.+\.(\w+)\.\w+$/gi, "$1");
-    var index = currentUrl.indexOf(domainName);
-    debugger;
-    this._controller.assertJS("subject.URLContainsDomain == true",
-                              {URLContainsDomain: currentUrl.indexOf(domainName) != -1});
-
-    // Check if search term is listed in URL
-    this._controller.assertJS("subject.URLContainsText == true",
-                              {URLContainsText: currentUrl.indexOf(data.text) != -1});
+    this.checkSearchResultPage(data.text);
   }
 };
