@@ -13,8 +13,8 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -41,27 +41,53 @@ var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module) {
+var setupModule = function(module)
+{
   module.controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance and set handler
   module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module) {
+var setupTest = function(module)
+{
+  // Make sure we are not in PB mode and don't show a prompt
+  pb.enabled = false;
+  pb.showPrompt = false;
+}
+
+var teardownModule = function(module)
+{
   pb.showPrompt = true;
   pb.enabled = false;
 }
 
 /**
+ * Verify about:privatebrowsing in regular mode
+ */
+var testCheckRegularMode = function()
+{
+  controller.open("about:privatebrowsing");
+  controller.waitForPageLoad();
+
+  // XXX Bug 504635 - Can't check DTD entities yet
+  var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
+
+  // Check button to enter Private Browsing mode
+  var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
+  controller.click(button);
+  controller.waitForPageLoad();
+
+  controller.waitForEval("subject.privateBrowsing.enabled == true", gTimeout, 100,
+                         {privateBrowsing: pb});
+  pb.stop();
+}
+
+/**
  * Verify about:privatebrowsing in private browsing mode
  */
-var testCheckAboutPrivateBrowsing = function()
+var testCheckPrivateBrowsingMode = function()
 {
-  // Make sure we are not in PB mode and don't show a prompt
-  pb.enabled = false;
-  pb.showPrompt = false;
-
   // Start the Private Browsing mode
   pb.start();
 
