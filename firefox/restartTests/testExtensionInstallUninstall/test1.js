@@ -107,8 +107,8 @@ var handleTriggerDialog = function(controller) {
                       {extensionsCount: itemElem.childNodes.length});
 
   // Check if the extension name is shown
-  controller.assertJS("subject.extensions[0].name == subject.targetName",
-                      {extensions: itemElem.childNodes, targetName: persisted.extensionName});
+  controller.assertJS("subject.extensions[0].name == subject.extensionName",
+                      {extensions: itemElem.childNodes, extensionName: persisted.extensionName});
 
   // Will the extension be installed from https://addons.mozilla.org/?
   controller.assertJS("subject.isExtensionFromAMO == true",
