@@ -206,7 +206,7 @@ engineManager.prototype = {
   },
 
   /**
-   * Edit the keyword accociated to a search engine
+   * Edit the keyword associated to a search engine
    *
    * @param {string} name
    *        Name of the engine to remove
@@ -506,7 +506,7 @@ searchBar.prototype = {
    * @param {string} searchTerm
    *        Text which should be checked for
    */
-  checkSearchResultPage : function(searchTerm) {
+  checkSearchResultPage : function searchBar_checkSearchResultPage(searchTerm) {
     // Retrieve the URL which is used for the currently selected search engine
     var targetUrl = this._bss.currentEngine.getSubmission(searchTerm, null).uri;
     var currentUrl = this._controller.tabs.activeTabWindow.document.location.href;
@@ -541,8 +541,8 @@ searchBar.prototype = {
   /**
    * Focus the search bar text field
    *
-   * @param {boolean} useMouse
-   *        If true use the mouse to focus the text field otherwise the shortcut
+   * @param {object} event
+   *        Specifies the event which has to be used to focus the search bar
    */
   focus : function searchBar_focus(event)
   {
@@ -552,7 +552,7 @@ searchBar.prototype = {
       case "click":
         this._controller.click(input);
         break;
-      case "keypress":
+      case "shortcut":
         this._controller.keypress(null, 'k', {accelKey: true});
         break;
       default:
@@ -631,8 +631,7 @@ searchBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP);
         break;
       case "searchBar_textBox":
-        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_BAR +
-                                      '/anon({"anonid":"searchbar-textbox"})');
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
