@@ -77,6 +77,7 @@ function privateBrowsing(controller)
    * @private
    */
   this._pbMenuItem = new elementslib.Elem(this._controller.menus['tools-menu'].privateBrowsingItem);
+  this._pbTransitionItem = new elementslib.ID(this._controller.window.document, "Tools:PrivateBrowsing");
 
   this.__defineGetter__('_pbs', function() {
     delete this._pbs;
@@ -94,6 +95,56 @@ privateBrowsing.prototype = {
    * @private
    */
   _handler: null,
+
+  /**
+   * Checks the state of the Private Browsing mode
+   *
+   * @returns Enabled state
+   * @type {boolean}
+   */
+  get enabled() {
+    return this._pbs.privateBrowsingEnabled;
+  },
+
+  /**
+   * Sets the state of the Private Browsing mode
+   *
+   * @param {boolean} value
+   *        New state of the Private Browsing mode
+   */
+  set enabled(value) {
+    this._pbs.privateBrowsingEnabled = value;
+  },
+
+  /**
+   * Sets the callback handler for the confirmation dialog
+   *
+   * @param {function} callback
+   *        Callback handler for the confirmation dialog
+   */
+  set handler(callback) {
+    this._handler = callback;
+  },
+
+  /**
+   * Gets the enabled state of the confirmation dialog
+   *
+   * @returns Enabled state
+   * @type {boolean}
+   */
+  get showPrompt() {
+    return !this._prefs.getPref(PB_NO_PROMPT_PREF, true);
+  },
+
+  /**
+   * Sets the enabled state of the confirmation dialog
+   *
+   * @param {boolean} value
+   *        New enabled state of the confirmation dialog
+   */
+  set showPrompt(value){
+    this._prefs.setPref(PB_NO_PROMPT_PREF, !value);
+  },
 
   /**
    * Start the Private Browsing mode
@@ -122,9 +173,7 @@ privateBrowsing.prototype = {
       this._controller.click(this._pbMenuItem);
     }
 
-    // We have to wait a bit before checking the state
-    this._controller.sleep(200);
-    this._controller.assertJS("subject.enabled == true", this);
+    this.waitForTransistionComplete(true);
   },
 
   /**
@@ -144,37 +193,20 @@ privateBrowsing.prototype = {
       this._controller.click(this._pbMenuItem);
     }
 
-    // We have to wait a bit before checking the state
-    this._controller.sleep(200);
-    this._controller.assertJS("subject.enabled == false", this);
+    this.waitForTransistionComplete(false);
+  },
+
+  /**
+   * Waits until the transistion into or out of the Private Browsing mode happened
+   *
+   * @param {boolean} state
+   *        Expected target state of the Private Browsing mode
+   */
+  waitForTransistionComplete : function privateBrowsing_waitForTransitionComplete(state) {
+    // We have to wait until the transition has been finished
+    this._controller.waitForEval("subject.hasAttribute('disabled') == false", gTimeout, 100,
+                                 this._pbTransitionItem.getNode());
+    this._controller.waitForEval("subject.privateBrowsing.enabled == subject.state", gTimeout, 100,
+                                 {privateBrowsing: this, state: state});
   }
 }
-
-/**
- * (Get/Set) Property to start/stop the Private Browsing mode
- */
-privateBrowsing.prototype.__defineGetter__('enabled', function() {
-  return this._pbs.privateBrowsingEnabled;
-});
-
-privateBrowsing.prototype.__defineSetter__('enabled', function(v) {
-  this._pbs.privateBrowsingEnabled = v;
-});
-
-/**
- * (Set) Property to set the callback function
- */
-privateBrowsing.prototype.__defineSetter__('handler', function(v) {
-  this._handler = v;
-});
-
-/**
- * (Get/Set) Property to enable/disable the modal entry dialog
- */
-privateBrowsing.prototype.__defineGetter__('showPrompt', function() {
-  return !this._prefs.getPref(PB_NO_PROMPT_PREF, true);
-});
-
-privateBrowsing.prototype.__defineSetter__('showPrompt', function(v) {
-  this._prefs.setPref(PB_NO_PROMPT_PREF, !v);
-});

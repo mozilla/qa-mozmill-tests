@@ -90,6 +90,7 @@ var testCheckPrivateBrowsingMode = function()
 {
   // Start the Private Browsing mode
   pb.start();
+  controller.waitForPageLoad();
 
   var moreInfo = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
   controller.waitThenClick(moreInfo, gTimeout);
