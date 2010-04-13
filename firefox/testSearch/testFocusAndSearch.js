@@ -66,7 +66,7 @@ var testClickAndSearch = function()
  */
 var testShortcutAndSearch = function()
 {
-  search.focus({type: "keypress"});
+  search.focus({type: "shortcut"});
   search.search({text: "Mozilla", action: "goButton"});
 }
 
