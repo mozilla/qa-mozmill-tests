@@ -51,15 +51,16 @@ const gTimeout = 5000;
 const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
 
 // Helper lookup constants for the search bar elements
-const SEARCH_BAR        = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")';
-const SEARCH_TEXTBOX    = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
-const SEARCH_DROPDOWN   = SEARCH_TEXTBOX  + '/anon({"anonid":"searchbar-engine-button"})';
-const SEARCH_POPUP      = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
-const SEARCH_INPUT      = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
-                                            '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
-const SEARCH_CONTEXT    = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
-                                            '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
-const SEARCH_GO_BUTTON  = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})/anon({"class":"search-go-button"})';
+const SEARCH_BAR          = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")';
+const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
+const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/anon({"anonid":"searchbar-engine-button"})';
+const SEARCH_POPUP        = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
+const SEARCH_INPUT        = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
+                                              '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
+const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
+                                              '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
+const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})/anon({"class":"search-go-button"})';
+const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")';
 
 /**
  * Constructor
@@ -391,7 +392,7 @@ searchBar.prototype = {
   get engines()
   {
     var engines = [ ];
-    var popup = this.getElement({type: "searchBar_popup"});
+    var popup = this.getElement({type: "searchBar_dropDownPopup"});
 
     for (var ii = 0; ii < popup.getNode().childNodes.length; ii++) {
       var entry = popup.getNode().childNodes[ii];
@@ -411,7 +412,7 @@ searchBar.prototype = {
    */
   get enginesDropDownOpen()
   {
-    var popup = this.getElement({type: "searchBar_popup"});
+    var popup = this.getElement({type: "searchBar_dropDownPopup"});
     return popup.getNode().state != "closed";
   },
 
@@ -436,7 +437,7 @@ searchBar.prototype = {
   get installableEngines()
   {
     var engines = [ ];
-    var popup = this.getElement({type: "searchBar_popup"});
+    var popup = this.getElement({type: "searchBar_dropDownPopup"});
 
     for (var ii = 0; ii < popup.getNode().childNodes.length; ii++) {
       var entry = popup.getNode().childNodes[ii];
@@ -587,7 +588,7 @@ searchBar.prototype = {
       case "engine":
         // XXX: bug 555938 - Mozmill can't fetch the element via a lookup here.
         // That means we have to grab it temporarily by iterating through all childs.
-        var popup = this.getElement({type: "searchBar_popup"}).getNode();
+        var popup = this.getElement({type: "searchBar_dropDownPopup"}).getNode();
         for (var ii = 0; ii < popup.childNodes.length; ii++) {
           var entry = popup.childNodes[ii];
           if (entry.getAttribute(spec.subtype) == spec.value) {
@@ -601,7 +602,7 @@ searchBar.prototype = {
       case "engine_manager":
         // XXX: bug 555938 - Mozmill can't fetch the element via a lookup here.
         // That means we have to grab it temporarily by iterating through all childs.
-        var popup = this.getElement({type: "searchBar_popup"}).getNode();
+        var popup = this.getElement({type: "searchBar_dropDownPopup"}).getNode();
         for (var ii = popup.childNodes.length - 1; ii >= 0; ii--) {
           var entry = popup.childNodes[ii];
           if (entry.className == "open-engine-manager") {
@@ -615,11 +616,17 @@ searchBar.prototype = {
       case "searchBar":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_BAR);
         break;
+      case "searchBar_autoCompletePopup":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_AUTOCOMPLETE);
+        break;
       case "searchBar_contextMenu":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_CONTEXT);
         break;
       case "searchBar_dropDown":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_DROPDOWN);
+        break;
+      case "searchBar_dropDownPopup":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP);
         break;
       case "searchBar_goButton":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_GO_BUTTON);
@@ -627,9 +634,10 @@ searchBar.prototype = {
       case "searchBar_input":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_INPUT);
         break;
-      case "searchBar_popup":
-        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP);
-        break;
+      case "searchBar_suggestions":
+        elem = new elementslib.Lookup(this._controller.window.document, SEARCH_AUTOCOMPLETE +
+                                      '/anon({"anonid":"tree"})');
+         break;
       case "searchBar_textBox":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
@@ -638,6 +646,36 @@ searchBar.prototype = {
     }
 
     return elem;
+  },
+
+  /**
+   * Returns the search suggestions for the search term
+   */
+  getSuggestions : function(searchTerm) {
+    var suggestions = [ ];
+    var popup = this.getElement({type: "searchBar_autoCompletePopup"});
+    var treeElem = this.getElement({type: "searchBar_suggestions"});
+
+    // Enter search term and wait for the popup
+    this.type(searchTerm);
+    this._controller.waitForEval("subject.popup.state == 'open'", gTimeout, 100,
+                                 {popup: popup.getNode()});
+    this._controller.waitForElement(treeElem, gTimeout);
+
+    // Get all suggestions
+    var tree = treeElem.getNode();
+    this._controller.waitForEval("subject.tree.view != null", gTimeout, 100,
+                                 {tree: tree});
+    for (var ii = 0; ii < tree.view.rowCount; ii ++) {
+      suggestions.push(tree.view.getCellText(ii, tree.columns.getColumnAt(0)));
+    }
+
+    // Close auto-complete popup
+    this._controller.keypress(popup, "VK_ESCAPE", {});
+    this._controller.waitForEval("subject.popup.state == 'closed'", gTimeout, 100,
+                                 {popup: popup.getNode()});
+
+    return suggestions;
   },
 
   /**
@@ -724,16 +762,13 @@ searchBar.prototype = {
    * Start a search with the given search term and check if the resulting URL
    * contains the search term.
    *
-   * @param {string} searchTerm
-   *        Text which should be searched for
+   * @param {object} data
+   *        Object which contains the search term and the action type
    */
   search : function searchBar_search(data)
   {
     var searchBar = this.getElement({type: "searchBar"});
-
-    // Enter search term in text field and start search
-    this._controller.type(searchBar, data.text);
-    this._controller.sleep(1000);
+    this.type(data.text);
 
     switch (data.action) {
       case "returnKey":
@@ -747,5 +782,16 @@ searchBar.prototype = {
 
     this._controller.waitForPageLoad();
     this.checkSearchResultPage(data.text);
+  },
+
+  /**
+   * Enter a search term into the search bar
+   *
+   * @param {string} searchTerm
+   *        Text which should be searched for
+   */
+  type : function searchBar_type(searchTerm) {
+    var searchBar = this.getElement({type: "searchBar"});
+    this._controller.type(searchBar, searchTerm);
   }
 };
