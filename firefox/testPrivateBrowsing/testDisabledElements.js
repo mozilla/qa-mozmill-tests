@@ -47,9 +47,9 @@ var setupModule = function(module) {
   module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module) {
-  pb.showPrompt = true;
-  pb.enabled = false;
+var teardownModule = function(module)
+{
+  pb.reset();
 }
 
 /**
@@ -88,8 +88,6 @@ var testCheckAboutPrivateBrowsing = function()
     libController.keypress(null, "w", {accelKey: true});
     libController.sleep(200);
   }
-
-  pb.stop();
 }
 
 /**

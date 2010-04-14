@@ -57,9 +57,7 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  // Reset Private Browsing options
-  pb.showPrompt = true;
-  pb.enabled = false;
+  pb.reset();
 
   // Reset the user cookie pref
   PrefsAPI.preferences.clearUserPref("network.cookie.lifetimePolicy");
@@ -108,15 +106,9 @@ var testPermissionsDisabled = function()
   // Enable the "Ask me every time" cookie behavior
   PrefsAPI.openPreferencesDialog(prefCookieHandler);
 
-  // Just in case we fail we should handle the modal cookie dialog
-  var md = new ModalDialogAPI.modalDialog(cookieHandler);
-  md.start();
-
   // No cookie dialog should show up
   controller.open(websites[2]);
   controller.waitForPageLoad();
-
-  pb.stop();
 }
 
 /**

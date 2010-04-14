@@ -55,9 +55,7 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  // Reset Private Browsing options
-  pb.showPrompt = true;
-  pb.enabled = false;
+  pb.reset();
 }
 
 /**

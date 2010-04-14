@@ -147,6 +147,20 @@ privateBrowsing.prototype = {
   },
 
   /**
+   * Turn off Private Browsing mode and reset all changes
+   */
+  reset : function privateBrowsing_reset() {
+    try {
+      pb.stop(true);
+    } catch (ex) {
+      // Do a hard reset
+      pb.enabled = false;
+    }
+
+    pb.showPrompt = true;
+  },
+
+  /**
    * Start the Private Browsing mode
    *
    * @param {boolean} useShortcut

@@ -52,31 +52,26 @@ const downloadsPB = [
 
 var setupModule = function(module)
 {
-  module.controller = mozmill.getBrowserController();
+  controller = mozmill.getBrowserController();
 
   // Make sure there are no active downloads, downloaded files
   // or data in the Download Manager database before beginning
-  module.dm = new DownloadsAPI.downloadManager();
-  module.dm.cleanAll();
+  dm = new DownloadsAPI.downloadManager();
+  dm.cleanAll();
 
   // Array for downloaded files
-  module.curDownloads = [];
+  curDownloads = [];
 
   // Make sure we are not in PB mode and don't show a prompt
-  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
-  module.pb.enabled = false;
-  module.pb.showPrompt = false;
+  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb.enabled = false;
+  pb.showPrompt = false;
 }
 
 var teardownModule = function(module)
 {
-  // Make sure there are no active downloads, downloaded files
-  // or data in the Download Manager database
-  module.dm.cleanAll();
-
-  // Reset Private Browsing prefs/state
-  module.pb.showPrompt = true;
-  module.pb.enabled = false;
+  dm.cleanAll();
+  pb.reset();
 
   PrefsAPI.preferences.clearUserPref("browser.download.manager.showWhenStarting");
 }

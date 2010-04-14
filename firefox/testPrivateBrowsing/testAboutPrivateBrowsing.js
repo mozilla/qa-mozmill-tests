@@ -42,10 +42,10 @@ const gTimeout = 5000;
 
 var setupModule = function(module)
 {
-  module.controller = mozmill.getBrowserController();
+  controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance and set handler
-  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
 var setupTest = function(module)
@@ -55,10 +55,9 @@ var setupTest = function(module)
   pb.showPrompt = false;
 }
 
-var teardownModule = function(module)
+var teardownTest = function(test)
 {
-  pb.showPrompt = true;
-  pb.enabled = false;
+  pb.reset();
 }
 
 /**
@@ -79,7 +78,6 @@ var testCheckRegularMode = function()
 
   controller.waitForEval("subject.privateBrowsing.enabled == true", gTimeout, 100,
                          {privateBrowsing: pb});
-  pb.stop();
 }
 
 /**
@@ -100,8 +98,6 @@ var testCheckPrivateBrowsingMode = function()
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
   controller.waitForPageLoad();
   UtilsAPI.assertLoadedUrlEqual(controller, targetUrl);
-
-  pb.stop();
 }
 
 /**
