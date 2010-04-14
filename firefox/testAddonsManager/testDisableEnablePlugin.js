@@ -73,7 +73,7 @@ var testDisableEnablePlugin = function()
   addonsManager.setPane("plugins");
   
   // Select the default plugin and disable it
-  addonsManager.setPluginState(pluginId, false);
+  addonsManager.setPluginState("addonID", pluginId, false);
 
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
@@ -83,7 +83,7 @@ var testDisableEnablePlugin = function()
   controller.assertText(status, "disabled");
 
   // Enable the default plugin
-  addonsManager.setPluginState(pluginId, true);
+  addonsManager.setPluginState("addonID", pluginId, true);
 
   // Check that the plugin is shown as disabled on web pages
   controller.open(localTestFolder + "plugin.html");
