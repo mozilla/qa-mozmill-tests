@@ -111,17 +111,19 @@ addonsManager.prototype = {
   /**
    * Retrieve the current enabled/disabled state of the given plug-in
    *
-   * @param {string} id
-   *        addonID of the plug-in
+   * @param {string} node
+   *        Node name of the plug-in entry
+   * @param {string} value
+   *        Node value of the plug-in entry
    * @returns True if plug-in is enabled
    * @type boolean
    */
-  isPluginEnabled : function addonsManager_setPluginState(id) {
+  isPluginEnabled : function addonsManager_setPluginState(node, value) {
     if (this.getPane() != "plugins")
       this.setPane("plugins");
 
     var plugin = new elementslib.Lookup(this._controller.window.document,
-                                        this.getListItem("addonID", id));
+                                        this.getListItem(node, value));
 
     return (plugin.getNode().getAttribute('isDisabled') == 'false');
   },
@@ -183,20 +185,22 @@ addonsManager.prototype = {
   /**
    * Set the state of the given plug-in
    *
-   * @param {string} id
-   *        addonID of the plug-in
+   * @param {string} node
+   *        Node name of the plug-in entry
+   * @param {string} value
+   *        Node value of the plug-in entry
    * @param {boolean} enable
    *        True if the plug-in should be enabled.
    */
-  setPluginState : function addonsManager_setPluginState(id, enable) {
-    if (this.isPluginEnabled(id) == enable)
+  setPluginState : function addonsManager_setPluginState(node, value, enable) {
+    if (this.isPluginEnabled(node, value) == enable)
       return;
 
     if (this.getPane() != "plugins")
       this.setPane("plugins");
 
     // Select the plug-in entry
-    var itemString = this.getListItem("addonID", id);
+    var itemString = this.getListItem(node, value);
     var plugin = new elementslib.Lookup(this._controller.window.document,
                                         itemString);
     this._controller.click(plugin);
@@ -208,7 +212,7 @@ addonsManager.prototype = {
                                         '/anon({"command":"cmd_' + (enable ? "enable" : "disable") + '"})');
     this._controller.waitThenClick(button, gTimeout);
 
-    this._controller.waitForEval("subject.plugin.isPluginEnabled(subject.id) == subject.state", gTimeout, 100,
-                                 {plugin: this, id: id, state: enable});
+    this._controller.waitForEval("subject.plugin.isPluginEnabled(subject.node, subject.value) == subject.state", gTimeout, 100,
+                                 {plugin: this, node: node, value: value, state: enable});
   }
 };

@@ -45,9 +45,10 @@ const gTimeout = 5000;
 
 const localTestFolder = collector.addHttpResource('./files');
 
-var plugins = {"darwin": "DefaultPlugin.plugin",
-               "winnt": "npnul32.dll",
-               "linux": "libnullplugin.so"};
+var plugins = {"darwin": {node: "name", value: "Default Plugin"},
+               "winnt":  {node: "description", value: "Default Plug-in"},
+               "linux":  {node: "name", value: "Default Plugin"}
+              };
 
 var setupModule = function(module) 
 {
@@ -66,14 +67,14 @@ var teardownModule = function(module)
  */
 var testDisableEnablePlugin = function()
 {
-  var pluginId = plugins[mozmill.platform];
+  var plugin = plugins[mozmill.platform];
 
   // Open Add-ons Manager and go to the themes pane
   addonsManager.open(controller);
   addonsManager.setPane("plugins");
   
   // Select the default plugin and disable it
-  addonsManager.setPluginState(pluginId, false);
+  addonsManager.setPluginState(plugin.node, plugin.value, false);
 
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
@@ -83,7 +84,7 @@ var testDisableEnablePlugin = function()
   controller.assertText(status, "disabled");
 
   // Enable the default plugin
-  addonsManager.setPluginState(pluginId, true);
+  addonsManager.setPluginState(plugin.node, plugin.value, true);
 
   // Check that the plugin is shown as disabled on web pages
   controller.open(localTestFolder + "plugin.html");
