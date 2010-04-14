@@ -39,6 +39,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
+var gTimeout = 5000;
+
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
@@ -146,9 +148,9 @@ var testLarryGreen = function()
   pageInfoController.assertProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document,
-                                            "security-identity-domain-value");
-  pageInfoController.assertValue(webIDDomainLabel, cert.commonName);
+  var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-domain-value");
+  pageInfoController.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
+                                 {domainLabel: webIDDomainLabel.getNode().value, CName: cert.commonName});
 
   // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(pageInfoController.window.document,
