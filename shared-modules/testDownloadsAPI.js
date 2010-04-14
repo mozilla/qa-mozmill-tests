@@ -341,7 +341,6 @@ var downloadFileOfUnknownType = function(controller, url)
   controller.open(url);
 
   // Wait until the unknown content type dialog has been opened
-  controller.sleep(500);
   controller.waitForEval("subject.getMostRecentWindow('').document.documentElement.id == 'unknownContentType'",
                          gTimeout, 100, mozmill.wm);
 
@@ -355,12 +354,16 @@ var downloadFileOfUnknownType = function(controller, url)
   utController.waitForEval("subject.selected == true", gTimeout, 100,
                          saveFile.getNode());
 
-  // The OK button is lazily updated. So wait a bit.
-  var button = new elementslib.Lookup(utController.window.document, '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  utController.waitThenClick(button);
+  // Wait until the OK button has been enabled and click on it
+  var button = new elementslib.Lookup(utController.window.document,
+                                      '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  utController.waitForElement(button, gTimeout);
+  utController.waitForEval("subject.okButton.hasAttribute('disabled') == false", gTimeout, 100,
+                           {okButton: button.getNode()});
+  utController.click(button);
 
-  utController.waitForEval("subject.getMostRecentWindow('') != this.window",
-                         gTimeout, 100, mozmill.wm);
+  utController.waitForEval("subject.getMostRecentWindow('') != this.window", gTimeout, 100,
+                           mozmill.wm);
 }
 
 /**

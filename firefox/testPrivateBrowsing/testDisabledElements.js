@@ -48,15 +48,15 @@ var setupModule = function(module) {
   module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module) {
-  pb.showPrompt = true;
-  pb.enabled = false;
+var teardownModule = function(module)
+{
+  pb.reset();
 }
 
 /**
  * Verify "Import" is disabled during Private Browsing mode
  */
-var testCheckAboutPrivateBrowsing = function()
+var testCheckImportDisabled = function()
 {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
@@ -89,11 +89,9 @@ var testCheckAboutPrivateBrowsing = function()
     libController.keypress(null, "w", {accelKey: true});
     libController.sleep(200);
   }
-
-  pb.stop();
 }
 
 /**
  * Map test functions to litmus tests
  */
-testCheckAboutPrivateBrowsing.meta = {litmusids : [7541]};
+testCheckImportDisabled.meta = {litmusids : [7541]};

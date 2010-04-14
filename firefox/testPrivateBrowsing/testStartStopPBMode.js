@@ -47,20 +47,20 @@ const websites = [
                  ];
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.modifier = controller.window.document.documentElement
-                              .getAttribute("titlemodifier_privatebrowsing");
+  controller = mozmill.getBrowserController();
+  modifier = controller.window.document.documentElement
+                       .getAttribute("titlemodifier_privatebrowsing");
 
   // Create Private Browsing instance and set handler
-  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
-  module.pb.handler = pbStartHandler;
+  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb.handler = pbStartHandler;
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
-var teardownModule = function(module) {
-  pb.showPrompt = true;
-  pb.enabled = false;
+var teardownModule = function(module)
+{
+  pb.reset();
 }
 
 /**
