@@ -45,6 +45,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function(module)

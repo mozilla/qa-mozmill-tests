@@ -50,8 +50,9 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  // Reset the pop-up blocking pref
+  // Reset the pop-up blocking pref and close all open tabs
   PrefsAPI.preferences.clearUserPref("dom.disable_open_during_load");
+  tabBrowser.closeAllTabs();
 
   for each (window in mozmill.utils.getWindows("navigator:browser")) {
     if (!window.toolbar.visible)
