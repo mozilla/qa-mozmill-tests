@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -42,8 +42,8 @@ var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI', 'UtilsAPI'];
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
 /*
@@ -51,15 +51,14 @@ var setupModule = function(module) {
  */
 var testCheckInstalledTheme = function()
 {
-  addonsManager.open();
-  addonsManager.setPane("themes");
+  addonsManager.open(controller);
+  addonsManager.paneId = "themes";
 
   // The installed theme should be the current theme in the list
-  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
-                                     addonsManager.getListItem("addonID", persisted.themeId));
+  var theme = addonsManager.getListboxItem("addonID", persisted.themeId);
   addonsManager.controller.waitThenClick(theme, gTimeout);
-  addonsManager.controller.assertJS("subject.getAttribute('current') == 'true'",
-                                    theme.getNode());
+  addonsManager.controller.assertJS("subject.isCurrentTheme == true",
+                                    {isCurrentTheme: theme.getNode().getAttribute('current') == 'true'});
 
   addonsManager.close();
 }
@@ -69,32 +68,27 @@ var testCheckInstalledTheme = function()
  */
 var testThemeChange = function() 
 {
-  addonsManager.open();
-  addonsManager.setPane("themes");
+  addonsManager.open(controller);
+  addonsManager.paneId = "themes";
 
   // Select the default theme and click the use theme button
-  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
-                                     addonsManager.getListItem("addonID", persisted.defaultThemeId));
+  var theme = addonsManager.getListboxItem("addonID", persisted.defaultThemeId);
   addonsManager.controller.waitThenClick(theme, gTimeout);
 
-  var useThemeButton = new elementslib.Lookup(addonsManager.controller.window.document,
-                                              addonsManager.getListItem("addonID", persisted.defaultThemeId) +
-                                              '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
-                                              '/anon({"anonid":"selectedButtons"})/{"command":"cmd_useTheme"}');
+  var useThemeButton = addonsManager.getElement({type: "listbox_button", subtype: "useTheme", value: theme});
   addonsManager.controller.waitThenClick(useThemeButton, gTimeout);
 
   // Wait for the restart button
-  var restartButton = new elementslib.XPath(addonsManager.controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);
 
-  // Verify useThemeButton is not visible and theme description has changed
+  // Verify useThemeButton is not visible 
   addonsManager.controller.assertProperty(useThemeButton, "disabled", "true");
-  addonsManager.controller.assertJS("subject.getAttribute('description').indexOf('Restart') != -1",
-                                    theme.getNode());
 
-  // Verify the theme that will be changed to is the default theme
-  nextTheme = PrefsAPI.preferences.getPref("extensions.lastSelectedSkin", "");
-  addonsManager.controller.assertJS("subject.indexOf('classic') != -1", nextTheme);
+  // ... and theme description has changed
+  var description = theme.getNode().getAttribute('description');
+  addonsManager.controller.assertJS("subject.hasDescriptionChanged == true",
+                                    {hasDescriptionChanged: description.indexOf('Restart') != -1});
 }
 
 /**

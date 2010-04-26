@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -42,72 +42,67 @@ var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
 var testCheckInstalledExtension = function() 
 {
-  // Check if Add-ons Manager is opened after restart
-  var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-  controller.assertJS("subject.extensionManager != null",
-                      {extensionManager: window});
-
-  addonsManager.open();
+  // Check if Add-ons Manager is automatically opened after restart
+  addonsManager.waitForOpened(controller);
 
   // Extensions pane should be selected
-  addonsManager.controller.waitForEval("subject.getPane() == 'extensions'", 10000, 100, addonsManager);
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 10000, 100,
+                                       {manager: addonsManager});
 
   // Notification bar should show one new installed extension
-  var notificationBar = new elementslib.Lookup(addonsManager.controller.window.document, '/id("extensionsManager")/id("addonsMsg")/{"type":"warning"}/anon({"type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
+  var notificationBar = addonsManager.getElement({type: "notificationBar"});
   addonsManager.controller.waitForElement(notificationBar, gTimeout);
 
   // The installed extension should be displayed with a different background in the list.
   // We can find it by the attribute "newAddon"
-  // XXX: Use a hard-coded name to access the entry directly until we can pass the info
-  // between restart test files (bug 500987)
-  var extension = new elementslib.Lookup(addonsManager.controller.window.document,
-                                         addonsManager.getListItem("addonID", persisted.extensionId));
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
   addonsManager.controller.waitForElement(extension, gTimeout);
-  addonsManager.controller.assertJS("subject.getAttribute('newAddon') == 'true'",
-                                    extension.getNode());
+  addonsManager.controller.assertJS("subject.isExtensionInstalled == true",
+                                    {isExtensionInstalled: extension.getNode().getAttribute('newAddon') == 'true'});
 }
 
 /*
  * Tests the uninstallation of the extension
  */
-var testUninstallExtension = function() 
+var testUninstallExtension = function()
 {
+  // Check if Add-ons Manager is automatically opened after restart
+  addonsManager.waitForOpened(controller);
+  addonsManager.paneId = "extensions";
+
   // Confirm the installed extension and click on it
-  var extension = new elementslib.Lookup(addonsManager.controller.window.document,
-                                         addonsManager.getListItem("addonID", persisted.extensionId));
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
   addonsManager.controller.waitThenClick(extension, gTimeout);
 
   // Create a modal dialog instance to handle the software uninstallation dialog
   var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
   md.start();
 
-  var uninstallExtensionButton = new elementslib.Lookup(addonsManager.controller.window.document,
-                                                        addonsManager.getListItem("addonID", persisted.extensionId) +
-                                                        '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
-                                                        '/anon({"anonid":"selectedButtons"})/{"command":"cmd_uninstall"}');
-  addonsManager.controller.waitThenClick(uninstallExtensionButton);
+  var uninstallButton = addonsManager.getElement({type: "listbox_button", subtype: "uninstall", value: extension});
+  addonsManager.controller.waitThenClick(uninstallButton, gTimeout);
  
   // Wait for the restart button
-  var restartButton = new elementslib.XPath(addonsManager.controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]");
+  var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);
 }
 
 /**
  * Handle the Software Un-installation dialog
  */
-var handleTriggerDialog = function(controller) 
+var handleTriggerDialog = function(controller)
 {
-  var cancelButton = new elementslib.Lookup(controller.window.document, '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
-  var uninstallButton = new elementslib.Lookup(controller.window.document, '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-
+  var cancelButton = new elementslib.Lookup(controller.window.document,
+                                            '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
   controller.waitForElement(cancelButton, gTimeout);
 
+  var uninstallButton = new elementslib.Lookup(controller.window.document,
+                                               '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitForEval("subject.disabled != true", 7000, 100, uninstallButton.getNode());
   controller.waitThenClick(uninstallButton, gTimeout);
 }

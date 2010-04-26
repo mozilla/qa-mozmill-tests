@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -40,19 +40,16 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
+const gSearchTimeout = 30000;
+const gInstallTimeout = 30000;
 
-var setupModule = function(module) 
+var setupModule = function(module)
 {
-  module.controller = mozmill.getBrowserController();
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 
-  module.persisted.extensionName = "Adblock Plus";
-  module.persisted.extensionId = "{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}";
-}
-
-var teardownModule = function(module)
-{
-  module.addonsManager.close();
+  persisted.extensionName = "Flashblock";
+  persisted.extensionId = "{3d7eb24f-2740-49df-8937-200b1cc08f8a}";
 }
 
 /*
@@ -63,42 +60,43 @@ var testInstallExtension = function()
   // Open the addons manager
   addonsManager.open(controller);
 
-  var addonsController = addonsManager.controller;
-
   // Search for the addon mentioned in extensionName
   addonsManager.search(persisted.extensionName);
 
   // Wait for search results to populate and click on the install addon button for extensionName
-  var footerField = new elementslib.ID(addonsController.window.document, "urn:mozilla:addons:search:status:footer");
-  addonsController.waitForElement(footerField, 30000);
+  var footer = addonsManager.getElement({type: "search_status", subtype: "footer"});
+  addonsManager.controller.waitForElement(footer, gSearchTimeout);
 
   // Select the extension we have searched for
-  var extension = new elementslib.Lookup(addonsController.window.document,
-                                         addonsManager.getListItem("addonID", persisted.extensionId));
-  addonsController.click(extension);
-
-  // XXX: Until bug 534070 is fixed, this is the work-around that we can provide to grab the install button
-  var installButton = new elementslib.Elem(extension.getNode().boxObject.firstChild.childNodes[1]
-                                           .childNodes[1].childNodes[1].childNodes[3].childNodes[7]);
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
+  addonsManager.controller.waitThenClick(extension, gSearchTimeout);
 
   // Create a modal dialog instance to handle the Software Installation dialog
   var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
   md.start();
 
-  // The installation is triggered lazily...
-  addonsController.waitThenClick(installButton);
+  // Trigger the extension installation
+  var installButton = addonsManager.getElement({type: "listbox_button", subtype: "installSearchResult", value: extension});
+  addonsManager.controller.waitThenClick(installButton);
 
-  // Check if the extension is visible in the installation pane
-  addonsManager.setPane("installs");
-  extension = new elementslib.Lookup(addonsController.window.document,
-                                     addonsManager.getListItem("addonID", persisted.extensionId));
-  addonsController.waitForElement(extension, 30000);
-  addonsController.waitForEval("subject.getAttribute('state') == 'success'",
-                               30000, 100, extension.getNode());
+  // Wait that the installation has been started
+  addonsManager.controller.waitForEval("subject.extension.getAttribute('action') == 'installing'", gInstallTimeout, 100,
+                                       {extension: extension.getNode()});
 
-  // so we have to wait a bit longer for the restart button
-  var restartButton = new elementslib.XPath(addonsController.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
-  addonsController.waitForElement(restartButton, gTimeout);
+  // Wait for the installation pane
+  var installPane = addonsManager.getPane("installs");
+  addonsManager.controller.waitForElement(installPane, gInstallTimeout);
+  addonsManager.paneId = "installs";
+
+  // ... and that the installation has been finished
+  extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
+  addonsManager.controller.waitForElement(extension, gInstallTimeout);
+  addonsManager.controller.waitForEval("subject.extension.getAttribute('state') == 'success'", gInstallTimeout, 100,
+                                       {extension: extension.getNode()});
+
+  // Check if restart button is present
+  var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
+  addonsManager.controller.waitForElement(restartButton, gTimeout);
 }
 
 /**
@@ -124,11 +122,13 @@ var handleTriggerDialog = function(controller)
                       {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('https://addons.mozilla.org/') != -1});
 
   // Check if the Cancel button is present
-  var cancelButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
+  var cancelButton = new elementslib.Lookup(controller.window.document,
+                                            '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
   controller.assertNode(cancelButton);
 
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  var installButton = new elementslib.Lookup(controller.window.document,
+                                             '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
   controller.click(installButton);
 }

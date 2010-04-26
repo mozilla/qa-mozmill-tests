@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -43,17 +43,17 @@ const gTimeout = 5000;
 
 var setupModule = function(module)
 {
+  controller = mozmill.getBrowserController();
   module.addonsManager = new AddonsAPI.addonsManager();
 }
 
 var testCheckUninstalledExtension = function()
 {
-  addonsManager.open();
-  addonsManager.setPane("extensions");
+  addonsManager.open(controller);
+  addonsManager.paneId = "extensions";
 
   // Confirm the uninstalled extension is not shown and assert its not in the extensions box
-  var extension = new elementslib.Lookup(addonsManager.controller.window.document,
-                                         addonsManager.getListItem("addonID", persisted.extensionId));
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
   addonsManager.controller.sleep(100);
   addonsManager.controller.assertNodeNotExist(extension);
 }

@@ -13,12 +13,13 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -42,34 +43,28 @@ const gTimeout = 5000;
 
 var setupModule = function(module)
 {
-  module.controller = mozmill.getBrowserController();
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
 var testCheckExtensionInstalled = function()
 {
-  // Check if Add-ons Manager is opened after restart
-  var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-  controller.assertJS("subject.extensionManager != null",
-                      {extensionManager: window});
-
-  addonsManager.open();
-  var addonsController = addonsManager.controller;
+  addonsManager.waitForOpened(controller);
 
   // Extensions pane should be selected
-  addonsController.assertJS("subject.getPane() == 'extensions'", addonsManager);
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 10000, 100,
+                                       {manager: addonsManager});
 
   // Notification bar should show one new installed extension
-  var notificationBar = new elementslib.Lookup(addonsController.window.document, '/id("extensionsManager")/id("addonsMsg")/{"type":"warning"}/anon({"type":"warning"})/anon({"anonid":"details"})/anon({"anonid":"messageText"})');
-  addonsController.waitForElement(notificationBar, gTimeout);
+  var notificationBar = addonsManager.getElement({type: "notificationBar"});
+  addonsManager.controller.waitForElement(notificationBar, gTimeout);
 
   // The installed extension should be displayed with a different background in the list.
   // We can find it by the attribute "newAddon"
-  var extension = new elementslib.Lookup(addonsController.window.document,
-                                         addonsManager.getListItem("addonID", persisted.extensionId));
-  addonsController.waitForElement(extension, gTimeout);
-  addonsController.assertJS("subject.getAttribute('newAddon') == 'true'",
-                            extension.getNode());
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
+  addonsManager.controller.waitForElement(extension, gTimeout);
+  addonsManager.controller.assertJS("subject.isExtensionInstalled == true",
+                                    {isExtensionInstalled: extension.getNode().getAttribute('newAddon') == 'true'});
 }
 
 /**

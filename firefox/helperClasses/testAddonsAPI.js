@@ -18,7 +18,6 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -35,34 +34,28 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI','UtilsAPI'];
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['AddonsAPI'];
 
+const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  am = new AddonsAPI.addonsManager();
 }
 
-/*
- * Verifies theme change back to the default theme
- */
-var testCheckThemeChange = function()
-{
-  addonsManager.open(controller);
-  addonsManager.paneId = "themes";
-
-  // Check that the default theme is selected and highlighted
-  var theme = addonsManager.getListboxItem("addonID", persisted.defaultThemeId);
-  addonsManager.controller.waitForElement(theme, gTimeout);
-  addonsManager.controller.assertJS("subject.isCurrentTheme == true",
-                                    {isCurrentTheme: theme.getNode().getAttribute('current') == 'true'});
+var teardownModule = function(module) {
+  am.close(true);
 }
 
-/**
- * Map test functions to litmus tests
- */
-testCheckThemeChanged.meta = {litmusids : [8168]};
+var testAddonsManager = function() {
+  am.open(controller);
+
+  am.paneId = "themes";
+
+  am.search("rss");
+  am.clearSearchField();
+
+  am.close();
+}

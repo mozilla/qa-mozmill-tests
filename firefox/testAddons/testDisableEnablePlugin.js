@@ -13,7 +13,7 @@
  *
  * The Original Code is Mozmill Test Code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -70,8 +70,7 @@ var testDisableEnablePlugin = function()
 
   // Open Add-ons Manager and go to the themes pane
   addonsManager.open(controller);
-  addonsManager.setPane("plugins");
-  
+
   // Select the default plugin and disable it
   addonsManager.setPluginState("addonID", pluginId, false);
 
