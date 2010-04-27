@@ -110,4 +110,4 @@ var testSecNotification = function()
 /**
  * Map test functions to litmus tests
  */
-testSecNotification.meta = {litmusids : [5920]};
+// testSecNotification.meta = {litmusids : [5920]};

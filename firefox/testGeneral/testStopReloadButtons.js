@@ -78,4 +78,4 @@ var testStopAndReload = function()
 /**
  * Map test functions to litmus tests
  */
-testStopAndReload.meta = {litmusids : [5988]};
+// testStopAndReload.meta = {litmusids : [5988]};

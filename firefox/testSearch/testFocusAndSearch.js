@@ -73,6 +73,6 @@ var testShortcutAndSearch = function()
 /**
  * Map test functions to litmus tests
  */
-testClickAndSearch.meta = {litmusids : [6199]};
-testShortcutAndSearch.meta = {litmusids : [6200]};
+// testClickAndSearch.meta = {litmusids : [6199]};
+// testShortcutAndSearch.meta = {litmusids : [6200]};
 

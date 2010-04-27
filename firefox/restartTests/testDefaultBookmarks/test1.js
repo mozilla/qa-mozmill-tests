@@ -141,4 +141,4 @@ function getBookmarkToolbarItems() {
 /**
  * Map test functions to litmus tests
  */
-testVerifyDefaultBookmarks.meta = {litmusids : [6717]};
+// testVerifyDefaultBookmarks.meta = {litmusids : [6717]};

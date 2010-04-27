@@ -199,4 +199,4 @@ var handleSecurityWarningDialog = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testSubmitUnencryptedInfoWarning.meta = {litmusids : [7678]};
+// testSubmitUnencryptedInfoWarning.meta = {litmusids : [7678]};

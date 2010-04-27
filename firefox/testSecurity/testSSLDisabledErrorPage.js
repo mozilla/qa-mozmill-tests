@@ -118,4 +118,4 @@ var prefDialogCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testDisableSSL.meta = {litmusids : [7774]};
+// testDisableSSL.meta = {litmusids : [7774]};

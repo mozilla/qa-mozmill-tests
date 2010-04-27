@@ -93,4 +93,4 @@ var testNewWindow = function () {
 /**
  * Map test functions to litmus tests
  */
-testNewWindow.meta = {litmusids : [5911]};
+// testNewWindow.meta = {litmusids : [5911]};

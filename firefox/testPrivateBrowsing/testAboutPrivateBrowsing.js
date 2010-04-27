@@ -104,4 +104,4 @@ var testCheckPrivateBrowsingMode = function()
 /**
  * Map test functions to litmus tests
  */
-testCheckAboutPrivateBrowsing.meta = {litmusids : [7463]};
+// testCheckAboutPrivateBrowsing.meta = {litmusids : [7463]};

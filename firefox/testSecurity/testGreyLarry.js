@@ -105,4 +105,4 @@ var testLarryGrey = function() {
 /**
  * Map test functions to litmus tests
  */
-testLarryGrey.meta = {litmusids : [6777]};
+// testLarryGrey.meta = {litmusids : [6777]};

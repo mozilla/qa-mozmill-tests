@@ -94,4 +94,4 @@ var testAllTabsClosedOnStop = function()
 /**
  * Map test functions to litmus tests
  */
-testAllTabsClosedOnStop.meta = {litmusids : [7714]};
+// testAllTabsClosedOnStop.meta = {litmusids : [7714]};

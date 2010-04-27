@@ -71,4 +71,4 @@ var testOpenDownloadManager = function()
 /**
  * Map test functions to litmus tests
  */
-testOpenDownloadManager.meta = {litmusids : [5936]};
+// testOpenDownloadManager.meta = {litmusids : [5936]};

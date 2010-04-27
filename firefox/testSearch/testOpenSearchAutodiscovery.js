@@ -96,4 +96,4 @@ var testOpenSearchAutodiscovery = function()
 /**
  * Map test functions to litmus tests
  */
-testOpenSearchAutodiscovery.meta = {litmusids : [6195]};
+// testOpenSearchAutodiscovery.meta = {litmusids : [6195]};

@@ -64,4 +64,4 @@ var testNavigateFTP = function () {
 /**
  * Map test functions to litmus tests
  */
-testNavigateFTP.meta = {litmusids : [5919]};
+// testNavigateFTP.meta = {litmusids : [5919]};

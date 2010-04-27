@@ -276,6 +276,6 @@ var removeMasterHandler = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testSetMasterPassword.meta = {litmusids : [6276]};
-testInvokeMasterPassword.meta = {litmusids : [6066]};
-testRemoveMasterPassword.meta = {litmusids : [6277]};
+// testSetMasterPassword.meta = {litmusids : [6276]};
+// testInvokeMasterPassword.meta = {litmusids : [6066]};
+// testRemoveMasterPassword.meta = {litmusids : [6277]};

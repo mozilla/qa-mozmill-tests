@@ -106,4 +106,4 @@ var testCloseDownloadManager = function()
 /**
  * Map test functions to litmus tests
  */
-testCloseDownloadManager.meta = {litmusids : [5937]};
+// testCloseDownloadManager.meta = {litmusids : [5937]};

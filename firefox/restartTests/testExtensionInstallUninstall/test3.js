@@ -61,4 +61,4 @@ var testCheckUninstalledExtension = function()
 /**
  * Map test functions to litmus tests
  */
-testUninstallExtension.meta = {litmusids : [6122]};
+// testUninstallExtension.meta = {litmusids : [6122]};

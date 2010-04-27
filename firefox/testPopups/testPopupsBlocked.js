@@ -114,4 +114,4 @@ var prefDialogCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testPopUpBlocked.meta = {litmusids : [5918]};
+// testPopUpBlocked.meta = {litmusids : [5918]};

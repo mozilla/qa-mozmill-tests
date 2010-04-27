@@ -94,4 +94,4 @@ var testCheckImportDisabled = function()
 /**
  * Map test functions to litmus tests
  */
-testCheckImportDisabled.meta = {litmusids : [7541]};
+// testCheckImportDisabled.meta = {litmusids : [7541]};

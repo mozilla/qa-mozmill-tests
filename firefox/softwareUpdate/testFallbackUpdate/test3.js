@@ -93,4 +93,4 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
 /**
  * Map test functions to litmus tests
  */
-testFallbackUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [6145]};
+// testFallbackUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [6145]};

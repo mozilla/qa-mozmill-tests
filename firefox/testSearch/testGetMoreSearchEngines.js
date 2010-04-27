@@ -142,4 +142,4 @@ var handleSearchInstall = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testGetMoreEngines.meta = {litmusids : [6196]};
+// testGetMoreEngines.meta = {litmusids : [6196]};

@@ -110,5 +110,5 @@ var handleTriggerDialog = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testCheckInstalledExtension.meta = {litmusids : [5929]};
-testUninstallExtension.meta = {litmusids : [6122]};
+// testCheckInstalledExtension.meta = {litmusids : [5929]};
+// testUninstallExtension.meta = {litmusids : [6122]};

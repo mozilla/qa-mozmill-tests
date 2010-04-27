@@ -118,4 +118,4 @@ var prefDialogCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testRemoveAllCookies.meta = {litmusids : [6012]};
+// testRemoveAllCookies.meta = {litmusids : [6012]};

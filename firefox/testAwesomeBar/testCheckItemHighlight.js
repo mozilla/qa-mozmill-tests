@@ -131,4 +131,4 @@ var prefDialogSuggestsCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testCheckItemHighlight.meta = {litmusids : [8774]};
+// testCheckItemHighlight.meta = {litmusids : [8774]};

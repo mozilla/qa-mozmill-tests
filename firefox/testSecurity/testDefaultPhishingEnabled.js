@@ -81,4 +81,4 @@ var prefPaneSetCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testDefaultPhishingEnabled.meta = {litmusids : [6248]};
+// testDefaultPhishingEnabled.meta = {litmusids : [6248]};

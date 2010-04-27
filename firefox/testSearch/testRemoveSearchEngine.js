@@ -89,4 +89,4 @@ var handleEngines = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testRemoveEngine.meta = {litmusids : [6198]};
+// testRemoveEngine.meta = {litmusids : [6198]};

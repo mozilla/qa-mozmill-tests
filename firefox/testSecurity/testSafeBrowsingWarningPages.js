@@ -151,4 +151,4 @@ var checkIgnoreWarningButton = function(url) {
 /**
  * Map test functions to litmus tests
  */
-testWarningPages.meta = {litmusids : [6988]};
+// testWarningPages.meta = {litmusids : [6988]};

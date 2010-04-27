@@ -76,4 +76,4 @@ var testUntrustedPageGetMeOutOfHereButton = function()
 /**
  * Map test functions to litmus tests
  */
-testUntrustedPageGetMeOutOfHereButton.meta = {litmusids : [6546]};
+// testUntrustedPageGetMeOutOfHereButton.meta = {litmusids : [6546]};

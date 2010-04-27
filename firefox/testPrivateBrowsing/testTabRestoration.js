@@ -103,4 +103,4 @@ var testTabRestoration = function()
 /**
  * Map test functions to litmus tests
  */
-testTabRestoration.meta = {litmusids : [7643]};
+// testTabRestoration.meta = {litmusids : [7643]};

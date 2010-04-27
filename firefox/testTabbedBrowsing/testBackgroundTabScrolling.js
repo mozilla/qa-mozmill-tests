@@ -142,4 +142,4 @@ var prefDialogCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testOpenInBackgroundTab.meta = {litmusids : [6217]};
+// testOpenInBackgroundTab.meta = {litmusids : [6217]};

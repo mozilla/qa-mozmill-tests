@@ -110,4 +110,4 @@ var testSearchForAddons = function()
 /**
  * Map test functions to litmus tests
  */
-testSearchForAddons.meta = {litmusids : [6796]};
+// testSearchForAddons.meta = {litmusids : [6796]};

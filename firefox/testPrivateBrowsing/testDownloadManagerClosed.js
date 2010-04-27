@@ -161,4 +161,4 @@ var handlePrefDialog = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testDownloadManagerClosed.meta = {litmusids : [7434]};
+// testDownloadManagerClosed.meta = {litmusids : [7434]};

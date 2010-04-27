@@ -85,4 +85,4 @@ var testFallbackUpdate_Download = function()
 /**
  * Map test functions to litmus tests
  */
-testFallbackUpdate_Download.meta = {litmusids : [6661]};
+// testFallbackUpdate_Download.meta = {litmusids : [6661]};

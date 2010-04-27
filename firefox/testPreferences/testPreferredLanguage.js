@@ -128,4 +128,4 @@ var langHandler = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testSetLanguages.meta = {litmusids : [6282]};
+// testSetLanguages.meta = {litmusids : [6282]};

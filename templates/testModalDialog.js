@@ -60,7 +60,3 @@ var callbackHandler = function(controller)
   // Code to be executed in the modal dialog
 }
 
-/**
- * Map test functions to litmus tests
- */
-testSampleTestcase.meta = {litmusids : [0000]};

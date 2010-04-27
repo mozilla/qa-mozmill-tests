@@ -164,6 +164,6 @@ var pbStartHandler = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testEnablePrivateBrowsingMode.meta = {litmusids : [7394]};
-testStopPrivateBrowsingMode.meta = {litmusids : [7395]};
-testKeyboardShortcut.meta = {litmusids : [7443]};
+// testEnablePrivateBrowsingMode.meta = {litmusids : [7394]};
+// testStopPrivateBrowsingMode.meta = {litmusids : [7395]};
+// testKeyboardShortcut.meta = {litmusids : [7443]};

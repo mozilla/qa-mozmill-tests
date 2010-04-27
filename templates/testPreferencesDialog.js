@@ -65,8 +65,3 @@ var callbackHandler = function(controller)
   // Close the Preferences dialog
   PrefsAPI.preferencesDialog.close(controller, true);
 }
-
-/**
- * Map test functions to litmus tests
- */
-testSampleTestcase.meta = {litmusids : [0000]};
