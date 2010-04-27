@@ -13,7 +13,7 @@
  *
  * The Original Code is Mozmill Test Code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -41,15 +41,17 @@ var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
+const gSearchTimeout = 30000;
 
 var setupModule = function(module)
 {
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
 var teardownModule = function(module)
 {
-  module.addonsManager.close();
+  addonsManager.close();
 }
 
 /**
@@ -57,38 +59,52 @@ var teardownModule = function(module)
  */
 var testSearchForAddons = function() 
 {
-  addonsManager.open();
-  controller = addonsManager.controller;
+  addonsManager.open(controller);
 
-  // Verify elements of the get addons pane are visible
   addonsManager.search("rss");
 
   // Wait for search results to populate and verify elements of search functionality
-  var footerField = new elementslib.ID(controller.window.document, "urn:mozilla:addons:search:status:footer");
+  var footer = addonsManager.getElement({type: "search_status", subtype: "footer"});
+  controller.waitForElement(footer, gSearchTimeout);
+  controller.assertProperty(footer, "hidden", false);
 
-  controller.waitForElement(footerField, 30000);  
-  controller.assertProperty(footerField, "hidden", false);
-  controller.assertJS("subject.selectedPanel.getAttribute('class') == 'textbox-search-clear'",
-                      addonsManager.searchFieldButton.getNode());
+  // Check if we show the x button in the search field
+  var searchButton = addonsManager.getElement({type: "search_fieldButton"});
+  var buttonPanel = searchButton.getNode().selectedPanel;
+  controller.assertJS("subject.isClearButtonShown == true",
+                      {isClearButtonShown: buttonPanel.getAttribute('class') == 'textbox-search-clear'});
 
   // Verify the number of addons is in-between 0 and the maxResults pref
   var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
-  var listBox = new elementslib.ID(controller.window.document, "extensionsView");
+  var listBox = addonsManager.getElement({type: "listbox"});
 
-  controller.assertJS("subject.itemCount > 0", listBox.getNode());
-  controller.assertJS("subject.itemCount <= " + maxResults, listBox.getNode());
+  addonsManager.controller.assertJS("subject.numSearchResults > 0",
+                                    {numSearchResults: listBox.getNode().itemCount});
+  addonsManager.controller.assertJS("subject.numSearchResults <= subject.maxResults",
+                                    {numSearchResults: listBox.getNode().itemCount,
+                                     maxResults: maxResults}
+                                   );
 
   // Clear the search field and verify elements of that functionality
-  controller.keypress(addonsManager.searchField, "VK_ESCAPE", {});
-  controller.waitForElement(footerField, 30000);
-  controller.assertProperty(footerField, "hidden", false);
-  controller.assertJS("subject.selectedPanel.getAttribute('class') != 'textbox-search-clear'",
-                      addonsManager.searchFieldButton.getNode());
-  controller.assertValue(addonsManager.searchField, "");
+  var searchField = addonsManager.getElement({type: "search_field"});
+  controller.keypress(searchField, "VK_ESCAPE", {});
+
+  buttonPanel = searchButton.getNode().selectedPanel;
+  controller.assertJS("subject.isClearButtonShown == true",
+                      {isClearButtonShown: buttonPanel.getAttribute('class') != 'textbox-search-clear'});
+  controller.assertValue(searchField, "");
+
+  // We still have to show the footer with recommended addons
+  controller.waitForElement(footer, gSearchTimeout);
+  controller.assertProperty(footer, "hidden", false);
 
   // Verify the number of recommended addons is in-between 0 and the maxResults pref
-  controller.assertJS("subject.itemCount > 0", listBox.getNode());
-  controller.assertJS("subject.itemCount <= " + maxResults, listBox.getNode());
+  addonsManager.controller.assertJS("subject.numSearchResults > 0",
+                                    {numSearchResults: listBox.getNode().itemCount});
+  addonsManager.controller.assertJS("subject.numSearchResults <= subject.maxResults",
+                                    {numSearchResults: listBox.getNode().itemCount,
+                                     maxResults: maxResults}
+                                   );
 }
 
 /**

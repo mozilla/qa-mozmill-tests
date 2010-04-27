@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is MozMill Test code.
+ * The Original Code is Mozmill Test Code.
  *
  * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Raymond Etornam Agbeame <retornam@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -36,33 +37,60 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI','UtilsAPI'];
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['AddonsAPI'];
 
+const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
+const localTestFolder = collector.addHttpResource('./files');
+
+var plugins = {"darwin": {node: "name", value: "Default Plugin"},
+               "winnt":  {node: "description", value: "Default Plug-in"},
+               "linux":  {node: "name", value: "Default Plugin"}
+              };
+
+var setupModule = function(module) 
 {
   controller = mozmill.getBrowserController();
   addonsManager = new AddonsAPI.addonsManager();
 }
 
-/*
- * Verifies theme change back to the default theme
- */
-var testCheckThemeChange = function()
+var teardownModule = function(module)
 {
-  addonsManager.open(controller);
-  addonsManager.paneId = "themes";
+  addonsManager.close();
+}
 
-  // Check that the default theme is selected and highlighted
-  var theme = addonsManager.getListboxItem("addonID", persisted.defaultThemeId);
-  addonsManager.controller.waitForElement(theme, gTimeout);
-  addonsManager.controller.assertJS("subject.isCurrentTheme == true",
-                                    {isCurrentTheme: theme.getNode().getAttribute('current') == 'true'});
+/**
+ * Test disabling the default plugin
+ */
+var testDisableEnablePlugin = function()
+{
+  var plugin = plugins[mozmill.platform];
+
+  // Open Add-ons Manager and go to the themes pane
+  addonsManager.open(controller);
+
+  // Select the default plugin and disable it
+  addonsManager.setPluginState(plugin.node, plugin.value, false);
+
+  // Check that the plugin is shown as disabled on web pages
+  var status = new elementslib.ID(controller.tabs.activeTab, "status");
+
+  controller.open(localTestFolder + "plugin.html");
+  controller.waitForPageLoad();
+  controller.assertText(status, "disabled");
+
+  // Enable the default plugin
+  addonsManager.setPluginState(plugin.node, plugin.value, true);
+
+  // Check that the plugin is shown as disabled on web pages
+  controller.open(localTestFolder + "plugin.html");
+  controller.waitForPageLoad();
+  controller.assertText(status, "enabled");
 }
 
 /**
  * Map test functions to litmus tests
  */
-testThemeChanged.meta = {litmusids : [6126]};
+testDisableEnablePlugin.meta = {litmusids : [8511]};

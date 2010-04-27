@@ -1,4 +1,4 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/* ****** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -11,15 +11,14 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozmill Test Code.
+ * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
- *   Raymond Etornam Agbeame <retornam@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -37,62 +36,38 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
+var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['AddonsAPI'];
 
-const gDelay = 0;
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('./files');
-
-var plugins = {"darwin": {node: "name", value: "Default Plugin"},
-               "winnt":  {node: "description", value: "Default Plug-in"},
-               "linux":  {node: "name", value: "Default Plugin"}
-              };
-
-var setupModule = function(module) 
+var setupModule = function(module)
 {
-  module.controller = mozmill.getBrowserController();
-
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
-var teardownModule = function(module)
+var testCheckExtensionInstalled = function()
 {
-  module.addonsManager.close();
-}
+  addonsManager.waitForOpened(controller);
 
-/**
- * Test disabling the default plugin
- */
-var testDisableEnablePlugin = function()
-{
-  var plugin = plugins[mozmill.platform];
+  // Extensions pane should be selected
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 10000, 100,
+                                       {manager: addonsManager});
 
-  // Open Add-ons Manager and go to the themes pane
-  addonsManager.open(controller);
-  addonsManager.setPane("plugins");
-  
-  // Select the default plugin and disable it
-  addonsManager.setPluginState(plugin.node, plugin.value, false);
+  // Notification bar should show one new installed extension
+  var notificationBar = addonsManager.getElement({type: "notificationBar"});
+  addonsManager.controller.waitForElement(notificationBar, gTimeout);
 
-  // Check that the plugin is shown as disabled on web pages
-  var status = new elementslib.ID(controller.tabs.activeTab, "status");
-
-  controller.open(localTestFolder + "plugin.html");
-  controller.waitForPageLoad();
-  controller.assertText(status, "disabled");
-
-  // Enable the default plugin
-  addonsManager.setPluginState(plugin.node, plugin.value, true);
-
-  // Check that the plugin is shown as disabled on web pages
-  controller.open(localTestFolder + "plugin.html");
-  controller.waitForPageLoad();
-  controller.assertText(status, "enabled");
+  // The installed extension should be displayed with a different background in the list.
+  // We can find it by the attribute "newAddon"
+  var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
+  addonsManager.controller.waitForElement(extension, gTimeout);
+  addonsManager.controller.assertJS("subject.isExtensionInstalled == true",
+                                    {isExtensionInstalled: extension.getNode().getAttribute('newAddon') == 'true'});
 }
 
 /**
  * Map test functions to litmus tests
  */
-testDisableEnablePlugin.meta = {litmusids : [8511]};
+testCheckExtensionInstalled.meta = {litmusids : [6799]};

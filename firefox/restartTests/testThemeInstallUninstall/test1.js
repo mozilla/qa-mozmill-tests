@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -42,12 +42,12 @@ const gTimeout = 5000;
 const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 
-  module.persisted.themeName = "Curacao";
-  module.persisted.themeId = "{cc6ef5ab-35be-4300-bd07-d12850fc97ff}";
-  module.persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
+  persisted.themeName = "Curacao";
+  persisted.themeId = "{cc6ef5ab-35be-4300-bd07-d12850fc97ff}";
+  persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
@@ -57,19 +57,19 @@ var setupModule = function(module) {
  */
 var testInstallTheme = function() 
 {
-  addonsManager.open();
-  addonsManager.setPane("search");
+  addonsManager.open(controller);
+  addonsManager.paneId = "search";
 
   // Wait for the Browse All Add-ons link and click on it
-  var browseAddonsLink = new elementslib.ID(addonsManager.controller.window.document, "browseAddons");
-  addonsManager.controller.waitThenClick(browseAddonsLink, gTimeout);
+  var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
+  addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
-  controller.open("https://addons.mozilla.org/en-US/firefox/addon/3663");
+  controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/3663");
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
@@ -77,21 +77,27 @@ var testInstallTheme = function()
   md.start();
 
   // Click link to install the theme which triggers a modal dialog
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
+  var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
+                                          "//div[@id='addon-install']/div[1]/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
-  // Wait that the Installation pane is selected in the Add-ons Manager after the extension has been installed
-  addonsManager.controller.waitForEval("subject.getPane() == 'installs'", 10000, 100, addonsManager);
+  // Wait that the Installation pane is selected after the extension has been installed
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+                                       {manager: addonsManager});
 
-  // Wait until the Theme has been installed. Note that the id of the element is
-  // added when the download has been finished. We don't know the extension id before.
-  var theme = new elementslib.Lookup(addonsManager.controller.window.document,
-                                     addonsManager.getListItem("addonID", persisted.themeId));
+  // Wait until the Theme has been installed.
+  var theme = addonsManager.getListboxItem("addonID", persisted.themeId);
   addonsManager.controller.waitForElement(theme, gDownloadTimeout);
-  addonsManager.controller.assertJS("subject.getAttribute('state') == 'success'", theme.getNode());
+
+  var themeName = theme.getNode().getAttribute('name');
+  addonsManager.controller.assertJS("subject.isValidThemeName == true",
+                                    {isValidThemeName: themeName == persisted.themeName});
+
+  addonsManager.controller.assertJS("subject.isThemeInstalled == true",
+                                    {isThemeInstalled: theme.getNode().getAttribute('state') == 'success'});
 
   // Check if restart button is present
-  var restartButton = new elementslib.XPath(addonsManager.controller.window.document, "/*[name()='window']/*[name()='notificationbox'][1]/*[name()='notification'][1]/*[name()='button'][1]");
+  var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);
 }
 
@@ -114,15 +120,17 @@ var handleTriggerDialog = function(controller)
                       itemElem.childNodes[0]);
 
   // Will the theme be installed from https://addons.mozilla.org/?
-  controller.assertJS("subject.url.indexOf('https://addons.mozilla.org/') != -1",
+  controller.assertJS("subject.url.indexOf('addons.mozilla.org/') != -1",
                       itemElem.childNodes[0]);
 
   // Check if the Cancel button is present
-  var cancelButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
+  var cancelButton = new elementslib.Lookup(controller.window.document,
+                                            '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"cancel"}');
   controller.assertNode(cancelButton);
 
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+  var installButton = new elementslib.Lookup(controller.window.document,
+                                             '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitForEval("subject.disabled != true", undefined, 100, installButton.getNode());
   controller.click(installButton);
 }

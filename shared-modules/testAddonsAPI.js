@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -38,18 +38,38 @@
  * @fileoverview
  * The AddonsAPI adds support for addons related functions. It also gives
  * access to the Addons Manager.
- *
- * @version 1.0.0
  */
 
 var MODULE_NAME = 'AddonsAPI';
 
 const gTimeout = 5000;
 
+// Addons Manager element templates
+const AM_TOPBAR       = '/id("extensionsManager")/{"orient":"vertical"}/id("topStackBar")';
+const AM_DECK         = '/id("extensionsManager")/id("addonsMsg")';
+const AM_SELECTOR     = AM_TOPBAR + '/id("viewGroup")';
+const AM_NOTIFICATION = AM_DECK + '/{"type":"warning"}';
+const AM_SEARCHFIELD  = AM_DECK + '/id("extensionsBox")/id("searchPanel")/id("searchfield")';
+const AM_SEARCHBUTTON = AM_SEARCHFIELD + '/anon({"class":"textbox-input-box"})/anon({"anonid":"search-icons"})';
+const AM_SEARCHINPUT  = AM_SEARCHFIELD + '/anon({"class":"textbox-input-box"})/anon({"anonid":"input"})';
+const AM_LISTBOX      = AM_DECK + '/id("extensionsBox")/[1]/id("extensionsView")';
+const AM_LISTBOX_BTN  = '/anon({"flex":"1"})/{"class":"addonTextBox"}/{"flex":"1"}';
+
+// Preferences which have to be changed to make sure we do not interact with the
+// official AMO page but preview.addons.mozilla.org instead
+const AMO_PREFERENCES = [
+  {name: "extensions.getAddons.browseAddons", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.recommended.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.recommended.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.search.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.search.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getMoreThemesURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"}
+];
+
 /**
  * Constructor
  */
-function addonsManager()
+function addonsManager(controller)
 {
   this._controller = null;
 }
@@ -58,21 +78,178 @@ function addonsManager()
  * Addons Manager class
  */
 addonsManager.prototype = {
-  get controller() { return this._controller; },
+  /**
+   * Returns the controller of the window
+   *
+   * @returns Mozmill Controller
+   * @type {MozMillController}
+   */
+  get controller() {
+    return this._controller;
+  },
 
-  get searchField() { return new elementslib.ID(this._controller.window.document, "searchfield"); },
-  get searchFieldButton() { return new elementslib.Lookup(controller.window.document, '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/id("searchPanel")/id("searchfield")/anon({"class":"textbox-input-box"})/anon({"anonid":"search-icons"})'); },
+  /**
+   * Retrieve the id of the currently selected pane
+   *
+   * @returns Id of the currently selected pane
+   * @type string
+   */
+  get paneId() {
+    var selected = this.getElement({type: "selector_button", subtype: "selected", value: "true"});
+
+    return /\w+/.exec(selected.getNode().id);
+  },
+
+  /**
+   * Select the pane with the given id
+   *
+   * @param {string} id
+   *        Id of the pane to select
+   */
+  set paneId(id) {
+    if (this.paneId == id)
+      return;
+
+    var button = this.getElement({type: "selector_button", subtype: "id", value: id + "-view"});
+    this._controller.waitThenClick(button, gTimeout);
+
+    // Wait until the expected pane has been selected
+    this._controller.waitForEval("subject.window.paneId == subject.expectedPaneId", gTimeout, 100,
+                                 {window: this, expectedPaneId: id});
+  },
+
+  /**
+   * Clear the search field
+   */
+  clearSearchField : function addonsManager_clearSearchField() {
+    this.paneId = 'search';
+
+    var searchInput = this.getElement({type: "search_fieldInput"});
+    this._controller.keypress(searchInput, 'a', {accelKey: true});
+    this._controller.keypress(searchInput, 'VK_DELETE', {});
+  },
 
   /**
    * Close the Addons Manager
+   *
+   * @param {boolean} force
+   *        Force closing of the window
    */
-  close : function addonsManager_close()
-  {
+  close : function addonsManager_close(force) {
     var windowCount = mozmill.utils.getWindows().length;
 
-    this._controller.keypress(null, 'w', {accelKey: true});
-    this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
-                         gTimeout, 100, mozmill.utils);
+    if (this._controller) {
+      // Check if we should force the closing of the DM window
+      if (force) {
+        this._controller.window.close();
+      } else {
+        this._controller.keypress(null, 'w', {accelKey: true});
+      }
+
+      this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
+                                   gTimeout, 100, mozmill.utils);
+      this._controller = null;
+    }
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        subtype: Specific element or property
+   *        value: Value of the element or property
+   * @returns Element which has been created
+   * @type {ElemBase}
+   */
+  getElement : function addonsManager_getElement(spec) {
+    var elem = null;
+
+    switch(spec.type) {
+      case "button_continue":
+        elem = new elementslib.ID(this._controller.window.document, "continueDialogButton");
+        break;
+      case "button_enableAll":
+        elem = new elementslib.ID(this._controller.window.document, "enableAllButton");
+        break;
+      case "button_findUpdates":
+        elem = new elementslib.ID(this._controller.window.document, "checkUpdatesAllButton");
+        break;
+      case "button_hideInformation":
+        elem = new elementslib.ID(this._controller.window.document, "hideUpdateInfoButton");
+        break;
+      case "button_installFile":
+        elem = new elementslib.ID(this._controller.window.document, "installFileButton");
+        break;
+      case "button_installUpdates":
+        elem = new elementslib.ID(this._controller.window.document, "installUpdatesAllButton");
+        break;
+      case "button_showInformation":
+        elem = new elementslib.ID(this._controller.window.document, "showUpdateInfoButton");
+        break;
+      case "button_skip":
+        elem = new elementslib.ID(this._controller.window.document, "skipDialogButton");
+        break;
+      case "link_browseAddons":
+        elem = new elementslib.ID(this._controller.window.document, "browseAddons");
+        break;
+      case "link_getMore":
+        elem = new elementslib.ID(this._controller.window.document, "getMore");
+        break;
+      case "listbox":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_LISTBOX);
+        break;
+      case "listbox_button":
+        // The search pane uses a bit differnet markup
+        if (this.paneId == "search") {
+          elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
+                                        AM_LISTBOX_BTN + '/{"flex":"1"}/anon({"anonid":"selectedButtons"})' +
+                                        '/{"command":"cmd_' + spec.subtype + '"}');
+        } else {
+          elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
+                                        AM_LISTBOX_BTN + '/{"command":"cmd_' + spec.subtype + '"}');
+        }
+        break;
+      case "listbox_element":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_LISTBOX +
+                                      '/{"' + spec.subtype + '":"' + spec.value + '"}');
+        break;
+      case "notificationBar":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_NOTIFICATION);
+        break;
+      case "notificationBar_buttonRestart":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_DECK +
+                                      '/{"type":"warning"}');
+        break;
+      case "search_field":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_SEARCHFIELD);
+        break;
+      case "search_fieldButton":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_SEARCHBUTTON);
+        break;
+      case "search_fieldInput":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_SEARCHINPUT);
+        break;
+      case "search_status":
+        elem = new elementslib.ID(this._controller.window.document,
+                                  'urn:mozilla:addons:search:status:' + spec.subtype);
+        break;
+      case "search_statusLabel":
+        elem = new elementslib.Elem(spec.value.getNode().boxObject.firstChild);
+        break;
+      case "selector":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_SELECTOR);
+        break;
+      case "selector_button":
+        elem = new elementslib.Lookup(this._controller.window.document, AM_SELECTOR +
+                                      '/{"' + spec.subtype + '":"' + spec.value + '"}');
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+    }
+
+    return elem;
   },
 
   /**
@@ -85,27 +262,18 @@ addonsManager.prototype = {
    * @returns Element string of the given list item
    * @type string
    */
-  getListItem : function addonsManager_getListItem(name, value) {
-    var spec = '{"' + name + '":"' + value + '"}';
-    var str = '/id("extensionsManager")/id("addonsMsg")/id("extensionsBox")/' +
-              '[1]/id("extensionsView")/' + spec;
-
-    return str;
+  getListboxItem : function addonsManager_getListItem(name, value) {
+    return this.getElement({type: "listbox_element", subtype: name, value: value});
   },
 
   /**
-   * Retrieve the currently selected pane
+   * Retrieves the pane with the given id
    *
-   * @returns Id of the currently selected pane
-   * @type string
+   * @returns The pane
+   * @type {ElemBase}
    */
-  getPane: function preferencesDialog_getPane()
-  {
-    var selected = new elementslib.Lookup(this._controller.window.document,
-                                          '/id("extensionsManager")/{"orient":"vertical"}/id("topStackBar")/' +
-                                          'id("viewGroup")/{"selected":"true"}');
-
-    return /\w+/.exec(selected.getNode().id);
+  getPane : function addonsManager_getPane(id) {
+    return this.getElement({type: "selector_button", subtype: "id", value: id + "-view"});
   },
 
   /**
@@ -118,14 +286,14 @@ addonsManager.prototype = {
    * @returns True if plug-in is enabled
    * @type boolean
    */
-  isPluginEnabled : function addonsManager_setPluginState(node, value) {
-    if (this.getPane() != "plugins")
-      this.setPane("plugins");
+  getPluginState : function addonsManager_getPluginState(node, value) {
+    // If the plugins pane is not selected, do it now
+    this.paneId = "plugins";
 
-    var plugin = new elementslib.Lookup(this._controller.window.document,
-                                        this.getListItem(node, value));
+    var plugin = this.getListboxItem(node, value);
+    var status = plugin.getNode().getAttribute('isDisabled') == 'false';
 
-    return (plugin.getNode().getAttribute('isDisabled') == 'false');
+    return status;
   },
 
   /**
@@ -134,19 +302,9 @@ addonsManager.prototype = {
    * @param {MozMillController} controller
    *        MozMillController of the window to operate on
    */
-  open : function addonsManager_open(controller)
-  {
-    if (controller) {
-      controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openAddons));
-      controller.sleep(500);
-
-      var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-      this._controller = new mozmill.controller.MozMillController(window);  
-
-      this._controller.sleep(500);
-    } else {
-      this._controller = mozmill.getAddonsController();
-    }
+  open : function addonsManager_open(controller) {
+    controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openAddons));
+    this.waitForOpened(controller);
   },
 
   /**
@@ -157,29 +315,14 @@ addonsManager.prototype = {
    */
   search : function addonsManager_search(searchTerm) {
     // Select the search pane and start search
-    this.setPane("search");
+    this.paneId = "search";
 
-    this._controller.waitForElement(this.searchField, gTimeout);
-    this._controller.type(this.searchField, searchTerm);
-    this._controller.keypress(this.searchField, "VK_RETURN", {});
-  },
+    var searchField = this.getElement({type: "search_field"});
 
-  /**
-   * Select the given pane
-   *
-   * @param {MozMillController} controller
-   *        MozMillController of the window to operate on
-   * @param {string} buttonId
-   *        Id of the pane to select
-   */
-  setPane: function addonsManager_setPane(paneId) {
-    var button = new elementslib.ID(this._controller.window.document,
-                                    paneId + "-view");
-    this._controller.waitThenClick(button, gTimeout);
-
-    // Strip off the "-views" part of the button id to be able to wait for the selected pane
-    this._controller.waitForEval("subject.getPane() == '" + paneId + "'",
-                                 gTimeout, 100, this);
+    this.clearSearchField();
+    this._controller.waitForElement(searchField, gTimeout);
+    this._controller.type(searchField, searchTerm);
+    this._controller.keypress(searchField, "VK_RETURN", {});
   },
 
   /**
@@ -193,26 +336,59 @@ addonsManager.prototype = {
    *        True if the plug-in should be enabled.
    */
   setPluginState : function addonsManager_setPluginState(node, value, enable) {
-    if (this.isPluginEnabled(node, value) == enable)
+    // If plugin already has the target state, do nothing
+    if (this.getPluginState(node, value) == enable)
       return;
 
-    if (this.getPane() != "plugins")
-      this.setPane("plugins");
-
     // Select the plug-in entry
-    var itemString = this.getListItem(node, value);
-    var plugin = new elementslib.Lookup(this._controller.window.document,
-                                        itemString);
+    var plugin = this.getListboxItem(node, value);
     this._controller.click(plugin);
 
     // Click the Enable/Disable button
-    var button = new elementslib.Lookup(this._controller.window.document,
-                                        itemString + '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
-                                        '/anon({"anonid":"selectedButtons"})' +
-                                        '/anon({"command":"cmd_' + (enable ? "enable" : "disable") + '"})');
-    this._controller.waitThenClick(button, gTimeout);
+    var subtype = enable ? "enable" : "disable";
+    var button = this.getElement({type: "listbox_button", subtype: subtype, value: plugin});
 
-    this._controller.waitForEval("subject.plugin.isPluginEnabled(subject.node, subject.value) == subject.state", gTimeout, 100,
+    this._controller.waitThenClick(button, gTimeout);
+    this._controller.waitForEval("subject.plugin.getPluginState(subject.node, subject.value) == subject.state", gTimeout, 100,
                                  {plugin: this, node: node, value: value, state: enable});
-  }
+  },
+
+  /**
+   * Waits until the Addons Manager has been opened and returns its controller
+   *
+   * @param {MozMillController} controller
+   *        MozMillController of the window to operate on
+   */
+  waitForOpened : function addonsManager_waitforOpened(controller) {
+    controller.sleep(500);
+    controller.waitForEval("subject.getMostRecentWindow('Extension:Manager') != null",
+                           gTimeout, 100, mozmill.wm);
+    var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
+    controller.sleep(500);
+
+    this._controller = new mozmill.controller.MozMillController(window);
+   }
 };
+
+/**
+ *  Updates all necessary preferences to the preview sub domain
+ */
+function useAmoPreviewUrls() {
+  var prefSrv = collector.getModule('PrefsAPI').preferences;
+
+  for each (preference in AMO_PREFERENCES) {
+    var pref = prefSrv.getPref(preference.name, "");
+    prefSrv.setPref(preference.name, pref.replace(preference.old, preference.new));
+  }
+}
+
+/**
+ * Reset all preferences which point to the preview sub domain
+ */
+function resetAmoPreviewUrls() {
+  var prefSrv = collector.getModule('PrefsAPI').preferences;
+
+  for each (preference in AMO_PREFERENCES) {
+    prefSrv.clearUserPref(preference.name);
+  }
+}
