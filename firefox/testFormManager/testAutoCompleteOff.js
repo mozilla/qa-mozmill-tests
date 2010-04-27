@@ -75,4 +75,4 @@ var testAutoCompleteOff = function() {
 /**
  * Map test functions to litmus tests
  */
-testAutoCompleteOff.meta = {litmusids : [9067]};
+// testAutoCompleteOff.meta = {litmusids : [9067]};

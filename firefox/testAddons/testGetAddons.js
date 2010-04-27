@@ -132,5 +132,5 @@ var testGetAddonsTab = function()
 /**
  * Map test functions to litmus tests
  */
-testLaunchAddonsManager.meta = {litmusids : [8154]};
-testGetAddonsTab.meta = {litmusids : [8155]};
+// testLaunchAddonsManager.meta = {litmusids : [8154]};
+// testGetAddonsTab.meta = {litmusids : [8155]};

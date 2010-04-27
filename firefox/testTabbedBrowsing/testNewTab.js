@@ -94,4 +94,4 @@ var checkOpenTab = function(event)
 /**
  * Map test functions to litmus tests
  */
-testNewTab.meta = {litmusids : [8086]};
+// testNewTab.meta = {litmusids : [8086]};

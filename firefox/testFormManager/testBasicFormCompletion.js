@@ -92,4 +92,4 @@ var testFormCompletion = function() {
 /**
  * Map test functions to litmus tests
  */
-testFormCompletion.meta = {litmusids : [7965]};
+// testFormCompletion.meta = {litmusids : [7965]};

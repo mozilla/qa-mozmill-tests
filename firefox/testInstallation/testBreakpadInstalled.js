@@ -86,4 +86,4 @@ var testBreakpadInstalled = function()
 /**
  * Map test functions to litmus tests
  */
-testBreakpadInstalled.meta = {litmusids : [7953]};
+// testBreakpadInstalled.meta = {litmusids : [7953]};

@@ -119,4 +119,4 @@ var handleSearchInstall = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testAddMozSearchPlugin.meta = {litmusids : [8235]};
+// testAddMozSearchPlugin.meta = {litmusids : [8235]};

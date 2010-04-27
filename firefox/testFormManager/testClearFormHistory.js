@@ -142,5 +142,5 @@ var clearHistoryHandler = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testSaveFormInformation.meta = {litmusids : [8052]};
-testClearFormHistory.meta = {litmusids : [8051]};
+// testSaveFormInformation.meta = {litmusids : [8052]};
+// testClearFormHistory.meta = {litmusids : [8051]};

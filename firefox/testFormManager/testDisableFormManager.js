@@ -116,4 +116,4 @@ var prefDialogFormCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testToggleFormManager.meta = {litmusids : [8050]};
+// testToggleFormManager.meta = {litmusids : [8050]};

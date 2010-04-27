@@ -152,4 +152,4 @@ var cookieHandler = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testPermissionsDisabled.meta = {litmusids : [9157]};
+// testPermissionsDisabled.meta = {litmusids : [9157]};

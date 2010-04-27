@@ -80,4 +80,4 @@ var testCloseTab = function()
 /**
  * Map test functions to litmus tests
  */
-testOpenInBackgroundTab.meta = {litmusids : [8094]};
+// testOpenInBackgroundTab.meta = {litmusids : [8094]};

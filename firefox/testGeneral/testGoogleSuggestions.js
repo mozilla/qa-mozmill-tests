@@ -79,4 +79,4 @@ var testGoogleSuggestedTerms = function() {
 /**
  * Map test functions to litmus tests
  */
-testGoogleSuggestedTerms.meta = {litmusids : [8083]};
+// testGoogleSuggestedTerms.meta = {litmusids : [8083]};

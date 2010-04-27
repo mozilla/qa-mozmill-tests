@@ -78,4 +78,4 @@ var testIdentityPopupOpenClose = function() {
 /**
  * Map test functions to litmus tests
  */
-testIdentityPopupOpenClose.meta = {litmusids : [8579]};
+// testIdentityPopupOpenClose.meta = {litmusids : [8579]};

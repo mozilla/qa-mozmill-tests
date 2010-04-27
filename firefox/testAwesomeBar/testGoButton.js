@@ -100,4 +100,4 @@ var testClickLocationBarAndGo = function()
 /**
  * Map test functions to litmus tests
  */
-testClickLocationBarAndGo.meta = {litmusids : [7957]};
+// testClickLocationBarAndGo.meta = {litmusids : [7957]};

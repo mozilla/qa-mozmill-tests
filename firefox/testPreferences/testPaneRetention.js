@@ -114,5 +114,5 @@ var prefPaneCheckCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testOptionsDialogRetention.meta = {litmusids : [8014]};
-testOpenCloseOptionsDialog.meta = {litmusids : [8015]};
+// testOptionsDialogRetention.meta = {litmusids : [8014]};
+// testOpenCloseOptionsDialog.meta = {litmusids : [8015]};

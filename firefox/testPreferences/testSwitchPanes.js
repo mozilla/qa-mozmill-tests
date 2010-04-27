@@ -85,4 +85,4 @@ var prefDialogCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testPreferencesPanes.meta = {litmusids : [8013]};
+// testPreferencesPanes.meta = {litmusids : [8013]};

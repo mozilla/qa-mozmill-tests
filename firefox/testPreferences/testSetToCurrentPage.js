@@ -107,5 +107,5 @@ var prefDialogHomePageCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testSetHomePage.meta = {litmusids : [7964]};
-testHomeButton.meta = {litmusids : [8031]};
+// testSetHomePage.meta = {litmusids : [7964]};
+// testHomeButton.meta = {litmusids : [8031]};

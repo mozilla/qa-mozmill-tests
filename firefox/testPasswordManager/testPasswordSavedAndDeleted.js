@@ -157,5 +157,5 @@ var confirmHandler = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testSavePassword.meta = {litmusids : [8172]};
-testDeletePassword.meta = {litmusids : [8173]};
+// testSavePassword.meta = {litmusids : [8172]};
+// testDeletePassword.meta = {litmusids : [8173]};

@@ -174,4 +174,4 @@ var checkXButton = function() {
 /**
  * Map test functions to litmus tests
  */
-testNotificationBar.meta = {litmusids : [9370]};
+// testNotificationBar.meta = {litmusids : [9370]};

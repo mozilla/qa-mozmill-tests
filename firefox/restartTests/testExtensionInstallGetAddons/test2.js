@@ -70,4 +70,4 @@ var testCheckExtensionInstalled = function()
 /**
  * Map test functions to litmus tests
  */
-testCheckExtensionInstalled.meta = {litmusids : [8828]};
+// testCheckExtensionInstalled.meta = {litmusids : [8828]};

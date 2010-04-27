@@ -66,4 +66,4 @@ var testSSLDomainLabelInStatusBar = function()
 /**
  * Map test functions to litmus tests
  */
-testSSLDomainLabelInStatusBar.meta = {litmusids : [9328]};
+// testSSLDomainLabelInStatusBar.meta = {litmusids : [9328]};

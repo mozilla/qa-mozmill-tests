@@ -110,4 +110,4 @@ var testLocationBarSearches = function ()
 /**
  * Map test functions to litmus tests
  */
-testLocationBarSearches.meta = {litmusids : [8082]};
+// testLocationBarSearches.meta = {litmusids : [8082]};

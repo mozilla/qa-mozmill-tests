@@ -84,4 +84,4 @@ var testDirectUpdate_Download = function()
 /**
  * Map test functions to litmus tests
  */
-testDirectUpdate_Download.meta = {litmusids : [8696]};
+// testDirectUpdate_Download.meta = {litmusids : [8696]};

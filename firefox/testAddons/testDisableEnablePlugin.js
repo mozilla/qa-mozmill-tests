@@ -92,4 +92,4 @@ var testDisableEnablePlugin = function()
 /**
  * Map test functions to litmus tests
  */
-testDisableEnablePlugin.meta = {litmusids : [8511]};
+// testDisableEnablePlugin.meta = {litmusids : [8511]};

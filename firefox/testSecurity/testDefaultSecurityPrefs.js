@@ -78,4 +78,4 @@ var prefDialogCallback = function(controller) {
 /**
  * Map test functions to litmus tests
  */
-testDefaultSecurityPreferences.meta = {litmusids : [8060]};
+// testDefaultSecurityPreferences.meta = {litmusids : [8060]};

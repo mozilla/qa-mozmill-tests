@@ -119,4 +119,4 @@ var testCloseWindow = function()
 /**
  * Map test functions to litmus tests
  */
-testCloseWindow.meta = {litmusids : [9267]};
+// testCloseWindow.meta = {litmusids : [9267]};

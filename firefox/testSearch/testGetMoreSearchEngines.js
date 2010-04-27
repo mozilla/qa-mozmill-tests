@@ -142,4 +142,4 @@ var handleSearchInstall = function(controller)
 /**
  * Map test functions to litmus tests
  */
-setupModule.meta = {litmusids : [8238]};
+// setupModule.meta = {litmusids : [8238]};

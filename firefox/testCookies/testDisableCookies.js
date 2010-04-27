@@ -143,4 +143,4 @@ var prefCheckDisableDialogCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testDisableCookies.meta = {litmusids : [8053]};
+// testDisableCookies.meta = {litmusids : [8053]};

@@ -92,4 +92,4 @@ var testDirectUpdate_AppliedAndNoUpdatesFound = function()
 /**
  * Map test functions to litmus tests
  */
-testDirectUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [8187]};
+// testDirectUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [8187]};

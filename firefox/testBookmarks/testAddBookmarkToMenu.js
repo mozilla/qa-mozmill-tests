@@ -83,4 +83,4 @@ var testAddBookmarkToBookmarksMenu = function() {
 /**
  * Map test functions to litmus tests
  */
-testAddBookmarkToBookmarksMenu.meta = {litmusids : [8154]};
+// testAddBookmarkToBookmarksMenu.meta = {litmusids : [8154]};

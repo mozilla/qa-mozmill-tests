@@ -142,5 +142,5 @@ var prefDialogCallback = function(controller)
 /**
  * Map test functions to litmus tests
  */
-testPasswordNotificationBar.meta = {litmusids : [8522]};
-testPasswordNotSaved.meta = {litmusids : [8174]};
+// testPasswordNotificationBar.meta = {litmusids : [8522]};
+// testPasswordNotSaved.meta = {litmusids : [8174]};

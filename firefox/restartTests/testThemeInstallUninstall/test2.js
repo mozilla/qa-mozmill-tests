@@ -94,5 +94,5 @@ var testThemeChange = function()
 /**
  * Map test functions to litmus tests
  */
-testCheckInstalledTheme.meta = {litmusids : [7973]};
-testThemeChange.meta = {litmusids : [8168]};
+// testCheckInstalledTheme.meta = {litmusids : [7973]};
+// testThemeChange.meta = {litmusids : [8168]};

@@ -46,8 +46,3 @@ var setupModule = function(module)
 var testSampleTestcase = function()
 {
 }
-
-/**
- * Map test functions to litmus tests
- */
-testSampleTestcase.meta = {litmusids : [0000]};

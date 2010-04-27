@@ -131,4 +131,4 @@ var testFindInPage = function() {
 /**
  * Map test functions to litmus tests
  */
-testFindInPage.meta = {litmusids : [7970]};
+// testFindInPage.meta = {litmusids : [7970]};
