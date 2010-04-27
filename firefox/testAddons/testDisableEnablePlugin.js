@@ -51,14 +51,13 @@ var plugins = {"darwin": "DefaultPlugin.plugin",
 
 var setupModule = function(module) 
 {
-  module.controller = mozmill.getBrowserController();
-
-  module.addonsManager = new AddonsAPI.addonsManager();
+  controller = mozmill.getBrowserController();
+  addonsManager = new AddonsAPI.addonsManager();
 }
 
 var teardownModule = function(module)
 {
-  module.addonsManager.close();
+  addonsManager.close();
 }
 
 /**

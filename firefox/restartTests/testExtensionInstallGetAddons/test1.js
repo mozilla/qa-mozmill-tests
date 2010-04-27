@@ -48,8 +48,15 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
   addonsManager = new AddonsAPI.addonsManager();
 
-  persisted.extensionName = "Flashblock";
-  persisted.extensionId = "{3d7eb24f-2740-49df-8937-200b1cc08f8a}";
+  persisted.extensionName = "Nightly Tester Tools";
+  persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
+
+  AddonsAPI.useAmoPreviewUrls();
+}
+
+var teardownModule = function(module)
+{
+  AddonsAPI.resetAmoPreviewUrls();
 }
 
 /*
@@ -79,13 +86,12 @@ var testInstallExtension = function()
   var installButton = addonsManager.getElement({type: "listbox_button", subtype: "installSearchResult", value: extension});
   addonsManager.controller.waitThenClick(installButton);
 
-  // Wait that the installation has been started
-  addonsManager.controller.waitForEval("subject.extension.getAttribute('action') == 'installing'", gInstallTimeout, 100,
-                                       {extension: extension.getNode()});
-
-  // Wait for the installation pane
-  var installPane = addonsManager.getPane("installs");
-  addonsManager.controller.waitForElement(installPane, gInstallTimeout);
+  // The lazy software dialog opening makes it hard for us to work with modal dialogs here.
+  // Until bug 560821 hasn't been fixed we have to do that workaround by setting the install
+  // panel manually if it hasn't been done automatically.
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs' || " +
+                                       "subject.extension.getAttribute('action') == 'installing'", gInstallTimeout, 100,
+                                       {manager: addonsManager, extension: extension.getNode()});
   addonsManager.paneId = "installs";
 
   // ... and that the installation has been finished
@@ -119,7 +125,7 @@ var handleTriggerDialog = function(controller)
 
   // Will the extension be installed from https://addons.mozilla.org/?
   controller.assertJS("subject.isExtensionFromAMO == true",
-                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('https://addons.mozilla.org/') != -1});
+                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('addons.mozilla.org/') != -1});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document,

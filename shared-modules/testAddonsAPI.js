@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -42,6 +42,9 @@
 
 var MODULE_NAME = 'AddonsAPI';
 
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['PrefsAPI'];
+
 const gTimeout = 5000;
 
 // Addons Manager element templates
@@ -55,10 +58,21 @@ const AM_SEARCHINPUT  = AM_SEARCHFIELD + '/anon({"class":"textbox-input-box"})/a
 const AM_LISTBOX      = AM_DECK + '/id("extensionsBox")/[1]/id("extensionsView")';
 const AM_LISTBOX_BTN  = '/anon({"flex":"1"})/{"class":"addonTextBox"}/{"flex":"1"}';
 
+// Preferences which have to be changed to make sure we do not interact with the
+// official AMO page but preview.addons.mozilla.org instead
+const AMO_PREFERENCES = [
+  {name: "extensions.getAddons.browseAddons", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.recommended.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.recommended.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.search.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getAddons.search.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
+  {name: "extensions.getMoreThemesURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"}
+];
+
 /**
  * Constructor
  */
-function addonsManager(controller)
+function addonsManager()
 {
   this._controller = null;
 }
@@ -124,8 +138,7 @@ addonsManager.prototype = {
    * @param {boolean} force
    *        Force closing of the window
    */
-  close : function addonsManager_close(force)
-  {
+  close : function addonsManager_close(force) {
     var windowCount = mozmill.utils.getWindows().length;
 
     if (this._controller) {
@@ -305,10 +318,11 @@ addonsManager.prototype = {
    */
   search : function addonsManager_search(searchTerm) {
     // Select the search pane and start search
-    if (this.paneId != "search")
-      this.paneId = "search";
+    this.paneId = "search";
 
     var searchField = this.getElement({type: "search_field"});
+
+    this.clearSearchField();
     this._controller.waitForElement(searchField, gTimeout);
     this._controller.type(searchField, searchTerm);
     this._controller.keypress(searchField, "VK_RETURN", {});
@@ -332,17 +346,12 @@ addonsManager.prototype = {
     // Select the plug-in entry
     var plugin = this.getListboxItem(node, value);
     this._controller.click(plugin);
-    
-    
-    // Click the Enable/Disable button
-    var button = new elementslib.Lookup(this._controller.window.document,
-                                        plugin.expression + '/anon({"flex":"1"})/{"class":"addonTextBox"}' +
-                                        '/anon({"anonid":"selectedButtons"})' +
-                                        '/anon({"command":"cmd_' + (enable ? "enable" : "disable") + '"})');
-    
-    this._controller.waitThenClick(button, gTimeout);
-    this._controller.sleep(3000);
 
+    // Click the Enable/Disable button
+    var subtype = enable ? "enable" : "disable";
+    var button = this.getElement({type: "listbox_button", subtype: subtype, value: plugin});
+
+    this._controller.waitThenClick(button, gTimeout);
     this._controller.waitForEval("subject.plugin.getPluginState(subject.node, subject.value) == subject.state", gTimeout, 100,
                                  {plugin: this, node: node, value: value, state: enable});
   },
@@ -363,3 +372,26 @@ addonsManager.prototype = {
     this._controller = new mozmill.controller.MozMillController(window);
   }
 };
+
+/**
+ *  Updates all necessary preferences to the preview sub domain
+ */
+function useAmoPreviewUrls() {
+  var prefSrv = collector.getModule('PrefsAPI').preferences;
+
+  for each (preference in AMO_PREFERENCES) {
+    var pref = prefSrv.getPref(preference.name, "");
+    prefSrv.setPref(preference.name, pref.replace(preference.old, preference.new));
+  }
+}
+
+/**
+ * Reset all preferences which point to the preview sub domain
+ */
+function resetAmoPreviewUrls() {
+  var prefSrv = collector.getModule('PrefsAPI').preferences;
+
+  for each (preference in AMO_PREFERENCES) {
+    prefSrv.clearUserPref(preference.name);
+  }
+}

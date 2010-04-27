@@ -77,7 +77,8 @@ var testSearchForAddons = function()
 
   // Verify the number of addons is in-between 0 and the maxResults pref
   var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
-  var listBox = new elementslib.ID(controller.window.document, "extensionsView");
+  var listBox = addonsManager.getElement({type: "listbox"});
+
   addonsManager.controller.assertJS("subject.numSearchResults > 0",
                                     {numSearchResults: listBox.getNode().itemCount});
   addonsManager.controller.assertJS("subject.numSearchResults <= subject.maxResults",
