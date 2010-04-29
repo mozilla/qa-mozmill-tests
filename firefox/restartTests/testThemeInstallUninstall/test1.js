@@ -78,7 +78,7 @@ var testInstallTheme = function()
 
   // Click link to install the theme which triggers a modal dialog
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
-                                          "//div[@id='addon-install']/div[1]/p/a/span");
+                                          "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
   // Wait that the Installation pane is selected after the extension has been installed

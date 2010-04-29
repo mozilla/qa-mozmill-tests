@@ -44,8 +44,9 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   addonsManager = new AddonsAPI.addonsManager();
 
-  persisted.extensionName = "Adblock Plus";
-  persisted.extensionId = "{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}";
+  persisted.url = "https://preview.addons.mozilla.org/de/firefox/addon/6543/";
+  persisted.extensionName = "Nightly Tester Tools";
+  persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
@@ -63,7 +64,7 @@ var testInstallExtension = function() {
   controller.waitForPageLoad();
 
   // To avoid a broken test lets install Adblock directly
-  controller.open("https://preview.addons.mozilla.org/de/firefox/addon/1865");
+  controller.open(persisted.url);
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
@@ -72,7 +73,7 @@ var testInstallExtension = function() {
 
   // Click the link to install the extension
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
-                                          "//div[@id='addon-install']/div[1]/p/a/span");
+                                          "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitForElement(triggerLink, gTimeout);
   controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
 
