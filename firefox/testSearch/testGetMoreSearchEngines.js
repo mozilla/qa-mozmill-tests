@@ -42,7 +42,7 @@ const gDelay = 0;
 const gTimeout = 5000;
 
 const searchEngine = {name: "SearchGeek",
-                      url : "https://addons.mozilla.org/en-US/firefox/addon/10772"};
+                      url : "https://preview.addons.mozilla.org/en-US/firefox/addon/10772"};
 
 
 var setupModule = function(module)
@@ -85,8 +85,7 @@ var testGetMoreEngines = function()
 
   // Install the search engine
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
-                                          "/html/body[@id='mozilla-com']/div/div[@id='addon']/div/div/div[@id='addon-summary-wrapper']" +
-                                          "/div[@id='addon-summary']/div[@id='addon-install']/div[1]/p/a/span");
+                                          "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
 
   controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", gTimeout, 100,
