@@ -83,25 +83,30 @@ class SoftwareUpdateCLI(mozmill.RestartCLI):
         self.options.usecode = None
         self.options.plugins = None
 
+        # If the script gets a list of arguments check for folders and expand
+        # those recursively. Get rid of hidden files like .DS_Store on Mac
+        if self.options.install:
+            builds = [ ]
+            for entry in self.args:
+                if not os.path.exists(entry):
+                    print "Failure: '%s' cannot be found." % (entry)
+                    sys.exit(1)
+                if not os.path.isdir(entry):
+                    builds.append(os.path.abspath(entry))
+                    continue
+                for root, dirs, files in os.walk(entry):
+                    for file in files:
+                        if not file in [".DS_Store"]:
+                            builds.append(os.path.abspath(os.path.join(root, file)))
+            self.args = builds
+
         # We need at least one argument
         if len(self.args) < 1:
-            print "No arguments specified. Please run with --help to see all options"
+            print "No files or directories specified. Please run with --help to see all options."
             sys.exit(1)
 
-        # If a folder is given as argument it will be expanded to the contained
-        # files. So we only have to specify the folder instead of all builds
-        if self.options.install and os.path.isdir(self.args[0]):
-            folder = self.args.pop(0)
-            files = os.listdir(folder)
-
-            if files is None: files = []
-            for file in files:
-                full_path = os.path.join(folder, file)
-                if os.path.isfile(full_path):
-                    self.args.append(full_path)
-
         # Check the type of the update and default to minor
-        if self.options.type != "minor" and self.options.type != "major":
+        if self.options.type not in ["minor", "major"]:
             self.options.type = "minor"
 
     def prepare_channel(self):
