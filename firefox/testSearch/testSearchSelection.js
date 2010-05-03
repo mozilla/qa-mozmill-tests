@@ -68,11 +68,12 @@ var testSearchSelectionViaContextMenu = function()
   // Use the last engine for the search
   search.selectedEngine = engineName;
 
-  // Select a word on the mozilla.org's web page
-  var textElem = new elementslib.XPath(controller.tabs.activeTab, "//div[@id='openweb_promo']/p");
-
-  controller.open("http://www.mozilla.org/causes/");
+  controller.open("http://www.mozilla.org/about/mission.html");
   controller.waitForPageLoad();
+
+  // Get text element from web page, which will be used for the search
+  var textElem = new elementslib.XPath(controller.tabs.activeTab,
+                                       "//div[@id='main-content-container']/div[2]/p");
 
   // Start search which opens a new tab in the background
   startSearch(textElem, engineName, true);
