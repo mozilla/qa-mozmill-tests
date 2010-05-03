@@ -39,7 +39,7 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+const gDelay = 500;
 const gTimeout = 5000;
 
 var setupModule = function(module)
@@ -74,7 +74,7 @@ var testSetMasterPassword = function()
   controller.type(passField, "foo");
 
   controller.waitThenClick(new elementslib.ID(controller.tabs.activeTab, "LogIn"), gTimeout);
-  controller.sleep(500);
+  controller.sleep(gDelay);
 
   // After logging in, remember the login information
   var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties",
@@ -84,7 +84,7 @@ var testSetMasterPassword = function()
 
   UtilsAPI.assertElementVisible(controller, button, true);
   controller.waitThenClick(button, gTimeout);
-  controller.sleep(500);
+  controller.sleep(gDelay);
   controller.assertNodeNotExist(button);
 
   // Call preferences dialog and invoke master password functionality
@@ -121,11 +121,10 @@ var prefDialogSetMasterPasswordCallback = function(controller)
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
   controller.waitForElement(masterPasswordCheck, gTimeout);
-  controller.sleep(gDelay);
 
   // Call setMasterPassword dialog and set a master password to your profile
   var md = new ModalDialogAPI.modalDialog(masterPasswordHandler);
-  md.start(200);
+  md.start(gDelay);
 
   controller.click(masterPasswordCheck);
 
@@ -150,7 +149,7 @@ var masterPasswordHandler = function(controller)
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
-  md.start(200);
+  md.start(gDelay);
 
   var button = new elementslib.Lookup(controller.window.document,
                            '/id("changemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
@@ -183,12 +182,12 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
-  md.start(200);
+  md.start(gDelay);
 
   controller.click(showPasswordButton);
 
   // Check if the password manager has been opened
-  controller.sleep(500);
+  controller.sleep(gDelay);
 
   var window = mozmill.wm.getMostRecentWindow('Toolkit:PasswordManager');
   var pwdController = new mozmill.controller.MozMillController(window);
@@ -201,7 +200,7 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
-  md.start(200);
+  md.start(gDelay);
 
   pwdController.click(togglePasswords);
 
@@ -245,7 +244,7 @@ var prefDialogDeleteMasterPasswordCallback = function(controller)
 
   // Call setMasterPassword dialog and remove the master password to your profile
   var md = new ModalDialogAPI.modalDialog(removeMasterHandler);
-  md.start(200);
+  md.start(gDelay);
 
   controller.click(masterPasswordCheck);
 
@@ -267,7 +266,7 @@ var removeMasterHandler = function(controller)
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
-  md.start(200);
+  md.start(gDelay);
 
   controller.click(new elementslib.Lookup(controller.window.document,
                          '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
