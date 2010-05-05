@@ -78,9 +78,12 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
   controller.assertJS("subject.newVersionGreater == true",
                       {newVersionGreater: check >= 0});
 
-  controller.assertJS("subject.postBuildId > subject.preBuildId",
-                      {postBuildId: persisted.postBuildId, preBuildId: persisted.preBuildId});
-  
+  // If we have the same version number we should check the build id instead
+  if (check == 0) {
+    controller.assertJS("subject.postBuildId > subject.preBuildId",
+                        {postBuildId: persisted.postBuildId, preBuildId: persisted.preBuildId});
+  }
+
   // An upgrade should not change the builds locale
   controller.assertJS("subject.postLocale == subject.preLocale",
                       {postLocale: persisted.postLocale, preLocale: persisted.preLocale});
