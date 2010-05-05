@@ -81,7 +81,7 @@ var testSecNotification = function()
   controller.assertNode(projects);
 
   // Security button should not be visible
-  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssSecButton);
+  controller.assertJS("subject.getPropertyValue('list-style-image') == 'none'", cssSecButton);
 
   // Identity box should have a gray background
   controller.assertProperty(identityBox, "className", "unknownIdentity");
