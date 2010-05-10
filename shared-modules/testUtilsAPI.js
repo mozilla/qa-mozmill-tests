@@ -268,7 +268,40 @@ function formatUrlPref(prefName)
 }
 
 /**
- * Called to get the value of an individual property.
+ * Returns the value of an individual entity in a DTD file.
+ *
+ * @param {Array of string} urls
+ *        Array of DTD urls.
+ * @param {string} entityId
+ *        The ID of the entity to get the value of.
+ *
+ * @return The value of the requested entity
+ * @type string
+ */
+function getEntity(urls, entityId)
+{
+  // Add xhtml11.dtd to prevent missing entity errors with XHTML files
+  urls.push("resource:///res/dtd/xhtml11.dtd");
+
+  // Build a string of external entities
+  var extEntities = "";
+  for (i = 0; i < urls.length; i++) {
+    extEntities += '<!ENTITY % dtd' + i + ' SYSTEM "' +
+                   urls[i] + '">%dtd' + i + ';';
+  }
+
+  var parser = Cc["@mozilla.org/xmlextras/domparser;1"]
+                  .createInstance(Ci.nsIDOMParser);
+  var header = '<?xml version="1.0"?><!DOCTYPE elem [' + extEntities + ']>';
+  var elem = '<elem id="elementID">&' + entityId + ';</elem>';
+  var doc = parser.parseFromString(header + elem, 'text/xml');
+  var elemNode = doc.querySelector('elem[id="elementID"]');
+
+  return elemNode.textContent;
+}
+
+/**
+ * Returns the value of an individual property.
  *
  * @param {string} url
  *        URL of the string bundle.
@@ -280,8 +313,8 @@ function formatUrlPref(prefName)
  */
 function getProperty(url, prefName)
 {
-  var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"].
-                       getService(Components.interfaces.nsIStringBundleService);
+  var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
+               .getService(Ci.nsIStringBundleService);
   var bundle = sbs.createBundle(url);
 
   return bundle.GetStringFromName(prefName);
