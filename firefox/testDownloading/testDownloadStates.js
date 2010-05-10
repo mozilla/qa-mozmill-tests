@@ -37,7 +37,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['DownloadsAPI'];
 
-var URL = "http://releases.mozilla.org/pub/mozilla.org/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
+var URL = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
 
 var setupModule = function(module)
 {
