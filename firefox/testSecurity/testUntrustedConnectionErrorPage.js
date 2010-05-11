@@ -66,10 +66,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
   controller.waitForPageLoad();
   
   // Verify the loaded page is the homepage
-  var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", 
-                                             "browser.startup.homepage");
-  
-  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);
+  UtilsAPI.assertLoadedUrlEqual(controller, UtilsAPI.getDefaultHomepage());
   
 }
 

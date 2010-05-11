@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -134,7 +135,7 @@ var checkNoPhishingButton = function(badUrl) {
     // Verify the not-an-attack-site report page is loaded
     var locationBar = new elementslib.ID(controller.window.document, "urlbar");
     controller.assertJS("subject.urlbar.indexOf('http://www.stopbadware.org/') != -1",
-	                     {urlbar: locationBar.getNode().value}); 
+                        {urlbar: locationBar.getNode().value}); 
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
@@ -153,9 +154,8 @@ var checkGetMeOutOfHereButton = function() {
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
 
-  var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties",
-                                             "browser.startup.homepage");
-  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);
+  var defaultHomepage = UtilsAPI.getDefaultHomepage();
+  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomepage);  
 }
 
 /**
