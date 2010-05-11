@@ -17,6 +17,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -87,8 +88,7 @@ var checkGetMeOutOfHereButton = function()
   controller.waitForPageLoad();
 
   // Check that the default home page has been opened
-  var defaultHomePage = UtilsAPI.getProperty("resource:/browserconfig.properties", "browser.startup.homepage");
-  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomePage);
+  UtilsAPI.assertLoadedUrlEqual(controller, UtilsAPI.getDefaultHomepage());
 }
 
 /*

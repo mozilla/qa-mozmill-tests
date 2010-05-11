@@ -268,6 +268,33 @@ function formatUrlPref(prefName)
 }
 
 /**
+ * Returns the default home page
+ *
+ * @return The URL of the default homepage
+ * @type string
+ */
+function getDefaultHomepage() {
+  // Instance of the preference API
+  var prefs = collector.getModule('PrefsAPI').preferences;
+  
+  // Get the browser.startup.homepage pref from about:config
+  var defaultHomepage = prefs.getPref("browser.startup.homepage", "");
+  
+  // If the pref ends with a .properties then load the pref from 
+  // the properties file
+  // 
+  // XXX: Bug 565148 comment #4
+  //      In some cases (Ubuntu) the .properties file is located at
+  //      a chrome:// URL and not a resource:// URL
+  if (/\.properties$/.test(defaultHomepage)) {
+    defaultHomepage = this.getProperty(defaultHomepage, 
+                                       "browser.startup.homepage");
+  }
+  
+  return defaultHomepage;
+}
+
+/**
  * Returns the value of an individual entity in a DTD file.
  *
  * @param {Array of string} urls
