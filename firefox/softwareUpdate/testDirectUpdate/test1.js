@@ -53,13 +53,14 @@ var setupModule = function(module)
 var teardownModule = function(module)
 {
   // Save the update properties for later usage
+  module.persisted.type = update.updateType;
   module.persisted.updateBuildId = update.activeUpdate.buildID;
   module.persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
   module.persisted.updateVersion = update.activeUpdate.version;
 }
 
 /**
- * Download a minor update via the given update channel
+ * Download an update via the given update channel
  */
 var testDirectUpdate_Download = function()
 {
@@ -71,11 +72,11 @@ var testDirectUpdate_Download = function()
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // Check that an update is available
+  // Check that an update is available and store its type
   update.assertUpdateStep('updatesfound');
 
   // Download the given type of update from the specified channel
-  update.download(persisted.type, persisted.channel);
+  update.download(persisted.channel);
 
   // We should be ready for restart
   update.assertUpdateStep('finished');

@@ -53,6 +53,7 @@ var setupModule = function(module)
 var teardownModule = function(module)
 {
   // Save the update properties for later usage
+  module.persisted.type = update.updateType;
   module.persisted.updateBuildId = update.activeUpdate.buildID;
   module.persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
   module.persisted.updateType += "+fallback";
@@ -73,7 +74,7 @@ var testFallbackUpdate_Download = function()
   update.assertUpdateStep('updatesfound');
 
   // Download the given update from the specified channel
-  update.download(persisted.type, persisted.channel);
+  update.download(persisted.channel);
 
   // We should be ready for restart
   update.assertUpdateStep('finished');
