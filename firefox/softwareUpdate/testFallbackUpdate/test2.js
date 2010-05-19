@@ -52,10 +52,9 @@ var testFallbackUpdate_ErrorPatching = function()
   // The dialog should be open in the background and shows a failure
   update.waitForDialogOpen(controller);
   update.assertUpdateStep('errorpatching');
-  controller.window.focus();
 
   // Start downloading the fallback patch
-  update.download(persisted.type, persisted.channel);
+  update.download(persisted.channel);
 
   // We should be ready for restart
   update.assertUpdateStep('finished');

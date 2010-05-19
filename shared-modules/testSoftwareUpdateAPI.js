@@ -166,12 +166,10 @@ softwareUpdate.prototype = {
 
   /**
    * Download the update of the given channel and type
-   * @param {string} updateType
-   *        Update type of the update (minor or major)
    * @param {string} channel
    *        Update channel to use
    */
-  download : function softwareUpdate_download(updateType, channel, timeout) {
+  download : function softwareUpdate_download(channel, timeout) {
     timeout = timeout ? timeout : gTimeoutUpdateDownload;
 
     if (this.currentStep == "updatesfound") {
@@ -180,10 +178,6 @@ softwareUpdate.prototype = {
 
       this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
                                 {currentChannel: channel, expectedChannel: prefs.getPref('app.update.channel','')});
-
-      // Only allow updates of the given type
-      this._controller.assertJS("subject.expectedUpdateType == subject.lastUpdateType",
-                                {expectedUpdateType: updateType, lastUpdateType: this.updateType});
     }
 
     // Click the next button
