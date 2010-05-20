@@ -13,7 +13,7 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -44,6 +44,8 @@
  */
 
 var MODULE_NAME = 'UtilsAPI';
+
+const gTimeout = 5000;
 
 /**
  * Get application specific informations
@@ -184,14 +186,15 @@ function assertElementVisible(controller, element, visibility)
 function assertLoadedUrlEqual(controller, targetUrl)
 {
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  var currentUrl = locationBar.getNode().value;
+  var currentURL = locationBar.getNode().value;
 
   // Load the target URL
   controller.open(targetUrl);
   controller.waitForPageLoad();
 
   // Check the same web page has been opened
-  controller.assertValue(locationBar, currentUrl);
+  controller.waitForEval("subject.targetURL.value == subject.currentURL", gTimeout, 100,
+                         {targetURL: locationBar.getNode(),  currentURL: currentURL});
 }
 
 /**
