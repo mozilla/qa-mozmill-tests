@@ -13,8 +13,8 @@
  *
  * The Original Code is Mozmill Test Code.
  *
- * The Initial Developer of the Original Code is Mozilla Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -54,7 +54,7 @@ var setupModule = function(module)
 var testLarryBlue = function()
 {
   // Go to a "blue" website
-  controller.open("https://bugzilla.mozilla.org/");
+  controller.open("https://wiki.mozilla.org/");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
@@ -68,7 +68,7 @@ var testLarryBlue = function()
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertProperty(favicon, "src" ,"https://bugzilla.mozilla.org/skins/custom/images/bugzilla.png");
+  controller.assertProperty(favicon, "src" ,"https://wiki.mozilla.org/favicon.ico");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
@@ -132,7 +132,7 @@ var testLarryBlue = function()
   //      Replace this with 'www' as it is the current domain
   var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document,
                                             "security-identity-domain-value");
-  pageInfoController.assertValue(webIDDomainLabel, cert.commonName.replace("*", "bugzilla"));
+  pageInfoController.assertValue(webIDDomainLabel, cert.commonName.replace("*", "wiki"));
 
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-owner-value");
