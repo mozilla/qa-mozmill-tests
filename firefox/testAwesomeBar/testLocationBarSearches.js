@@ -13,13 +13,14 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Mark Locklear <marklocklear@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -49,7 +50,7 @@ var setupModule = function(module) {
 /**
  * Test three different ways to search in the location bar
  */
-var testLocationBarSearches = function ()
+var testLocationBarSearches = function()
 {
   controller.open("about:blank");
   controller.waitForPageLoad();
@@ -57,17 +58,20 @@ var testLocationBarSearches = function ()
   /**
    * Part 1 - Check unmatched string search
    */
-  var randomTestString = "oau45rtdgsh34nft";
+
+  var randomTestString = getRandomString(32);
 
   // Check if random test string is listed in the URL
   locationBar.loadURL(randomTestString);
   controller.waitForPageLoad();
-  controller.assertJS("subject.contains('" + randomTestString + "') == true", locationBar);
-
+  var containsString = locationBar.contains(randomTestString.toLowerCase());
+  controller.assertJS("subject.randomStringInLocationBar == true",
+                      {randomStringInLocationBar: containsString});
+                    
   // Check for presense of Your search message containing search string
   var yourSearchString = new elementslib.XPath(controller.tabs.activeTab,
-                                               "/html/body[@id='gsr']/div[@id='cnt']/div[@id='res']/div/p[1]/b");
-  controller.assertText(yourSearchString, randomTestString);
+                                               "//div[@id='res']/div/p[1]/b");
+  controller.assertText(yourSearchString, randomTestString.toLowerCase());
 
   controller.open("about:blank");
   controller.waitForPageLoad();
@@ -83,7 +87,7 @@ var testLocationBarSearches = function ()
 
   // Check for presense of Personsas image
   var personasImage = new elementslib.XPath(controller.tabs.activeTab,
-                                            "/html/body/div[@id='outer-wrapper']/div[@id='inner-wrapper']/div[@id='nav']/h1/a/img");
+                                            "//div[@id='nav']/h1/a/img");
   controller.waitForElement(personasImage, gTimeout);
 
   controller.open("about:blank");
@@ -103,8 +107,30 @@ var testLocationBarSearches = function ()
   // Check for presense of search term in return results count
   // That section of the Google results page is unique from the unmtached results page
   var resultsStringCheck = new elementslib.XPath(controller.tabs.activeTab,
-                                                 "/html/body[@id='gsr']/div[@id='cnt']/div[@id='ssb']/p/b[4]");
+                                                 "//div[@id='ssb']/p/b[4]");
   controller.assertText(resultsStringCheck, resultsTestString);
+}
+
+/**
+ * Creates a random set of characters
+ *
+ * @param {string} numCharacters
+ *        length of random character set
+ * @returns a random set of upper/lower case letters and digits
+ * @type string
+ */
+function getRandomString(numCharacters) {
+  var string = '';
+  for(var i = 0; i < numCharacters; i++) {
+    var n = Math.floor(Math.random() * 62);
+    if(n < 10)
+      string += n; //1-10
+    else if(n < 36)
+      string += String.fromCharCode(n + 55); //A-Z
+    else
+      string += String.fromCharCode(n + 61); //a-z
+  }
+  return string;
 }
 
 /**
