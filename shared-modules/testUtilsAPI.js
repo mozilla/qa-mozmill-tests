@@ -327,6 +327,9 @@ function getEntity(urls, entityId)
   var doc = parser.parseFromString(header + elem, 'text/xml');
   var elemNode = doc.querySelector('elem[id="elementID"]');
 
+  if (elemNode == null)
+    throw new Error(arguments.callee.name + ": Unknown entity - " + entityId);
+
   return elemNode.textContent;
 }
 
@@ -344,8 +347,12 @@ function getEntity(urls, entityId)
 function getProperty(url, prefName)
 {
   var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
-               .getService(Ci.nsIStringBundleService);
+            .getService(Ci.nsIStringBundleService);
   var bundle = sbs.createBundle(url);
 
-  return bundle.GetStringFromName(prefName);
+  try {
+    return bundle.GetStringFromName(prefName);
+  } catch (ex) {
+    throw new Error(arguments.callee.name + ": Unknown property - " + prefName);
+  }
 }
