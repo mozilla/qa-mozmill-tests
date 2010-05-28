@@ -59,6 +59,7 @@ var setupModule = function(module)
 var teardownModule = function()
 {
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
+  tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
   allTabsPopup.getNode().hidePopup();

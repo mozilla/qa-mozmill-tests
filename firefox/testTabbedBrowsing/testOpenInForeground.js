@@ -63,6 +63,7 @@ var teardownModule = function(module)
 {
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
   UtilsAPI.closeContentAreaContextMenu(controller);
+  tabBrowser.closeAllTabs();
 }
 
 /**
