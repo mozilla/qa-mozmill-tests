@@ -50,8 +50,8 @@ var setupModule = function(module)
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 
-  container = tabBrowser.getElement({type: "tabs_container"});
-  animateBox = tabBrowser.getElement({type: "tabs_animateBox"});
+  scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
+  scrollButtonUp = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "up"});
   allTabsButton = tabBrowser.getElement({type: "tabs_allTabsButton"});
   allTabsPopup = tabBrowser.getElement({type: "tabs_allTabsPopup"});
 }
@@ -59,6 +59,7 @@ var setupModule = function(module)
 var teardownModule = function()
 {
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
+  tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
   allTabsPopup.getNode().hidePopup();
@@ -82,21 +83,21 @@ var testScrollBackgroundTabIntoView = function()
     controller.middleClick(link1);
 
     // Wait until the new tab has been opened
-    controller.waitForEval("subject.length == " + (++count), gTimeout, 100, tabBrowser);
-  } while ((container.getNode().getAttribute("overflow") != 'true') || count > 50)
+    controller.waitForEval("subject.tabs.length == subject.count", gTimeout, 100,
+                           {tabs: tabBrowser, count: ++count});
+  } while ((scrollButtonDown.getNode().getAttribute("collapsed") == 'true') || count > 50)
 
-  // Scroll arrows will be shown when the overflow attribute has been added
-  controller.assertJS("subject.getAttribute('overflow') == 'true'",
-                      container.getNode())
+  controller.assertJS("subject.isLeftButtonVisible == true",
+                      {isLeftButtonVisible: !scrollButtonUp.getNode().getAttribute("collapsed")});
 
   // Open one more tab but with another link for later verification
   controller.middleClick(link2);
 
-  // Check that the List all Tabs button flashes
-  controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity != 0",
-                         gTimeout, 10, {window : controller.window, animateBox: animateBox.getNode()});
-  controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity == 0",
-                         gTimeout, 100, {window : controller.window, animateBox: animateBox.getNode()});
+  // Check that the right scroll button flashes
+  controller.waitForEval("subject.scrollButton.hasAttribute('notifybgtab') == true", gTimeout, 10,
+                         {scrollButton: scrollButtonDown.getNode()});
+  controller.waitForEval("subject.scrollButton.hasAttribute('notifybgtab') != true", gTimeout, 10,
+                         {scrollButton: scrollButtonDown.getNode()});
 
   // Check that the correct link has been loaded in the last tab
   var lastIndex = controller.tabs.length - 1;

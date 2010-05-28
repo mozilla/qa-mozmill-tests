@@ -46,10 +46,10 @@ var MODULE_NAME = 'TabbedBrowsingAPI';
 const gTimeout = 5000;
 
 const tabsBrowser = '/id("main-window")/id("browser")/id("appcontent")/id("content")';
-const tabsStrip = tabsBrowser + '/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})';
-const tabsContainer = tabsStrip + '/anon({"anonid":"tabcontainer"})/anon({"class":"tabs-stack"})/{"class":"tabs-container"}';
-const tabsArrowScrollbox = tabsContainer + '/anon({"anonid":"arrowscrollbox"})';
-
+const tabsToolbar = '/id("main-window")/id("navigator-toolbox")/id("TabsToolbar")';
+const tabsTabs = tabsToolbar + '/id("tabbrowser-tabs")';
+const tabsArrowScrollbox = tabsTabs + '/anon({"anonid":"arrowscrollbox"})';
+const tabsStrip = tabsArrowScrollbox + '/anon({"anonid":"scrollbox"})/anon({"flex":"1"})';
 
 /**
  * Close all tabs and open about:blank
@@ -183,23 +183,15 @@ tabBrowser.prototype = {
        */
       case "tabs":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsStrip + '/anon({"anonid":"tabcontainer"})');
+                                      tabsTabs);
         break;
       case "tabs_allTabsButton":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsContainer + '/{"pack":"end"}/anon({"anonid":"alltabs-button"})');
+                                      tabsToolbar + '/id("alltabs-button")');
         break;
       case "tabs_allTabsPopup":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsContainer + '/{"pack":"end"}/anon({"anonid":"alltabs-button"})' +
-                                      '/anon({"anonid":"alltabs-popup"})');
-        break;
-      case "tabs_animateBox":
-        elem = new elementslib.Lookup(this._controller.window.document, tabsContainer +
-                                      '/{"pack":"end"}/anon({"anonid":"alltabs-box-animate"})');
-        break;
-      case "tabs_container":
-        elem = new elementslib.Lookup(this._controller.window.document, tabsContainer);
+        elem = new elementslib.Lookup(this._controller.window.document, tabsToolbar +
+                                      '/id("alltabs-button")/id("alltabs-popup")');
         break;
       case "tabs_newTabButton":
         elem = new elementslib.Lookup(this._controller.window.document,

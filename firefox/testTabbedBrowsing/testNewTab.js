@@ -81,8 +81,8 @@ var checkOpenTab = function(event)
                       controller.tabs);
 
   // The tabs title should be 'Untitled'
-  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties",
-                                   "tabs.untitled");
+  var title = UtilsAPI.getEntity(["chrome://browser/locale/browser.dtd"],
+                                  "newTab.label");
   var tab = tabBrowser.getTab();
   controller.assertJS("subject.label == '" + title + "'", tab.getNode());
 
