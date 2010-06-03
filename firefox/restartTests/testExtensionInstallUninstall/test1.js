@@ -127,6 +127,9 @@ var handleTriggerDialog = function(controller) {
   controller.click(installButton);
 }
 
+// Bug 569813: The AddonsAPI needs an update to make sure the test will work
+setupModule.skipped = true;
+
 /**
  * Map test functions to litmus tests
  */
