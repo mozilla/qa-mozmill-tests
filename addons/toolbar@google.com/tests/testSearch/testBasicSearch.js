@@ -53,6 +53,8 @@ Components.utils.import('resource://mozmill/modules/jum.js', jumlib);
  * Note: This may became more elegant after Mozmill adds the feature for sharing
  * code across different tests.
  */
+
+// Include necessary modules
 const RELATIVE_ROOT = '../../shared-modules';
 const MODULE_REQUIRES = ['SearchBoxAPI', 'SearchVerifyUtilsAPI', 'BrowserUtilsAPI',
                          'GtbUtilsAPI'];
