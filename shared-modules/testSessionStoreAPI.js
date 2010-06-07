@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <aaron.train@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,11 +46,14 @@ var MODULE_NAME = 'SessionStoreAPI';
 
 // Include necessary modules
 var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['WidgetsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'WidgetsAPI'];
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
                              .getService(Ci.nsISessionStore);
+
+// Preference for indicating the amount of restorable tabs
+const SESSIONSTORE_MAXTABS_PREF = 'browser.sessionstore.max_tabs_undo';
 
 const gTimeout = 5000;
 
@@ -215,6 +219,29 @@ aboutSessionRestore.prototype = {
     this._controller.assertJS("subject.newState != subject.oldState",
                               {newState : this.getRestoreState(element), oldState : state});
   }
+}
+
+/**
+ * Resets the list of recently closed tabs by setting and clearing the user preference
+ */
+function resetRecentlyClosedTabs()
+{
+  var prefs = collector.getModule('PrefsAPI').preferences;
+
+  prefs.setPref(SESSIONSTORE_MAXTABS_PREF, 0);
+  prefs.clearUserPref(SESSIONSTORE_MAXTABS_PREF);
+}
+
+/**
+ * Returns the number of restorable tabs for a given window
+ * 
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ * @returns The number of restorable tabs in the window
+ */
+function getClosedTabCount(controller)
+{
+  return sessionStoreService.getClosedTabCount(controller.window);
 }
 
 /**
