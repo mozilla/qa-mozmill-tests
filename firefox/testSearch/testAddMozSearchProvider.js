@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -38,11 +39,13 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
+const localTestFolder = collector.addHttpResource('../test-files');
+
 const gDelay = 0;
 const gTimeout = 5000;
 
 const searchEngine = {name: "MDC",
-                      url : "https://litmus.mozilla.org/testcase_files/firefox/search/mozsearch.html"};
+                      url : localTestFolder + "/search/mozsearch.html"};
 
 var setupModule = function(module)
 {
@@ -106,9 +109,9 @@ var handleSearchInstall = function(controller)
   controller.assertJS("subject.windowTitle == subject.addEngineTitle",
                       {windowTitle: title, addEngineTitle: confirmTitle});
 
-  // Check that litmus.mozilla.org is shown as domain
+  // Check that the correct domain is shown
   var infoBody = controller.window.document.getElementById("info.body");
-  controller.waitForEval("subject.textContent.indexOf('litmus.mozilla.org') != -1",
+  controller.waitForEval("subject.textContent.indexOf('localhost') != -1",
                          gTimeout, 100, infoBody);
 
   var addButton = new elementslib.Lookup(controller.window.document,
