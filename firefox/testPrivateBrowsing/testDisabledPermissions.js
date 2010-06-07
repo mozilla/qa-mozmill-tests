@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -38,13 +39,15 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI',
                        'TabbedBrowsingAPI', 'UtilsAPI'];
 
+const localTestFolder = collector.addHttpResource('../test-files');
+
 const gDelay = 0;
 const gTimeout = 5000;
 
 var websites = [
-                "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html",
+                localTestFolder + "/popups/popups_2.html",
                 "http://www.google.com",
-                "https://litmus.mozilla.org/testcase_files/firefox/cookies/cookie_single.html"
+                localTestFolder + "/cookies/cookie_single.html"
                ];
 
 var setupModule = function(module)
@@ -86,7 +89,8 @@ var testPermissionsDisabled = function()
 
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
-  var allow = new elementslib.XPath(controller.window.document, "/*[name()='window']/*[name()='popupset'][1]/*[name()='popup'][2]/*[name()='menuitem'][1]");
+  var allow = new elementslib.XPath(controller.window.document, 
+                                    "/*[name()='window']/*[name()='popupset'][1]/*[name()='popup'][2]/*[name()='menuitem'][1]");
 
   controller.waitForElement(allow);
   controller.assertProperty(allow, "disabled", true);

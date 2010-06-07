@@ -39,6 +39,8 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
+const localTestFolder = collector.addHttpResource('../test-files');
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -66,7 +68,7 @@ var teardownModule = function(module)
  */
 var testPopUpBlocked = function()
 {
-  var url = "https://litmus.mozilla.org/testcase_files/firefox/5918/index.html";
+  var url = localTestFolder + "/popups/popups_2.html";
 
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
