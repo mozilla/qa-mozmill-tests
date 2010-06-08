@@ -34,6 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 

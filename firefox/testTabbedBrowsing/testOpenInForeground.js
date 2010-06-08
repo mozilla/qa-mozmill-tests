@@ -40,7 +40,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files');
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -71,7 +71,7 @@ var testOpenInForegroundTab = function()
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Open the HTML testcase:
-  controller.open(localTestFolder + "openinnewtab.html");
+  controller.open(localTestFolder + "/tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();
 
   for(var i = 0; i < 3; i++) {
