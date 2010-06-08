@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Raymond Etornam Agbeame <retornam@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -43,7 +44,7 @@ var MODULE_REQUIRES = ['AddonsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files');
 
 var plugins = {"darwin": "DefaultPlugin.plugin",
                "winnt": "npnul32.dll",
@@ -76,7 +77,7 @@ var testDisableEnablePlugin = function()
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
 
-  controller.open(localTestFolder + "plugin.html");
+  controller.open(localTestFolder + "/plugins/default_plugin.html");
   controller.waitForPageLoad();
   controller.assertText(status, "disabled");
 

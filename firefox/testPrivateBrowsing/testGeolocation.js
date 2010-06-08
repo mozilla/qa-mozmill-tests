@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -34,6 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'PrivateBrowsingAPI',
                        'TabbedBrowsingAPI', 'UtilsAPI'
@@ -44,7 +46,7 @@ const gTimeout = 7000;
 
 const PREF_GEO_TOKEN = "geo.wifi.access_token";
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files');
 
 var setupModule = function(module)
 {
@@ -75,7 +77,7 @@ var testTabRestoration = function()
   pb.start();
 
   // Load a page which supports geolocation and accept sharing the location
-  controller.open(localTestFolder + "geolocation.html");
+  controller.open(localTestFolder + "/geolocation/position.html");
   controller.waitForPageLoad();
 
   var shortcut = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
