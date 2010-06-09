@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Mark Locklear <marklocklear@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -57,7 +58,7 @@ var testGoogleSuggestedTerms = function() {
   // The auto-complete box has a different markup for nightly builds
   // Official releases will not have the 'pre' suffix in the version number
   if (UtilsAPI.appInfo.platformVersion.indexOf("pre") == -1) {
-    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[@id='main']/center/span[@id='body']/center/form/table[2]/tbody/tr[2]/td");
+    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "//span[@id='body']/center/form/table[1]/tbody/tr/td[2]");
   } else {
     var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[1]/tbody/tr/td[2]");
   }
