@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,37 +42,34 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI',
 const gDelay = 0;
 const gTimeout = 5000;
 
-// Used to indicate the modal warning dialog has been shown
-var modalWarningShown = false;
+var gPreferences = new Array("security.warn_entering_secure",
+                             "security.warn_entering_weak",
+                             "security.warn_leaving_secure",
+                             "security.warn_submit_insecure",
+                             "security.warn_viewing_mixed");
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+  TabbedBrowsingAPI.closeAllTabs(controller);
+
+  persisted.modalWarningShown = false;
 }
 
 var teardownModule = function(module)
 {
-  // Reset the warning prefs
-  var prefs = new Array("security.warn_entering_secure",
-                        "security.warn_entering_weak",
-                        "security.warn_leaving_secure",
-                        "security.warn_submit_insecure",
-                        "security.warn_viewing_mixed");
-  for each (p in prefs)
+  for each (p in gPreferences)
     PrefsAPI.preferences.clearUserPref(p);
+
+  persisted = {}
 }
 
 /**
  * Test warning about submitting unencrypted information
  */
-var testSubmitUnencryptedInfoWarning = function()
-{
-  // Close the page because the warnings don't appear if you are on the page
-  // where the warning was triggered
-  TabbedBrowsingAPI.closeAllTabs(controller);
-
-  // Make sure the prefs are set
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+var testSubmitUnencryptedInfoWarning = function() {
+  // Enable the 'warn_submit_insecure' pref only
+  for (var i = 0; i < gPreferences.length; i++)
+    PrefsAPI.preferences.setPref(gPreferences[i], (i == 3));
 
   // Create a listener for the warning dialog
   var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
@@ -97,65 +95,7 @@ var testSubmitUnencryptedInfoWarning = function()
 
   // Test if the modal dialog has been shown
   controller.assertJS("subject.isModalWarningShown == true",
-                      {isModalWarningShown: modalWarningShown});
-}
-
-/**
- * Call-back handler for preferences dialog
- *
- * @param {MozmMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogCallback = function(controller)
-{
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
-  prefDialog.paneId = 'paneSecurity';
-
-  // Click the Warning Messages Settings button
-  var warningSettingsButton = new elementslib.ID(controller.window.document,
-                                                 "warningSettings");
-  controller.waitForElement(warningSettingsButton, gTimeout);
-
-  // Create a listener for the Warning Messages Settings dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningSettingsDialog);
-  md.start(500);
-
-  // Click the Warning Messages Settings button
-  controller.click(warningSettingsButton);
-
-  // Close the preferences dialog
-  prefDialog.close(true);
-}
-
-/**
- * Helper function to handle interaction with the
- * Security Warning Settings modal dialog
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var handleSecurityWarningSettingsDialog = function(controller)
-{
-  // All the prefs in the dialog
-  var prefs = new Array("warn_entering_secure",
-                        "warn_entering_weak",
-                        "warn_leaving_secure",
-                        "warn_submit_insecure",
-                        "warn_viewing_mixed");
-
-  // Make sure only the "encrypted page" pref is checked
-  for each (p in prefs) {
-    var element = new elementslib.ID(controller.window.document, p);
-    controller.waitForElement(element, gTimeout);
-    controller.check(element, (p == "warn_submit_insecure"));
-  }
-
-  // Click OK on the Security window
-  var okButton = new elementslib.Lookup(controller.window.document,
-                                        '/id("SecurityWarnings")' +
-                                        '/anon({"anonid":"dlg-buttons"})' +
-                                        '/{"dlgtype":"accept"}');
-  controller.click(okButton);
+                      {isModalWarningShown: persisted.modalWarningShown});
 }
 
 /**
@@ -164,9 +104,8 @@ var handleSecurityWarningSettingsDialog = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var handleSecurityWarningDialog = function(controller)
-{
-  modalWarningShown = true;
+var handleSecurityWarningDialog = function(controller) {
+  persisted.modalWarningShown = true;
 
   // Get the message text
   var message = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
