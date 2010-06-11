@@ -44,7 +44,7 @@ var MODULE_REQUIRES = ['AddonsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 var plugins = {"darwin": "DefaultPlugin.plugin",
                "winnt": "npnul32.dll",
@@ -77,7 +77,7 @@ var testDisableEnablePlugin = function()
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
 
-  controller.open(localTestFolder + "/plugins/default_plugin.html");
+  controller.open(localTestFolder + "plugins/default_plugin.html");
   controller.waitForPageLoad();
   controller.assertText(status, "disabled");
 

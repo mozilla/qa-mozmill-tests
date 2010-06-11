@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
@@ -40,7 +41,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -71,7 +72,7 @@ var testOpenInBackgroundTab = function()
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Open the HTML testcase:
-  controller.open(localTestFolder + "/tabbedbrowsing/openinnewtab.html");
+  controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();
 
   for(var i = 0; i < gTabOrder.length; i++) {

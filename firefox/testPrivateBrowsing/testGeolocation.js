@@ -46,7 +46,7 @@ const gTimeout = 7000;
 
 const PREF_GEO_TOKEN = "geo.wifi.access_token";
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 var setupModule = function(module)
 {
@@ -77,7 +77,7 @@ var testTabRestoration = function()
   pb.start();
 
   // Load a page which supports geolocation and accept sharing the location
-  controller.open(localTestFolder + "/geolocation/position.html");
+  controller.open(localTestFolder + "geolocation/position.html");
   controller.waitForPageLoad();
 
   var shortcut = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
