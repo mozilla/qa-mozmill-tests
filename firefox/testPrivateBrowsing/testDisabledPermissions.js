@@ -40,15 +40,15 @@ var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI',
                        'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var websites = [
-                localTestFolder + "/popups/popups_2.html",
+                localTestFolder + "popups/popups_2.html",
                 "http://www.google.com",
-                localTestFolder + "/cookies/cookie_single.html"
+                localTestFolder + "cookies/cookie_single.html"
                ];
 
 var setupModule = function(module)

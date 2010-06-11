@@ -39,13 +39,13 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 const searchEngine = {name: "MDC",
-                      url : localTestFolder + "/search/mozsearch.html"};
+                      url : localTestFolder + "search/mozsearch.html"};
 
 var setupModule = function(module)
 {

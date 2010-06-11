@@ -41,7 +41,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'SessionStoreAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -74,7 +74,7 @@ var testUndoTabFromContextMenu = function() {
   // Open 3 tabs with pages in the local test folder
   for (var i = 0; i < 3; i++) {
    controller.open(localTestFolder + 
-                   '/tabbedbrowsing/openinnewtab_target.html?id=' + i);
+                   'tabbedbrowsing/openinnewtab_target.html?id=' + i);
    controller.waitForPageLoad();
    tabBrowser.openTab({type: 'menu'});
   }
