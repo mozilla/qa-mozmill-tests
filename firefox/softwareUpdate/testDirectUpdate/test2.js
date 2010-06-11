@@ -38,8 +38,7 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.update = new SoftwareUpdateAPI.softwareUpdate();
 
@@ -54,15 +53,14 @@ var setupModule = function(module)
  * Test that the update has been correctly applied and no further updates
  * can be found.
  */
-var testDirectUpdate_AppliedAndNoUpdatesFound = function()
-{
+var testDirectUpdate_AppliedAndNoUpdatesFound = function() {
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
 
   // No updates should be offered now - filter out major updates
   try {
-    update.assertUpdateStep('noupdatesfound');
+    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.updateNotFound);
   } catch (ex) {
     // If a major update is offered we shouldn't fail
     controller.assertJS("subject.newUpdateType != subject.lastUpdateType",

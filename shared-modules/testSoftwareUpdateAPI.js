@@ -37,8 +37,6 @@
 /**
  * @fileoverview
  * The SoftwareUpdateAPI adds support for an easy access to the update process.
- *
- * @version 1.0.0
  */
 
 const MODULE_NAME = 'SoftwareUpdateAPI';
@@ -50,6 +48,55 @@ const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
 const gTimeoutUpdateDownload  = 360000;
 
+// Helper lookup constants for elements of the software update dialog
+const WIZARD = '/id("updates")';
+const WIZARD_BUTTONS = WIZARD + '/anon({"anonid":"Buttons"})';
+const WIZARD_DECK = WIZARD  + '/anon({"anonid":"Deck"})';
+
+const WIZARD_PAGES = {
+  dummy: 'dummy',
+  checking: 'checking',
+  updateFoundPlugins: 'pluginupdatesfound',
+  updateNotFound: 'noupdatesfound',
+  updateManual: 'manualUpdate',
+  incompatibleCheck: 'incompatibleCheck',
+  updateFoundMinor: 'updatesfoundbasic',
+  updateFoundMajor: 'updatesfoundbillboard',
+  license: 'license',
+  incompatibleList: 'incompatibleList',
+  downloading: 'downloading',
+  errors: 'errors',
+  errorpatching: 'errorpatching',
+  finished: 'finished',
+  finishedBackground: 'finishedBackground',
+  installed: 'installed'
+}
+
+// On Mac there is another DOM structure used as on Windows and Linux
+if (mozmill.isMac) {
+  var WIZARD_BUTTONS_BOX = WIZARD_BUTTONS +
+                             '/anon({"flex":"1"})/{"class":"wizard-buttons-btm"}/';
+  var WIZARD_BUTTON = {
+          back: '{"dlgtype":"back"}',
+          next: '{"dlgtype":"next"}',
+          cancel: '{"dlgtype":"cancel"}',
+          finish: '{"dlgtype":"finish"}',
+          extra1: '{"dlgtype":"extra1"}',
+          extra2: '{"dlgtype":"extra2"}'
+        }
+} else {
+  var WIZARD_BUTTONS_BOX = WIZARD_BUTTONS +
+                       '/anon({"flex":"1"})/{"class":"wizard-buttons-box-2"}/';
+  var WIZARD_BUTTON = {
+    back: '{"dlgtype":"back"}',
+    next: 'anon({"anonid":"WizardButtonDeck"})/[1]/{"dlgtype":"next"}',
+    cancel: '{"dlgtype":"cancel"}',
+    finish: 'anon({"anonid":"WizardButtonDeck"})/[0]/{"dlgtype":"finish"}',
+    extra1: '{"dlgtype":"extra1"}',
+    extra2: '{"dlgtype":"extra2"}'
+  }
+}
+
 /**
  * Constructor for software update class
  */
@@ -58,47 +105,22 @@ function softwareUpdate()
   this._controller = null;
   this._wizard = null;
 
+  this._prefs = collector.getModule('PrefsAPI').preferences;
   this._aus = Cc["@mozilla.org/updates/update-service;1"]
                  .getService(Ci.nsIApplicationUpdateService);
   this._ums = Cc["@mozilla.org/updates/update-manager;1"]
                  .getService(Ci.nsIUpdateManager);
-
-  // Get all available buttons for later clicks
-  // http://mxr.mozilla.org/mozilla-central/source/toolkit/content/widgets/wizard.xml#467
-  if (mozmill.isMac) {
-    var template = '/id("updates")/anon({"anonid":"Buttons"})/anon({"flex":"1"})' +
-                   '/{"class":"wizard-buttons-btm"}/';
-    this._buttons = {
-                      back: template + '{"dlgtype":"back"}',
-                      next: template + '{"dlgtype":"next"}',
-                      cancel: template + '{"dlgtype":"cancel"}',
-                      finish: template + '{"dlgtype":"finish"}',
-                      extra1: template + '{"dlgtype":"extra1"}',
-                      extra2: template + '{"dlgtype":"extra2"}'
-                    };
-  } else if (mozmill.isLinux || mozmill.isWindows) {
-    var template = '/id("updates")/anon({"anonid":"Buttons"})/anon({"flex":"1"})' +
-                   '/{"class":"wizard-buttons-box-2"}/';
-    this._buttons = {
-                      back: template + '{"dlgtype":"back"}',
-                      next: template + 'anon({"anonid":"WizardButtonDeck"})/[1]' +
-                                       '/{"dlgtype":"next"}',
-                      cancel: template + '{"dlgtype":"cancel"}',
-                      finish: template + 'anon({"anonid":"WizardButtonDeck"})/[0]' +
-                                         '/{"dlgtype":"finish"}',
-                      extra1: template + '{"dlgtype":"extra1"}',
-                      extra2: template + '{"dlgtype":"extra2"}'
-                    };
-  }
 }
 
 /**
  * Class for software updates
  */
 softwareUpdate.prototype = {
-
   /**
    * Returns the active update
+   *
+   * @returns The currently selected update
+   * @type nsIUpdate
    */
   get activeUpdate() {
     return this._ums.activeUpdate;
@@ -106,16 +128,29 @@ softwareUpdate.prototype = {
 
   /**
    * Check if the user has permissions to run the software update
+   *
+   * @returns Status if the user has the permissions.
+   * @type {boolean}
    */
   get allowed() {
-    return this._aus.canUpdate;
+    return this._aus.canCheckForUpdates && this._aus.canApplyUpdates;
+  },
+
+  /**
+   * Get the controller of the associated engine manager dialog
+   *
+   * @returns Controller of the browser window
+   * @type MozMillController
+   */
+  get controller() {
+    return this._controller;
   },
 
   /**
    * Returns the current step of the software update dialog wizard
    */
-  get currentStep() {
-    return this._wizard.getAttribute('currentpageid');
+  get currentPage() {
+    return this._wizard.getNode().getAttribute('currentpageid');
   },
 
   /**
@@ -134,22 +169,20 @@ softwareUpdate.prototype = {
   },
 
   /**
-   * Returns the update type (minor or major)
+   * Check if updates have been found
    */
-  get updateType() {
-    updateType = new elementslib.ID(this._controller.window.document, "updateType");
-    return updateType.getNode().getAttribute("severity");
+  assertUpdatesFound : function softwareUpdate_assertUpdatesFound() {
+    // Check that an update has been found
+    if (this.currentPage != WIZARD_PAGES.updateFoundMajor &&
+        this.currentPage != WIZARD_PAGES.updateFoundMinor)
+      throw new Error("Cannot download an update because none has been found.")
   },
 
   /**
-   * Asserts the given step of the update dialog wizard
-   * Available steps: dummy, checking, noupdatesfound, incompatibleCheck,
-   *                  updatesfound, license, incompatibleList, downloading,
-   *                  errors, errorpatching, finished, finishedBackground,
-   *                  installed
+   * Waits for the given page of the update dialog wizard
    */
-  assertUpdateStep : function softwareUpdate_assertUpdateStep(step) {
-    this._controller.waitForEval("subject.currentStep == '" + step + "'",
+  waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
+    this._controller.waitForEval("subject.currentPage == '" + step + "'",
                                  gTimeout, 100, this);
   },
 
@@ -161,6 +194,7 @@ softwareUpdate.prototype = {
       this._controller.keypress(null, "VK_ESCAPE", {});
       this._controller.sleep(500);
       this._controller = null;
+      this._wizard = null;
     }
   },
 
@@ -172,22 +206,19 @@ softwareUpdate.prototype = {
   download : function softwareUpdate_download(channel, timeout) {
     timeout = timeout ? timeout : gTimeoutUpdateDownload;
 
-    if (this.currentStep == "updatesfound") {
-      // Check if the correct channel has been set
-      var prefs = collector.getModule('PrefsAPI').preferences;
-
-      this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
-                                {currentChannel: channel, expectedChannel: prefs.getPref('app.update.channel','')});
-    }
+    // Check that the correct channel has been set
+    var prefChannel = this._prefs.getPref('app.update.channel', '');
+    this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
+                              {currentChannel: channel, expectedChannel: prefChannel});
 
     // Click the next button
-    var next = new elementslib.Lookup(this._controller.window.document,
-                                      this._buttons.next);
+    var next = this.getElement({type: "button", subtype: "next"});
     this._controller.click(next);
 
-    // Wait until update has been downloaded
-    var progress = this._controller.window.document.getElementById("downloadProgress");
-    this._controller.waitForEval("subject.value == 100", timeout, 100, progress);
+    // Wait until the update has been downloaded
+    var progress =  this.getElement({type: "download_progress"});
+    this._controller.waitForEval("subject.progress.value == 100", timeout, 100,
+                                 {progress: progress.getNode()});
   },
 
   /**
@@ -229,16 +260,58 @@ softwareUpdate.prototype = {
   },
 
   /**
-   * Open software update dialog and get window controller
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} spec
+   *        Information of the UI element which should be retrieved
+   *        type: General type information
+   *        subtype: Specific element or property
+   *        value: Value of the element or property
+   * @returns Element which has been created  
+   * @type {ElemBase}
+   */
+  getElement : function searchBar_getElement(spec) {
+    var elem = null;
+
+    switch(spec.type) {
+      /**
+       * subtype: subtype to match
+       * value: value to match
+       */
+      case "button":
+        elem = new elementslib.Lookup(this._controller.window.document,
+                                      WIZARD_BUTTONS_BOX + WIZARD_BUTTON[spec.subtype]);
+        break;
+      case "wizard":
+        elem = new elementslib.Lookup(this._controller.window.document, WIZARD);
+        break;
+      case "wizard_page":
+        elem = new elementslib.Lookup(this._controller.window.document, WIZARD_DECK +
+                                      '/id(' + spec.subtype + ')');
+        break;
+      case "download_progress":
+        elem = new elementslib.ID(this._controller.window.document, "downloadProgress");
+        break;
+      case "menu_update":
+        elem = new elementslib.Elem(spec.value.menus.helpMenu.checkForUpdates);
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+    }
+
+    return elem;
+  },
+
+  /**
+   * Open software update dialog
+   *
    * @param {MozMillController} browserController
    *        Mozmill controller of the browser window
    */
   openDialog: function softwareUpdate_openDialog(browserController) {
-    // Allow only one instance of the controller
-    if (this._controller)
-      return;
-
-    var updateMenu = new elementslib.Elem(browserController.menus.helpMenu.checkForUpdates);
+    var updateMenu = this.getElement({type: "menu_update",
+                                      value: browserController});
+    
     browserController.click(updateMenu);
 
     this.waitForDialogOpen(browserController);
@@ -251,11 +324,13 @@ softwareUpdate.prototype = {
   waitForCheckFinished : function softwareUpdate_waitForCheckFinished(timeout) {
     timeout = timeout ? timeout : gTimeoutUpdateCheck;
 
-    this._controller.waitForEval("subject.currentStep != 'checking'", timeout, 100, this);
+    this._controller.waitForEval("subject.wizard.currentPage != subject.checking", timeout, 100,
+                                 {wizard: this, checking: WIZARD_PAGES.checking});
   },
 
   /**
    * Wait for the software update dialog
+   *
    * @param {MozMillController} browserController
    *        Mozmill controller of the browser window
    */
@@ -264,10 +339,11 @@ softwareUpdate.prototype = {
 
     var window = mozmill.wm.getMostRecentWindow('Update:Wizard');
     this._controller = new mozmill.controller.MozMillController(window);
-    this._wizard = this._controller.window.document.getElementById('updates');
+    this._wizard = this.getElement({type: "wizard"});
 
     // Wait until the dummy wizard page isn't visible anymore
-    this._controller.waitForEval("subject.currentStep != 'dummy'", gTimeout, 100, this);
+    this._controller.waitForEval("subject.wizard.currentPage != subject.dummy", gTimeout, 100,
+                                 {wizard: this, dummy: WIZARD_PAGES.dummy});
     this._controller.window.focus();
   }
 }

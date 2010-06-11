@@ -38,32 +38,36 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
-
-  // Collect some data of the current build
-  module.persisted.preBuildId = UtilsAPI.appInfo.buildID;
-  module.persisted.preLocale = UtilsAPI.appInfo.locale;
-  module.persisted.preUserAgent = UtilsAPI.appInfo.userAgent;
-  module.persisted.preVersion = UtilsAPI.appInfo.version;
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new SoftwareUpdateAPI.softwareUpdate();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
+  // Collect some data of the current build
+  persisted.preBuildId = UtilsAPI.appInfo.buildID;
+  persisted.preLocale = UtilsAPI.appInfo.locale;
+  persisted.preUserAgent = UtilsAPI.appInfo.userAgent;
+  persisted.preVersion = UtilsAPI.appInfo.version;
+
   // Save the update properties for later usage
-  module.persisted.type = update.updateType;
-  module.persisted.updateBuildId = update.activeUpdate.buildID;
-  module.persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
-  module.persisted.updateVersion = update.activeUpdate.version;
+  if (update.activeUpdate) {
+    persisted.type = update.activeUpdate.type;
+    persisted.updateBuildId = update.activeUpdate.buildID;
+    persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
+    persisted.updateVersion = update.activeUpdate.version;
+  } else {
+    persisted.type = "n/a";
+    persisted.updateBuildId = "n/a";
+    persisted.updateType = "n/a";
+    persisted.updateVersion = "n/a";
+  }
 }
 
 /**
  * Download an update via the given update channel
  */
-var testDirectUpdate_Download = function()
-{
+var testDirectUpdate_Download = function() {
   // Check if the user has permissions to run the update
   controller.assertJS("subject.isUpdateAllowed == true",
                       {isUpdateAllowed: update.allowed});
@@ -72,14 +76,12 @@ var testDirectUpdate_Download = function()
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // Check that an update is available and store its type
-  update.assertUpdateStep('updatesfound');
-
-  // Download the given type of update from the specified channel
+  // Download the update
+  update.assertUpdatesFound();
   update.download(persisted.channel);
 
-  // We should be ready for restart
-  update.assertUpdateStep('finished');
+  // Wait until the finish page is shown
+  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.finished);
 }
 
 /**

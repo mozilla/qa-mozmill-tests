@@ -38,8 +38,7 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.update = new SoftwareUpdateAPI.softwareUpdate();
 }
@@ -47,15 +46,14 @@ var setupModule = function(module)
 /**
  * Test that the patch hasn't been applied and the complete patch gets downloaded
  **/
-var testFallbackUpdate_ErrorPatching = function()
-{
+var testFallbackUpdate_ErrorPatching = function() {
   // The dialog should be open in the background and shows a failure
   update.waitForDialogOpen(controller);
-  update.assertUpdateStep('errorpatching');
+  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorpatching);
 
   // Start downloading the fallback patch
   update.download(persisted.channel);
 
-  // We should be ready for restart
-  update.assertUpdateStep('finished');
+  // Wait until the finish page is shown
+  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.finished);
 }
