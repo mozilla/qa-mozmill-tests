@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,7 +39,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -71,7 +72,7 @@ var testScrollBackgroundTabIntoView = function()
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   // Open the testcase
-  controller.open(localTestFolder + "/openinnewtab.html");
+  controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();
 
   var link1 = new elementslib.Name(controller.tabs.activeTab, "link_1");

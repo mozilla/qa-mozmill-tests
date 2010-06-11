@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,7 +46,7 @@ const gTimeout = 7000;
 
 const PREF_GEO_TOKEN = "geo.wifi.access_token";
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 var setupModule = function(module)
 {
@@ -76,7 +77,7 @@ var testTabRestoration = function()
   pb.start();
 
   // Load a page which supports geolocation and accept sharing the location
-  controller.open(localTestFolder + "geolocation.html");
+  controller.open(localTestFolder + "geolocation/position.html");
   controller.waitForPageLoad();
 
   var shortcut = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",

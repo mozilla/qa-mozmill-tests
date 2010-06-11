@@ -39,7 +39,7 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -68,7 +68,7 @@ var teardownModule = function(module)
  */
 var testPopUpBlocked = function()
 {
-  var url = localTestFolder + "/popups/popups_2.html";
+  var url = localTestFolder + "popups/popups_2.html";
 
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 

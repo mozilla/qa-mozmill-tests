@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Raymond Etornam Agbeame <retornam@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,7 +44,7 @@ var MODULE_REQUIRES = ['AddonsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('./files');
+const localTestFolder = collector.addHttpResource('../test-files/');
 
 var plugins = {"darwin": {node: "name", value: "Default Plugin"},
                "winnt":  {node: "description", value: "Default Plug-in"},
@@ -77,7 +78,7 @@ var testDisableEnablePlugin = function()
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
 
-  controller.open(localTestFolder + "plugin.html");
+  controller.open(localTestFolder + "plugins/default_plugin.html");
   controller.waitForPageLoad();
   controller.assertText(status, "disabled");
 
@@ -85,7 +86,7 @@ var testDisableEnablePlugin = function()
   addonsManager.setPluginState(plugin.node, plugin.value, true);
 
   // Check that the plugin is shown as disabled on web pages
-  controller.open(localTestFolder + "plugin.html");
+  controller.open(localTestFolder + "plugins/default_plugin.html");
   controller.waitForPageLoad();
   controller.assertText(status, "enabled");
 }
