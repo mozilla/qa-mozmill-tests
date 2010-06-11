@@ -58,10 +58,6 @@ var testSecNotification = function() {
   var query = new elementslib.ID(controller.tabs.activeTab, "query");
   controller.assertNode(query);
 
-  // Verify Mozilla label
-  var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  controller.assertValue(identLabel, 'Mozilla Corporation (US)');
-
   // The security button should be visible in the status bar
   var securityButton = controller.window.document.getElementById("security-button");
   var cssSecButton = controller.window.getComputedStyle(securityButton, "");

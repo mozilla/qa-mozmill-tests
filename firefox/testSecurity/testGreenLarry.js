@@ -56,24 +56,28 @@ var setupModule = function(module)
 var testLarryGreen = function()
 {
   // Go to a "green" website
-  controller.open("https://www.verisign.com/");
+  controller.open("https://addons.mozilla.org/");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
   var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   var cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
+                                           cert.subjectName.indexOf(",serialNumber="));
 
   // Check the label displays
   // Format: Organization (CountryCode)
-  var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  var country = cert.subjectName.substring(cert.subjectName.indexOf("C=")+2,
-                                           cert.subjectName.indexOf(",serialNumber="));
-  var certIdent = cert.organization + ' (' + country + ')';
-  controller.assertValue(identLabel, certIdent);
+  var identOrganizationLabel = new elementslib.ID(controller.window.document,
+                                                  "identity-icon-label");
+  var identCountryLabel = new elementslib.ID(controller.window.document,
+                                             "identity-icon-country-label");
+  controller.assertValue(identOrganizationLabel, cert.organization);
+  controller.assertValue(identCountryLabel, '(' + country + ')');
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertProperty(favicon, "src" ,"https://www.verisign.com/favicon.ico");
+  controller.assertProperty(favicon, "src",
+                            "https://addons.mozilla.org/media//img/favicon.ico");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
@@ -107,11 +111,11 @@ var testLarryGreen = function()
   // Check the owner location string against the Cert
   // Format: City
   //         State, Country Code
-  var city = cert.subjectName.substring(cert.subjectName.indexOf("L=")+2,
+  var city = cert.subjectName.substring(cert.subjectName.indexOf("L=") + 2,
                                         cert.subjectName.indexOf(",ST="));
-  var state = cert.subjectName.substring(cert.subjectName.indexOf("ST=")+3,
-                                         cert.subjectName.indexOf(",postalCode="));
-  var country = cert.subjectName.substring(cert.subjectName.indexOf("C=")+2,
+  var state = cert.subjectName.substring(cert.subjectName.indexOf("ST=") + 3,
+                                         cert.subjectName.indexOf(",C="));
+  var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
                                            cert.subjectName.indexOf(",serialNumber="));
   var location = city + '\n' + state + ', ' + country;
   var ownerLocation = new elementslib.ID(controller.window.document,
