@@ -87,10 +87,12 @@ var testOpenSearchAutodiscovery = function()
   // Check if a search redirects to the YouTube website
   search.search({text: "Firefox", action: "goButton"});
 
-  // Clear search term and check the empty text
+  // Clear search term and check the placeholder text
   var inputField = search.getElement({type: "searchBar_input"});
   search.clear();
-  controller.assertValue(inputField, searchEngine.name);
+  controller.assertJS("subject.placeholder == subject.engineName",
+                      {placeholder: inputField.getNode().placeholder,
+                       engineName: searchEngine.name});
 }
 
 /**

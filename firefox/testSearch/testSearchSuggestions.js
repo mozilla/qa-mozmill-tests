@@ -56,17 +56,17 @@ var testMultipleEngines = function()
   var suggestions = [ ];
 
   // Get suggested auto-complete results for two engines
-  for (var ii = 0; ii < 2; ii++) {
-    search.selectedEngine = engines[ii].name;
-    suggestions[ii] = search.getSuggestions("Moz");
+  for (var i = 0; i < 2; i++) {
+    search.selectedEngine = engines[i].name;
+    suggestions[i] = search.getSuggestions("Moz");
     search.clear();
   }
 
   // Check that at least one suggestion is different
   var difference = false;
   var maxIndex = Math.max(suggestions[0].length, suggestions[1].length);
-  for (ii = 0; ii < maxIndex; ii++) {
-    if (suggestions[0][ii] != suggestions[1][ii]) {
+  for (i = 0; i < maxIndex; i++) {
+    if (suggestions[0][i] != suggestions[1][i]) {
       difference = true;
       break;
     }

@@ -53,12 +53,11 @@ const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
 // Helper lookup constants for the search bar elements
 const SEARCH_BAR          = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")';
 const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
-const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/anon({"anonid":"searchbar-engine-button"})';
+const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[0]/anon({"anonid":"searchbar-engine-button"})';
 const SEARCH_POPUP        = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
 const SEARCH_INPUT        = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
                                               '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
-const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
-                                              '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
+const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
 const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})/anon({"class":"search-go-button"})';
 const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")';
 
@@ -113,7 +112,7 @@ engineManager.prototype = {
    * Gets the name of the selected search engine
    *
    * @returns Name of the selected search engine
-   * @type {string}
+   * @type string
    */
   get selectedEngine() {
     var treeNode = this.getElement({type: "engine_list"}).getNode();
@@ -147,7 +146,7 @@ engineManager.prototype = {
    * Gets the index of the selected search engine
    *
    * @returns Index of the selected search engine
-   * @type {number}
+   * @type number
    */
   get selectedIndex() {
     var tree = this.getElement({type: "engine_list"});
@@ -243,7 +242,7 @@ engineManager.prototype = {
    *        subtype: Specific element or property
    *        value: Value of the element or property
    * @returns Element which has been created  
-   * @type {ElemBase}
+   * @type ElemBase
    */
   getElement : function engineManager_getElement(spec) {
     var elem = null;
@@ -456,7 +455,7 @@ searchBar.prototype = {
    * Returns the currently selected search engine
    *
    * @return Name of the currently selected engine
-   * @type {string}
+   * @type string
    */
   get selectedEngine()
   {
@@ -575,7 +574,7 @@ searchBar.prototype = {
    *        subtype: Specific element or property
    *        value: Value of the element or property
    * @returns Element which has been created  
-   * @type {ElemBase}
+   * @type ElemBase
    */
   getElement : function searchBar_getElement(spec) {
     var elem = null;
@@ -658,6 +657,7 @@ searchBar.prototype = {
 
     // Enter search term and wait for the popup
     this.type(searchTerm);
+
     this._controller.waitForEval("subject.popup.state == 'open'", gTimeout, 100,
                                  {popup: popup.getNode()});
     this._controller.waitForElement(treeElem, gTimeout);
@@ -666,8 +666,8 @@ searchBar.prototype = {
     var tree = treeElem.getNode();
     this._controller.waitForEval("subject.tree.view != null", gTimeout, 100,
                                  {tree: tree});
-    for (var ii = 0; ii < tree.view.rowCount; ii ++) {
-      suggestions.push(tree.view.getCellText(ii, tree.columns.getColumnAt(0)));
+    for (var i = 0; i < tree.view.rowCount; i ++) {
+      suggestions.push(tree.view.getCellText(i, tree.columns.getColumnAt(0)));
     }
 
     // Close auto-complete popup
