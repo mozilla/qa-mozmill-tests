@@ -46,10 +46,10 @@ const gInstallTimeout = 10000;
 const gAddons = [
   {name: "Nightly Tester Tools",
    id: "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}",
-   url: "https://addons.mozilla.org/firefox/addon/6543/"},
+   url: "https://preview.addons.mozilla.org/firefox/addon/6543/"},
   {name: "Mozilla QA Companion",
    id: "{667e9f3d-0096-4d2b-b171-9a96afbabe20}",
-   url: "https://addons.mozilla.org/firefox/addon/5428"}
+   url: "https://preview.addons.mozilla.org/firefox/addon/5428"}
 ];
 
 var setupModule = function() {
@@ -118,8 +118,8 @@ var handleTriggerDialog = function(controller) {
                       {extensions: itemElem.childNodes, 
                        extensionName: persisted.currentAddon.name});
 
-  // Will the extension be installed from https://addons.mozilla.org/?
-  var isAMOUrl = itemElem.childNodes[0].url.indexOf('addons.mozilla.org') != -1;
+  // Will the extension be installed from https://preview.addons.mozilla.org/?
+  var isAMOUrl = itemElem.childNodes[0].url.indexOf('preview.addons.mozilla.org') != -1;
   controller.assertJS("subject.isExtensionFromAMO == true",
                       {isExtensionFromAMO: isAMOUrl});
 
