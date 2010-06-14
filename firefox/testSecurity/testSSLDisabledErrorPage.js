@@ -44,12 +44,20 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+  
+  // XXX: Bug 513129
+  //      Disable Keep-alive connections
+  PrefsAPI.preferences.setPref("network.http.keep-alive", false);
 }
 
 var teardownModule = function(module) {
   // Reset the SSL and TLS pref
   PrefsAPI.preferences.clearUserPref("security.enable_ssl3");
   PrefsAPI.preferences.clearUserPref("security.enable_tls");
+  
+  // XXX: Bug 513129
+  //      Re-enable Keep-alive connections
+  PrefsAPI.preferences.clearUserPref("network.http.keep-alive");
 }
 
 /**
@@ -63,7 +71,7 @@ var testDisableSSL = function() {
 
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
-  controller.open("https://www.verisign.com");
+  controller.open("https://www.google.com");
   controller.waitForPageLoad(1000);
 
   // Verify "Secure Connection Failed" error page title
@@ -81,7 +89,7 @@ var testDisableSSL = function() {
   controller.assertJS("subject.errorMessage.indexOf('ssl_error_ssl_disabled') != -1",
                       {errorMessage: text.getNode().textContent});
 
-  controller.assertJS("subject.errorMessage.indexOf('www.verisign.com') != -1",
+  controller.assertJS("subject.errorMessage.indexOf('www.google.com') != -1",
                       {errorMessage: text.getNode().textContent});
 
   controller.assertJS("subject.errorMessage.indexOf('SSL protocol has been disabled') != -1",
