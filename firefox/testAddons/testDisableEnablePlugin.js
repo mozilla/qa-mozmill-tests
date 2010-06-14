@@ -66,6 +66,7 @@ var teardownModule = function(module)
  */
 var testDisableEnablePlugin = function()
 {
+  var url = "plugins/default_plugin.html";
   var pluginId = plugins[mozmill.platform];
 
   // Open Add-ons Manager and go to the themes pane
@@ -77,7 +78,7 @@ var testDisableEnablePlugin = function()
   // Check that the plugin is shown as disabled on web pages
   var status = new elementslib.ID(controller.tabs.activeTab, "status");
 
-  controller.open(localTestFolder + "plugins/default_plugin.html");
+  controller.open(localTestFolder + url);
   controller.waitForPageLoad();
   controller.assertText(status, "disabled");
 
@@ -85,7 +86,7 @@ var testDisableEnablePlugin = function()
   addonsManager.setPluginState("addonID", pluginId, true);
 
   // Check that the plugin is shown as disabled on web pages
-  controller.open(localTestFolder + "plugin.html");
+  controller.open(localTestFolder + url);
   controller.waitForPageLoad();
   controller.assertText(status, "enabled");
 }
