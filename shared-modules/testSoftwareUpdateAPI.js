@@ -42,7 +42,7 @@
 const MODULE_NAME = 'SoftwareUpdateAPI';
 
 const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI'];
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
@@ -105,7 +105,9 @@ function softwareUpdate()
   this._controller = null;
   this._wizard = null;
 
-  this._prefs = collector.getModule('PrefsAPI').preferences;
+  this._prefsAPI = collector.getModule('PrefsAPI');
+  this._utilsAPI = collector.getModule('UtilsAPI');
+
   this._aus = Cc["@mozilla.org/updates/update-service;1"]
                  .getService(Ci.nsIApplicationUpdateService);
   this._ums = Cc["@mozilla.org/updates/update-manager;1"]
@@ -207,7 +209,7 @@ softwareUpdate.prototype = {
     timeout = timeout ? timeout : gTimeoutUpdateDownload;
 
     // Check that the correct channel has been set
-    var prefChannel = this._prefs.getPref('app.update.channel', '');
+    var prefChannel = this._prefsAPI.preferences.getPref('app.update.channel', '');
     this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
                               {currentChannel: channel, expectedChannel: prefChannel});
 
@@ -335,10 +337,8 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
-    browserController.sleep(500);
-
-    var window = mozmill.wm.getMostRecentWindow('Update:Wizard');
-    this._controller = new mozmill.controller.MozMillController(window);
+    this._controller = this._utilsAPI.handleWindow("type", "Update:Wizard",
+                                                   null, true);
     this._wizard = this.getElement({type: "wizard"});
 
     // Wait until the dummy wizard page isn't visible anymore

@@ -68,15 +68,12 @@ var teardownModule = function(module)
  */
 var testPopUpAllowed = function()
 {
-  var url = localTestFolder + "popups/popups_2.html";
+  var windowCount = mozmill.utils.getWindows().length;
 
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
-  // Get the window count
-  var windowCount = mozmill.utils.getWindows().length;
-
   // Open the Pop-up test site
-  controller.open(url);
+  controller.open(localTestFolder + "popups/popups_2.html");
   controller.waitForPageLoad();
 
   // A notification bar always exists in the DOM so check the visibility of the X button

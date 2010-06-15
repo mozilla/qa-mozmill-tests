@@ -41,27 +41,27 @@ var MODULE_REQUIRES = ['UtilsAPI'];
 
 var gTimeout = 5000;
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
 
   // Effective TLD Service for grabbing certificate info
-  module.gETLDService = Cc["@mozilla.org/network/effective-tld-service;1"]
-                           .getService(Ci.nsIEffectiveTLDService);
+  gETLDService = Cc["@mozilla.org/network/effective-tld-service;1"].
+                 getService(Ci.nsIEffectiveTLDService);
+  cert = null;
 }
 
 /**
  * Test the Larry displays GREEN
  */
-var testLarryGreen = function()
-{
+var testLarryGreen = function() {
   // Go to a "green" website
   controller.open("https://addons.mozilla.org/");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
   var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  var cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+
   var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
                                            cert.subjectName.indexOf(",serialNumber="));
 
@@ -141,36 +141,38 @@ var testLarryGreen = function()
   var moreInfoButton = new elementslib.ID(controller.window.document,
                                           "identity-popup-more-info-button");
   controller.click(moreInfoButton);
-  controller.sleep(500);
 
-  // Check the Page Info - Security Tab
-  var window = mozmill.wm.getMostRecentWindow('Browser:page-info');
-  var pageInfoController = new mozmill.controller.MozMillController(window);
+  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+}
 
+/**
+ * Check the security tab of the page info window
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
-  var securityTab = new elementslib.ID(pageInfoController.window.document, "securityTab");
-  pageInfoController.assertProperty(securityTab, "selected", "true");
+  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+  controller.assertProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-domain-value");
-  pageInfoController.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
-                                 {domainLabel: webIDDomainLabel.getNode().value, CName: cert.commonName});
+  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+                                            "security-identity-domain-value");
+  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
+                         {domainLabel: webIDDomainLabel.getNode().value,
+                          CName: cert.commonName});
 
   // Check the Owner label against the Cert Owner
-  var webIDOwnerLabel = new elementslib.ID(pageInfoController.window.document,
+  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  pageInfoController.assertValue(webIDOwnerLabel, cert.organization);
+  controller.assertValue(webIDOwnerLabel, cert.organization);
 
   // Check the Verifier label against the Cert Issuer
-  var webIDVerifierLabel = new elementslib.ID(pageInfoController.window.document,
+  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  pageInfoController.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
 
-  // Press ESC to close the Page Info dialog
-  pageInfoController.keypress(null, 'VK_ESCAPE', {});
-
-  // Wait a bit to make sure the page info window has been closed
-  controller.sleep(200);
+  controller.keypress(null, 'VK_ESCAPE', {});
 }
 
 /**

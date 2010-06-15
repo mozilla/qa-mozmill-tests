@@ -46,7 +46,7 @@
 var MODULE_NAME = 'PrefsAPI';
 
 const RELATIVE_ROOT = '.'
-const MODULE_REQUIRES = ['ModalDialogAPI'];
+const MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
 
@@ -291,8 +291,6 @@ var preferences = {
  */
 function openPreferencesDialog(callback, launcher)
 {
-  var prefCtrl = null;
-
   if(!callback)
     throw new Error("No callback given for Preferences Dialog");
 
@@ -306,22 +304,23 @@ function openPreferencesDialog(callback, launcher)
   // Launch the preference dialog
   if (launcher) {
     launcher();
-
-    // Now that we've launched the dialog, wait a bit for the window
-    mozmill.controller.sleep(500);
-    var win = Cc["@mozilla.org/appshell/window-mediator;1"]
-                 .getService(Ci.nsIWindowMediator).getMostRecentWindow(null);
-    prefCtrl = new mozmill.controller.MozMillController(win);
   } else {
-    prefCtrl = new mozmill.getPreferencesController();
+    mozmill.getPreferencesController();
+  }
+
+  // Get the window type of the preferences window depending on the application
+  var prefWindowType = null;
+  switch (mozmill.Application) {
+    case "Thunderbird":
+      prefWindowType = "Mail:Preferences";
+      break;
+    default:
+      prefWindowType = "Browser:Preferences";
   }
 
   // If the dialog is not modal, run the callback directly
   if (!mozmill.isWindows) {
-    prefCtrl.sleep(500);
-    callback(prefCtrl);
+    var utilsAPI = collector.getModule('UtilsAPI');
+    utilsAPI.handleWindow("type", prefWindowType, callback);
   }
-
-  // Wait a bit to make sure window has been closed
-  mozmill.controller.sleep(500);
 }
