@@ -71,8 +71,8 @@ var testLarryGreen = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertProperty(favicon, "src",
-                            "https://addons.mozilla.org/media//img/favicon.ico");
+  controller.assertJS("subject.faviconFromAMO == true",
+                      {faviconFromAMO: favicon.getNode().src.indexOf('addons.mozilla.org') != -1});
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
