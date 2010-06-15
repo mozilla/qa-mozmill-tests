@@ -39,8 +39,8 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
+  controller = mozmill.getBrowserController();
+  update = new SoftwareUpdateAPI.softwareUpdate();
 }
 
 /**
@@ -53,7 +53,4 @@ var testFallbackUpdate_ErrorPatching = function() {
 
   // Start downloading the fallback patch
   update.download(persisted.channel);
-
-  // Wait until the finish page is shown
-  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.finished);
 }

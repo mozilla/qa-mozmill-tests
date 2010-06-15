@@ -77,11 +77,9 @@ var testDirectUpdate_Download = function() {
   update.waitForCheckFinished();
 
   // Download the update
-  update.assertUpdatesFound();
+  update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
+                                {update: update});
   update.download(persisted.channel);
-
-  // Wait until the finish page is shown
-  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.finished);
 }
 
 /**

@@ -108,10 +108,10 @@ function softwareUpdate()
   this._prefsAPI = collector.getModule('PrefsAPI');
   this._utilsAPI = collector.getModule('UtilsAPI');
 
-  this._aus = Cc["@mozilla.org/updates/update-service;1"]
-                 .getService(Ci.nsIApplicationUpdateService);
-  this._ums = Cc["@mozilla.org/updates/update-manager;1"]
-                 .getService(Ci.nsIUpdateManager);
+  this._aus = Cc["@mozilla.org/updates/update-service;1"].
+              getService(Ci.nsIApplicationUpdateService);
+  this._ums = Cc["@mozilla.org/updates/update-manager;1"].
+              getService(Ci.nsIUpdateManager);
 }
 
 /**
@@ -171,21 +171,47 @@ softwareUpdate.prototype = {
   },
 
   /**
-   * Check if updates have been found
+   * Returns the update type (minor or major)
+   *
+   * @returns The update type
    */
-  assertUpdatesFound : function softwareUpdate_assertUpdatesFound() {
-    // Check that an update has been found
-    if (this.currentPage != WIZARD_PAGES.updateFoundMajor &&
-        this.currentPage != WIZARD_PAGES.updateFoundMinor)
-      throw new Error("Cannot download an update because none has been found.")
+  get updateType() {
+    return this.activeUpdate.type;
   },
 
   /**
-   * Waits for the given page of the update dialog wizard
+   * Check if updates have been found
    */
-  waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
-    this._controller.waitForEval("subject.currentPage == '" + step + "'",
-                                 gTimeout, 100, this);
+  get updatesFound() {
+    return this.currentPage == WIZARD_PAGES.updateFoundMajor ||
+           this.currentPage == WIZARD_PAGES.updateFoundMinor;
+  },
+
+  /**
+   * Checks if an update has been applied correctly
+   *
+   * @param {object} updateData
+   *        All the data collected during the update process
+   */
+  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(updateData) {
+    // The upgraded version should be identical with the version given by
+    // the update and we shouldn't have run a downgrade
+    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
+             getService(Ci.nsIVersionComparator);
+    var check = vc.compare(updateData.postVersion, updateData.preVersion);
+  
+    controller.assertJS("subject.newVersionGreater == true",
+                        {newVersionGreater: check >= 0});
+  
+    // If we have the same version number we should check the build id instead
+    if (check == 0) {
+      controller.assertJS("subject.postBuildId == subject.updateBuildId",
+                          {postBuildId: updateData.postBuildId, updateBuildId: updateData.updateBuildId});
+    }
+  
+    // An upgrade should not change the builds locale
+    controller.assertJS("subject.postLocale == subject.preLocale",
+                        {postLocale: updateData.postLocale, preLocale: updateData.preLocale});
   },
 
   /**
@@ -204,9 +230,13 @@ softwareUpdate.prototype = {
    * Download the update of the given channel and type
    * @param {string} channel
    *        Update channel to use
+   * @param {boolean} waitForFinish
+   *        Sets if the function should wait until the download has been finished
+   * @param {number} timeout
+   *        Timeout the download has to stop
    */
-  download : function softwareUpdate_download(channel, timeout) {
-    timeout = timeout ? timeout : gTimeoutUpdateDownload;
+  download : function softwareUpdate_download(channel, waitForFinish, timeout) {
+    waitForFinish = waitForFinish ? waitForFinish : true;
 
     // Check that the correct channel has been set
     var prefChannel = this._prefsAPI.preferences.getPref('app.update.channel', '');
@@ -217,10 +247,11 @@ softwareUpdate.prototype = {
     var next = this.getElement({type: "button", subtype: "next"});
     this._controller.click(next);
 
-    // Wait until the update has been downloaded
-    var progress =  this.getElement({type: "download_progress"});
-    this._controller.waitForEval("subject.progress.value == 100", timeout, 100,
-                                 {progress: progress.getNode()});
+    // Wait for the download page
+    this.waitForWizardPage(WIZARD_PAGES.downloading);
+
+    if (waitForFinish)
+      this.waitforDownloadFinished(timeout);
   },
 
   /**
@@ -345,5 +376,30 @@ softwareUpdate.prototype = {
     this._controller.waitForEval("subject.wizard.currentPage != subject.dummy", gTimeout, 100,
                                  {wizard: this, dummy: WIZARD_PAGES.dummy});
     this._controller.window.focus();
+  },
+
+  /**
+   * Wait until the download has been finished
+   *
+   * @param {number} timeout
+   *        Timeout the download has to stop
+   */
+  waitforDownloadFinished: function softwareUpdate_waitForDownloadFinished(timeout) {
+    timeout = timeout ? timeout : gTimeoutUpdateDownload;
+
+    // Wait until the update has been downloaded
+    var progress =  this.getElement({type: "download_progress"});
+    this._controller.waitForEval("subject.progress.value == 100", timeout, 100,
+                                 {progress: progress.getNode()});
+
+    this.waitForWizardPage(WIZARD_PAGES.finished);
+  },
+
+  /**
+   * Waits for the given page of the update dialog wizard
+   */
+  waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
+    this._controller.waitForEval("subject.currentPage == '" + step + "'",
+                                 gTimeout, 100, this);
   }
 }

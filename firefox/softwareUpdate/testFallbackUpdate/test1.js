@@ -39,8 +39,8 @@ var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
+  controller = mozmill.getBrowserController();
+  update = new SoftwareUpdateAPI.softwareUpdate();
 }
 
 var teardownModule = function(module) {
@@ -76,12 +76,10 @@ var testFallbackUpdate_Download = function() {
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // Download the given update from the specified channel
-  update.assertUpdatesFound();
+  // Download the update
+  update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
+                                {update: update});
   update.download(persisted.channel);
-
-  // Wait until the finish page is shown
-  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.finished);
 }
 
 /**
