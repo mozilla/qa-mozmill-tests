@@ -356,3 +356,62 @@ function getProperty(url, prefName)
     throw new Error(arguments.callee.name + ": Unknown property - " + prefName);
   }
 }
+
+/**
+ * Function to handle non-modal windows
+ *
+ * @param {string} type
+ *        Specifies how to check for the new window (possible values: type or title)
+ * @param {string} text
+ *        The window type of title string to search for
+ * @param {function} callback (optional)
+ *        Callback function to call for window specific tests
+ * @param {boolean} dontClose (optional)
+ *        Doens't close the window after the return from the callback handler
+ * @returns The MozMillController of the window (if the window hasn't been closed)
+ */
+function handleWindow(type, text, callback, dontClose) {
+  var func_ptr = null;
+  var window = null;
+
+  if (dontClose === undefined)
+    dontClose = false;
+
+  // Set the window opener function to use depending on the type
+  switch (type) {
+    case "type":
+      func_ptr = mozmill.utils.getWindowByType;
+      break;
+    case "title":
+      func_ptr = mozmill.utils.getWindowByTitle;
+      break;
+    default:
+      throw new Error(arguments.callee.name + ": Unknown opener type - " + type);
+  }
+
+  try {
+    // Wait until the window has been opened
+    mozmill.controller.waitForEval("subject.getWindow(subject.text) != null", gTimeout, 100,
+                                   {getWindow: func_ptr, text: text});
+    window = func_ptr(text);
+
+    // XXX: We still have to find a reliable way to wait until the new window
+    // content has been finished loading. Let's wait for now.
+    var ctrl = new mozmill.controller.MozMillController(window);
+    ctrl.sleep(200);
+
+    if (callback)
+      callback(ctrl);
+  } finally {
+    // If a failure happened make sure we close the window if wanted
+    if (dontClose != true & window != null) {
+      window.close();
+      mozmill.controller.waitForEval("subject.getWindow(subject.text) != subject.window",
+                                     gTimeout, 100,
+                                     {getWindow: func_ptr, text: text, window: window});
+      return null;
+    }
+
+    return ctrl;
+  }
+}

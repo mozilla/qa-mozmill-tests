@@ -36,28 +36,26 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+  controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance and set handler
-  module.pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   pb.reset();
 }
 
 /**
  * Verify "Import" is disabled during Private Browsing mode
  */
-var testCheckAboutPrivateBrowsing = function()
-{
+var testCheckAboutPrivateBrowsing = function() {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
@@ -72,23 +70,26 @@ var testCheckAboutPrivateBrowsing = function()
   if (mozmill.isMac) {
     var libraryItem = new elementslib.ID(controller.window.document, "bookmarksShowAll");
     controller.click(libraryItem);
-    controller.sleep(500);
 
-    // Check if the Page Info window has been opened
-    var window = mozmill.wm.getMostRecentWindow('Places:Organizer');
-    var libController = new mozmill.controller.MozMillController(window);
-
-    // Check File -> Import entry again
-    var importItem = new elementslib.ID(libController.window.document, "menu_import");
-    libController.assertProperty(importItem, "disabled", true);
-
-    // Check that "Import HTML" is available
-    var importHTML = new elementslib.ID(libController.window.document, "fileImport");
-    libController.assertPropertyNotExist(importHTML, "disabled");
-
-    libController.keypress(null, "w", {accelKey: true});
-    libController.sleep(200);
+    UtilsAPI.handleWindow("type", "Places:Organizer", checkImportMenu);
   }
+}
+
+/**
+ * Check that the import menuitem is disabled
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkImportMenu(controller) {
+  // Check File -> Import entry again
+  var importItem = new elementslib.ID(controller.window.document, "menu_import");
+  controller.assertProperty(importItem, "disabled", true);
+
+  // Check that "Import HTML" is available
+  var importHTML = new elementslib.ID(controller.window.document, "fileImport");
+  controller.assertPropertyNotExist(importHTML, "disabled");
+
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**

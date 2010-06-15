@@ -43,7 +43,7 @@
 var MODULE_NAME = 'AddonsAPI';
 
 const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI'];
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
 
@@ -75,6 +75,7 @@ const AMO_PREFERENCES = [
 function addonsManager()
 {
   this._controller = null;
+  this._utilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -363,13 +364,8 @@ addonsManager.prototype = {
    *        MozMillController of the window to operate on
    */
   waitForOpened : function addonsManager_waitforOpened(controller) {
-    controller.sleep(500);
-    controller.waitForEval("subject.getMostRecentWindow('Extension:Manager') != null",
-                           gTimeout, 100, mozmill.wm);
-    var window = mozmill.wm.getMostRecentWindow('Extension:Manager');
-    controller.sleep(500);
-  
-    this._controller = new mozmill.controller.MozMillController(window);
+    this._controller = this._utilsAPI.handleWindow("type", "Extension:Manager",
+                                                   null, true);
   }
 };
 

@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,7 +37,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -68,7 +69,7 @@ var testRemoveCookie = function()
 }
 
 /**
- * Go to the privacy pane and delete a cookie from the cookie manager
+ * Open the cookie manager from the privacy pane
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
@@ -81,41 +82,44 @@ var prefDialogCallback = function(controller)
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
-  controller.sleep(gDelay);
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
+  // The Show Cookies button doesn't receive focus that fast. Means a click will
+  // fail if sent too early. There is no property we can check so far. So lets
+  // use a sleep call for now.
+  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
   controller.sleep(500);
+  controller.click(showCookies);
 
-  try {
-    // Grab the cookies manager window
-    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-    var cmController = new mozmill.controller.MozMillController(window);
-  
-    // Search for a cookie from mozilla.org and delete it
-    var filterField = new elementslib.ID(cmController.window.document, "filter");
-    cmController.waitForElement(filterField, gTimeout);
-    cmController.type(filterField, "__utmz");
-    cmController.sleep(500);
-  
-    // Get the number of cookies in the file manager before removing a single cookie
-    var cookiesList = cmController.window.document.getElementById("cookiesList");
-    var origNumCookies = cookiesList.view.rowCount;
-  
-    cmController.click(new elementslib.ID(cmController.window.document, "removeCookie"));
-  
-    cmController.assertJS("subject.isCookieRemoved == true",
-                          {isCookieRemoved: !cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
-    cmController.assertJS("subject.list.view.rowCount == subject.numberCookies",
-                          {list: cookiesList, numberCookies: origNumCookies - 1});
-  } catch (ex) {
-    throw ex;
-  } finally {
-    // Close the cookies manager
-    cmController.keypress(null, "w", {accelKey: true});
-    controller.sleep(200);
-  }
+  UtilsAPI.handleWindow("type", "Browser:Cookies", deleteCookie);
 
   prefDialog.close(true);
+}
+
+/**
+ * Delete a cookie
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function deleteCookie(controller) {
+  // Search for a cookie from mozilla.org and delete it
+  var filterField = new elementslib.ID(controller.window.document, "filter");
+  controller.waitForElement(filterField, gTimeout);
+  controller.type(filterField, "__utmz");
+  controller.sleep(500);
+
+  // Get the number of cookies in the file manager before removing a single cookie
+  var cookiesList = controller.window.document.getElementById("cookiesList");
+  var origNumCookies = cookiesList.view.rowCount;
+
+  controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
+
+  var removed = !cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"});
+  controller.assertJS("subject.isCookieRemoved == true",
+                      {isCookieRemoved: removed});
+  controller.assertJS("subject.list.view.rowCount == subject.numberCookies",
+                        {list: cookiesList, numberCookies: origNumCookies - 1});
+
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**

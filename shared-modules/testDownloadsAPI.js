@@ -45,6 +45,9 @@
 
 var MODULE_NAME = 'DownloadsAPI';
 
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['UtilsAPI'];
+
 const gTimeout = 5000;
 
 /**
@@ -69,10 +72,11 @@ const downloadState = {
  */
 function downloadManager() {
   this._controller = null;
-  this._dms = Cc["@mozilla.org/download-manager;1"]
-                 .getService(Ci.nsIDownloadManager);
-
+  this._utilsAPI = collector.getModule('UtilsAPI');
   this.downloadState = downloadState;
+
+  this._dms = Cc["@mozilla.org/download-manager;1"].
+              getService(Ci.nsIDownloadManager);
 }
 
 /**
@@ -322,11 +326,8 @@ downloadManager.prototype = {
    *        MozMillController of the window to operate on
    */
   waitForOpened : function downloadManager_waitForOpened(controller) {
-    controller.waitForEval("subject.getMostRecentWindow('Download:Manager') != null",
-                           gTimeout, 100, mozmill.wm);
-
-    var window = mozmill.wm.getMostRecentWindow('Download:Manager');
-    this._controller = new mozmill.controller.MozMillController(window);
+    this._controller = this._utilsAPI.handleWindow("type", "Download:Manager",
+                                                   null, true);
   }
 };
 
@@ -340,32 +341,29 @@ downloadManager.prototype = {
  *        URL of the file which has to be downloaded
  */
 var downloadFileOfUnknownType = function(controller, url) {
+  var utilsAPI = collector.getModule('UtilsAPI');
+
   controller.open(url);
 
   // Wait until the unknown content type dialog has been opened
   controller.waitForEval("subject.getMostRecentWindow('').document.documentElement.id == 'unknownContentType'",
                          gTimeout, 100, mozmill.wm);
 
-  var window = mozmill.wm.getMostRecentWindow('');
-  var utController = new mozmill.controller.MozMillController(window);
-  utController.sleep(500);
-
-  // Select to save the file directly
-  var saveFile = new elementslib.ID(utController.window.document, "save");
-  utController.waitThenClick(saveFile, gTimeout);
-  utController.waitForEval("subject.selected == true", gTimeout, 100,
-                         saveFile.getNode());
-
-  // Wait until the OK button has been enabled and click on it
-  var button = new elementslib.Lookup(utController.window.document,
-                                      '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  utController.waitForElement(button, gTimeout);
-  utController.waitForEval("subject.okButton.hasAttribute('disabled') == false", gTimeout, 100,
+  utilsAPI.handleWindow("type", "", function (controller) {
+    // Select to save the file directly
+    var saveFile = new elementslib.ID(controller.window.document, "save");
+    controller.waitThenClick(saveFile, gTimeout);
+    controller.waitForEval("subject.selected == true", gTimeout, 100,
+                           saveFile.getNode());
+  
+    // Wait until the OK button has been enabled and click on it
+    var button = new elementslib.Lookup(controller.window.document,
+                                        '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
+    controller.waitForElement(button, gTimeout);
+    controller.waitForEval("subject.okButton.hasAttribute('disabled') == false", gTimeout, 100,
                            {okButton: button.getNode()});
-  utController.click(button);
-
-  utController.waitForEval("subject.getMostRecentWindow('') != this.window", gTimeout, 100,
-                           mozmill.wm);
+    controller.click(button);
+  });
 }
 
 /**
