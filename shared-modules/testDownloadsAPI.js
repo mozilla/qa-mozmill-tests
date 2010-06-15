@@ -67,8 +67,7 @@ const downloadState = {
 /**
  * Constructor
  */
-function downloadManager()
-{
+function downloadManager() {
   this._controller = null;
   this._dms = Cc["@mozilla.org/download-manager;1"]
                  .getService(Ci.nsIDownloadManager);
@@ -125,14 +124,21 @@ downloadManager.prototype = {
   /**
    * Cancel any active downloads, remove the files, and clean
    * up the Download Manager database
+   *
+   * @param {Array of download} downloads
+   *        Downloaded files which should be deleted (optional)
    */
-  cleanAll : function downloadManager_cleanAll()
-  {
+  cleanAll : function downloadManager_cleanAll(downloads) {
     // Cancel any active downloads
     this.cancelActiveDownloads();
 
+    // If no downloads have been specified retrieve the list from the database
+    if (downloads === undefined || downloads.length == 0)
+      downloads = this.getAllDownloads();
+    else
+      downloads = downloads.concat(this.getAllDownloads());
+
     // Delete all files referred to in the Download Manager
-    var downloads = this.getAllDownloads();
     this.deleteDownloadedFiles(downloads);
 
     // Clean any entries from the Download Manager database
@@ -145,8 +151,7 @@ downloadManager.prototype = {
    * @param {boolean} force
    *        Force the closing of the DM window
    */
-  close : function downloadManager_close(force)
-  {
+  close : function downloadManager_close(force) {
     var windowCount = mozmill.utils.getWindows().length;
 
     if (this._controller) {
@@ -169,8 +174,7 @@ downloadManager.prototype = {
    * @param {download} downloads
    *        List of downloaded files
    */
-  deleteDownloadedFiles : function downloadManager_deleteDownloadedFiles(downloads)
-  {
+  deleteDownloadedFiles : function downloadManager_deleteDownloadedFiles(downloads) {
     downloads.forEach(function(download) {
       try {
         var file = getLocalFileFromNativePathOrUrl(download.target);
@@ -186,8 +190,7 @@ downloadManager.prototype = {
    * @returns List of downloads
    * @type {Array of download}
    */
-  getAllDownloads : function downloadManager_getAllDownloads()
-  {
+  getAllDownloads : function downloadManager_getAllDownloads() {
     var dbConn = this._dms.DBConnection;
     var stmt = null;
 
@@ -336,8 +339,7 @@ downloadManager.prototype = {
  * @param {string} url
  *        URL of the file which has to be downloaded
  */
-var downloadFileOfUnknownType = function(controller, url)
-{
+var downloadFileOfUnknownType = function(controller, url) {
   controller.open(url);
 
   // Wait until the unknown content type dialog has been opened
@@ -373,8 +375,7 @@ var downloadFileOfUnknownType = function(controller, url)
  *        Native path or URL of the file
  * @see http://mxr.mozilla.org/mozilla-central/source/toolkit/mozapps/downloads/content/downloads.js#1309
  */
-function getLocalFileFromNativePathOrUrl(aPathOrUrl)
-{
+function getLocalFileFromNativePathOrUrl(aPathOrUrl) {
   if (aPathOrUrl.substring(0,7) == "file://") {
     // if this is a URL, get the file from that
     let ioSvc = Cc["@mozilla.org/network/io-service;1"]
