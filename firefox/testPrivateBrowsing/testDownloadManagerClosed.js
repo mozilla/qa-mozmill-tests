@@ -51,8 +51,7 @@ const downloadsPB = [
                      "http://www.bzip.org/1.0.5/bzip2-1.0.5.tar.gz"
                     ];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   // Make sure there are no active downloads, downloaded files
@@ -61,7 +60,7 @@ var setupModule = function(module)
   dm.cleanAll();
 
   // Array for downloaded files
-  curDownloads = [];
+  downloadedFiles = [];
 
   // Make sure we are not in PB mode and don't show a prompt
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
@@ -69,9 +68,8 @@ var setupModule = function(module)
   pb.showPrompt = false;
 }
 
-var teardownModule = function(module)
-{
-  dm.cleanAll();
+var teardownModule = function(module) {
+  dm.cleanAll(downloadedFiles);
   pb.reset();
 
   PrefsAPI.preferences.clearUserPref("browser.download.manager.showWhenStarting");
@@ -80,21 +78,20 @@ var teardownModule = function(module)
 /**
  * Test that no downloads are shown when switching in/out of PB mode
  */
-var testDownloadManagerClosed = function()
-{
+var testDownloadManagerClosed = function() {
   // Disable the opening of the Downloads Manager when starting a download
   PrefsAPI.openPreferencesDialog(handlePrefDialog);
 
   // Download a couple of files
-  for (var ii = 0; ii < downloads.length; ii++)
-    DownloadsAPI.downloadFileOfUnknownType(controller, downloads[ii]);
+  for each (download in downloads)
+    DownloadsAPI.downloadFileOfUnknownType(controller, download);
+
+  // Save information of currently downloaded files
+  downloadedFiles = dm.getAllDownloads();
 
   // Wait until all downloads have been finished
   controller.sleep(100);
   controller.waitForEval("subject.activeDownloadCount == 0", 30000, 100, dm);
-
-  // Save information of currently downloaded files
-  curDownloads = dm.getAllDownloads();
 
   // Enable Private Browsing mode
   pb.start();
@@ -113,12 +110,12 @@ var testDownloadManagerClosed = function()
   // Download a file in Private Browsing mode
   DownloadsAPI.downloadFileOfUnknownType(controller, downloadsPB[0]);
 
+  // Track the download from Private Browsing mode too
+  downloadedFiles = downloadedFiles.concat(dm.getAllDownloads());
+
   // Wait until all downloads have been finished
   controller.sleep(100);
   controller.waitForEval("subject.activeDownloadCount == 0", 30000, 100, dm);
-
-  // Track the download from Private Browsing mode too
-  curDownloads = curDownloads.concat(dm.getAllDownloads());
 
   pb.stop();
 
