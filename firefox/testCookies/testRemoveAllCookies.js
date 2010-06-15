@@ -41,13 +41,12 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   module.cm = Cc["@mozilla.org/cookiemanager;1"]
@@ -58,13 +57,12 @@ var setupModule = function(module)
 /**
  * Test removing all cookies via the cookie manager
  */
-var testRemoveAllCookies = function()
-{
+var testRemoveAllCookies = function() {
   // Go to mozilla.org to build a list of cookies
   controller.open("http://www.mozilla.org/");
   controller.waitForPageLoad();
 
-  controller.open("http://www.amazon.com/");
+  controller.open("http://www.google.com/");
   controller.waitForPageLoad();
 
   // Call preferences dialog and delete the created cookies
@@ -72,12 +70,11 @@ var testRemoveAllCookies = function()
 }
 
 /**
- * Go to the privacy pane and delete all cookies from the cookie manager
+ * Open the cookie manager from the privacy pane
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller)
-{
+var prefDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
@@ -85,34 +82,37 @@ var prefDialogCallback = function(controller)
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode, gTimeout);
   controller.select(historyMode, null, null, "custom");
-  controller.sleep(gDelay);
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
+  // The Show Cookies button doesn't receive focus that fast. Means a click will
+  // fail if sent too early. There is no property we can check so far. So lets
+  // use a sleep call for now.
+  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
   controller.sleep(500);
+  controller.click(showCookies);
 
-  try {
-    // Grab the cookies manager window
-    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-    var cmController = new mozmill.controller.MozMillController(window);
-
-    // Get the amount of current cookies
-    var cookiesList = cmController.window.document.getElementById("cookiesList");
-    cmController.assertJS("subject.cookieCount > 0",
-                          {cookieCount : cookiesList.view.rowCount});
-
-    // Verify all cookies have been removed
-    cmController.waitThenClick(new elementslib.ID(cmController.window.document, "removeAllCookies"), gTimeout);
-    cmController.assertJS("subject.cookieCount == 0",
-                          {cookieCount : cookiesList.view.rowCount});
-  } catch (ex) {
-    throw ex;
-  } finally {
-    // Close the cookies manager
-    cmController.keypress(null, "w", {accelKey: true});
-    controller.sleep(200);
-  }
+  UtilsAPI.handleWindow("type", "Browser:Cookies", deleteAllCookies);
 
   prefDialog.close(true);
+}
+
+/**
+ * Delete all cookies
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function deleteAllCookies(controller) {
+  // Get the amount of current cookies
+  var cookiesList = controller.window.document.getElementById("cookiesList");
+  controller.assertJS("subject.cookieCount > 0",
+                      {cookieCount: cookiesList.view.rowCount});
+
+  // Verify all cookies have been removed
+  var removeAll = new elementslib.ID(controller.window.document, "removeAllCookies");
+  controller.waitThenClick(removeAll, gTimeout);
+  controller.assertJS("subject.cookieCount == 0",
+                      {cookieCount: cookiesList.view.rowCount});
+
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**

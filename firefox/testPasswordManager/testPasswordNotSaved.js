@@ -44,8 +44,7 @@ const gTimeout = 5000;
 
 var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
@@ -92,8 +91,7 @@ var testPasswordNotificationBar = function() {
 /**
  * Verify passwords are not saved when we select not to save them
  */
-var testPasswordNotSaved = function()
-{
+var testPasswordNotSaved = function() {
   // Go back verify the login information has not been saved
   controller.open(testSite);
   controller.waitForPageLoad();
@@ -110,33 +108,37 @@ var testPasswordNotSaved = function()
 }
 
 /**
- * Checks that no password has been saved
+ * Open the password manager from the security pane
  *
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller)
-{
+var prefDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "showPasswords"), gTimeout);
-  controller.sleep(500);
+  var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
+  controller.waitThenClick(showPasswords, gTimeout);
 
-  // Grab the password manager window
-  var window = mozmill.wm.getMostRecentWindow('Toolkit:PasswordManager');
-  var pwdController = new mozmill.controller.MozMillController(window);
-
-  var filterField = new elementslib.ID(pwdController.window.document, "filter");
-  pwdController.waitForElement(filterField, gTimeout);
-
-  var removeLogin = new elementslib.ID(pwdController.window.document, "removeSignon");
-  pwdController.assertProperty(removeLogin, 'disabled', 'true');
-
-  // Close the password manager and preferences dialog
-  pwdController.keypress(null, "W", {accelKey: true});
+  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
   prefDialog.close(true);
+}
+
+/**
+ * Check that passwords haven't been saved
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkPasswordsNotSaved(controller) {
+  var filterField = new elementslib.ID(controller.window.document, "filter");
+  controller.waitForElement(filterField, gTimeout);
+
+  var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
+  controller.assertProperty(removeLogin, 'disabled', 'true');
+
+  // Close the password manager and preferences dialog
+  controller.keypress(null, "W", {accelKey: true});
 }
 
 /**

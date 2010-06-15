@@ -44,14 +44,12 @@ const localTestFolder = collector.addHttpResource('../test-files/');
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   // Reset the pop-up blocking pref and close all open tabs
   PrefsAPI.preferences.clearUserPref("dom.disable_open_during_load");
   tabBrowser.closeAllTabs();
@@ -66,17 +64,13 @@ var teardownModule = function(module)
  * Test to make sure pop-ups are blocked
  *
  */
-var testPopUpBlocked = function()
-{
-  var url = localTestFolder + "popups/popups_2.html";
+var testPopUpBlocked = function() {
+  var windowCount = mozmill.utils.getWindows().length;
 
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
-  // Get the Window count
-  var windowCount = mozmill.utils.getWindows().length;
-
   // Open the Pop-up test site
-  controller.open(url);
+  controller.open(localTestFolder + "popups/popups_2.html");
   controller.waitForPageLoad();
 
   // Check for the close button in the notification bar

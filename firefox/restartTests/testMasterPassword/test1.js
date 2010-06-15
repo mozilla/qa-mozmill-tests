@@ -37,19 +37,18 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI',
+                       'UtilsAPI'];
 
 const gDelay = 500;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   // Remove all logins set by the testscript
   var pm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
   pm.removeAllLogins();
@@ -58,8 +57,7 @@ var teardownModule = function(module)
 /**
  * Test saving login information and setting a master password
  */
-var testSetMasterPassword = function()
-{
+var testSetMasterPassword = function() {
   var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
   // Go to the sample login page and perform a test log-in with inputted fields
@@ -137,8 +135,7 @@ var prefDialogSetMasterPasswordCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var masterPasswordHandler = function(controller)
-{
+var masterPasswordHandler = function(controller) {
   var pw1 = new elementslib.ID(controller.window.document, "pw1");
   var pw2 = new elementslib.ID(controller.window.document, "pw2");
 
@@ -187,30 +184,33 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
   controller.click(showPasswordButton);
 
   // Check if the password manager has been opened
-  controller.sleep(gDelay);
+  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
 
-  var window = mozmill.wm.getMostRecentWindow('Toolkit:PasswordManager');
-  var pwdController = new mozmill.controller.MozMillController(window);
+  prefDialog.close(true);
+}
 
-  var togglePasswords = new elementslib.ID(pwdController.window.document, "togglePasswords");
-  var passwordCol = new elementslib.ID(pwdController.window.document, "passwordCol");
+/**
+ * Check that the saved passwords are shown
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkPasswordManager(controller) {
+  var togglePasswords = new elementslib.ID(controller.window.document, "togglePasswords");
+  var passwordCol = new elementslib.ID(controller.window.document, "passwordCol");
 
-  pwdController.waitForElement(togglePasswords, gTimeout);
-  UtilsAPI.assertElementVisible(pwdController, passwordCol, false);
+  controller.waitForElement(togglePasswords, gTimeout);
+  UtilsAPI.assertElementVisible(controller, passwordCol, false);
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
   md.start(gDelay);
 
-  pwdController.click(togglePasswords);
+  controller.click(togglePasswords);
 
-  UtilsAPI.assertElementVisible(pwdController, passwordCol, true);
+  UtilsAPI.assertElementVisible(controller, passwordCol, true);
 
   // Close the password manager and the preferences dialog
-  pwdController.keypress(null, "w", {accelKey: true});
-  pwdController.sleep(200);
-
-  prefDialog.close(true);
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**
@@ -218,8 +218,7 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var checkMasterHandler = function(controller)
-{
+var checkMasterHandler = function(controller) {
   var passwordBox = new elementslib.ID(controller.window.document, "password1Textbox");
 
   controller.waitForElement(passwordBox, gTimeout);
@@ -235,8 +234,7 @@ var checkMasterHandler = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogDeleteMasterPasswordCallback = function(controller)
-{
+var prefDialogDeleteMasterPasswordCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
@@ -257,8 +255,7 @@ var prefDialogDeleteMasterPasswordCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var removeMasterHandler = function(controller)
-{
+var removeMasterHandler = function(controller) {
   var removePwdField = new elementslib.ID(controller.window.document, "password");
 
   controller.waitForElement(removePwdField, gTimeout);

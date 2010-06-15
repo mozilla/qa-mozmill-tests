@@ -41,18 +41,27 @@ var MODULE_REQUIRES = ['UtilsAPI'];
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   UtilsAPI.closeContentAreaContextMenu(controller);
 }
 
-var testAccessPageInfo = function ()
-{
+var testAccessPageInfo = function () {
+  // Load web page with RSS feed
+  controller.open('http://www.google.com');
+  controller.waitForPageLoad();
+
+  // Open context menu on the html element and select Page Info entry
+  controller.rightclick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
+  controller.click(new elementslib.ID(controller.window.document, "context-viewinfo"));
+
+  UtilsAPI.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
+}
+
+function checkPageInfoWindow(controller) {
   // List of all available panes inside the page info window
   var panes = [
                {button: 'generalTab', panel: 'generalPanel'},
@@ -62,35 +71,18 @@ var testAccessPageInfo = function ()
                {button: 'securityTab', panel: 'securityPanel'}
               ];
 
-  // Load web page with RSS feed
-  controller.open('http://www.cnn.com');
-  controller.waitForPageLoad();
-
-  // Open context menu on the html element and select Page Info entry
-  controller.rightclick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
-  controller.sleep(gDelay);
-  controller.click(new elementslib.ID(controller.window.document, "context-viewinfo"));
-  controller.sleep(500);
-
-  // Check if the Page Info window has been opened
-  var window = mozmill.wm.getMostRecentWindow('Browser:page-info');
-  var piController = new mozmill.controller.MozMillController(window);
-
   // Step through each of the tabs
   for each (pane in panes) {
-    piController.click(new elementslib.ID(piController.window.document, pane.button));
-    piController.sleep(gDelay);
+    controller.click(new elementslib.ID(controller.window.document, pane.button));
+    controller.sleep(gDelay);
 
     // Check if the panel has been shown
-    var node = new elementslib.ID(piController.window.document, pane.panel);
-    piController.waitForElement(node, gTimeout);
+    var node = new elementslib.ID(controller.window.document, pane.panel);
+    controller.waitForElement(node, gTimeout);
   }
 
   // Close the Page Info window by pressing Escape
-  piController.keypress(null, 'VK_ESCAPE', {});
-
-  // Wait a bit to make sure the page info window has been closed
-  controller.sleep(200);
+  controller.keypress(null, 'VK_ESCAPE', {});
 }
 
 /**

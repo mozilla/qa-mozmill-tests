@@ -42,8 +42,7 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'Utils
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
@@ -52,8 +51,7 @@ var setupModule = function(module)
   pm.removeAllLogins();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   // Just in case the test fails remove all cookies
   pm.removeAllLogins();
 }
@@ -61,8 +59,7 @@ var teardownModule = function(module)
 /**
  * Test saving a password using the notification bar
  */
-var testSavePassword = function()
-{
+var testSavePassword = function() {
   var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
   // Go to the sample login page and log-in with inputted fields
@@ -100,8 +97,7 @@ var testSavePassword = function()
 /**
  * Test the deletion of a password from the password manager dialog
  */
-var testDeletePassword = function()
-{
+var testDeletePassword = function() {
   // Call preferences dialog and delete the saved password
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 }
@@ -111,36 +107,40 @@ var testDeletePassword = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller)
-{
+var prefDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "showPasswords"), gTimeout);
-  controller.sleep(500);
+  var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
+  controller.waitThenClick(showPasswords, gTimeout);
 
-  // Grab the password manager window
-  var window = mozmill.wm.getMostRecentWindow('Toolkit:PasswordManager');
-  var pwdController = new mozmill.controller.MozMillController(window);
-  var signOnsTree = pwdController.window.document.getElementById("signonsTree");
+  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
+
+
+  // Close the preferences dialog
+  prefDialog.close(true);
+}
+
+/**
+ * Delete all passwords
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function deleteAllPasswords(controller) {
+  var signOnsTree = controller.window.document.getElementById("signonsTree");
 
   // Verify there is at least one saved password
-  pwdController.assertJS("subject.view.rowCount == 1", signOnsTree);
+  controller.assertJS("subject.view.rowCount == 1", signOnsTree);
 
   // Delete all passwords and accept the deletion of the saved passwords
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
   md.start(200);
 
-  pwdController.click(new elementslib.ID(pwdController.window.document, "removeAllSignons"));
-
-  pwdController.assertJS("subject.view.rowCount == 0", signOnsTree);
+  controller.click(new elementslib.ID(controller.window.document, "removeAllSignons"));
+  controller.assertJS("subject.view.rowCount == 0", signOnsTree);
 
   // Close the password manager
-  pwdController.keypress(null, "w", {accelKey:true});
-  controller.sleep(200);
-
-  // Close the preferences dialog
-  prefDialog.close(true);
+  controller.keypress(null, "w", {accelKey:true});
 }
 
 /**
@@ -148,8 +148,7 @@ var prefDialogCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var confirmHandler = function(controller)
-{
+var confirmHandler = function(controller) {
   controller.waitThenClick(new elementslib.Lookup(controller.window.document,
                            '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'), gTimeout);
 }

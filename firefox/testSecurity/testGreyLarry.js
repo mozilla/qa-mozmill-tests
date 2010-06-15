@@ -56,7 +56,8 @@ var testLarryGrey = function() {
   controller.assertProperty(favicon, "src" ,"http://www.mozilla.org/favicon.ico");
 
   // Check the favicon has no label
-  controller.assertValue(new elementslib.ID(controller.window.document, "identity-icon-label"), "");
+  controller.assertValue(new elementslib.ID(controller.window.document,
+                                            "identity-icon-label"), "");
 
   // Click the identity button to display Larry
   controller.click(new elementslib.ID(controller.window.document, "identity-box"));
@@ -69,37 +70,43 @@ var testLarryGrey = function() {
   controller.assertProperty(doorhanger, "className", "unknownIdentity");
 
   // Check the More Information button
-  var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
+  var moreInfoButton = new elementslib.ID(controller.window.document,
+                                          "identity-popup-more-info-button");
   controller.click(moreInfoButton);
-  controller.sleep(500);
 
-  // Check the Page Info - Security Tab
-  var window = mozmill.wm.getMostRecentWindow('Browser:page-info');
-  var pageInfoController = new mozmill.controller.MozMillController(window);
+  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+}
 
+/**
+ * Check the security tab of the page info window
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
-  var securityTab = new elementslib.ID(pageInfoController.window.document, "securityTab");
-  pageInfoController.assertProperty(securityTab, "selected", "true");
+  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+  controller.assertProperty(securityTab, "selected", "true");
 
   // Check the Web Site label for "www.mozilla.org"
-  var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-domain-value");
-  pageInfoController.assertValue(webIDDomainLabel, "www.mozilla.org");
+  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+                                            "security-identity-domain-value");
+  controller.assertValue(webIDDomainLabel, "www.mozilla.org");
 
   // Check the Owner label for "This web site does not supply ownership information."
-  var webIDOwnerLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-owner-value");
-  var securityOwner = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties", "securityNoOwner");
-  pageInfoController.assertValue(webIDOwnerLabel, securityOwner);
+  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+                                           "security-identity-owner-value");
+  var securityOwner = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties",
+                                           "securityNoOwner");
+  controller.assertValue(webIDOwnerLabel, securityOwner);
 
   // Check the Verifier label for "Not Specified"
-  var webIDVerifierLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-verifier-value");
-  var securityIdentifier = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties", "notset");
-  pageInfoController.assertValue(webIDVerifierLabel, securityIdentifier);
+  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+                                              "security-identity-verifier-value");
+  var securityIdentifier = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties",
+                                                "notset");
+  controller.assertValue(webIDVerifierLabel, securityIdentifier);
 
-  // Press ESC to close the Page Info dialog
-  pageInfoController.keypress(null, 'VK_ESCAPE', {});
-
-  // Wait a bit to make sure the page info window has been closed
-  controller.sleep(200);
+  controller.keypress(null, 'VK_ESCAPE', {});
 }
 
 /**

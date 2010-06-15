@@ -37,13 +37,12 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   module.cm = Cc["@mozilla.org/cookiemanager;1"]
@@ -51,16 +50,14 @@ var setupModule = function(module)
   cm.removeAll();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   cm.removeAll();
 }
 
 /**
  * Tests enabling cookies from the preferences dialog
  */
-var testEnableCookies = function()
-{
+var testEnableCookies = function() {
   // Call preferences dialog and disable cookies
   PrefsAPI.openPreferencesDialog(prefEnableCookieDialogCallback);
 
@@ -77,8 +74,7 @@ var testEnableCookies = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefEnableCookieDialogCallback = function(controller)
-{
+var prefEnableCookieDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
@@ -97,46 +93,49 @@ var prefEnableCookieDialogCallback = function(controller)
 }
 
 /**
- * Go to the privacy pane and check cookies have been saved
+ * Open the cookie manager from the privacy pane
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefCheckEnableDialogCallback = function(controller)
-{
+var prefCheckEnableDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
-  controller.sleep(gDelay);
 
-  controller.waitThenClick(new elementslib.ID(controller.window.document, "showCookiesButton"), gTimeout);
+  // The Show Cookies button doesn't receive focus that fast. Means a click will
+  // fail if sent too early. There is no property we can check so far. So lets
+  // use a sleep call for now.
+  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
   controller.sleep(500);
+  controller.click(showCookies);
 
-  try {
-    // Grab the cookies manager window
-    var window = mozmill.wm.getMostRecentWindow('Browser:Cookies');
-    var cmController = new mozmill.controller.MozMillController(window);
-  
-    // Search for cookies from mozilla.org and verify cookies are saved
-    var removeCookieButton = new elementslib.ID(cmController.window.document, "removeCookie");
-    cmController.waitForElement(removeCookieButton, gTimeout);
-    cmController.assertProperty(removeCookieButton, "disabled", false);
-  
-    cmController.assertJS("subject.cookieExists == true",
-                          {cookieExists: cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
-    cmController.assertJS("subject.cookieCount > 0",
-                          {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
-  } catch (ex) {
-    throw ex;
-  } finally {
-    // Close the cookies manager
-    cmController.keypress(null, "w", {accelKey: true});
-    controller.sleep(200);
-  }
+  UtilsAPI.handleWindow("type", "Browser:Cookies", checkSavedCookies);
 
   prefDialog.close(true);
+}
+
+/**
+ * Check that cookies have been saved.
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkSavedCookies(controller) {
+  controller.sleep(1000);
+
+  // Search for cookies from mozilla.org and verify cookies are saved
+  var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
+  controller.waitForElement(removeCookieButton, gTimeout);
+  controller.assertProperty(removeCookieButton, "disabled", false);
+
+  controller.assertJS("subject.cookieExists == true",
+                      {cookieExists: cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
+  controller.assertJS("subject.cookieCount > 0",
+                      {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
+
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**

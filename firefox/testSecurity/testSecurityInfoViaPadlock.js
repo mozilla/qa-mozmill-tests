@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,59 +35,67 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include necessary modules
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+
+  cert = null;
 }
 
 /**
  * Test clicking the padlock in the statusbar opens the Page Info dialog
  * to the Security tab
  */
-var testSecurityInfoViaPadlock = function()
-{
+var testSecurityInfoViaPadlock = function() {
   // Go to a secure website
   controller.open("https://www.verisign.com/");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
   var secUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  var cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
   // Double click the padlock icon
-  controller.doubleClick(new elementslib.ID(controller.window.document, "security-button"));
+  controller.doubleClick(new elementslib.ID(controller.window.document,
+                                            "security-button"));
 
-  // Check the Page Info - Security Tab
-  controller.sleep(500);
-  var window = mozmill.wm.getMostRecentWindow('Browser:page-info');
-  var pageInfoController = new mozmill.controller.MozMillController(window);
+  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+}
 
+/**
+ * Check the security tab of the page info window
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
+ */
+function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
-  var securityTab = new elementslib.ID(pageInfoController.window.document, "securityTab");
-  pageInfoController.assertProperty(securityTab, "selected", "true");
+  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+  controller.assertProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-domain-value");
-  pageInfoController.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
-                                 {domainLabel: webIDDomainLabel.getNode().value, CName: cert.commonName});
-
+  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+                                            "security-identity-domain-value");
+  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
+                                 {domainLabel: webIDDomainLabel.getNode().value,
+                                  CName: cert.commonName});
 
   // Check the Owner label against the Cert Owner
-  var webIDOwnerLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-owner-value");
-  pageInfoController.assertValue(webIDOwnerLabel, cert.organization);
+  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+                                           "security-identity-owner-value");
+  controller.assertValue(webIDOwnerLabel, cert.organization);
 
   // Check the Verifier label against the Cert Issuer
-  var webIDVerifierLabel = new elementslib.ID(pageInfoController.window.document, "security-identity-verifier-value");
-  pageInfoController.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+                                              "security-identity-verifier-value");
+  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
 
-  // Press ESC to close the Page Info dialog
-  pageInfoController.keypress(null, 'VK_ESCAPE', {});
-
-  // Wait a bit to make sure the page info window has been closed
-  controller.sleep(200);
+  controller.keypress(null, 'VK_ESCAPE', {});
 }
 
 /**

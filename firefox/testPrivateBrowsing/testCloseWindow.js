@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,24 +46,21 @@ var websites = [
                 {url: 'https://bugzilla.mozilla.org', id: 'quicksearch_top'}
                ];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   pb.reset();
 }
 
 /**
  * Verify when closing window in private browsing that regular session is restored
  */
-var testCloseWindow = function()
-{
+var testCloseWindow = function() {
   // Closing the only browser window while staying in Private Browsing mode
   // will quit the application on Windows and Linux. So only on the test on OS X.
   if (!mozmill.isMac)
@@ -91,28 +88,35 @@ var testCloseWindow = function()
   // Start Private Browsing
   pb.start();
 
-  // Get the window count and wait until the window has been closed
-  controller.keypress(null, "w", {shiftKey: true, accelKey: true});
-  controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
-                         gTimeout, 100, mozmill.utils);
+  // One single window will be opened in PB mode which has to be closed now
+  controller.waitForPageLoad();
+  controller.keypress(null, "w", {accelKey: true});
+  
+  controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
+                         gTimeout, 100,
+                         {utils: mozmill.utils, expectedCount: (windowCount - 1)});
 
   // Without a window any keypress and menu click will fail.
   // Flipping the pref directly will also do it.
   pb.enabled = false;
-  controller.waitForEval("subject.getWindows().length == " + windowCount,
-                         gTimeout, 100, mozmill.utils);
+  controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
+                         gTimeout, 100,
+                         {utils: mozmill.utils, expectedCount: windowCount});
 
-  controller.sleep(500);
-  var window = mozmill.wm.getMostRecentWindow("navigator:browser");
-  controller = new mozmill.controller.MozMillController(window);
+  UtilsAPI.handleWindow("type", "navigator:browser", checkWindowOpen);
+}
 
+function checkWindowOpen(controller) {
   // All tabs should be restored
-  controller.assertJS("subject.tabs.length == " + (websites.length + 1),
-                      controller);
+  controller.assertJS("subject.tabs.length == subject.expectedCount",
+                      {tabs: controller.tabs, expectedCount: (websites.length + 1)});
 
   // Check if all pages were re-loaded and show their content
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
+  for (var i = 0; i < websites.length; i++) {
+    var tab = controller.tabs.getTab(i);
+    var elem = new elementslib.ID(tab, websites[i].id);
+
+    controller.waitForPageLoad(tab);
     controller.waitForElement(elem, gTimeout);
   }
 }
