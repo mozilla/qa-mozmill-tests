@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -48,7 +49,7 @@ var setupModule = function(module) {
 }
 
 var testVerifyDefaultBookmarks = function() {
-  var elemString = "/*[name()='window']/*[name()='toolbox'][1]/*[name()='toolbar'][3]/*[name()='toolbaritem'][1]/*[name()='hbox'][1]/*[name()='toolbarbutton'][%1]";
+  var elemString = "/*[name()='window']/*[name()='toolbox'][1]/*[name()='toolbar'][3]/*[name()='toolbaritem'][1]/*[name()='hbox'][1]/*[name()='hbox'][1]/*[name()='scrollbox'][1]/*[name()='toolbarbutton'][%1]";
 
   // Get list of items on the bookmarks toolbar and open container
   var toolbarNodes = getBookmarkToolbarItems();
