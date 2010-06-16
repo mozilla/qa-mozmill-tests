@@ -38,99 +38,39 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ToolbarAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'ToolbarAPI'];
 
 const gTimeout = 5000;
 
+const localTestFolder = collector.addHttpResource('../test-files/');
+const prefName = "keyword.URL";
+
 var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.locationBar =  new ToolbarAPI.locationBar(controller);
+  controller = mozmill.getBrowserController();
+  locationBar =  new ToolbarAPI.locationBar(controller);
+  
+  PrefsAPI.preferences.setPref(prefName, localTestFolder + "search/searchresults.html?q=");
+}
+
+var teardownModule = function() {
+  PrefsAPI.preferences.clearUserPref(prefName);
 }
 
 /**
- * Test three different ways to search in the location bar
+ * Check search in location bar for non-domain search terms (feeling lucky search)
  */
-var testLocationBarSearches = function()
-{
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-
-  /**
-   * Part 1 - Check unmatched string search
-   */
-
-  var randomTestString = getRandomString(32);
-
-  // Check if random test string is listed in the URL
-  locationBar.loadURL(randomTestString);
-  controller.waitForPageLoad();
-  var containsString = locationBar.contains(randomTestString.toLowerCase());
-  controller.assertJS("subject.randomStringInLocationBar == true",
-                      {randomStringInLocationBar: containsString});
-                    
-  // Check for presense of Your search message containing search string
-  var yourSearchString = new elementslib.XPath(controller.tabs.activeTab,
-                                               "//div[@id='res']/div/p[1]/b");
-  controller.assertText(yourSearchString, randomTestString.toLowerCase());
+var testLocationBarSearches = function() {
+  var testString = "Mozilla Firefox";
 
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  /**
-   * Part 2 - Check lucky match
-   */
-
-  // Check if lucky match to getpersonas.com is produced
-  locationBar.loadURL("personas");
+  locationBar.loadURL(testString);
   controller.waitForPageLoad();
-  controller.assertJS("subject.contains('getpersonas') == true", locationBar);
-
-  // Check for presense of Personsas image
-  var personasImage = new elementslib.XPath(controller.tabs.activeTab,
-                                            "//div[@id='nav']/h1/a/img");
-  controller.waitForElement(personasImage, gTimeout);
-
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-
-  /**
-   * Part 3 - Check results list match
-   */
-  var resultsTestString = "lotr";
-
-  // Check if search term is listed in URL
-  locationBar.loadURL(resultsTestString);
-  controller.waitForPageLoad();
-  controller.assertJS("subject.contains('" + resultsTestString + "') == true",
-                      locationBar);
 
   // Check for presense of search term in return results count
-  // That section of the Google results page is unique from the unmtached results page
-  var resultsStringCheck = new elementslib.XPath(controller.tabs.activeTab,
-                                                 "//div[@id='ssb']/p/b[4]");
-  controller.assertText(resultsStringCheck, resultsTestString);
-}
-
-/**
- * Creates a random set of characters
- *
- * @param {string} numCharacters
- *        length of random character set
- * @returns a random set of upper/lower case letters and digits
- * @type string
- */
-function getRandomString(numCharacters) {
-  var string = '';
-  for(var i = 0; i < numCharacters; i++) {
-    var n = Math.floor(Math.random() * 62);
-    if(n < 10)
-      string += n; //1-10
-    else if(n < 36)
-      string += String.fromCharCode(n + 55); //A-Z
-    else
-      string += String.fromCharCode(n + 61); //a-z
-  }
-  return string;
+  var resultsStringCheck = new elementslib.ID(controller.tabs.activeTab, "term");
+  controller.assertText(resultsStringCheck, testString);
 }
 
 /**
