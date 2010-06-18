@@ -190,8 +190,8 @@ preferencesDialog.prototype = {
  * Preferences object to simplify the access to the nsIPrefBranch.
  */
 var preferences = {
-  _branch : Cc["@mozilla.org/preferences-service;1"].
-            getService(Ci.nsIPrefBranch),
+  _prefService : Cc["@mozilla.org/preferences-service;1"].
+                 getService(Ci.nsIPrefService),
 
   /**
    * Use branch to access low level functions of nsIPrefBranch
@@ -199,8 +199,28 @@ var preferences = {
    * @return Instance of the preferences branch
    * @type nsIPrefBranch
    */
-  get branch() {
-    return this._branch;
+  get prefBranch() {
+    return this._prefService.QueryInterface(Ci.nsIPrefBranch);
+  },
+
+  /**
+   * Use defaultPrefBranch to access low level functions of the default branch
+   *
+   * @return Instance of the preferences branch
+   * @type nsIPrefBranch
+   */
+  get defaultPrefBranch() {
+    return this._prefService.getDefaultBranch("");
+  },
+
+  /**
+   * Use prefService to access low level functions of nsIPrefService
+   *
+   * @return Instance of the pref service
+   * @type nsIPrefService
+   */
+  get prefService() {
+    return this._prefService;
   },
 
   /**
@@ -213,7 +233,7 @@ var preferences = {
    **/
   clearUserPref : function preferences_clearUserPref(prefName) {
     try {
-      this._branch.clearUserPref(prefName);
+      this.prefBranch.clearUserPref(prefName);
       return true;
     } catch (e) {
       return false;
@@ -227,18 +247,32 @@ var preferences = {
    *        The preference to get the value of.
    * @param {boolean/number/string} defaultValue
    *        The default value if preference cannot be found.
+   * @param {boolean/number/string} defaultBranch
+   *        If true the value will be read from the default branch (optional)
+   * @param {string} interfaceType
+   *        Interface to use for the complex value (optional)
+   *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
+   *
    * @return The value of the requested preference
-   * @type boolean/int/string
+   * @type boolean/int/string/complex
    */
-  getPref : function preferences_getPref(prefName, defaultValue) {
+  getPref : function preferences_getPref(prefName, defaultValue, defaultBranch,
+                                         interfaceType) {
     try {
+      branch = defaultBranch ? this.defaultPrefBranch : this.prefBranch;
+
+      // If interfaceType has been set, handle it differently
+      if (interfaceType != undefined) {
+        return branch.getComplexValue(prefName, interfaceType);
+      }
+
       switch (typeof defaultValue) {
         case ('boolean'):
-          return this._branch.getBoolPref(prefName);
+          return branch.getBoolPref(prefName);
         case ('string'):
-          return this._branch.getCharPref(prefName);
+          return branch.getCharPref(prefName);
         case ('number'):
-          return this._branch.getIntPref(prefName);
+          return branch.getIntPref(prefName);
         default:
           return undefined;
       }
@@ -252,26 +286,29 @@ var preferences = {
    *
    * @param {string} prefName
    *        The preference to set the value of.
-   * @param {boolean/number/string} value
+   * @param {boolean/number/string/complex} value
    *        The value to set the preference to.
+   * @param {string} interfaceType
+   *        Interface to use for the complex value
+   *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
    *
    * @return Returns if the value was successfully set.
    * @type boolean
    */
-  setPref : function preferences_setPref(name, value) {
+  setPref : function preferences_setPref(prefName, value, interfaceType) {
     try {
       switch (typeof value) {
         case ('boolean'):
-          this._branch.setBoolPref(name, value);
+          this.prefBranch.setBoolPref(prefName, value);
           break;
         case ('string'):
-          this._branch.setCharPref(name, value);
+          this.prefBranch.setCharPref(prefName, value);
           break;
         case ('number'):
-          this._branch.setIntPref(name, value);
+          this.prefBranch.setIntPref(prefName, value);
           break;
         default:
-          return false;
+          this.prefBranch.setComplexValue(prefName, interfaceType, value);
       }
     } catch(e) {
       return false;
