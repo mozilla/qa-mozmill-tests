@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -49,10 +50,7 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
   module.locationBar =  new ToolbarAPI.locationBar(controller);
 
-  // Clear complete history so we don't get interference from previous entries
-  try {
-    PlacesAPI.historyService.removeAllPages();
-  } catch (ex) {}
+  PlacesAPI.removeAllHistory();
 }
 
 var teardownModule = function(module)
@@ -118,10 +116,8 @@ var testStarInAutocomplete = function()
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Clear history
-  try {
-    PlacesAPI.historyService.removeAllPages();
-  } catch (ex) {}
-
+  PlacesAPI.removeAllHistory();
+  
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
