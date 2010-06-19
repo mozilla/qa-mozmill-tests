@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -52,9 +53,7 @@ var setupModule = function(module) {
   locationBar = new ToolbarAPI.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
-  try {
-    PlacesAPI.historyService.removeAllPages();
-  } catch (ex) {}
+  PlacesAPI.removeAllHistory();
 }
 
 /**

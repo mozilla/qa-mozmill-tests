@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,6 +45,8 @@
 
 var MODULE_NAME = 'PlacesAPI';
 
+const gTimeout = 5000;
+
 /**
  * Instance of the bookmark service to gain access to the bookmark API.
  *
@@ -67,6 +70,15 @@ var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].
  */
 var livemarkService = Cc["@mozilla.org/browser/livemark-service;2"].
                       getService(Ci.nsILivemarkService);
+
+/**
+ * Instance of the browser history interface to gain access to
+ * browser-specific history API
+ *
+ * @see http://mxr.mozilla.org/mozilla-central (nsIBrowserHistory.idl)
+ */
+var browserHistory = Cc["@mozilla.org/browser/nav-history-service;1"].
+                     getService(Ci.nsIBrowserHistory);
 
 /**
  * Check if an URI is bookmarked within the specified folder
@@ -104,4 +116,13 @@ function restoreDefaultBookmarks() {
   let importer = Cc["@mozilla.org/browser/places/import-export-service;1"].
                  getService(Ci.nsIPlacesImportExportService);
   importer.importHTMLFromFile(bookmarksFile, true);
+}
+
+/**
+ * Passthrough to browserHistory.removeAllPages()
+ * Implemented to keep Places API the same between branches, as this helper
+ * function is necessary in later branches as operation is asynchronous there
+ */
+function removeAllHistory() {
+  browserHistory.removeAllPages();
 }
