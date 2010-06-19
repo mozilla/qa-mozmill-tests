@@ -93,7 +93,7 @@ var testTabRestoration = function()
 
   // If a position has been returned check for geo access tokens
   if (available) {
-    PrefsAPI.preferences.branch.getChildList(PREF_GEO_TOKEN, tokens);
+    PrefsAPI.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
     controller.assertJS("subject.hasGeoTokens == true",
                         {hasGeoTokens: tokens.value > 0});
   }
@@ -102,7 +102,7 @@ var testTabRestoration = function()
   pb.stop();
 
   // No geo access tokens should be present
-  PrefsAPI.preferences.branch.getChildList(PREF_GEO_TOKEN, tokens);
+  PrefsAPI.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
   controller.assertJS("subject.hasNoGeoTokens == true",
                       {hasNoGeoTokens: tokens.value == 0});
 }
