@@ -41,12 +41,15 @@
  * @version 1.0.0
  */
 
-var MODULE_NAME = 'ToolbarAPI';
+const MODULE_NAME = 'ToolbarAPI';
 
 const gTimeout = 5000;
 
 const autocompletePopup = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
 const urlbarContainer = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("urlbar-container")';
+const urlbarInputBox = urlbarContainer + '/id("urlbar")/anon({"class":"autocomplete-textbox-container"})' +
+                                         '/anon({"anonid":"textbox-input-box"})';
+const contextMenu = urlbarInputBox + '/anon({"anonid":"input-box-contextmenu"})';
 
 /**
  * Constructor
@@ -290,6 +293,14 @@ locationBar.prototype = {
   },
 
   /**
+   * Close the context menu of the urlbar input field
+   */
+  closeContextMenu : function locationBar_closeContextMenu() {
+    var menu = this.getElement({type: "contextMenu"});
+    this._controller.keypress(menu, "VK_ESCAPE", {});
+  },
+
+  /**
    * Check if the location bar contains the given text
    *
    * @param {string} text
@@ -341,6 +352,13 @@ locationBar.prototype = {
        * subtype: subtype to match
        * value: value to match
        */
+      case "contextMenu":
+        elem = new elementslib.Lookup(this._controller.window.document, contextMenu);
+        break;
+      case "contextMenu_entry":
+        elem = new elementslib.Lookup(this._controller.window.document, contextMenu +
+                                      '/{"cmd":"cmd_' + spec.subtype + '"}');
+        break;
       case "favicon":
         elem = new elementslib.ID(this._controller.window.document, "page-proxy-favicon");
         break;
@@ -362,6 +380,10 @@ locationBar.prototype = {
         break;
       case "urlbar":
         elem = new elementslib.ID(this._controller.window.document, "urlbar");
+        break;
+      case "urlbar_input":
+        elem = new elementslib.Lookup(this._controller.window.document, urlbarInputBox +
+                                      '/anon({"anonid":"input"})');
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
