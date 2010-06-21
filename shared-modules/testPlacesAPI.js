@@ -143,5 +143,5 @@ function removeAllHistory() {
 
   // Remove the pages, then block until we're done or until timeout is reached
   browserHistory.removeAllPages();
-  controller.waitForEval("subject.state == true", gTimeout, 100, finishedFlag);
+  mozmill.controller.waitForEval("subject.state == true", gTimeout, 100, finishedFlag);
 }
