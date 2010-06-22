@@ -39,17 +39,17 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['DownloadsAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 100;
-const gTimeout = 5000;
+const DELAY = 100;
+const TIMEOUT = 5000;
 
-const downloads = [
-                   "http://www.adobe.com/education/pdf/etd/etd_lesson2.pdf",
-                   "http://switch.dl.sourceforge.net/project/rarexpander/RAR%20Expander/0.8.4/rar_expander_v084.dmg"
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+
+const DOWNLOADS = [
+                   LOCAL_TEST_FOLDER + "downloading/unknown_type.mtdl",
+                   LOCAL_TEST_FOLDER + "downloading/unknown_type.fmtd"
                   ];
-
-const downloadsPB = [
-                     "http://www.bzip.org/1.0.5/bzip2-1.0.5.tar.gz"
-                    ];
+                   
+const DOWNLOAD_PB = LOCAL_TEST_FOLDER + "downloading/unknown_type_pb.stbf";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -69,9 +69,13 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
+  // Clean all downloaded files from the system
   dm.cleanAll(downloadedFiles);
+  
+  // Make sure the browser is not in Private Browsing mode
   pb.reset();
 
+  // Reset the "Show Downloads When Downloading" pref
   PrefsAPI.preferences.clearUserPref("browser.download.manager.showWhenStarting");
 }
 
@@ -82,57 +86,64 @@ var testDownloadManagerClosed = function() {
   // Disable the opening of the Downloads Manager when starting a download
   PrefsAPI.openPreferencesDialog(handlePrefDialog);
 
-  // Download a couple of files
-  for each (download in downloads)
-    DownloadsAPI.downloadFileOfUnknownType(controller, download);
+  // Download two files of unknown type
+  for (var i = 0; i < DOWNLOADS.length; i++) {
+    DownloadsAPI.downloadFileOfUnknownType(controller, DOWNLOADS[i]);
+  }
 
   // Save information of currently downloaded files
   downloadedFiles = dm.getAllDownloads();
 
   // Wait until all downloads have been finished
-  controller.sleep(100);
-  controller.waitForEval("subject.activeDownloadCount == 0", 30000, 100, dm);
+  controller.waitForEval("subject.activeDownloadCount == 0", TIMEOUT, DELAY, dm);
 
   // Enable Private Browsing mode
   pb.start();
 
-  // Check that no downloads are shown
+  // Open the Download Manager
   dm.open(controller);
 
+  // Get a list of downloaded items in the Download Manager
   var downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
-  dm.controller.waitForElement(downloadView, gTimeout);
+  dm.controller.waitForElement(downloadView, TIMEOUT);
+  
+  // Check that no items are listed in the Download Manager
   dm.controller.waitForEval("subject.itemCount == 0",
-                            gTimeout, 100, downloadView.getNode());
+                            TIMEOUT, DELAY, downloadView.getNode());
 
   // Close the Download Manager
   dm.close();
 
   // Download a file in Private Browsing mode
-  DownloadsAPI.downloadFileOfUnknownType(controller, downloadsPB[0]);
+  DownloadsAPI.downloadFileOfUnknownType(controller, DOWNLOAD_PB);
 
   // Track the download from Private Browsing mode too
   downloadedFiles = downloadedFiles.concat(dm.getAllDownloads());
 
   // Wait until all downloads have been finished
-  controller.sleep(100);
-  controller.waitForEval("subject.activeDownloadCount == 0", 30000, 100, dm);
+  controller.waitForEval("subject.activeDownloadCount == 0", TIMEOUT, DELAY, dm);
 
+  // Exit Private Browsing mode
   pb.stop();
 
-  // Check that the downloads from before the Private Browsing mode are shown
+  // Open the Download Manager
   dm.open(controller);
 
+  // Get the list of the downloads in the Download Manager
   downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
-  dm.controller.waitForElement(downloadView, gTimeout);
-  dm.controller.waitForEval("subject.itemCount == " + downloads.length,
-                            gTimeout, 100, downloadView.getNode());
+  dm.controller.waitForElement(downloadView, TIMEOUT);
+  
+  // The Download Manager should contain the two items downloaded pre-Private Browsing
+  dm.controller.waitForEval("subject.isCorrectDownloadNumber == true", TIMEOUT, DELAY, 
+                            {isCorrectDownloadNumber: downloadView.getNode().itemCount == DOWNLOADS.length});
 
-  for (var ii = 0; ii < downloads.length; ii++) {
-    var item = new elementslib.ID(dm.controller.window.document, "dl" + (ii + 1));
-    dm.controller.assertJS("subject.getAttribute('uri') == '" + downloads[ii] + "'",
-                           item.getNode());
+  for (i = 0; i < DOWNLOADS.length; i++) {
+    var download = new elementslib.ID(dm.controller.window.document, "dl" + (i + 1));
+    dm.controller.assertJS("subject.isCorrectDownload == true",
+                           {isCorrectDownload: download.getNode().getAttribute('uri') == DOWNLOADS[i]});
   }
-
+    
+  // Close the Download Manager
   dm.close();
 }
 
@@ -144,14 +155,16 @@ var testDownloadManagerClosed = function() {
  */
 var handlePrefDialog = function(controller)
 {
+  // Set the Preferences dialog to the Main pane
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'paneMain';
 
   // Don't show the download manager when a download starts
   var show = new elementslib.ID(controller.window.document, "showWhenDownloading");
-  controller.waitForElement(show, gTimeout);
+  controller.waitForElement(show, TIMEOUT);
   controller.check(show, false);
 
+  // Close the Preferences dialog
   prefDialog.close(true);
 }
 
