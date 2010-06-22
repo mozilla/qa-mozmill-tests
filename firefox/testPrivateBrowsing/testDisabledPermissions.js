@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -91,7 +92,7 @@ var testPermissionsDisabled = function()
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
   var allow = new elementslib.XPath(controller.window.document, 
-                                    "/*[name()='window']/*[name()='popupset'][1]/*[name()='popup'][2]/*[name()='menuitem'][1]");
+                                    "/*[name()='window']/*[name()='popupset'][1]/*[name()='menupopup'][4]/*[name()='menuitem'][1]");
 
   controller.waitForElement(allow);
   controller.assertProperty(allow, "disabled", true);
