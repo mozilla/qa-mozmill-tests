@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,20 +40,25 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const TEST_PAGE = LOCAL_TEST_FOLDER + "passwordmanager/login_form.html";
 
-var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+var setupModule = function() {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
-
-  module.pm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
-  pm.removeAllLogins();
+  pm = Cc["@mozilla.org/login-manager;1"].
+       getService(Ci.nsILoginManager);
 }
 
-var teardownModule = function(module) {
+var setupTest = function() {
+  // Ensure we start from a clean state for each test
+  pm.removeAllLogins();
+  tabBrowser.closeAllTabs();
+}
+
+var teardownModule = function() {
   // Just in case the test fails remove all passwords
   pm.removeAllLogins();
 }
@@ -62,30 +68,42 @@ var teardownModule = function(module) {
  */
 var testPasswordNotificationBar = function() {
   // Go to the sample login page and perform a test log-in with input fields
-  controller.open(testSite);
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, gTimeout);
+  controller.waitForElement(userField, TIMEOUT);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
+  
+  // Get the current notification panel
+  var panel = tabBrowser.getTabPanelElement();
 
-  // After logging in, close the notification bar
+  // Check that the notification bar is not visible before logging in
+  controller.waitForEval("subject.currentNotification == null", 
+                         TIMEOUT, 100, panel.getNode());
+
+  // Click the Form Login button
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
+  controller.click(loginButton);
+  controller.waitForPageLoad();
+   
+  // Check that the notification bar now visible after logging in
+  controller.waitForEval("subject.currentNotification.value == 'password-save'", 
+                         TIMEOUT, 100, panel.getNode());
+  
+  // Click the X button to dismiss the notification bar
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"password-save"}/anon({"type":"info"})' +
                                              '/{"class":"messageCloseButton tabbable"}');
-
-  // The notification bar should not be visible before submitting the credentials
-  controller.assertNodeNotExist(button);
-
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
-  controller.waitForPageLoad();
-
-  controller.waitThenClick(button, gTimeout);
   controller.sleep(500);
-  controller.assertNodeNotExist(button);
+  controller.click(button);
+  
+  // Check that the notification bar is no longer visible 
+  controller.waitForEval("subject.currentNotification == null", 
+                         TIMEOUT, 100, panel.getNode());
 }
 
 /**
@@ -93,13 +111,13 @@ var testPasswordNotificationBar = function() {
  */
 var testPasswordNotSaved = function() {
   // Go back verify the login information has not been saved
-  controller.open(testSite);
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, gTimeout);
+  controller.waitForElement(userField, TIMEOUT);
   controller.assertValue(userField, "");
   controller.assertValue(passField, "");
 
@@ -118,7 +136,7 @@ var prefDialogCallback = function(controller) {
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, gTimeout);
+  controller.waitThenClick(showPasswords, TIMEOUT);
 
   UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
@@ -132,7 +150,7 @@ var prefDialogCallback = function(controller) {
  */
 function checkPasswordsNotSaved(controller) {
   var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, gTimeout);
+  controller.waitForElement(filterField, TIMEOUT);
 
   var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
   controller.assertProperty(removeLogin, 'disabled', 'true');
