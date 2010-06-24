@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,7 +45,7 @@ const fileNames = {
 // Expected states of the crash reporter
 const states = {
                 "Enabled" : true,
-                "ServerURL" : "https://crash-reports.mozilla.com/submit"
+                "ServerURLPattern" : /^https:\/\/crash-reports\.mozilla\.com\/submit.*/
                };
 
 var setupModule = function(module)
@@ -79,8 +80,9 @@ var testBreakpadInstalled = function()
                       {reporter: crashReporter, stateEnabled: states['Enabled']});
 
   // Do we have the correct server URL?
-  controller.assertJS("subject.reporter.serverURL.spec == subject.stateServerURL",
-                      {reporter: crashReporter, stateServerURL: states['ServerURL']});
+  var pos = crashReporter.serverURL.spec.search(states['ServerURLPattern']);
+  controller.assertJS("subject.expectedCrashReportURL == true",
+                      {expectedCrashReportURL: pos != -1});
 }
 
 /**
