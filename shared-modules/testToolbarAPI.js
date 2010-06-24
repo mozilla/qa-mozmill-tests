@@ -160,7 +160,7 @@ autoCompleteResults.prototype = {
         description = result.getNode().boxObject.firstChild.childNodes[1].childNodes[0];
         break;
       case "url":
-        description = result.getNode().boxObject.lastChild.childNodes[1].childNodes[0];
+        description = result.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
         break;
       default:
         throw new Error(arguments.callee.name + ": Type unknown - " + type);
