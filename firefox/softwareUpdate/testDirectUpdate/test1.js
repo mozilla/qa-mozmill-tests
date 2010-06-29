@@ -53,11 +53,13 @@ var teardownModule = function(module) {
   // Save the update properties for later usage
   if (update.activeUpdate) {
     persisted.type = update.activeUpdate.type;
+    persisted.isCompletePatch = update.isCompleteUpdate;
     persisted.updateBuildId = update.activeUpdate.buildID;
     persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
     persisted.updateVersion = update.activeUpdate.version;
   } else {
     persisted.type = "n/a";
+    persisted.isCompletePatch = "n/a";
     persisted.updateBuildId = "n/a";
     persisted.updateType = "n/a";
     persisted.updateVersion = "n/a";

@@ -49,8 +49,25 @@ var setupModule = function(module) {
 var testFallbackUpdate_ErrorPatching = function() {
   // The dialog should be open in the background and shows a failure
   update.waitForDialogOpen(controller);
-  update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorpatching);
 
-  // Start downloading the fallback patch
-  update.download(persisted.channel);
+  // Complete updates have to be handled differently
+  if (persisted.isCompletePatch) {
+    // Wait for the error page and close the software update dialog
+    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errors);
+    update.closeDialog();
+
+    // Open the software update dialog again and wait until the check has been finished
+    update.openDialog(controller);
+    update.waitForCheckFinished();
+
+    // Download the update
+    update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
+                                  {update: update});
+    update.download(persisted.channel);
+  } else {
+    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorpatching);
+
+    // Start downloading the fallback patch
+    update.download(persisted.channel);
+  }
 }
