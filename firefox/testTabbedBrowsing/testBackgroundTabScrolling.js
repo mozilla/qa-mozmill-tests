@@ -18,8 +18,9 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -103,6 +104,9 @@ var testScrollBackgroundTabIntoView = function()
   // Check that the correct link has been loaded in the last tab
   var lastIndex = controller.tabs.length - 1;
   var linkId = new elementslib.ID(controller.tabs.getTab(lastIndex), "id");
+
+  // Need to wait for element to appear, then we check text is correct
+  controller.waitForElement(linkId, gTimeout, 100);
   controller.assertText(linkId, "2");
 
   // and is displayed inside the all tabs popup menu
