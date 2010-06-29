@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,12 +39,10 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
 const searchEngine = {name: "SearchGeek",
                       url : "https://preview.addons.mozilla.org/en-US/firefox/addon/10772"};
-
 
 var setupModule = function(module)
 {
@@ -71,13 +70,21 @@ var testGetMoreEngines = function()
   var tabCount = controller.tabs.length;
   search.openEngineManager(enginesHandler);
 
-  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", gTimeout, 100,
+  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", TIMEOUT, 100,
                          {tabs: controller.tabs, preCount: tabCount});
   controller.waitForPageLoad();
   
   // Install the engine from the Open the search provider page before installing the engine
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
+  
+  // XXX: Bug 575241
+  // AMO Lazy install buttons: wait for class change
+  var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
+                                          "//div[@id='addon-summary']/div/div/div/p/a");
+
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
   var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
@@ -86,9 +93,9 @@ var testGetMoreEngines = function()
   // Install the search engine
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitThenClick(triggerLink, gTimeout);
+  controller.waitThenClick(triggerLink, TIMEOUT);
 
-  controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", gTimeout, 100,
+  controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", TIMEOUT, 100,
                          {engine: search, name: searchEngine.name});
 
   search.selectedEngine = searchEngine.name;
@@ -131,7 +138,7 @@ var handleSearchInstall = function(controller)
   // Check that addons.mozilla.org is shown as domain
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
   controller.waitForEval("subject.textContent.indexOf('addons.mozilla.org') != -1",
-                         gTimeout, 100, infoBody.getNode());
+                         TIMEOUT, 100, infoBody.getNode());
 
   var addButton = new elementslib.Lookup(controller.window.document,
                                          '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
