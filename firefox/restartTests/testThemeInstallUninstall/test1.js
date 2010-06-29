@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,7 +39,7 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'TabbedBrowsingAPI'];
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
@@ -62,15 +63,23 @@ var testInstallTheme = function()
 
   // Wait for the Browse All Add-ons link and click on it
   var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
-  addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
+  addonsManager.controller.waitThenClick(browseAllAddons, TIMEOUT);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
+  controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
   controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/122");
   controller.waitForPageLoad();
+  
+  // XXX: Bug 575241
+  // AMO Lazy install buttons: wait for class change
+  var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
+                                          "//div[@id='addon-summary']/div/div/div/p/a");
+
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
   var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
@@ -79,7 +88,7 @@ var testInstallTheme = function()
   // Click link to install the theme which triggers a modal dialog
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitThenClick(triggerLink, gTimeout);
+  controller.waitThenClick(triggerLink, TIMEOUT);
 
   // Wait that the Installation pane is selected after the extension has been installed
   addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
@@ -98,7 +107,7 @@ var testInstallTheme = function()
 
   // Check if restart button is present
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
-  addonsManager.controller.waitForElement(restartButton, gTimeout);
+  addonsManager.controller.waitForElement(restartButton, TIMEOUT);
 }
 
 /**
@@ -109,7 +118,7 @@ var handleTriggerDialog = function(controller)
   // Get list of themes which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
-  controller.waitForElement(itemList, gTimeout);
+  controller.waitForElement(itemList, TIMEOUT);
 
   // There should be one theme for installation
   controller.assertJS("subject.themes.length == 1",

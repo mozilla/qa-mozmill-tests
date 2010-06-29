@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,7 +40,7 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI'];
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 const gInstallTimeout = 10000;
 
 // Object of all add-ons we want to install
@@ -68,6 +69,14 @@ var testInstallExtensions = function() {
     controller.open(addon.url);
     controller.waitForPageLoad();
 
+    // XXX: Bug 575241
+    // AMO Lazy install buttons: wait for class change
+    var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
+                                          "//div[@id='addon-summary']/div/div/div/p/a");
+ 
+    controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
+
     // Create a modal dialog instance to handle the Software Installation dialog
     var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
     md.start();
@@ -75,7 +84,7 @@ var testInstallExtensions = function() {
     // Click the link to install the extension
     var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                             "//div[@id='addon-summary']/div/div/div/p/a/span");
-    controller.waitForElement(triggerLink, gTimeout);
+    controller.waitForElement(triggerLink, TIMEOUT);
     controller.click(triggerLink, 
                      triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
 
@@ -94,7 +103,7 @@ var testInstallExtensions = function() {
 
     // Check if restart button is present
     var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
-    addonsManager.controller.waitForElement(restartButton, gTimeout);
+    addonsManager.controller.waitForElement(restartButton, TIMEOUT);
   }
 }
 
@@ -107,7 +116,7 @@ var handleTriggerDialog = function(controller) {
   // Get list of extensions which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
-  controller.waitForElement(itemList, gTimeout);
+  controller.waitForElement(itemList, TIMEOUT);
 
   // There should be listed only one extension
   controller.assertJS("subject.extensions.length == 1",
