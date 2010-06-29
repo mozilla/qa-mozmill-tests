@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -45,8 +46,8 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   addonsManager = new AddonsAPI.addonsManager();
 
-  persisted.themeName = "Curacao";
-  persisted.themeId = "{cc6ef5ab-35be-4300-bd07-d12850fc97ff}";
+  persisted.themeName = "Walnut for Firefox";
+  persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
   persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
 
   TabbedBrowsingAPI.closeAllTabs(controller);
@@ -69,7 +70,7 @@ var testInstallTheme = function()
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
-  controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/3663");
+  controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/122");
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
