@@ -49,7 +49,15 @@ var setupModule = function(module) {
 }
 
 var testVerifyDefaultBookmarks = function() {
-  var elemString = "/*[name()='window']/*[name()='toolbox'][1]/*[name()='toolbar'][3]/*[name()='toolbaritem'][1]/*[name()='hbox'][1]/*[name()='hbox'][1]/*[name()='scrollbox'][1]/*[name()='toolbarbutton'][%1]";
+  var toolbarElemString = "/*[name()='window']/*[name()='toolbox'][1]/*[name()='toolbar'][3]";
+  var elemString = toolbarElemString + "/*[name()='toolbaritem'][1]/*[name()='hbox'][1]/*[name()='hbox'][1]/*[name()='scrollbox'][1]/*[name()='toolbarbutton'][%1]";
+
+  // Default bookmarks toolbar should be closed
+  var toolbar = new elementslib.XPath(controller.window.document, toolbarElemString);
+  controller.assertProperty(toolbar, "collapsed", true);
+
+  // Open bookmarks toolbar for the rest of the test
+  toolbar.getNode().collapsed = false;
 
   // Get list of items on the bookmarks toolbar and open container
   var toolbarNodes = getBookmarkToolbarItems();
