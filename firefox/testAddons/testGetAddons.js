@@ -131,6 +131,7 @@ var testGetAddonsTab = function()
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
 setupModule.skipped = true;
+setupModule.skipped_reason = "Bug 569813: New add-ons manager not supported yet";
 
 /**
  * Map test functions to litmus tests
