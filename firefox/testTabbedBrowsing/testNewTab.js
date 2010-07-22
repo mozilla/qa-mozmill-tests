@@ -80,9 +80,9 @@ var checkOpenTab = function(event)
   controller.assertJS("subject.activeTab.location == 'about:blank'",
                       controller.tabs);
 
-  // The tabs title should be 'Untitled'
-  var title = UtilsAPI.getEntity(["chrome://browser/locale/browser.dtd"],
-                                  "newTab.label");
+  // The tabs title should be 'New Tab'
+  var title = UtilsAPI.getProperty(["chrome://browser/locale/tabbrowser.properties"],
+                                    "tabs.emptyTabTitle");
   var tab = tabBrowser.getTab();
   controller.assertJS("subject.label == '" + title + "'", tab.getNode());
 
