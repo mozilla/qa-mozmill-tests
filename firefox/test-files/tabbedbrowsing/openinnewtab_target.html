@@ -6,13 +6,19 @@
     var re = new RegExp("[0-9]+$");
     var id = re.exec(window.document.location);
 
-    document.getElementById("id").innerHTML = id;
     document.title = id;
+
+    var node = document.createElement("span");
+    node.id = "id";
+    node.innerHTML = id;
+
+    var result = document.getElementById("result");
+    result.appendChild(node);
   }
 </script>
 </head>
 
 <body onload="show();">
-  <p>Loaded link with id=<span id="id"></span>.</p>
+  <p id="result">Loaded link with id=</p>
 </body>
 </html>
