@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   M.-A. Darche <mozdev@cynode.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -155,23 +156,27 @@ var appInfo = {
  *
  * @param {MozmillController} controller
  *        MozMillController of the window to operate on
- * @param {ElemBase} element
+ * @param {ElemBase} elem
  *        Element to check its visibility
- * @param {boolean} visibility
+ * @param {boolean} expectedVisibility
  *        Expected visibility state of the element
  */
-function assertElementVisible(controller, element, visibility)
-{
-  var style = controller.window.getComputedStyle(element.getNode(), "");
-  var state = style.getPropertyValue("visibility");
+function assertElementVisible(controller, elem, expectedVisibility) {
+  var element = elem.getNode();
+  var visible;
 
-  if (visibility) {
-    controller.assertJS("subject.visibilityState == 'visible'",
-                        {visibilityState: state});
-  } else {
-    controller.assertJS("subject.visibilityState != 'visible'",
-                        {visibilityState: state});
+  switch (element.nodeName) {
+    case 'panel':
+      visible = ['open', 'showing'].indexOf(element.state) >= 0;
+      break;
+    default:
+      var style = controller.window.getComputedStyle(element, '');
+      var state = style.getPropertyValue('visibility');
+      visible = (state == 'visible');
   }
+
+  controller.assertJS('subject.visible == subject.expectedVisibility',
+                      {visible: visible, expectedVisibility: expectedVisibility });
 }
 
 /**
