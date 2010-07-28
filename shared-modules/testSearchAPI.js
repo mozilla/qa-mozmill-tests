@@ -43,7 +43,7 @@ var MODULE_NAME = 'SearchAPI';
 
 // Include necessary modules
 var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['ModalDialogAPI'];
+var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
 const gTimeout = 5000;
 
@@ -234,6 +234,17 @@ engineManager.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function engineManager_getDtds() {
+    var dtds = ["chrome://browser/locale/engineManager.dtd"];
+    return dtds;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -368,6 +379,7 @@ function searchBar(controller)
                  .getService(Ci.nsIBrowserSearchService);
 
   this._ModalDialogAPI = collector.getModule('ModalDialogAPI');
+  this._utilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -531,7 +543,8 @@ searchBar.prototype = {
     var activeElement = this._controller.window.document.activeElement;
 
     var searchInput = this.getElement({type: "searchBar_input"});
-    this._controller.keypress(searchInput, 'a', {accelKey: true});
+    var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "selectAllCmd.key");
+    this._controller.keypress(searchInput, cmdKey, {accelKey: true});
     this._controller.keypress(searchInput, 'VK_DELETE', {});
 
     if (activeElement)
@@ -553,7 +566,12 @@ searchBar.prototype = {
         this._controller.click(input);
         break;
       case "shortcut":
-        this._controller.keypress(null, 'k', {accelKey: true});
+        if (mozmill.isLinux) {
+          var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "searchFocusUnix.commandkey");
+        } else {
+          var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "searchFocus.commandkey");
+        }
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown element type - " + event.type);
@@ -563,6 +581,17 @@ searchBar.prototype = {
     var activeElement = this._controller.window.document.activeElement;
     this._controller.assertJS("subject.isFocused == true",
                               {isFocused: input.getNode() == activeElement});
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function searchBar_getDtds() {
+    var dtds = ["chrome://browser/locale/browser.dtd"];
+    return dtds;
   },
 
   /**

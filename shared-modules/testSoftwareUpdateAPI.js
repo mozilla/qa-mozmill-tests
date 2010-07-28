@@ -293,6 +293,18 @@ softwareUpdate.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function softwareUpdate_getDtds() {
+    var dtds = ["chrome://mozapps/locale/update/history.dtd",
+               "chrome://mozapps/locale/update/updates.dtd"]
+    return dtds;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -303,7 +315,7 @@ softwareUpdate.prototype = {
    * @returns Element which has been created  
    * @type {ElemBase}
    */
-  getElement : function searchBar_getElement(spec) {
+  getElement : function softwareUpdate_getElement(spec) {
     var elem = null;
 
     switch(spec.type) {

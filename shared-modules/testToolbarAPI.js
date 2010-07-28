@@ -178,6 +178,16 @@ autoCompleteResults.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function autoCompleteResults_getDtds() {
+    return null;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -331,6 +341,18 @@ locationBar.prototype = {
     // Wait until the location bar has been focused
     this._controller.waitForEval("subject.getAttribute('focused') == 'true'",
                                  gTimeout, 100, this.urlbar.getNode());
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function locationBar_getDtds() {
+    var dtds = ["chrome://branding/locale/brand.dtd",
+               "chrome://browser/locale/browser.dtd"];
+    return dtds;
   },
 
   /**

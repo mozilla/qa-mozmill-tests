@@ -129,7 +129,8 @@ addonsManager.prototype = {
     this.paneId = 'search';
 
     var searchInput = this.getElement({type: "search_fieldInput"});
-    this._controller.keypress(searchInput, 'a', {accelKey: true});
+    var cmdKey = UtilsAPI.getEntity(this.getDtds(), "selectAllCmd.key");
+    this._controller.keypress(searchInput, cmdKey, {accelKey: true});
     this._controller.keypress(searchInput, 'VK_DELETE', {});
   },
 
@@ -143,17 +144,30 @@ addonsManager.prototype = {
     var windowCount = mozmill.utils.getWindows().length;
 
     if (this._controller) {
-      // Check if we should force the closing of the DM window
+      // Check if we should force the closing of the AM window
       if (force) {
         this._controller.window.close();
       } else {
-        this._controller.keypress(null, 'w', {accelKey: true});
+        var cmdKey = UtilsAPI.getEntity(this.getDtds(), "closeCmd.key");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
       }
 
       this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
                                    gTimeout, 100, mozmill.utils);
       this._controller = null;
     }
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function downloadManager_getDtds() {
+    var dtds = ["chrome://mozapps/locale/extensions/extensions.dtd",
+               "chrome://browser/locale/browser.dtd",];
+    return dtds;
   },
 
   /**

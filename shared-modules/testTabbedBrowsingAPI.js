@@ -43,6 +43,9 @@
 
 var MODULE_NAME = 'TabbedBrowsingAPI';
 
+var RELATIVE_ROOT = '.';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
 const gTimeout = 5000;
 
 const tabsBrowser = '/id("main-window")/id("browser")/id("appcontent")/id("content")';
@@ -72,6 +75,7 @@ function closeAllTabs(controller)
 function tabBrowser(controller)
 {
   this._controller = controller;
+  this._utilsApi = collector.getModule('UtilsAPI');
   this._tabs = this.getElement({type: "tabs"});
 }
 
@@ -160,6 +164,18 @@ tabBrowser.prototype = {
       default:
         throw new Error(arguments.callee.name + ": Unknown event - " + event.type);
     }
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function tabBrowser_getDtds() {
+    var dtds = ["chrome://browser/locale/tabbrowser.dtd",
+               "chrome://global/locale/global.dtd"];
+    return dtds;
   },
 
   /**
@@ -290,12 +306,19 @@ tabBrowser.prototype = {
         break;
       case "tabStrip":
         var tabStrip = this.getElement({type: "tabs_strip"});
-
-        // XXX: Workaround until bug 537968 has been fixed
-        this._controller.click(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
-
-        // Todo: Calculate the correct x position
-        this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+        
+        // RTL-locales need to be treated separately
+        if (this._utilsApi.getEntity(this.getDtds(), "locale.dir") == "rtl") {
+          // XXX: Workaround until bug 537968 has been fixed
+          this._controller.click(tabStrip, 100, 3);
+          // Todo: Calculate the correct x position
+          this._controller.doubleClick(tabStrip, 100, 3);
+        } else {
+          // XXX: Workaround until bug 537968 has been fixed
+          this._controller.click(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+          // Todo: Calculate the correct x position
+          this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+        }
         break;
     }
   }

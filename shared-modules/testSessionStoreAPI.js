@@ -95,6 +95,17 @@ aboutSessionRestore.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function aboutSessionRestore_getDtds() {
+    var dtds = ["chrome://browser/locale/aboutSessionRestore.dtd"];
+    return dtds;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
