@@ -159,7 +159,8 @@ tabBrowser.prototype = {
         this._controller.middleClick(tab);
         break;
       case "shortcut":
-        this._controller.keypress(null, "w", {accelKey: true});
+        var cmdKey = this._utilsApi.getEntity(this.getDtds(), "closeCmd.key");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown event - " + event.type);
@@ -173,8 +174,9 @@ tabBrowser.prototype = {
    * @type [string]
    */
   getDtds : function tabBrowser_getDtds() {
-    var dtds = ["chrome://browser/locale/tabbrowser.dtd",
-               "chrome://global/locale/global.dtd"];
+    var dtds = ["chrome://browser/locale/browser.dtd",
+                "chrome://browser/locale/tabbrowser.dtd",
+                "chrome://global/locale/global.dtd"];
     return dtds;
   },
 
@@ -298,7 +300,8 @@ tabBrowser.prototype = {
         this._controller.click(menuitem);
         break;
       case "shortcut":
-        this._controller.keypress(null, "t", {accelKey: true});
+        var cmdKey = this._utilsApi.getEntity(this.getDtds(), "tabCmd.commandkey");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       case "newTabButton":
         var newTabButton = this.getElement({type: "tabs_newTabButton"});

@@ -61,9 +61,7 @@ const gTimeout = 5000;
 function privateBrowsing(controller)
 {
   this._prefs = collector.getModule('PrefsAPI').preferences;
-
   this._utilsApi = collector.getModule('UtilsAPI');
-
   this._controller = controller;
 
   /**
@@ -148,8 +146,8 @@ privateBrowsing.prototype = {
    */
   getDtds : function downloadManager_getDtds() {
     var dtds = ["chrome://branding/locale/brand.dtd",
-               "chrome://browser/locale/browser.dtd",
-               "chrome://browser/locale/aboutPrivateBrowsing.dtd"];
+                "chrome://browser/locale/browser.dtd",
+                "chrome://browser/locale/aboutPrivateBrowsing.dtd"];
     return dtds;
   },
 

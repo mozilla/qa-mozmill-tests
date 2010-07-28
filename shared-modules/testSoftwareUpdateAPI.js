@@ -300,7 +300,7 @@ softwareUpdate.prototype = {
    */
   getDtds : function softwareUpdate_getDtds() {
     var dtds = ["chrome://mozapps/locale/update/history.dtd",
-               "chrome://mozapps/locale/update/updates.dtd"]
+                "chrome://mozapps/locale/update/updates.dtd"]
     return dtds;
   },
 

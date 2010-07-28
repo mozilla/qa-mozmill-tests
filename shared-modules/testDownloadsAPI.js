@@ -240,7 +240,7 @@ downloadManager.prototype = {
    */
   getDtds : function downloadManager_getDtds() {
     var dtds = ["chrome://browser/locale/browser.dtd",
-               "chrome://mozapps/locale/downloads/downloads.dtd"];
+                "chrome://mozapps/locale/downloads/downloads.dtd"];
     return dtds;
   },
 

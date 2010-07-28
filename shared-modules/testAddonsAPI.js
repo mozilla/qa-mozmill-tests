@@ -166,7 +166,7 @@ addonsManager.prototype = {
    */
   getDtds : function downloadManager_getDtds() {
     var dtds = ["chrome://mozapps/locale/extensions/extensions.dtd",
-               "chrome://browser/locale/browser.dtd",];
+                "chrome://browser/locale/browser.dtd"];
     return dtds;
   },
 
