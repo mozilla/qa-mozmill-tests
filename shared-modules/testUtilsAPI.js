@@ -260,6 +260,15 @@ function createURI(spec, originCharset, baseURI)
 }
 
 /**
+ * Empty the clipboard by assigning an empty string
+ */
+function emptyClipboard() {
+  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].
+                  getService(Ci.nsIClipboardHelper);
+  clipboard.copyString("");
+}
+
+/**
  * Format a URL by replacing all placeholders
  *
  * @param {string} prefName
