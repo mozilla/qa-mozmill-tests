@@ -43,6 +43,7 @@
 
 var MODULE_NAME = 'TabbedBrowsingAPI';
 
+// Include necessary modules
 var RELATIVE_ROOT = '.';
 var MODULE_REQUIRES = ['UtilsAPI'];
 
@@ -75,8 +76,9 @@ function closeAllTabs(controller)
 function tabBrowser(controller)
 {
   this._controller = controller;
-  this._utilsApi = collector.getModule('UtilsAPI');
   this._tabs = this.getElement({type: "tabs"});
+
+  this._UtilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -159,7 +161,7 @@ tabBrowser.prototype = {
         this._controller.middleClick(tab);
         break;
       case "shortcut":
-        var cmdKey = this._utilsApi.getEntity(this.getDtds(), "closeCmd.key");
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "closeCmd.key");
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
@@ -287,6 +289,39 @@ tabBrowser.prototype = {
   },
 
   /**
+   * Open element (link) in a new tab
+   *
+   * @param {object} event
+   *        The event specifies how to open the element in a new tab
+   *        (contextMenu, middleClick)
+   */
+  openInNewTab : function tabBrowser_openInNewTab(event) {
+    // Add event listener to wait until the transistion has been completed
+    var self = { opened: false };
+    function checkTabOpened() { self.opened = true; }
+    this._controller.window.addEventListener("transitionend", checkTabOpened, false);
+
+    switch (event.type) {
+      case "contextMenu":
+        var contextMenuItem = new elementslib.ID(this._controller.window.document,
+                                                 "context-openlinkintab");
+        this._controller.rightClick(event.target);
+        this._controller.click(contextMenuItem);
+        this._UtilsAPI.closeContentAreaContextMenu(this._controller);
+        break;
+      case "middleClick":
+        this._controller.middleClick(event.target);
+        break;
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.opened == true", gTimeout, 100, {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("transitionend", checkTabOpened, false);
+    }
+  },
+
+  /**
    * Open a new tab
    *
    * @param {object} event
@@ -294,13 +329,18 @@ tabBrowser.prototype = {
    *        new tab button, or double click on the tabstrip)
    */
   openTab : function tabBrowser_openTab(event) {
+    // Add event listener to wait until the transistion has been completed
+    var self = { opened: false };
+    function checkTabOpened() { self.opened = true; }
+    this._controller.window.addEventListener("transitionend", checkTabOpened, false);
+
     switch (event.type) {
       case "menu":
         var menuitem = new elementslib.Elem(this._controller.menus['file-menu'].menu_newNavigatorTab);
         this._controller.click(menuitem);
         break;
       case "shortcut":
-        var cmdKey = this._utilsApi.getEntity(this.getDtds(), "tabCmd.commandkey");
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "tabCmd.commandkey");
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       case "newTabButton":
@@ -311,7 +351,7 @@ tabBrowser.prototype = {
         var tabStrip = this.getElement({type: "tabs_strip"});
         
         // RTL-locales need to be treated separately
-        if (this._utilsApi.getEntity(this.getDtds(), "locale.dir") == "rtl") {
+        if (this._UtilsAPI.getEntity(this.getDtds(), "locale.dir") == "rtl") {
           // XXX: Workaround until bug 537968 has been fixed
           this._controller.click(tabStrip, 100, 3);
           // Todo: Calculate the correct x position
@@ -323,6 +363,13 @@ tabBrowser.prototype = {
           this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
         }
         break;
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.opened == true", gTimeout, 100,
+                                   {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("transitionend", checkTabOpened, false);
     }
   }
 }
