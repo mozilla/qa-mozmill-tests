@@ -37,14 +37,10 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
-
-// TODO: move the dtds to a SecurityAPI, if one will be created
-const dtds = ["chrome://browser/locale/netError.dtd"];
-const property = "chrome://pipnss/locale/pipnss.properties";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -81,8 +77,7 @@ var testDisableSSL = function() {
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title, gTimeout);
-  var nssFailure2title = UtilsAPI.getEntity(dtds, "nssFailure2.title")
-  controller.assertJS("subject.errorTitle == '" + nssFailure2title + "'",
+  controller.assertJS("subject.errorTitle == 'Secure Connection Failed'",
                       {errorTitle: title.getNode().textContent});
 
   // Verify "Try Again" button appears
@@ -97,8 +92,7 @@ var testDisableSSL = function() {
   controller.assertJS("subject.errorMessage.indexOf('www.google.com') != -1",
                       {errorMessage: text.getNode().textContent});
 
-  var PSMERR_SSL_Disabled = UtilsAPI.getProperty(property, 'PSMERR_SSL_Disabled')
-  controller.assertJS('subject.errorMessage.indexOf("' + PSMERR_SSL_Disabled + '") != -1',
+  controller.assertJS("subject.errorMessage.indexOf('SSL protocol has been disabled') != -1",
                       {errorMessage: text.getNode().textContent});
 }
 

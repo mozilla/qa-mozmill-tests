@@ -68,13 +68,10 @@ var testCheckRegularMode = function()
 {
   controller.open("about:privatebrowsing");
   controller.waitForPageLoad();
-  
-  // Check descriptions on the about:privatebrowsing page
-  var issueDesc = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
+
+  // XXX Bug 504635 - Can't check DTD entities yet
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
-  controller.waitForElement(statusText, gTimeout);
-  controller.assertText(statusText, issueDesc);
-  
+
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);

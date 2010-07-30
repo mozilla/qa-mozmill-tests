@@ -36,7 +36,7 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SessionStoreAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['SessionStoreAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,7 +46,6 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
 
   module.session = new SessionStoreAPI.aboutSessionRestore(controller);
-  module.tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 }
 
 var testAboutSessionRestoreErrorPage = function()
@@ -78,10 +77,10 @@ var testAboutSessionRestoreErrorPage = function()
   var button = session.getElement({type: "button_newSession"});
   controller.assertJS("subject.getAttribute('oncommand') == 'startNewSession();'", button.getNode());
 
-  tabBrowser.openTab({type: "shortcut"});
+  controller.keypress(null, "t", {accelKey: true});
   controller.open("http://www.google.com");
   controller.waitForPageLoad();
-  tabBrowser.closeTab({type: "shortcut"});
+  controller.keypress(null, "w", {accelKey: true});
 
   SessionStoreAPI.undoClosedTab(controller, {type: "shortcut"});
   

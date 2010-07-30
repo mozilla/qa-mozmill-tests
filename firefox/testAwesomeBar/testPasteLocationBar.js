@@ -36,10 +36,8 @@ var testPasteLocationBar = function() {
   controller.doubleClick(ipsumLocation);
   var docSelection = controller.tabs.activeTabWindow.getSelection().toString();
 
-  // Copy "ipsum" into clipboard
-  var dtds = ["chrome://browser/locale/browser.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "copyCmd.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  // Copy "ipsum" into clipboard  
+  controller.keypress(null, "c", {accelKey: true});
 
   // Clear the locationBar
   locationBar.clear();

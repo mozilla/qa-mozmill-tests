@@ -44,7 +44,6 @@ const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  module.browserLocale = UtilsAPI.appInfo.locale;
 }
 
 var teardownModule = function(module) {
@@ -64,19 +63,10 @@ var testSetLanguages = function () {
   controller.open('http://www.google.com/');
   controller.waitForPageLoad();
 
-  // Test the language of the site
-  // If we test an Italian build, we have to use a non-Italian version of Google
-  if (browserLocale == "it") {
-    // Verify the site is Polish oriented
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Zaloguj"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Grupy"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Szukanie zaawansowane"));
-  } else {
-    // Verify the site is Italian oriented
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Gruppi"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
-  }
+  // Verify the site is Italian oriented
+  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
+  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Gruppi"));
+  controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
 }
 
 /**
@@ -106,24 +96,19 @@ var prefDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 var langHandler = function(controller) {
-  // Add the Italian Language, or Polish, if it is an Italian build
-  if (browserLocale == "it") {
-    var language = UtilsAPI.getProperty("chrome://global/locale/languageNames.properties",
-                                        "pl");
-  } else {
-    var language = UtilsAPI.getProperty("chrome://global/locale/languageNames.properties",
-                                        "it");
-  }
-
-  // Select the language from the list
+  // Add the Italian Language
   var langDropDown = new elementslib.ID(controller.window.document, "availableLanguages");
   controller.waitForElement(langDropDown, gTimeout);
 
-  for (i = 0; i < language.length; i++) {
-    controller.keypress(langDropDown, language[i], {});
-    controller.sleep(100);
-  };
-  
+  controller.keypress(langDropDown, "i", {});
+  controller.sleep(100);
+  controller.keypress(langDropDown, "t", {});
+  controller.sleep(100);
+  controller.keypress(langDropDown, "a", {});
+  controller.sleep(100);
+  controller.keypress(langDropDown, "l", {});
+  controller.sleep(100);
+
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(controller.window.document, "addButton");
   controller.waitForEval("subject.disabled == false", gTimeout, 100, addButton.getNode());
@@ -131,11 +116,10 @@ var langHandler = function(controller) {
 
   // Move the Language to the Top of the List and Accept the new settings
   var upButton = new elementslib.ID(controller.window.document, "up");
-
-  while (upButton.getNode().getAttribute("disabled") != "true") {
-    controller.click(upButton);
-    controller.sleep(gDelay);
-  };
+  controller.click(upButton);
+  controller.sleep(gDelay);
+  controller.click(upButton);
+  controller.sleep(gDelay);
 
   // Save and close the languages dialog window
   controller.click(new elementslib.Lookup(controller.window.document, '/id("LanguagesDialog")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}'));

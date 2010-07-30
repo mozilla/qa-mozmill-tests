@@ -36,14 +36,13 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
   // Create Private Browsing instance and set handler
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
@@ -90,8 +89,7 @@ function checkImportMenu(controller) {
   var importHTML = new elementslib.ID(controller.window.document, "fileImport");
   controller.assertPropertyNotExist(importHTML, "disabled");
 
-  var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  controller.keypress(null, "w", {accelKey: true});
 }
 
 /**
