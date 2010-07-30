@@ -119,7 +119,9 @@ function deleteCookie(controller) {
   controller.assertJS("subject.list.view.rowCount == subject.numberCookies",
                         {list: cookiesList, numberCookies: origNumCookies - 1});
 
-  controller.keypress(null, "w", {accelKey: true});
+  var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
+  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  controller.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**

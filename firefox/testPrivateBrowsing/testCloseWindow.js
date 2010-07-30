@@ -50,6 +50,7 @@ var websites = [
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
@@ -91,7 +92,8 @@ var testCloseWindow = function() {
 
   // One single window will be opened in PB mode which has to be closed now
   controller.waitForPageLoad();
-  controller.keypress(null, "w", {accelKey: true});
+  var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
+  controller.keypress(null, cmdKey, {accelKey: true});
   
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
                          gTimeout, 100,
