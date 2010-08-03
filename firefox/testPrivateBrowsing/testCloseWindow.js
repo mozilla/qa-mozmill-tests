@@ -91,7 +91,6 @@ var testCloseWindow = function() {
   pb.start();
 
   // One single window will be opened in PB mode which has to be closed now
-  controller.waitForPageLoad();
   var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
   

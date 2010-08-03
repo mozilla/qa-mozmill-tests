@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -78,7 +79,6 @@ var testCheckRegularMode = function()
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);
-  controller.waitForPageLoad();
 
   controller.waitForEval("subject.privateBrowsing.enabled == true", gTimeout, 100,
                          {privateBrowsing: pb});
@@ -91,7 +91,6 @@ var testCheckPrivateBrowsingMode = function()
 {
   // Start the Private Browsing mode
   pb.start();
-  controller.waitForPageLoad();
 
   var moreInfo = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
   controller.waitThenClick(moreInfo, gTimeout);
