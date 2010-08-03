@@ -65,7 +65,7 @@ var testFallbackUpdate_ErrorPatching = function() {
                                   {update: update});
     update.download(persisted.channel);
   } else {
-    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorpatching);
+    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorPatching);
 
     // Start downloading the fallback patch
     update.download(persisted.channel);

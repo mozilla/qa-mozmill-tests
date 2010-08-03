@@ -56,17 +56,17 @@ const WIZARD_DECK = WIZARD  + '/anon({"anonid":"Deck"})';
 const WIZARD_PAGES = {
   dummy: 'dummy',
   checking: 'checking',
-  updateFoundPlugins: 'pluginupdatesfound',
-  updateNotFound: 'noupdatesfound',
-  updateManual: 'manualUpdate',
+  pluginUpdatesFound: 'pluginupdatesfound',
+  noUpdatesFound: 'noupdatesfound',
+  manualUpdate: 'manualUpdate',
   incompatibleCheck: 'incompatibleCheck',
-  updateFoundMinor: 'updatesfoundbasic',
-  updateFoundMajor: 'updatesfoundbillboard',
+  updatesFoundBasic: 'updatesfoundbasic',
+  updatesFoundBillboard: 'updatesfoundbillboard',
   license: 'license',
   incompatibleList: 'incompatibleList',
   downloading: 'downloading',
   errors: 'errors',
-  errorpatching: 'errorpatching',
+  errorPatching: 'errorpatching',
   finished: 'finished',
   finishedBackground: 'finishedBackground',
   installed: 'installed'
@@ -110,6 +110,12 @@ function softwareUpdate()
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"].
               getService(Ci.nsIApplicationUpdateService);
+  // nsIApplicationUpdateService2 is required for Firefox 3.6 but doesn't exist
+  // in Firefox 4.0. This will QI to nsIApplicationUpdateService2 only when it
+  // is available.
+  if ("nsIApplicationUpdateService2" in Ci) {
+    this._aus.QueryInterface(Ci.nsIApplicationUpdateService2);
+  }
   this._ums = Cc["@mozilla.org/updates/update-manager;1"].
               getService(Ci.nsIUpdateManager);
 }
@@ -156,18 +162,35 @@ softwareUpdate.prototype = {
   },
 
   /**
-   * Returns if the offered update is a complete update
+   * Returns true if the offered update is a complete update
    */
   get isCompleteUpdate() {
-    // XXX: Bug 514040: _ums.isCompleteUpdate doesn't work at the moment
-    if (this.activeUpdate.patchCount > 1) {
-      var patch1 = this.activeUpdate.getPatchAt(0);
-      var patch2 = this.activeUpdate.getPatchAt(1);
+    // Throw when isCompleteUpdate is called without an update. This should
+    // never happen except if the test is incorrectly written.
+    if (!this.activeUpdate)
+      throw new Error(arguments.callee.name + ": isCompleteUpdate called " +
+                      "when activeUpdate is null!");
 
-      return (patch1.URL == patch2.URL);
-    } else {
-      return (this.activeUpdate.getPatchAt(0).type == "complete");
-    }
+    var patchCount = this.activeUpdate.patchCount;
+    // Test that the update snippet created by releng has less than 3 patches
+    controller.assertJS("subject.patchCount < 3",
+                        {patchCount: patchCount < 3});
+    // Test that the update snippet created by releng has more than 0 patches
+    controller.assertJS("subject.patchCount > 0",
+                        {patchCount: patchCount > 0});
+
+// After bug 514040 is fixed remove this line and uncomment out the following
+// code
+//    if (this.activeUpdate.patchCount == 2) {
+//      var patch0URL = this.activeUpdate.getPatchAt(0).URL;
+//      var patch1URL = this.activeUpdate.getPatchAt(1).URL;
+      // Test that the update snippet created by releng doesn't have the same
+      // url for both patches (bug 514040).
+//      controller.assertJS("subject.patch0URL != subject.patch1URL",
+//                          {patch0URL: patch0URL, patch1URL: patch1URL});
+//    }
+
+    return (this.activeUpdate.selectedPatch.type  == "complete");
   },
 
   /**
@@ -183,8 +206,7 @@ softwareUpdate.prototype = {
    * Check if updates have been found
    */
   get updatesFound() {
-    return this.currentPage == WIZARD_PAGES.updateFoundMajor ||
-           this.currentPage == WIZARD_PAGES.updateFoundMinor;
+    return this.currentPage.indexOf("updatesfound") == 0;
   },
 
   /**
