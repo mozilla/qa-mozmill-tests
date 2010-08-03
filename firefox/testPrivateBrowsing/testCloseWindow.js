@@ -90,7 +90,6 @@ var testCloseWindow = function() {
   pb.start();
 
   // One single window will be opened in PB mode which has to be closed now
-  controller.waitForPageLoad();
   controller.keypress(null, "w", {accelKey: true});
   
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",

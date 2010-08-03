@@ -87,7 +87,6 @@ var testTabRestoration = function()
 
   // Stop Private Browsing
   pb.stop();
-  controller.waitForPageLoad();
 
   // All tabs should be restored
   controller.assertJS("subject.tabs.length == " + (websites.length + 1),
