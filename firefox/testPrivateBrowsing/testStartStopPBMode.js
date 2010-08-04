@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,16 +36,16 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-const websites = [
-                  {url: 'http://www.mozilla.org', id: 'q'},
-                  {url: 'about:', id: 'aboutPageList'}
-                 ];
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_PAGES = [
+  {url: LOCAL_TEST_FOLDER + 'tabbedbrowsing/openinnewtab.html', id: 'list', index: 0},
+  {url: 'about:', id: 'aboutPageList', index: 1}
+];
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -74,15 +75,16 @@ var testEnablePrivateBrowsingMode = function()
 
   // Open websites in separate tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  for (var ii = 0; ii < websites.length; ii++) {
-    controller.open(websites[ii].url);
-    controller.click(newTab);
+  
+  for each(var localPage in LOCAL_PAGES) {
+   controller.open(localPage.url);
+   controller.click(newTab);
   }
 
   // Wait until all tabs have been finished loading
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
+  for each(var localPage in LOCAL_PAGES) {
+   var elem = new elementslib.ID(controller.tabs.getTab(localPage.index), localPage.id);
+   controller.waitForElement(elem, TIMEOUT);
   }
 
   // Start the Private Browsing mode
@@ -100,7 +102,7 @@ var testEnablePrivateBrowsingMode = function()
   var learnMore = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.learnMore");
   var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText");
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-  controller.waitForElement(longDescElem, gTimeout);  
+  controller.waitForElement(longDescElem, TIMEOUT);  
   controller.assertText(longDescElem, description);
   controller.assertText(moreInfoElem, learnMore);
 }
@@ -117,12 +119,12 @@ var testStopPrivateBrowsingMode = function()
   pb.stop();
 
   // All tabs should be restored
-  controller.assertJS("subject.tabs.length == " + (websites.length + 1),
+  controller.assertJS("subject.tabs.length == " + (LOCAL_PAGES.length + 1),
                       controller);
 
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
+  for (var ii = 0; ii < LOCAL_PAGES.length; ii++) {
+    var elem = new elementslib.ID(controller.tabs.getTab(ii), LOCAL_PAGES[ii].id);
+    controller.waitForElement(elem, TIMEOUT);
   }
 
   // No title modifier should have been set
@@ -156,7 +158,7 @@ var pbStartHandler = function(controller)
 {
   // Check to not ask anymore for entering Private Browsing mode
   var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
-  controller.waitThenClick(checkbox, gTimeout);
+  controller.waitThenClick(checkbox, TIMEOUT);
 
   var okButton = new elementslib.Lookup(controller.window.document, '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.click(okButton);
