@@ -38,10 +38,12 @@
 
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'SessionStoreAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'SessionStoreAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 
+                        "tabbedbrowsing/openinnewtab_target.html?id=";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -62,9 +64,9 @@ var testUndoTabFromContextMenu = function() {
   var tabBar = tabBrowser.getElement({type: 'tabs'});
   controller.rightClick(tabBar);
 
-  // Check if 'Undo Close Tab' is hidden
+  // Check if 'Undo Close Tab' is disabled
   var contextMenuItem = new elementslib.ID(controller.window.document, 'context_undoCloseTab');
-  controller.assertProperty(contextMenuItem, 'hidden', true);
+  controller.assertProperty(contextMenuItem, 'disabled', true);
   UtilsAPI.closeContentAreaContextMenu(controller);
 
   // Check 'Recently Closed Tabs' count, should be 0
@@ -73,8 +75,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Open 3 tabs with pages in the local test folder
   for (var i = 0; i < 3; i++) {
-   controller.open(localTestFolder + 
-                   'tabbedbrowsing/openinnewtab_target.html?id=' + i);
+   controller.open(LOCAL_TEST_PAGE + i);
    controller.waitForPageLoad();
    tabBrowser.openTab({type: 'menu'});
   }
@@ -83,7 +84,7 @@ var testUndoTabFromContextMenu = function() {
   tabBrowser.selectedIndex = 1;
   tabBrowser.closeTab({type: 'menu'});
 
-  // Check for correct linkId on 2nd tab, should be 2
+  // Check for correct id on 2nd tab, should be 2
   var linkId = new elementslib.ID(controller.tabs.activeTab, "id");
   controller.assertText(linkId, "2")
 
@@ -91,16 +92,16 @@ var testUndoTabFromContextMenu = function() {
   controller.assertJS("subject.closedTabCount == 1", 
                       {closedTabCount: SessionStoreAPI.getClosedTabCount(controller)});
 
-  // Check if 'Undo Close Tab' is visible
+  // Check if 'Undo Close Tab' is enabled
   controller.rightClick(tabBar);
-  controller.assertProperty(contextMenuItem, 'hidden', false);
+  controller.assertProperty(contextMenuItem, 'disabled', false);
 
   // Restore recently closed tab via tab browser context menu'
   controller.click(contextMenuItem);
   controller.waitForPageLoad();
   UtilsAPI.closeContentAreaContextMenu(controller);
 
-  // Check for correct linkId on 2nd tab, should be 1
+  // Check for correct id on 2nd tab, should be 1
   linkId = new elementslib.ID(controller.tabs.activeTab, "id");
   controller.assertText(linkId, "1");
 
@@ -108,8 +109,8 @@ var testUndoTabFromContextMenu = function() {
   controller.assertJS("subject.closedTabCount == 0", 
                       {closedTabCount: SessionStoreAPI.getClosedTabCount(controller)});
 
-  // Check if 'Undo Close Tab' is hidden
+  // Check if 'Undo Close Tab' is disabled
   controller.rightClick(tabBar);
-  controller.assertProperty(contextMenuItem, 'hidden', true);
+  controller.assertProperty(contextMenuItem, 'disabled', true);
   UtilsAPI.closeContentAreaContextMenu(controller);
 }
