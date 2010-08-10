@@ -21,6 +21,7 @@
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,34 +38,38 @@
  * **** END LICENSE BLOCK *****/
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
 
-const gTimeout = 5000;
-const gDelay = 100;
+const TIMEOUT = 5000;
 
-const websites = ['http://www.google.com/',
-                  'http://www.mozilla.org/',
-                  'http://www.getpersonas.com/',
-                  'about:blank'];
-
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html',
+  'about:blank'
+];
+                          
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   locationBar = new ToolbarAPI.locationBar(controller);
 
-  // Clear complete history so we don't get interference from previous entries
+  // Clear complete history so we don't get interference from 
+  // previous entries
   PlacesAPI.removeAllHistory();
 }
 
 /**
- * Check acces to the location bar drop down list via autocomplete
+ * Check access to the location bar drop down list via autocomplete
  */
 var testAccessLocationBarHistory = function()
 {
-  // Open a few different sites to create a small history (about:blank doesn't
-  // appear in history and clears the page for clean test arena
-  for each (website in websites) {
-    locationBar.loadURL(website);
+  // Open a few different sites to create a small history 
+  // NOTE: about:blank doesn't appear in history and clears the page 
+  //       for clean test arena
+  for each (var page in LOCAL_TEST_PAGES) {
+    locationBar.loadURL(page);
     controller.waitForPageLoad();
   }
 
@@ -74,27 +79,28 @@ var testAccessLocationBarHistory = function()
   // First - Focus the locationbar then delete any contents there
   locationBar.clear();
 
-  // Second - Arrow down to open the autocomplete list (displays most recent visit first),
-  // then arrow down again to the first entry, in this case www.getpersonas.com;
+  // Second - Arrow down to open the autocomplete list, displaying
+  // the most recent visit first, then arrow down again to the first entry, 
+  // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.sleep(gDelay);
+  controller.sleep(100);
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
-  // checks that the first item in the drop down list is selected.
-  controller.waitForEval("subject.selectedIndex == 0",
-                         gTimeout, 100, locationBar.autoCompleteResults);
-  locationBar.contains("getpersonas");
+  // Check that the first item in the drop down list is selected
+  controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100,
+                         locationBar.autoCompleteResults);
+  locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
-  // Finally - Check that the personas page was loaded
-  // Check for presense of Personsas image
-  var personasImage = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[@id='outer-wrapper']/div[@id='inner-wrapper']/div[@id='nav']/h1/a/img");
-  controller.waitForElement(personasImage, gTimeout, 100);
+  // Finally - Check that the mozilla page was loaded by verifying the
+  // Mozilla logo exists
+  var mozillaLogo = new elementslib.ID(controller.tabs.activeTab, "mozilla_logo");
+  controller.waitForElement(mozillaLogo, TIMEOUT, 100);
 
-  // Check that getpersonas is in the url bar
-  locationBar.contains("getpersonas");
+  // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
+  locationBar.contains(LOCAL_TEST_PAGES[2]);
 }
 
 /**
