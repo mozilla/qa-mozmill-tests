@@ -38,30 +38,28 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const TIMEOUT = 5000;
 
-const gDelay = 0;
-const gTimeout = 5000;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
 
-var gTabOrder = [
+const TAB_ORDER = [
   {index: 1, linkid: 1},
   {index: 2, linkid: 2},
   {index: 3, linkid: 3}
 ];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
   UtilsAPI.closeContentAreaContextMenu(controller);
   tabBrowser.closeAllTabs();
@@ -70,45 +68,38 @@ var teardownModule = function(module)
 /**
  * Check that links open in background tabs
  */
-var testOpenInBackgroundTab = function()
-{
+var testOpenInBackgroundTab = function() {
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
-  // Open the HTML testcase
-  controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
+  // Open the HTML testcase:
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  for(var i = 0; i < gTabOrder.length; i++) {
-    // Reference to the current link in the testcase
+  for (var i = 0; i < TAB_ORDER.length; i++) {
+    // Reference to the current link in the testcase:
     var currentLink = new elementslib.Name(controller.tabs.activeTab, "link_" + (i + 1));
-    var contextMenuItem = new elementslib.ID(controller.window.document, "context-openlinkintab");
-    
-    if(i == 2) {
+
+    if (i == 2) {
       // Open another tab by middle-clicking on the link
-      controller.middleClick(currentLink);
+      tabBrowser.openInNewTab({type: "middleClick", target: currentLink});
     } else {
-      // Open the first link via context menu in a new tab
-      controller.rightClick(currentLink);
-      controller.click(contextMenuItem);
-      UtilsAPI.closeContentAreaContextMenu(controller);
+      // Open the first link via context menu in a new tab:
+      tabBrowser.openInNewTab({type: "contextMenu", target: currentLink});
     }
 
     // Check that i+1 tabs are open and the first tab is selected
-    controller.waitForEval("subject.length == " + (i + 2), gTimeout, 100, tabBrowser);
-    controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, tabBrowser);
-    
-    if(i == 0) {
+    controller.waitForEval("subject.length == " + (i + 2), TIMEOUT, 100, tabBrowser);
+    controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100, tabBrowser);
+
+    if (i == 0) {
       // Switch to the newly opened tab and back to the first tab
       tabBrowser.selectedIndex = 1;
       tabBrowser.selectedIndex = 0;
     }
   }
 
-  // We need to wait for the pages to load completely, before we can check on the tab titles
-  controller.waitForPageLoad();
-
   // Verify that the order of tabs is correct
-  for each(tab in gTabOrder) {
+  for each (var tab in TAB_ORDER) {
     var linkId = new elementslib.ID(controller.tabs.getTab(tab.index), "id");
     controller.waitForElement(linkId);
     controller.assertText(linkId, tab.linkid);
@@ -118,9 +109,9 @@ var testOpenInBackgroundTab = function()
   tabBrowser.selectedIndex = 3;
   tabBrowser.closeTab({type: "closeButton"});
 
-  // Verify that the last tab is selected
-  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
-  controller.waitForEval("subject.selectedIndex == 2", gTimeout, 100, tabBrowser);
+  // Verify that the last tab is selected:
+  controller.waitForEval("subject.length == 3", TIMEOUT, 100, tabBrowser);
+  controller.waitForEval("subject.selectedIndex == 2", TIMEOUT, 100, tabBrowser);
 }
 
 /**
@@ -136,7 +127,7 @@ var prefDialogCallback = function(controller)
 
   // Ensure that 'Switch to tabs immediately' is unchecked
   var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
-  controller.waitForElement(switchToTabsPref, gTimeout);
+  controller.waitForElement(switchToTabsPref, TIMEOUT);
   controller.check(switchToTabsPref, false);
 
   prefDialog.close(true);

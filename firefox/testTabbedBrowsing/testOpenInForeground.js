@@ -101,9 +101,6 @@ var testOpenInForegroundTab = function()
     controller.waitForEval("subject.selectedIndex == " + (i + 1), gTimeout, 100, tabBrowser);
   }
 
-  // We need to wait for the pages to load completely, before we can check on the tab titles
-  controller.waitForPageLoad();
-
   // Verify that the order of tabs is correct
   for each(tab in gTabOrder) {
     var linkId = new elementslib.ID(controller.tabs.getTab(tab.index), "id");

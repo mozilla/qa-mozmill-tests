@@ -41,9 +41,13 @@
  * @version 1.0.0
  */
 
-var MODULE_NAME = 'TabbedBrowsingAPI';
+const MODULE_NAME = 'TabbedBrowsingAPI';
 
-const gTimeout = 5000;
+// Include necessary modules
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['UtilsAPI'];
+
+const TIMEOUT = 5000;
 
 const tabsBrowser = '/id("main-window")/id("browser")/id("appcontent")/id("content")';
 const tabsStrip = tabsBrowser + '/anon({"anonid":"tabbox"})/anon({"anonid":"strip"})';
@@ -75,6 +79,8 @@ function tabBrowser(controller)
 {
   this._controller = controller;
   this._tabs = this.getElement({type: "tabs"});
+
+  this._UtilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -126,8 +132,9 @@ tabBrowser.prototype = {
    */
   closeAllTabs : function tabBrowser_closeAllTabs()
   {
-    while (this._controller.tabs.length > 1)
+    while (this._controller.tabs.length > 1) {
       this.closeTab({type: "menu"});
+    }
 
     this._controller.open("about:blank");
     this._controller.waitForPageLoad();
@@ -142,6 +149,11 @@ tabBrowser.prototype = {
    *        inactive tab can be closed.
    */
   closeTab : function tabBrowser_closeTab(event) {
+    // Add event listener to wait until the tab has been closed
+    var self = { closed: false };
+    function checkTabClosed() { self.closed = true; }
+    this._controller.window.addEventListener("TabClose", checkTabClosed, false);
+
     switch (event.type) {
       case "closeButton":
         var button = this.getElement({type: "tabs_tabCloseButton",
@@ -161,6 +173,13 @@ tabBrowser.prototype = {
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown event - " + event.type);
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.closed == true", TIMEOUT, 100,
+                                   {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
     }
   },
 
@@ -279,6 +298,40 @@ tabBrowser.prototype = {
   },
 
   /**
+   * Open element (link) in a new tab
+   *
+   * @param {object} event
+   *        The event specifies how to open the element in a new tab
+   *        (contextMenu, middleClick)
+   */
+  openInNewTab : function tabBrowser_openInNewTab(event) {
+    // Add event listener to wait until the tab has been opened
+    var self = { opened: false };
+    function checkTabOpened() { self.opened = true; }
+    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
+
+    switch (event.type) {
+      case "contextMenu":
+        var contextMenuItem = new elementslib.ID(this._controller.window.document,
+                                                 "context-openlinkintab");
+        this._controller.rightClick(event.target);
+        this._controller.click(contextMenuItem);
+        this._UtilsAPI.closeContentAreaContextMenu(this._controller);
+        break;
+      case "middleClick":
+        this._controller.middleClick(event.target);
+        break;
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.opened == true", TIMEOUT, 100,
+                                   {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
+    }
+  },
+
+  /**
    * Open a new tab
    *
    * @param {object} event
@@ -286,6 +339,11 @@ tabBrowser.prototype = {
    *        new tab button, or double click on the tabstrip)
    */
   openTab : function tabBrowser_openTab(event) {
+    // Add event listener to wait until the tab has been opened
+    var self = { opened: false };
+    function checkTabOpened() { self.opened = true; }
+    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
+
     switch (event.type) {
       case "menu":
         var menuitem = new elementslib.Elem(this._controller.menus['file-menu'].menu_newNavigatorTab);
@@ -307,6 +365,13 @@ tabBrowser.prototype = {
         // Todo: Calculate the correct x position
         this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
         break;
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.opened == true", TIMEOUT, 100,
+                                   {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
     }
   }
 }
