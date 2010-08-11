@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,27 +36,25 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var websites = [
-                {url: 'http://www.mozilla.org', id: 'q'},
-                {url: 'about:', id: 'aboutPageList'}
-               ];
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'organization'},
+  {url: 'about:', id: 'aboutPageList'}
+];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 
   TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   pb.reset();
 }
 
@@ -63,8 +62,7 @@ var teardownModule = function(module)
  * Test that the content of all tabs (http, https, about), which were loaded
  * before the transistion into PB mode, is re-loaded when leaving PB mode
  */
-var testAllTabsClosedOnStop = function()
-{
+var testAllTabsClosedOnStop = function() {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
@@ -74,17 +72,18 @@ var testAllTabsClosedOnStop = function()
 
   // Open websites in separate tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  for (var ii = 0; ii < websites.length; ii++) {
-    controller.open(websites[ii].url);
+  for each (var page in LOCAL_TEST_PAGES) {
+    controller.open(page.url);
     controller.click(newTab);
   }
 
   // Wait until all tabs have been finished loading
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
+  for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
+    controller.waitForElement(elem, TIMEOUT);
   }
 
+  // Stop Private Browsing
   pb.stop();
 
   // All tabs should have been removed
