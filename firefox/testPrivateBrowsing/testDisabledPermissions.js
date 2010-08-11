@@ -37,30 +37,26 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI',
-                       'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 
+                         'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  LOCAL_TEST_FOLDER + 'popups/popups_2.html',
+  LOCAL_TEST_FOLDER + 'cookies/cookie_single.html'
+];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var websites = [
-                localTestFolder + "popups/popups_2.html",
-                localTestFolder + "cookies/cookie_single.html"
-               ];
-
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   pb.reset();
 
   // Reset the user cookie pref
@@ -70,8 +66,7 @@ var teardownModule = function(module)
 /**
  * Verify various permissions are disabled when in Private Browsing mode
  */
-var testPermissionsDisabled = function()
-{
+var testPermissionsDisabled = function() {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
@@ -81,7 +76,7 @@ var testPermissionsDisabled = function()
   pb.start();
 
   // Check that the "allow" button for pop-ups is disabled in the preferences
-  controller.open(websites[0]);
+  controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
 
   // Open context menu and check "Allow Popups" is disabled
@@ -91,7 +86,10 @@ var testPermissionsDisabled = function()
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
   var allow = new elementslib.XPath(controller.window.document, 
-                                    "/*[name()='window']/*[name()='popupset'][1]/*[name()='menupopup'][4]/*[name()='menuitem'][1]");
+                                    '/*[name()="window"]' +
+                                    '/*[name()="popupset"][1]' +
+                                    '/*[name()="menupopup"][4]' +
+                                    '/*[name()="menuitem"][1]');
 
   controller.waitForElement(allow);
   controller.assertProperty(allow, "disabled", true);
@@ -102,7 +100,7 @@ var testPermissionsDisabled = function()
   PrefsAPI.openPreferencesDialog(prefCookieHandler);
 
   // No cookie dialog should show up
-  controller.open(websites[1]);
+  controller.open(LOCAL_TEST_PAGES[1]);
   controller.waitForPageLoad();
 }
 
@@ -112,25 +110,24 @@ var testPermissionsDisabled = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefCookieHandler = function(controller)
-{
+var prefCookieHandler = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and select ask me every time for cookies
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode, gTimeout);
+  controller.waitForElement(historyMode, TIMEOUT);
   controller.select(historyMode, null, null, "custom");
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
   var acceptCookies = new elementslib.ID(controller.window.document, "acceptCookies");
   controller.assertChecked(acceptCookies);
 
   // Select "ask me every time"
   var keepCookies = new elementslib.ID(controller.window.document, "keepCookiesUntil");
-  controller.waitForElement(keepCookies, gTimeout);
+  controller.waitForElement(keepCookies, TIMEOUT);
   controller.select(keepCookies, null, null, 1);
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
   prefDialog.close(true);
 }
@@ -138,8 +135,7 @@ var prefCookieHandler = function(controller)
 /**
  * Just in case we open a modal dialog we have to mark the test as failed
  */
-var cookieHandler = function(controller)
-{
+var cookieHandler = function(controller) {
   var button = new elementslib.ID(controller.window.document, "ok");
   controller.assertNodeNotExist(button);
 }
