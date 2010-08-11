@@ -41,13 +41,15 @@
  * @version 1.0.0
  */
 
-var MODULE_NAME = 'TabbedBrowsingAPI';
+const MODULE_NAME = 'TabbedBrowsingAPI';
 
 // Include necessary modules
-var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['UtilsAPI'];
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+
+const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
 const tabsBrowser = '/id("main-window")/id("browser")/id("appcontent")/id("content")';
 const tabsToolbar = '/id("main-window")/id("navigator-toolbox")/id("TabsToolbar")';
@@ -79,6 +81,7 @@ function tabBrowser(controller)
   this._tabs = this.getElement({type: "tabs"});
 
   this._UtilsAPI = collector.getModule('UtilsAPI');
+  this._PrefsAPI = collector.getModule('PrefsAPI');
 }
 
 /**
@@ -130,8 +133,9 @@ tabBrowser.prototype = {
    */
   closeAllTabs : function tabBrowser_closeAllTabs()
   {
-    while (this._controller.tabs.length > 1)
+    while (this._controller.tabs.length > 1) {
       this.closeTab({type: "menu"});
+    }
 
     this._controller.open("about:blank");
     this._controller.waitForPageLoad();
@@ -146,6 +150,14 @@ tabBrowser.prototype = {
    *        inactive tab can be closed.
    */
   closeTab : function tabBrowser_closeTab(event) {
+    // Disable tab closing animation for default behavior
+    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+
+    // Add event listener to wait until the tab has been closed
+    var self = { closed: false };
+    function checkTabClosed() { self.closed = true; }
+    this._controller.window.addEventListener("TabClose", checkTabClosed, false);
+
     switch (event.type) {
       case "closeButton":
         var button = this.getElement({type: "tabs_tabCloseButton",
@@ -166,6 +178,14 @@ tabBrowser.prototype = {
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown event - " + event.type);
+    }
+
+    try {
+      this._controller.waitForEval("subject.tab.closed == true", TIMEOUT, 100,
+                                   {tab: self});
+    } finally {
+      this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
+      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
@@ -296,10 +316,13 @@ tabBrowser.prototype = {
    *        (contextMenu, middleClick)
    */
   openInNewTab : function tabBrowser_openInNewTab(event) {
-    // Add event listener to wait until the transistion has been completed
+    // Disable tab closing animation for default behavior
+    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+
+    // Add event listener to wait until the tab has been opened
     var self = { opened: false };
     function checkTabOpened() { self.opened = true; }
-    this._controller.window.addEventListener("transitionend", checkTabOpened, false);
+    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
 
     switch (event.type) {
       case "contextMenu":
@@ -315,9 +338,11 @@ tabBrowser.prototype = {
     }
 
     try {
-      this._controller.waitForEval("subject.tab.opened == true", gTimeout, 100, {tab: self});
+      this._controller.waitForEval("subject.tab.opened == true", TIMEOUT, 100,
+                                   {tab: self});
     } finally {
-      this._controller.window.removeEventListener("transitionend", checkTabOpened, false);
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
+      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
@@ -329,10 +354,13 @@ tabBrowser.prototype = {
    *        new tab button, or double click on the tabstrip)
    */
   openTab : function tabBrowser_openTab(event) {
-    // Add event listener to wait until the transistion has been completed
+    // Disable tab closing animation for default behavior
+    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+
+    // Add event listener to wait until the tab has been opened
     var self = { opened: false };
     function checkTabOpened() { self.opened = true; }
-    this._controller.window.addEventListener("transitionend", checkTabOpened, false);
+    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
 
     switch (event.type) {
       case "menu":
@@ -366,10 +394,11 @@ tabBrowser.prototype = {
     }
 
     try {
-      this._controller.waitForEval("subject.tab.opened == true", gTimeout, 100,
+      this._controller.waitForEval("subject.tab.opened == true", TIMEOUT, 100,
                                    {tab: self});
     } finally {
-      this._controller.window.removeEventListener("transitionend", checkTabOpened, false);
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
+      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   }
 }
