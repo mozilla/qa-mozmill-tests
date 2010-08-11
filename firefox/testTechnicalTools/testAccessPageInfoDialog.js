@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,11 +36,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -51,7 +54,7 @@ var teardownModule = function(module) {
 
 var testAccessPageInfo = function () {
   // Load web page with RSS feed
-  controller.open('http://www.google.com');
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Open context menu on the html element and select Page Info entry
@@ -72,13 +75,13 @@ function checkPageInfoWindow(controller) {
               ];
 
   // Step through each of the tabs
-  for each (pane in panes) {
+  for each (var pane in panes) {
     var paneButton = new elementslib.ID(controller.window.document, pane.button);
     controller.click(paneButton);
 
     // Check if the panel has been shown
     var node = new elementslib.ID(controller.window.document, pane.panel);
-    controller.waitForElement(node, gTimeout);
+    controller.waitForElement(node, TIMEOUT);
   }
 
   // Close the Page Info window by pressing Escape
