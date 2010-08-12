@@ -36,16 +36,16 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var websites = [
-                {url: 'https://addons.mozilla.org/', id: 'search-query'},
-                {url: 'https://bugzilla.mozilla.org', id: 'quicksearch_top'}
-               ];
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', name: 'community'},
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', name: 'mission'}
+];
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -74,17 +74,18 @@ var testCloseWindow = function() {
   pb.enabled = false;
   pb.showPrompt = false;
 
-  // Open websites in separate tabs
+  // Open local pages in separate tabs
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  for (var ii = 0; ii < websites.length; ii++) {
-    controller.open(websites[ii].url);
+  
+  for each (var page in LOCAL_TEST_PAGES) {
+    controller.open(page.url);
     controller.click(newTab);
   }
 
-  // Wait until all tabs have been finished loading
-  for (var ii = 0; ii < websites.length; ii++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(ii), websites[ii].id);
-    controller.waitForElement(elem, gTimeout);
+  // Wait until all tabs have finished loading
+  for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    var elem = new elementslib.Name(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].name);
+     controller.waitForElement(elem, TIMEOUT); 
   }
 
   // Start Private Browsing
@@ -95,14 +96,14 @@ var testCloseWindow = function() {
   controller.keypress(null, cmdKey, {accelKey: true});
   
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
-                         gTimeout, 100,
+                         TIMEOUT, 100,
                          {utils: mozmill.utils, expectedCount: (windowCount - 1)});
 
   // Without a window any keypress and menu click will fail.
   // Flipping the pref directly will also do it.
   pb.enabled = false;
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
-                         gTimeout, 100,
+                         TIMEOUT, 100,
                          {utils: mozmill.utils, expectedCount: windowCount});
 
   UtilsAPI.handleWindow("type", "navigator:browser", checkWindowOpen, true);
@@ -113,13 +114,13 @@ function checkWindowOpen(controller) {
   controller.assertJS("subject.tabs.length == subject.expectedCount",
                       {tabs: controller.tabs, expectedCount: (websites.length + 1)});
 
-  // Check if all pages were re-loaded and show their content
-  for (var i = 0; i < websites.length; i++) {
+  // Check if all local pages were re-loaded and show their content
+  for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
     var tab = controller.tabs.getTab(i);
-    var elem = new elementslib.ID(tab, websites[i].id);
+    var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].name);
 
     controller.waitForPageLoad(tab);
-    controller.waitForElement(elem, gTimeout);
+    controller.waitForElement(elem, TIMEOUT);
   }
 }
 
