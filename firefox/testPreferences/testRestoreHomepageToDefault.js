@@ -37,11 +37,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -58,10 +60,10 @@ var teardownModule = function(module) {
  */
 var testRestoreHomeToDefault = function() {
   // Open a web page for the temporary home page
-  controller.open('http://www.mozilla.org/');
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  var link = new elementslib.Link(controller.tabs.activeTab, "Mozilla");
+  var link = new elementslib.Link(controller.tabs.activeTab, "Organization");
   controller.assertNode(link);
 
   // Call Preferences dialog and set home page
@@ -89,7 +91,7 @@ var prefDialogHomePageCallback = function(controller) {
   // Set home page to the current page
   var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
   controller.waitThenClick(useCurrent);
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
   prefDialog.close(true);
 }
@@ -99,7 +101,7 @@ var prefDialogDefHomePageCallback = function(controller) {
 
   // Reset home page to the default page
   var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
-  controller.waitForElement(useDefault, gTimeout);
+  controller.waitForElement(useDefault, TIMEOUT);
   controller.click(useDefault);
 
   // Check the browserconfig file to get the get default homepage
