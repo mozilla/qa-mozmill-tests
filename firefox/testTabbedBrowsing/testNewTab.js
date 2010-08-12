@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,11 +37,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 var setupModule = function(module)
 {
@@ -53,11 +56,11 @@ var setupModule = function(module)
 var testNewTab = function()
 {
   // Ensure current tab does not have blank page loaded
-  var section = new elementslib.ID(controller.tabs.activeTab, "sub");
+  var section = new elementslib.ID(controller.tabs.activeTab, "organization");
 
-  controller.open('http://www.mozilla.org');
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  controller.waitForElement(section, gTimeout);
+  controller.waitForElement(section, TIMEOUT);
 
   // Test all different ways to open a tab
   checkOpenTab({type: "menu"});
@@ -76,7 +79,7 @@ var checkOpenTab = function(event)
 {
   // Open a new tab and check that 'about:blank' has been opened
   tabBrowser.openTab(event);
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.length == 2", TIMEOUT, 100, controller.tabs);
   controller.assertJS("subject.activeTab.location == 'about:blank'",
                       controller.tabs);
 
@@ -88,7 +91,7 @@ var checkOpenTab = function(event)
 
   // Close the tab again
   tabBrowser.closeTab({type: "shortcut"});
-  controller.waitForEval("subject.length == 1", gTimeout, 100, controller.tabs);
+  controller.waitForEval("subject.length == 1", TIMEOUT, 100, controller.tabs);
 }
 
 /**
