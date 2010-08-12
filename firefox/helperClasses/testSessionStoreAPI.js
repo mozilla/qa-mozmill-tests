@@ -75,9 +75,6 @@ var testAboutSessionRestoreErrorPage = function()
   var button = session.getElement({type: "button_restoreSession"});
   controller.assertJS("subject.getAttribute('oncommand') == 'restoreSession();'", button.getNode());
 
-  var button = session.getElement({type: "button_newSession"});
-  controller.assertJS("subject.getAttribute('oncommand') == 'startNewSession();'", button.getNode());
-
   tabBrowser.openTab({type: "shortcut"});
   controller.open("http://www.google.com");
   controller.waitForPageLoad();
