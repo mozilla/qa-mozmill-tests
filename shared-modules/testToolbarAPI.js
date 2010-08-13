@@ -382,10 +382,10 @@ locationBar.prototype = {
        * value: value to match
        */
       case "contextMenu":
-        elem = new elementslib.Lookup(this._controller.window.document, CENTEXT_MENU);
+        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU);
         break;
       case "contextMenu_entry":
-        elem = new elementslib.Lookup(this._controller.window.document, CENTEXT_MENU +
+        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU +
                                       '/{"cmd":"cmd_' + spec.subtype + '"}');
         break;
       case "favicon":
