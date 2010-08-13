@@ -46,7 +46,7 @@ var MODULE_NAME = 'SessionStoreAPI';
 
 // Include necessary modules
 var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['PrefsAPI', 'WidgetsAPI'];
+var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI', 'WidgetsAPI'];
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
@@ -66,7 +66,8 @@ const gTimeout = 5000;
 function aboutSessionRestore(controller)
 {
   this._controller = controller;
-
+  
+  this._UtilsAPI = collector.getModule('UtilsAPI');
   this._WidgetsAPI = collector.getModule('WidgetsAPI');
 }
 
@@ -92,6 +93,18 @@ aboutSessionRestore.prototype = {
    */
   get tabList() {
     return this.getElement({type: "tabList"});
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function aboutSessionRestore_getDtds() {
+    var dtds = ["chrome://browser/locale/browser.dtd",
+                "chrome://browser/locale/aboutSessionRestore.dtd"];
+    return dtds;
   },
 
   /**
@@ -261,7 +274,8 @@ function undoClosedTab(controller, event)
       throw new Error("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
-      controller.keypress(null, "t", {accelKey: true, shiftKey: true});
+      var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "tabCmd.commandkey");
+      controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
 
@@ -290,7 +304,8 @@ function undoClosedWindow(controller, event)
       throw new Error("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
-      controller.keypress(null, "n", {accelKey: true, shiftKey: true});
+      var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "newNavigatorCmd.key");
+      controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
 

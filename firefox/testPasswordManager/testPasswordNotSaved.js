@@ -137,8 +137,10 @@ function checkPasswordsNotSaved(controller) {
   var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
   controller.assertProperty(removeLogin, 'disabled', 'true');
 
-  // Close the password manager and preferences dialog
-  controller.keypress(null, "W", {accelKey: true});
+  // Close the password manager
+  var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
+  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  controller.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**

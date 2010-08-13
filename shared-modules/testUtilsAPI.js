@@ -301,7 +301,7 @@ function getDefaultHomepage() {
 /**
  * Returns the value of an individual entity in a DTD file.
  *
- * @param {Array of string} urls
+ * @param [string] urls
  *        Array of DTD urls.
  * @param {string} entityId
  *        The ID of the entity to get the value of.

@@ -140,7 +140,9 @@ function deleteAllPasswords(controller) {
   controller.assertJS("subject.view.rowCount == 0", signOnsTree);
 
   // Close the password manager
-  controller.keypress(null, "w", {accelKey:true});
+  var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
+  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  controller.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**

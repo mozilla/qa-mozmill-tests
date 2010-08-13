@@ -58,7 +58,8 @@ function softwareUpdate()
   this._controller = null;
   this._wizard = null;
   this._prefsAPI = collector.getModule('PrefsAPI');
-  this._utilsAPI = collector.getModule('UtilsAPI');
+
+  this._UtilsAPI = collector.getModule('UtilsAPI');
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"]
                  .getService(Ci.nsIApplicationUpdateService);
@@ -230,6 +231,19 @@ softwareUpdate.prototype = {
     foStream.close();
   },
 
+  
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function softwareUpdate_getDtds() {
+    var dtds = ["chrome://mozapps/locale/update/history.dtd",
+                "chrome://mozapps/locale/update/updates.dtd"]
+    return dtds;
+  },
+
   /**
    * Open software update dialog and get window controller
    * @param {MozMillController} browserController
@@ -262,7 +276,7 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
-    this._controller = this._utilsAPI.handleWindow("type", "Update:Wizard",
+    this._controller = this._UtilsAPI.handleWindow("type", "Update:Wizard",
                                                    null, true);
     this._wizard = this._controller.window.document.getElementById('updates');
 

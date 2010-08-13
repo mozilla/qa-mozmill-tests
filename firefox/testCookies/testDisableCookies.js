@@ -129,7 +129,9 @@ function checkCookiesNotSaved(controller) {
   controller.assertJS("subject.cookieCount == 0",
                       {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
 
-  controller.keypress(null, "w", {accelKey: true});
+  var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
+  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  controller.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**
