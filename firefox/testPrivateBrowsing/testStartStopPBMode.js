@@ -98,12 +98,13 @@ var testEnablePrivateBrowsingMode = function()
                       controller.window.document);
 
   // Check descriptions on the about:privatebrowsing page
-  // XXX: Bug 504635 needs to be implemented so we can get the entities from the DTD
-  var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText")
+  var description = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.description");
+  var learnMore = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.learnMore");
+  var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText");
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-
-  controller.waitForElement(longDescElem, TIMEOUT);
-  controller.waitForElement(moreInfoElem, TIMEOUT);
+  controller.waitForElement(longDescElem, TIMEOUT);  
+  controller.assertText(longDescElem, description);
+  controller.assertText(moreInfoElem, learnMore);
 }
 
 /**

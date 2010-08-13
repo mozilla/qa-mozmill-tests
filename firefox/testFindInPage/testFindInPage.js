@@ -36,6 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var RELATIVE_ROOT = '../../shared-modules';
+var MODULE_REQUIRES = ['UtilsAPI'];
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -58,7 +61,9 @@ var setupModule = function(module) {
 var teardownModule = function(module) {
   try {
      // Just press Ctrl/Cmd + F to select the whole search string
-    controller.keypress(null, "f", {accelKey:true});
+    var dtds = ["chrome://browser/locale/browser.dtd"];
+    var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
+    controller.keypress(null, cmdKey, {accelKey: true});
 
     // Clear search text from the text field
     controller.keypress(findBarTextField, 'VK_DELETE', {});
@@ -83,7 +88,9 @@ var testFindInPage = function() {
   controller.waitForPageLoad();
 
   // Press Ctrl/Cmd + F to open the find bar
-  controller.keypress(null, "f", {accelKey:true});
+  var dtds = ["chrome://browser/locale/browser.dtd"];
+  var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
+  controller.keypress(null, cmdKey, {accelKey: true});
   controller.sleep(gDelay);
 
   // Check that the find bar is visible

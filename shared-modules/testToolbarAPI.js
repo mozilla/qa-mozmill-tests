@@ -43,6 +43,9 @@
 
 const MODULE_NAME = 'ToolbarAPI';
 
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['UtilsAPI'];
+
 const gTimeout = 5000;
 
 const autocompletePopup = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
@@ -178,6 +181,16 @@ autoCompleteResults.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function autoCompleteResults_getDtds() {
+    return null;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -236,6 +249,8 @@ function locationBar(controller)
 {
   this._controller = controller;
   this._autoCompleteResults = new autoCompleteResults(controller);
+  
+  this._UtilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -322,7 +337,8 @@ locationBar.prototype = {
         this._controller.click(this.urlbar);
         break;
       case "shortcut":
-        this._controller.keypress(null, "l", {accelKey: true});
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "openCmd.commandkey");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
         throw new Error(arguments.callee.name + ": Unkown event type - " + event.type);
@@ -331,6 +347,18 @@ locationBar.prototype = {
     // Wait until the location bar has been focused
     this._controller.waitForEval("subject.getAttribute('focused') == 'true'",
                                  gTimeout, 100, this.urlbar.getNode());
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function locationBar_getDtds() {
+    var dtds = ["chrome://branding/locale/brand.dtd",
+                "chrome://browser/locale/browser.dtd"];
+    return dtds;
   },
 
   /**

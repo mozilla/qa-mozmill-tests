@@ -167,7 +167,8 @@ tabBrowser.prototype = {
         this._controller.middleClick(tab);
         break;
       case "shortcut":
-        this._controller.keypress(null, "w", {accelKey: true});
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "closeCmd.key");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown event - " + event.type);
@@ -179,6 +180,19 @@ tabBrowser.prototype = {
     } finally {
       this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
     }
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function tabBrowser_getDtds() {
+    var dtds = ["chrome://browser/locale/browser.dtd",
+                "chrome://browser/locale/tabbrowser.dtd",
+                "chrome://global/locale/global.dtd"];
+    return dtds;
   },
 
   /**
@@ -348,7 +362,8 @@ tabBrowser.prototype = {
         this._controller.click(menuitem);
         break;
       case "shortcut":
-        this._controller.keypress(null, "t", {accelKey: true});
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "tabCmd.commandkey");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       case "newTabButton":
         var newTabButton = this.getElement({type: "tabs_newTabButton"});
@@ -357,11 +372,18 @@ tabBrowser.prototype = {
       case "tabStrip":
         var tabStrip = this.getElement({type: "tabs_strip"});
 
-        // XXX: Workaround until bug 537968 has been fixed
-        this._controller.click(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
-
-        // Todo: Calculate the correct x position
-        this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+        // RTL-locales need to be treated separately
+        if (this._UtilsAPI.getEntity(this.getDtds(), "locale.dir") == "rtl") {
+          // XXX: Workaround until bug 537968 has been fixed
+          this._controller.click(tabStrip, 100, 3);
+          // Todo: Calculate the correct x position
+          this._controller.doubleClick(tabStrip, 100, 3);
+        } else {
+          // XXX: Workaround until bug 537968 has been fixed
+          this._controller.click(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+          // Todo: Calculate the correct x position
+          this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+        }
         break;
     }
 

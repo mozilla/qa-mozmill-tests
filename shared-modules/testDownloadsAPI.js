@@ -72,7 +72,9 @@ const downloadState = {
  */
 function downloadManager() {
   this._controller = null;
-  this._utilsAPI = collector.getModule('UtilsAPI');
+
+  this._UtilsAPI = collector.getModule('UtilsAPI');
+
   this.downloadState = downloadState;
 
   this._dms = Cc["@mozilla.org/download-manager;1"].
@@ -163,7 +165,8 @@ downloadManager.prototype = {
       if (force) {
         this._controller.window.close();
       } else {
-        this._controller.keypress(null, 'w', {accelKey: true});
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "cmd.close.commandKey");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
       }
 
       this._controller.waitForEval("subject.getWindows().length == " + (windowCount - 1),
@@ -232,6 +235,18 @@ downloadManager.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function downloadManager_getDtds() {
+    var dtds = ["chrome://browser/locale/browser.dtd",
+                "chrome://mozapps/locale/downloads/downloads.dtd"];
+    return dtds;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -291,11 +306,13 @@ downloadManager.prototype = {
    */
   open : function downloadManager_open(controller, shortcut) {
     if (shortcut) {
-      // XXX: Cannot extract commandKeys from DTD until bug 504635 is fixed
-      if (mozmill.isLinux)
-        controller.keypress(null, "y", {ctrlKey: true, shiftKey: true});
-      else
-        controller.keypress(null, "j", {accelKey: true});
+      if (mozmill.isLinux) {
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "downloadsUnix.commandkey");
+        controller.keypress(null, cmdKey, {ctrlKey: true, shiftKey: true});
+      } else {
+        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "downloads.commandkey");
+        controller.keypress(null, cmdKey, {accelKey: true});
+      }
     } else {
       controller.click(new elementslib.Elem(controller.menus["tools-menu"].menu_openDownloads));
     }
@@ -326,7 +343,7 @@ downloadManager.prototype = {
    *        MozMillController of the window to operate on
    */
   waitForOpened : function downloadManager_waitForOpened(controller) {
-    this._controller = this._utilsAPI.handleWindow("type", "Download:Manager",
+    this._controller = this._UtilsAPI.handleWindow("type", "Download:Manager",
                                                    null, true);
   }
 };

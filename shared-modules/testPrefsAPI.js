@@ -140,6 +140,16 @@ preferencesDialog.prototype = {
   },
 
   /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns Array of external DTD urls
+   * @type [string]
+   */
+  getDtds : function preferencesDialog_getDtds() {
+    return null;
+  },
+
+  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
