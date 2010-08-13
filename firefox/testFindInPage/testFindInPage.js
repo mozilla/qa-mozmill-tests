@@ -21,6 +21,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Tobias Markus <tobbi.bugs@googlemail.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,16 +37,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  containerString = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}/id("browser-bottombox")/id("FindToolbar")' +
+  containerString = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                    '/id("browser-bottombox")/id("FindToolbar")' +
                     '/anon({"anonid":"findbar-container"})';
   findBar = new elementslib.Lookup(controller.window.document, containerString);
   findBarTextField = new elementslib.Lookup(controller.window.document,
@@ -79,27 +83,25 @@ var teardownModule = function(module) {
  *
  */
 var testFindInPage = function() {
-  var searchTerm = "mozilla";
+  var searchTerm = "community";
   var comparator = Ci.nsIDOMRange.START_TO_START;
   var tabContent = controller.tabs.activeTabWindow;
 
-  // Open a website
-  controller.open("http://www.mozilla.org");
+  // Open a local page
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Press Ctrl/Cmd + F to open the find bar
   var dtds = ["chrome://browser/locale/browser.dtd"];
   var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
   controller.keypress(null, cmdKey, {accelKey: true});
-  controller.sleep(gDelay);
 
   // Check that the find bar is visible
-  controller.waitForElement(findBar, gTimeout);
+  controller.waitForElement(findBar, TIMEOUT);
 
-  // Type "mozilla" into the find bar text field and press return to start the search
+  // Type "community" into the find bar text field and press return to start the search
   controller.type(findBarTextField, searchTerm);
   controller.keypress(null, "VK_RETURN", {});
-  controller.sleep(gDelay);
 
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
@@ -112,7 +114,6 @@ var testFindInPage = function() {
 
   // Click the next button and check the strings again
   controller.click(findBarNextButton);
-  controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
   controller.assertJS("subject.selectedText == subject.searchTerm",
@@ -124,7 +125,6 @@ var testFindInPage = function() {
 
   // Click the prev button and check the strings again
   controller.click(findBarPrevButton);
-  controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
   controller.assertJS("subject.selectedText == subject.searchTerm",
