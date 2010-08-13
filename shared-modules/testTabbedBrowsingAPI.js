@@ -51,11 +51,12 @@ const TIMEOUT = 5000;
 
 const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
-const tabsBrowser = '/id("main-window")/id("browser")/id("appcontent")/id("content")';
-const tabsToolbar = '/id("main-window")/id("navigator-toolbox")/id("TabsToolbar")';
-const tabsTabs = tabsToolbar + '/id("tabbrowser-tabs")';
-const tabsArrowScrollbox = tabsTabs + '/anon({"anonid":"arrowscrollbox"})';
-const tabsStrip = tabsArrowScrollbox + '/anon({"anonid":"scrollbox"})/anon({"flex":"1"})';
+const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}';
+const TABS_BROWSER = TABS_VIEW + '/id("browser")/id("appcontent")/id("content")';
+const TABS_TOOLBAR = TABS_VIEW + '/id("navigator-toolbox")/id("TabsToolbar")';
+const TABS_TABS = TABS_TOOLBAR + '/id("tabbrowser-tabs")';
+const TABS_ARROW_SCROLLBOX = TABS_TABS + '/anon({"anonid":"arrowscrollbox"})';
+const TABS_STRIP = TABS_ARROW_SCROLLBOX + '/anon({"anonid":"scrollbox"})/anon({"flex":"1"})';
 
 /**
  * Close all tabs and open about:blank
@@ -223,27 +224,27 @@ tabBrowser.prototype = {
        */
       case "tabs":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsTabs);
+                                      TABS_TABS);
         break;
       case "tabs_allTabsButton":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsToolbar + '/id("alltabs-button")');
+                                      TABS_TOOLBAR + '/id("alltabs-button")');
         break;
       case "tabs_allTabsPopup":
-        elem = new elementslib.Lookup(this._controller.window.document, tabsToolbar +
+        elem = new elementslib.Lookup(this._controller.window.document, TABS_TOOLBAR +
                                       '/id("alltabs-button")/id("alltabs-popup")');
         break;
       case "tabs_newTabButton":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      tabsArrowScrollbox + '/anon({"class":"tabs-newtab-button"})');
+                                      TABS_ARROW_SCROLLBOX + '/anon({"class":"tabs-newtab-button"})');
         break;
       case "tabs_scrollButton":
         elem = new elementslib.Lookup(controller.window.document,
-                                      tabsArrowScrollbox +
+                                      TABS_ARROW_SCROLLBOX +
                                       '/anon({"anonid":"scrollbutton-' + spec.subtype + '"})');
         break;
       case "tabs_strip":
-        elem = new elementslib.Lookup(this._controller.window.document, tabsStrip);
+        elem = new elementslib.Lookup(this._controller.window.document, TABS_STRIP);
         break;
       case "tabs_tab":
         switch (spec.subtype) {
@@ -260,7 +261,7 @@ tabBrowser.prototype = {
         break;
       case "tabs_tabPanel":
         var panelId = spec.value.getNode().getAttribute("linkedpanel");
-        elem = new elementslib.Lookup(this._controller.window.document, tabsBrowser +
+        elem = new elementslib.Lookup(this._controller.window.document, TABS_BROWSER +
                                       '/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})' +
                                       '/{"id":"' + panelId + '"}');
         break;

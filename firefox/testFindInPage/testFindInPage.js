@@ -45,7 +45,7 @@ const gTimeout = 5000;
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
-  containerString = '/id("main-window")/id("browser-bottombox")/id("FindToolbar")' +
+  containerString = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}/id("browser-bottombox")/id("FindToolbar")' +
                     '/anon({"anonid":"findbar-container"})';
   findBar = new elementslib.Lookup(controller.window.document, containerString);
   findBarTextField = new elementslib.Lookup(controller.window.document,

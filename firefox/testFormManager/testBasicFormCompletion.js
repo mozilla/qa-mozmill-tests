@@ -79,7 +79,10 @@ var testFormCompletion = function() {
   controller.type(searchField, "mozilla");
 
   // Select the first element of the drop down
-  var popDownAutoCompList = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
+  var popDownAutoCompList = new elementslib.Lookup(controller.window.document,
+                              '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                              '/id("mainPopupSet")/id("PopupAutoComplete")' +
+                              '/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
 
   controller.keypress(searchField, "VK_DOWN", {});
   controller.sleep(1000);

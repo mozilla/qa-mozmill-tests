@@ -39,26 +39,31 @@
  * The SearchAPI adds support for search related functions like the search bar.
  */
 
-var MODULE_NAME = 'SearchAPI';
+const MODULE_NAME = 'SearchAPI';
 
 // Include necessary modules
-var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '.';
+const MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
 // Helper lookup constants for the engine manager elements
 const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
 
 // Helper lookup constants for the search bar elements
-const SEARCH_BAR          = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("search-container")/id("searchbar")';
+const NAV_BAR             = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                            '/id("navigator-toolbox")/id("nav-bar")';
+const SEARCH_BAR          = NAV_BAR + '/id("search-container")/id("searchbar")';
 const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
 const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[0]/anon({"anonid":"searchbar-engine-button"})';
 const SEARCH_POPUP        = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
 const SEARCH_INPUT        = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
-                                              '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input"})';
-const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"anonid":"textbox-input-box"})/anon({"anonid":"input-box-contextmenu"})';
-const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})/anon({"class":"search-go-button"})';
+                                              '/anon({"anonid":"textbox-input-box"})' +
+                                              '/anon({"anonid":"input"})';
+const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"anonid":"textbox-input-box"})' +
+                                              '/anon({"anonid":"input-box-contextmenu"})';
+const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})' +
+                                              '/anon({"class":"search-go-button"})';
 const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")';
 
 /**
@@ -169,7 +174,7 @@ engineManager.prototype = {
       this._WidgetsAPI.clickTreeCell(this._controller, tree, index, 0, {});
     }
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", TIMEOUT, 100,
                                  {manager: this, newIndex: index});
   },
 
@@ -320,7 +325,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "down"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex + 1", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex + 1", TIMEOUT, 100,
                                  {manager: this, oldIndex: index});
   },
 
@@ -337,7 +342,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "up"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex - 1", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex - 1", TIMEOUT, 100,
                                  {manager: this, oldIndex: index});
   },
 
@@ -353,7 +358,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "remove"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedEngine != subject.removedEngine", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedEngine != subject.removedEngine", TIMEOUT, 100,
                                  {manager: this, removedEngine: name});
   },
 
@@ -436,7 +441,7 @@ searchBar.prototype = {
       var button = this.getElement({type: "searchBar_dropDown"});
       this._controller.click(button);
 
-      this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == subject.newState", gTimeout, 100,
+      this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == subject.newState", TIMEOUT, 100,
                                    {searchBar: this, newState: newState });
       this._controller.sleep(0);
     }
@@ -476,7 +481,7 @@ searchBar.prototype = {
     this.enginesDropDownOpen = true;
 
     var engine = this.getElement({type: "engine", subtype: "selected", value: "true"});
-    this._controller.waitForElement(engine, gTimeout);
+    this._controller.waitForElement(engine, TIMEOUT);
 
     this.enginesDropDownOpen = state;
 
@@ -494,13 +499,13 @@ searchBar.prototype = {
     this.enginesDropDownOpen = true;
 
     var engine = this.getElement({type: "engine", subtype: "id", value: name});
-    this._controller.waitThenClick(engine, gTimeout);
+    this._controller.waitThenClick(engine, TIMEOUT);
 
     // Wait until the drop down has been closed
-    this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == false", gTimeout, 100,
+    this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == false", TIMEOUT, 100,
                                  {searchBar: this});
 
-    this._controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", gTimeout, 100,
+    this._controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", TIMEOUT, 100,
                                  {searchBar: this, newEngine: name});
   },
 
@@ -687,13 +692,13 @@ searchBar.prototype = {
     // Enter search term and wait for the popup
     this.type(searchTerm);
 
-    this._controller.waitForEval("subject.popup.state == 'open'", gTimeout, 100,
+    this._controller.waitForEval("subject.popup.state == 'open'", TIMEOUT, 100,
                                  {popup: popup.getNode()});
-    this._controller.waitForElement(treeElem, gTimeout);
+    this._controller.waitForElement(treeElem, TIMEOUT);
 
     // Get all suggestions
     var tree = treeElem.getNode();
-    this._controller.waitForEval("subject.tree.view != null", gTimeout, 100,
+    this._controller.waitForEval("subject.tree.view != null", TIMEOUT, 100,
                                  {tree: tree});
     for (var i = 0; i < tree.view.rowCount; i ++) {
       suggestions.push(tree.view.getCellText(i, tree.columns.getColumnAt(0)));
@@ -701,7 +706,7 @@ searchBar.prototype = {
 
     // Close auto-complete popup
     this._controller.keypress(popup, "VK_ESCAPE", {});
-    this._controller.waitForEval("subject.popup.state == 'closed'", gTimeout, 100,
+    this._controller.waitForEval("subject.popup.state == 'closed'", TIMEOUT, 100,
                                  {popup: popup.getNode()});
 
     return suggestions;
@@ -742,7 +747,7 @@ searchBar.prototype = {
     this._controller.click(engineManager);
 
     // Wait until the drop down has been closed
-    this._controller.waitForEval("subject.search.enginesDropDownOpen == false", gTimeout, 100,
+    this._controller.waitForEval("subject.search.enginesDropDownOpen == false", TIMEOUT, 100,
                                  {search: this});
 
     // XXX: We have to wait a bit more, so the modal dialog handler can kick in. Otherwise

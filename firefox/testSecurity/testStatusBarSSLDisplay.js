@@ -55,6 +55,7 @@ var testSSLDomainLabelInStatusBar = function()
 
   // Check the domain name does NOT display in the status bar
   var lookupPath = '/id("main-window")' +
+                   '/id("tab-view-deck")/{"flex":"1"}' +
                    '/id("browser-bottombox")' +
                    '/id("status-bar")' +
                    '/id("security-button")' +

@@ -46,13 +46,15 @@ const MODULE_NAME = 'ToolbarAPI';
 const RELATIVE_ROOT = '.';
 const MODULE_REQUIRES = ['UtilsAPI'];
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-const autocompletePopup = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
-const urlbarContainer = '/id("main-window")/id("navigator-toolbox")/id("nav-bar")/id("urlbar-container")';
-const urlbarInputBox = urlbarContainer + '/id("urlbar")/anon({"class":"autocomplete-textbox-container"})' +
+const AUTOCOMPLETE_POPUP = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                           '/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
+const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                         '/id("navigator-toolbox")/id("nav-bar")/id("urlbar-container")';
+const URLBAR_INPUTBOX = URLBAR_CONTAINER + '/id("urlbar")/anon({"class":"autocomplete-textbox-container"})' +
                                          '/anon({"anonid":"textbox-input-box"})';
-const contextMenu = urlbarInputBox + '/anon({"anonid":"input-box-contextmenu"})';
+const CONTEXT_MENU = URLBAR_INPUTBOX + '/anon({"anonid":"input-box-contextmenu"})';
 
 /**
  * Constructor
@@ -210,11 +212,11 @@ autoCompleteResults.prototype = {
        * value: value to match
        */
       case "popup":
-        elem = new elementslib.Lookup(this._controller.window.document, autocompletePopup);
+        elem = new elementslib.Lookup(this._controller.window.document, AUTOCOMPLETE_POPUP);
         break;
       case "results":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      autocompletePopup + '/anon({"anonid":"richlistbox"})');
+                                      AUTOCOMPLETE_POPUP + '/anon({"anonid":"richlistbox"})');
         break;
       case "result":
         elem = new elementslib.Elem(this._results.getNode().getItemAtIndex(spec.value));
@@ -303,7 +305,7 @@ locationBar.prototype = {
     this.focus({type: "shortcut"});
     this._controller.keypress(this.urlbar, "VK_DELETE", {});
     this._controller.waitForEval("subject.value == ''",
-                                 gTimeout, 100, this.urlbar.getNode());
+                                 TIMEOUT, 100, this.urlbar.getNode());
   },
 
   /**
@@ -345,7 +347,7 @@ locationBar.prototype = {
 
     // Wait until the location bar has been focused
     this._controller.waitForEval("subject.getAttribute('focused') == 'true'",
-                                 gTimeout, 100, this.urlbar.getNode());
+                                 TIMEOUT, 100, this.urlbar.getNode());
   },
 
   /**
@@ -380,10 +382,10 @@ locationBar.prototype = {
        * value: value to match
        */
       case "contextMenu":
-        elem = new elementslib.Lookup(this._controller.window.document, contextMenu);
+        elem = new elementslib.Lookup(this._controller.window.document, CENTEXT_MENU);
         break;
       case "contextMenu_entry":
-        elem = new elementslib.Lookup(this._controller.window.document, contextMenu +
+        elem = new elementslib.Lookup(this._controller.window.document, CENTEXT_MENU +
                                       '/{"cmd":"cmd_' + spec.subtype + '"}');
         break;
       case "favicon":
@@ -397,7 +399,7 @@ locationBar.prototype = {
         break;
       case "historyDropMarker":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      urlbarContainer + '/id("urlbar")/anon({"anonid":"historydropmarker"})');
+                                      URLBAR_CONTAINER + '/id("urlbar")/anon({"anonid":"historydropmarker"})');
         break;
       case "identityBox":
         elem = new elementslib.ID(this._controller.window.document, "identity-box");
@@ -409,7 +411,7 @@ locationBar.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "urlbar");
         break;
       case "urlbar_input":
-        elem = new elementslib.Lookup(this._controller.window.document, urlbarInputBox +
+        elem = new elementslib.Lookup(this._controller.window.document, URLBAR_INPUTBOX +
                                       '/anon({"anonid":"input"})');
         break;
       default:
@@ -440,7 +442,7 @@ locationBar.prototype = {
 
     this._controller.click(dropdown);
     this._controller.waitForEval("subject.isOpened == " + stateOpen,
-                                 gTimeout, 100, this.autoCompleteResults);
+                                 TIMEOUT, 100, this.autoCompleteResults);
   },
 
   /**

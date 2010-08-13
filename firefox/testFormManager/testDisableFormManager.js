@@ -78,7 +78,7 @@ var testToggleFormManager = function() {
   controller.waitForElement(firstName, gTimeout);
 
   // Verify no form completion in each submitted form field
-  var popDownAutoCompList = new elementslib.Lookup(controller.window.content.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
+  var popDownAutoCompList = new elementslib.Lookup(controller.window.content.document, '/id("main-window")/id("tab-view-deck")/{"flex":"1"}/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
 
   controller.type(firstName, fname.substring(0,2));
   controller.sleep(gTimeout);
