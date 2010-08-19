@@ -49,6 +49,7 @@ var setupModule = function(module)
   
   // Clear complete history so we don't get interference from previous entries
   PlacesAPI.removeAllHistory();
+}
 
 /**
  * Check Escape key functionality during auto-complete process
