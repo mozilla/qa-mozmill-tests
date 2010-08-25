@@ -38,30 +38,38 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new SoftwareUpdateAPI.softwareUpdate();
+}
 
+var teardownModule = function(module) {
   // Collect some data of the current build
-  module.persisted.preBuildId = UtilsAPI.appInfo.buildID;
-  module.persisted.preLocale = UtilsAPI.appInfo.locale;
-  module.persisted.preUserAgent = UtilsAPI.appInfo.userAgent;
-  module.persisted.preVersion = UtilsAPI.appInfo.version;
-}
+  persisted.preBuildId = UtilsAPI.appInfo.buildID;
+  persisted.preLocale = UtilsAPI.appInfo.locale;
+  persisted.preUserAgent = UtilsAPI.appInfo.userAgent;
+  persisted.preVersion = UtilsAPI.appInfo.version;
 
-var teardownModule = function(module)
-{
   // Save the update properties for later usage
-  module.persisted.type = update.updateType;
-  module.persisted.updateBuildId = update.activeUpdate.buildID;
-  module.persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
-  module.persisted.updateType += "+fallback";
-  module.persisted.updateVersion = update.activeUpdate.version;
+  if (update.activeUpdate) {
+    persisted.type = update.activeUpdate.type;
+    persisted.isCompletePatch = update.isCompleteUpdate;
+    persisted.updateBuildId = update.activeUpdate.buildID;
+    persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
+    persisted.updateVersion = update.activeUpdate.version;
+  } else {
+    persisted.type = "n/a";
+    persisted.isCompletePatch = "n/a";
+    persisted.updateBuildId = "n/a";
+    persisted.updateType = "n/a";
+    persisted.updateVersion = "n/a";
+  }
+
+  // Put the downloaded update into failed state
+  update.forceFallback();
 }
 
-var testFallbackUpdate_Download = function()
-{
+var testFallbackUpdate_Download = function() {
   // Check if the user has permissions to run the update
   controller.assertJS("subject.isUpdateAllowed == true",
                       {isUpdateAllowed: update.allowed});
@@ -70,17 +78,10 @@ var testFallbackUpdate_Download = function()
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // An update should have been found
-  update.assertUpdateStep('updatesfound');
-
-  // Download the given update from the specified channel
+  // Download the update
+  update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
+                                {update: update});
   update.download(persisted.channel);
-
-  // We should be ready for restart
-  update.assertUpdateStep('finished');
-
-  // Put the downloaded update into failed state
-  update.forceFallback();
 }
 
 /**

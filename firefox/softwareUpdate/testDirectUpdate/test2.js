@@ -38,55 +38,36 @@
 var RELATIVE_ROOT = '../../../shared-modules';
 var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new SoftwareUpdateAPI.softwareUpdate();
 
   // Collect some data of the current build
-  module.persisted.postBuildId = UtilsAPI.appInfo.buildID;
-  module.persisted.postLocale = UtilsAPI.appInfo.locale;
-  module.persisted.postUserAgent = UtilsAPI.appInfo.userAgent;
-  module.persisted.postVersion = UtilsAPI.appInfo.version;
+  persisted.postBuildId = UtilsAPI.appInfo.buildID;
+  persisted.postLocale = UtilsAPI.appInfo.locale;
+  persisted.postUserAgent = UtilsAPI.appInfo.userAgent;
+  persisted.postVersion = UtilsAPI.appInfo.version;
 }
 
 /**
  * Test that the update has been correctly applied and no further updates
  * can be found.
  */
-var testDirectUpdate_AppliedAndNoUpdatesFound = function()
-{
+var testDirectUpdate_AppliedAndNoUpdatesFound = function() {
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
 
   // No updates should be offered now - filter out major updates
-  try {
-    update.assertUpdateStep('noupdatesfound');
-  } catch (ex) {
-    // If a major update is offered we shouldn't fail
+  if (update.updatesFound) {
+    update.download(persisted.channel, false);
+
     controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
                         {newUpdateType: update.updateType, lastUpdateType: persisted.type});
   }
 
-  // The upgraded version should be identical with the version given by
-  // the update and we shouldn't have run a downgrade
-  var vc = Cc["@mozilla.org/xpcom/version-comparator;1"]
-              .getService(Ci.nsIVersionComparator);
-  var check = vc.compare(persisted.postVersion, persisted.preVersion);
-
-  controller.assertJS("subject.newVersionGreater == true",
-                      {newVersionGreater: check >= 0});
-
-  // If we have the same version number we should check the build id instead
-  if (check == 0) {
-    controller.assertJS("subject.postBuildId > subject.preBuildId",
-                        {postBuildId: persisted.postBuildId, preBuildId: persisted.preBuildId});
-  }
-
-  // An upgrade should not change the builds locale
-  controller.assertJS("subject.postLocale == subject.preLocale",
-                      {postLocale: persisted.postLocale, preLocale: persisted.preLocale});
+  // Check that updates have been applied correctly
+  update.assertUpdateApplied(persisted);
 
   // Update was successful
   persisted.success = true;
