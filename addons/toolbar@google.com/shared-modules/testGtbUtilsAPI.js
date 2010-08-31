@@ -122,7 +122,7 @@ function getRlz() {
     return rlzNode[0].firstChild.nodeValue;
   } else {
     // TODO(ankush): Implement it on Mac.
-    window.dump('Method not implemented for this platform');
+    controller.window.dump('Method not implemented for this platform');
   }
 }
 
