@@ -159,6 +159,3 @@ var prefDialogSuggestsCallback = function(controller)
 
   prefDialog.close(true);
 }
-
-testStarInAutocomplete.skipped = true;
-testStarInAutocomplete.skipped_reason = 'Test skipped pending fix for Bug 575609 (No decorations for Switch-To-Tab autocomplete entries)';
