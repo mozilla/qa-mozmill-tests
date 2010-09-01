@@ -81,7 +81,7 @@ var testFormCompletion = function() {
 
   // Select the first element of the drop down
   var popDownAutoCompList = new elementslib.Lookup(controller.window.document,
-                              '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+                              '/id("main-window")' +
                               '/id("mainPopupSet")/id("PopupAutoComplete")' +
                               '/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
 
