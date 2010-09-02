@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,51 +36,52 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'community'},
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', id: 'mission_statement'},
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html', id: 'accessibility'} 
+];
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
 }
 
 /**
  * Test the back and forward buttons
  */
-var testBackandForward = function()
-{
-  var pageElements = ['guser', 'sb_form_q', 'i'];
-  var websites = ['http://www.google.com/webhp?hl=en&complete=1',
-                  'http://www.bing.com/',
-                  'http://www.wolframalpha.com/'];
-
-  // Open up the list of websites statically assigned in the array
-  for (var k = 0; k < websites.length; k++) {
-    controller.open(websites[k]);
+var testBackAndForward = function() {
+  // Open up the list of local pages statically assigned in the array
+  for each(var localPage in LOCAL_TEST_PAGES) {
+    controller.open(localPage.url);
     controller.waitForPageLoad();
-
-    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[k]);
-    controller.waitForElement(element, gTimeout);
+   
+    var element = new elementslib.ID(controller.tabs.activeTab, localPage.id);
+    controller.waitForElement(element, TIMEOUT);
   }
 
-  // Click on the Back button for the number of websites visited
-  for (var i = websites.length - 2; i >= 0; i--) {
+  // Click on the Back button for the number of local pages visited
+  for (var i = LOCAL_TEST_PAGES.length - 2; i >= 0; i--) {
     controller.goBack();
     controller.waitForPageLoad();
 
-    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[i]);
-    controller.waitForElement(element, gTimeout);
+    var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[i].id);
+    controller.waitForElement(element, TIMEOUT);
   }
 
   // Click on the Forward button for the number of websites visited
-  for (var j = 1; j < websites.length; j++) {
+  for (var j = 1; j < LOCAL_TEST_PAGES.length; j++) {
     controller.goForward();
     controller.waitForPageLoad();
 
-    var element = new elementslib.ID(controller.tabs.activeTab, pageElements[j]);
-    controller.waitForElement(element, gTimeout);
+    var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[j].id);
+    controller.waitForElement(element, TIMEOUT);
   }
 }
 
 /**
  * Map test functions to litmus tests
  */
-// testBackandForward.meta = {litmusids : [8032]};
+// testBackAndForward.meta = {litmusids : [8032]};
