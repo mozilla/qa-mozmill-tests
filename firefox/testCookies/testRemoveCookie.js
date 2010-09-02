@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,32 +37,32 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module)
-{
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  module.cm = Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager2);
+  cm = Cc["@mozilla.org/cookiemanager;1"].
+       getService(Ci.nsICookieManager2);
   cm.removeAll();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function() {
   cm.removeAll();
 }
 
 /**
  * Tests removing a single cookie via the cookie manager
  */
-var testRemoveCookie = function()
-{
-  // Go to mozilla.org to build a list of cookies
-  controller.open("http://www.mozilla.org/");
+var testRemoveCookie = function() {
+  // Go to a local test page to build a list of cookies
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Call preferences dialog and delete the created cookie
@@ -73,8 +74,7 @@ var testRemoveCookie = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller)
-{
+var prefDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
@@ -103,7 +103,7 @@ var prefDialogCallback = function(controller)
 function deleteCookie(controller) {
   // Search for a cookie from mozilla.org and delete it
   var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, gTimeout);
+  controller.waitForElement(filterField, TIMEOUT);
   controller.type(filterField, "__utmz");
   controller.sleep(500);
 
