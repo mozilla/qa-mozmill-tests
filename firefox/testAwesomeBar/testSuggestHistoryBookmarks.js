@@ -138,7 +138,7 @@ var testStarInAutocomplete = function()
 
   // For icons, check that the bookmark star is present
   controller.assertJS("subject.isItemBookmarked == true",
-                      {isItemBookmarked: richlistItem.getNode().getAttribute('type') == 'bookmark'});
+                      {isItemBookmarked: richlistItem.getNode().getAttribute('type').indexOf('bookmark') != -1});
 }
 
 /**
