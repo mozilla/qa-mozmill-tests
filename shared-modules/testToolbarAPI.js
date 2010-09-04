@@ -394,7 +394,7 @@ locationBar.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "feed-button");
         break;
       case "goButton":
-        elem = new elementslib.ID(this._controller.window.document, "go-button");
+        elem = new elementslib.ID(this._controller.window.document, "urlbar-go-button");
         break;
       case "historyDropMarker":
         elem = new elementslib.Lookup(this._controller.window.document,
