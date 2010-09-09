@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,58 +36,61 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const gDelay = 0;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
 
   try {
     // Clear complete form history so we don't interfer with already added entries
     var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                        getService(Ci.nsIFormHistory2);
+                      getService(Ci.nsIFormHistory2);
     formHistory.removeAllEntries();
   } catch (ex) {
   }
 }
 
 var testFormCompletion = function() {
-  var url = 'http://www.mozilla.org/';
-  var searchText = 'mozillazine';
+  var inputText = 'John';
 
-  // Open the URL and verify it's the correct page
-  controller.open(url);
+  // Open the local site and verify it's the correct page
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  var searchField = new elementslib.ID(controller.tabs.activeTab, "q");
-  controller.assertNode(searchField);
+  var inputField = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
+  controller.assertNode(inputField);
 
-  // Perform a search
-  controller.type(searchField, searchText);
-  controller.sleep(gDelay);
-
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "quick-search-btn"));
+  // Fill out the name field with the input text and click Submit
+  controller.type(inputField, inputText);
+ 
+  var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
+  controller.click(submitButton);
   controller.waitForPageLoad();
 
-  // Go to a filler site
-  controller.open('http://www.yahoo.com/');
+  // Go to a filler local site: about:blank
+  controller.open('about:blank');
   controller.waitForPageLoad();
 
-  // Go back to the starting page
-  controller.open(url);
+  // Go back to the starting local page
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  // Verify search field element and type in a portion of the field
-  controller.type(searchField, "mozilla");
+  // Verify name field element, and type in a portion of the field
+  controller.type(inputField, inputText);
 
   // Select the first element of the drop down
-  var popDownAutoCompList = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
+  var popDownAutoCompList = new elementslib.Lookup(controller.window.document, 
+    '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")' +
+    '/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}'
+  );
 
-  controller.keypress(searchField, "VK_DOWN", {});
+  controller.keypress(inputField, "VK_DOWN", {});
   controller.sleep(1000);
   controller.click(popDownAutoCompList);
 
   // Verify the field element and the text in it
-  controller.assertValue(searchField, searchText);
+  controller.assertValue(inputField, inputText);
 }
 
 /**
