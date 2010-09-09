@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,22 +37,24 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
 
-  module.pm = Cc["@mozilla.org/login-manager;1"]
-                 .getService(Ci.nsILoginManager);
+  pm = Cc["@mozilla.org/login-manager;1"].
+       getService(Ci.nsILoginManager);
   pm.removeAllLogins();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function() {
   // Just in case the test fails remove all cookies
   pm.removeAllLogins();
 }
@@ -60,36 +63,37 @@ var teardownModule = function(module) {
  * Test saving a password using the notification bar
  */
 var testSavePassword = function() {
-  var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
-
   // Go to the sample login page and log-in with inputted fields
-  controller.open(testSite);
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, gTimeout);
+  controller.waitForElement(userField, TIMEOUT);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
+  var logInButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
+  controller.click(logInButton);
   controller.sleep(500);
 
   // After logging in, remember the login information
-  var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties", "notifyBarRememberButtonText");
+  var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties", 
+                                   "notifyBarRememberButtonText");
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                             '/{"value":"password-save"}/{"label":"' + label + '"}');
+                                             '/{"value":"password-save"}' + 
+                                             '/{"label":"' + label + '"}');
 
-  controller.waitThenClick(button, gTimeout);
+  controller.waitThenClick(button, TIMEOUT);
   controller.sleep(500);
   controller.assertNodeNotExist(button);
 
   // Go back to the login page and verify the password has been saved
-  controller.open(testSite);
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  controller.waitForElement(userField, gTimeout);
+  controller.waitForElement(userField, TIMEOUT);
   controller.assertValue(userField, "bar");
   controller.assertValue(passField, "foo");
 }
@@ -112,7 +116,7 @@ var prefDialogCallback = function(controller) {
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, gTimeout);
+  controller.waitThenClick(showPasswords, TIMEOUT);
 
   UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
@@ -151,8 +155,12 @@ function deleteAllPasswords(controller) {
  *        MozMillController of the window to operate on
  */
 var confirmHandler = function(controller) {
-  controller.waitThenClick(new elementslib.Lookup(controller.window.document,
-                           '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'), gTimeout);
+  var dialogButton = new elementslib.Lookup(controller.window.document,
+                                            '/id("commonDialog")' +
+                                            '/anon({"anonid":"buttons"})' +
+                                            '/{"dlgtype":"accept"}');
+  
+  controller.waitThenClick(dialogButton, TIMEOUT);
 }
 
 /**
