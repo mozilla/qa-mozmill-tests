@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,16 +37,20 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
 
-const gTimeout = 1000;
-const gDelay = 100;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html'
+];
 
-var setupModule = function(module) 
-{
-  module.controller = mozmill.getBrowserController();
-  module.locationBar =  new ToolbarAPI.locationBar(controller);
+const TEST_STRING = "mozilla";
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
+  locationBar =  new ToolbarAPI.locationBar(controller);
   
   // Clear complete history so we don't get interference from previous entries
   PlacesAPI.removeAllHistory();
@@ -54,42 +59,37 @@ var setupModule = function(module)
 /**
  * Check Escape key functionality during auto-complete process
  */
-var testEscape = function()
-{
-  var websites = ['http://www.google.com/', 'http://www.mozilla.org'];
-
-  // Open some pages to set up the test environment
-  for each (website in websites) {
-    locationBar.loadURL(website);
+var testEscape = function() {
+  // Open some local pages to set up the test environment
+  for each (var localPage in LOCAL_TEST_PAGES) {
+    locationBar.loadURL(localPage);
     controller.waitForPageLoad();
   }
 
-  // wait for 4 seconds to work around Firefox LAZY ADD of items to the db
+  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
-
-  var testString = "google";
   
-  // Focus the locationbar and delete any contents there
+  // Focus the locationbar and delete any content that is there
   locationBar.clear();
 
-  // Use type and sleep on each letter to allow the autocomplete to populate with results. 
-  for (var i = 0; i < testString.length; i++) {
-    locationBar.type(testString[i]);
-    controller.sleep(gDelay);
+  // Use type and sleep on each letter to allow the autocomplete to populate with results
+  for (var i = 0; i < TEST_STRING.length; i++) {
+    locationBar.type(TEST_STRING[i]);
+    controller.sleep(100);
   }
 
-  // confirm that google is in the locationbar and the awesomecomplete list is open
-  controller.assertJS("subject.contains('" + testString + "') == true", locationBar);
+  // Confirm that 'mozilla' is in the locationbar and the awesomecomplete list is open
+  controller.assertJS("subject.contains('" + TEST_STRING + "') == true", locationBar);
   controller.assertJS("subject.autoCompleteResults.isOpened == true", locationBar);
 
-  // After first Escape, confirm that google is in the locationbar and awesomecomplete list is closed
+  // After the first Escape press, confirm that 'mozilla' is in the locationbar and awesomecomplete list is closed
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
-  controller.assertJS("subject.contains('" + testString + "') == true", locationBar);
+  controller.assertJS("subject.contains('" + TEST_STRING + "') == true", locationBar);
   controller.assertJS("subject.autoCompleteResults.isOpened == false", locationBar);
   
-  // After second Escape, confirm the locationbar returns to the current page url
+  // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
-  controller.assertJS("subject.contains('" + websites[1] + "') == true", locationBar);
+  controller.assertJS("subject.contains('" + LOCAL_TEST_PAGES[1] + "') == true", locationBar);
 }
 
 /**
