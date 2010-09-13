@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,16 +37,25 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
 
-const gTimeout = 5000;
-const gDelay = 100;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_PAGES = [
+  LOCAL_TEST_FOLDER + 'layout/mozilla.html', 
+  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_governance.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_organizations.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
+];
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.locationBar =  new ToolbarAPI.locationBar(controller);
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
+  locationBar =  new ToolbarAPI.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
   PlacesAPI.removeAllHistory();
@@ -54,30 +64,17 @@ var setupModule = function(module)
 /**
  * Check Six is the maximum visible items in a match list.
  */
-var testVisibleItemsMax = function()
-{
+var testVisibleItemsMax = function() {
   // Use preferences dialog to ensure "When Using the location bar suggest:" History and Bookmarks is selected
   PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
 
-  // Load some pages to populate history.
-  var websites = [
-                  'http://www.google.com/',
-                  'http://www.mozilla.org',
-                  'http://www.mozilla.org/projects/',
-                  'http://www.mozilla.org/about/history.html',
-                  'http://www.mozilla.org/contribute/',
-                  'http://www.mozilla.org/causes/',
-                  'http://www.mozilla.org/community/',
-                  'http://www.mozilla.org/about/'
-                 ];
-
-  // Open some pages to set up the test environment
-  for each (website in websites) {
-    locationBar.loadURL(website);
+  // Open some local pages to set up the test environment
+  for each (var page in LOCAL_PAGES) {
+    locationBar.loadURL(page);
     controller.waitForPageLoad();
   }
 
-  // wait for 4 seconds to work around Firefox LAZY ADD of items to the db
+  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
 
   var testString = 'll';
@@ -86,9 +83,9 @@ var testVisibleItemsMax = function()
   locationBar.clear();
 
   // Use type and sleep on each letter to allow the autocomplete to populate with results.
-  for each (letter in testString) {
+  for each (var letter in testString) {
     locationBar.type(letter);
-    controller.sleep(gDelay);
+    controller.sleep(100);
   }
 
   // Get the visible results from the autocomplete list. Verify it is six
@@ -102,15 +99,14 @@ var testVisibleItemsMax = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogSuggestsCallback = function(controller)
-{
+var prefDialogSuggestsCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
   controller.waitForElement(suggests);
   controller.select(suggests, null, null, 0);
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
   prefDialog.close(true);
 }
