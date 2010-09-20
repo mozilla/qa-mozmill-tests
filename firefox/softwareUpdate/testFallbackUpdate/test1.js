@@ -56,6 +56,7 @@ var teardownModule = function(module) {
     persisted.isCompletePatch = update.isCompleteUpdate;
     persisted.updateBuildId = update.activeUpdate.buildID;
     persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
+    persisted.updateType += "+fallback";
     persisted.updateVersion = update.activeUpdate.version;
   } else {
     persisted.type = "n/a";
