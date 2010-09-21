@@ -66,11 +66,6 @@ var testOpenSearchAutodiscovery = function()
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
 
-  // Check that the drop down icon glows
-  var engineButton = search.getElement({type: "searchBar_dropDown"});
-  controller.assertJS("subject.dropDownGlows == 'true'",
-                      {dropDownGlows: engineButton.getNode().getAttribute('addengines')});
-
   // Open search engine drop down and check for installable engines
   search.enginesDropDownOpen = true;
   var addEngines = search.installableEngines;
