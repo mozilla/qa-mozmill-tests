@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,14 +36,35 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
+var setupModule = function() {
+ controller = mozmill.getBrowserController();
+ 
+ containerString = '/id("main-window")' +
+                   '/id("browser-bottombox")' + 
+                   '/id("FindToolbar")' +
+                   '/anon({"anonid":"findbar-container"})';
+ findBar = new elementslib.Lookup(controller.window.document, containerString);
+ findBarTextField = new elementslib.Lookup(controller.window.document,
+                                           containerString + 
+                                           '/anon({"anonid":"find-field-container"})' +
+                                           '/anon({"anonid":"findbar-textbox"})');
+ findBarNextButton = new elementslib.Lookup(controller.window.document,
+                                            containerString +
+                                            '/anon({"anonid":"find-next"})');
+ findBarPrevButton = new elementslib.Lookup(controller.window.document,
+                                            containerString +
+                                            '/anon({"anonid":"find-previous"})');
+ findBarCloseButton = new elementslib.Lookup(controller.window.document,
+                                             containerString +
+                                             '/anon({"anonid":"find-closebutton"})');
 }
 
 var teardownModule = function(module) {
@@ -53,11 +75,10 @@ var teardownModule = function(module) {
     controller.keypress(null, cmdKey, {accelKey: true});
 
     // Clear search text from the text field
-    var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');
     controller.keypress(findBarTextField, 'VK_DELETE', {});
 
     // Make sure the find bar is closed by click the X button
-    controller.click(new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-closebutton"})'));
+    controller.click(findBarCloseButton);
   } catch(e) {
   }
 }
@@ -67,64 +88,61 @@ var teardownModule = function(module) {
  *
  */
 var testFindInPage = function() {
-  var searchTerm = "mozilla";
+  var searchTerm = "community";
   var comparator = Ci.nsIDOMRange.START_TO_START;
   var tabContent = controller.tabs.activeTabWindow;
 
-  // Open a website
-  controller.open("http://www.mozilla.org");
+  // Open a web page
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Press Ctrl/Cmd + F to open the find bar
   var dtds = ["chrome://browser/locale/browser.dtd"];
   var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
   controller.keypress(null, cmdKey, {accelKey: true});
-  controller.sleep(gDelay);
 
   // Check that the find bar is visible
-  var findBar = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})');
-  controller.waitForElement(findBar, gTimeout);
+  controller.waitForElement(findBar, TIMEOUT);
 
-  // Type "mozilla" into the find bar text field and press return to start the search
-  var findBarTextField = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-field-container"})/anon({"anonid":"findbar-textbox"})');
+  // Type "community" into the find bar text field and press return to start the search
   controller.type(findBarTextField, searchTerm);
   controller.keypress(null, "VK_RETURN", {});
-  controller.sleep(gDelay);
 
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
   var selectedText = tabContent.getSelection();
   controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+                      {selectedText: selectedText.toString().toLowerCase(), 
+                       searchTerm: searchTerm});
 
   // Remember DOM range of first search result
   var range = selectedText.getRangeAt(0);
 
   // Click the next button and check the strings again
-  var findBarNextButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-next"})');
   controller.click(findBarNextButton);
-  controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
   controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+                      {selectedText: selectedText.toString().toLowerCase(), 
+                       searchTerm: searchTerm});
 
   // Check that the next result has been selected
   controller.assertJS("subject.isNextResult == true",
-                      {isNextResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) != 0});
+                      {isNextResult: selectedText.getRangeAt(0).
+                                     compareBoundaryPoints(comparator, range) != 0});
 
   // Click the prev button and check the strings again
-  var findBarPrevButton = new elementslib.Lookup(controller.window.document, '/id("main-window")/id("browser-bottombox")/id("FindToolbar")/anon({"anonid":"findbar-container"})/anon({"anonid":"find-previous"})');
   controller.click(findBarPrevButton);
-  controller.sleep(gDelay);
 
   selectedText = tabContent.getSelection();
   controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+                      {selectedText: selectedText.toString().toLowerCase(), 
+                       searchTerm: searchTerm});
 
   // Check that the first result has been selected again
   controller.assertJS("subject.isFirstResult == true",
-                      {isFirstResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0});
+                      {isFirstResult: selectedText.getRangeAt(0).
+                                      compareBoundaryPoints(comparator, range) == 0});
 }
 
 /**
