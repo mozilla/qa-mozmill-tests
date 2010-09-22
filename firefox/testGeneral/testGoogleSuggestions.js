@@ -57,9 +57,12 @@ var testGoogleSuggestedTerms = function() {
   controller.type(searchField, "area");
 
   // Get a reference to the autocomplete results 
-  var autoComplete = new elementslib.XPath(controller.tabs.activeTab, 
-                                           "/html/body/span[@id='main']" + 
-                                           "/div[5]/div/table/tbody/tr[1]");
+  var autoComplete = new elementslib.XPath(
+                       controller.tabs.activeTab, 
+                       "/html/body/div[@id='gac_scont']" + 
+                       "/div/div/table/tbody/tr/td/" + 
+                       "table/tbody/tr/td[1]"
+  );
 
   // Click the first element in the pop-down autocomplete
   controller.waitThenClick(autoComplete, TIMEOUT);
