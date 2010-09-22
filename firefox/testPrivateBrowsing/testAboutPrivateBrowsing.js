@@ -91,9 +91,10 @@ var testCheckPrivateBrowsingMode = function()
 {
   // Start the Private Browsing mode
   pb.start();
+  controller.waitForPageLoad();
 
   var moreInfo = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-  controller.waitThenClick(moreInfo, gTimeout);
+  controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
   var targetUrl = UtilsAPI.formatUrlPref("app.support.baseURL") + "private-browsing";
