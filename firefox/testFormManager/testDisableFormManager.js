@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,22 +37,27 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI'];
 
-const gDelay = 0;
-const gTimeout = 200;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
+
+const FNAME = "John";
+const LNAME = "Smith";
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
 
   // Clear complete form history so we don't interfer with already added entries
-  var formHistory = Cc["@mozilla.org/satchel/form-history;1"]
-                       .getService(Ci.nsIFormHistory2);
+  var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
+                    getService(Ci.nsIFormHistory2);
   formHistory.removeAllEntries();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function() {
   PrefsAPI.preferences.clearUserPref("browser.formfill.enable");
 }
 
@@ -59,36 +65,40 @@ var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
   PrefsAPI.openPreferencesDialog(prefDialogFormCallback);
 
-  var url = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
-
-  // Go to the sample form website and submit form data
-  controller.open(url);
+  // Go to the sample form page and submit form data
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
+ 
+  var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
+  var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
+  var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
 
-  var firstName = new elementslib.Name(controller.tabs.activeTab, "ship_fname");
-  var fname = "John";
-  var lastName = new elementslib.Name(controller.tabs.activeTab, "ship_lname");
-  var lname = "Smith";
+  controller.type(firstName, FNAME);
+  controller.type(lastName, LNAME);
 
-  controller.type(firstName, fname);
-  controller.type(lastName, lname);
-
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "SubmitButton"));
+  controller.click(submitButton);
   controller.waitForPageLoad();
-  controller.waitForElement(firstName, gTimeout);
+  controller.waitForElement(firstName, TIMEOUT);
 
   // Verify no form completion in each submitted form field
-  var popDownAutoCompList = new elementslib.Lookup(controller.window.content.document, '/id("main-window")/id("tab-view-deck")/{"flex":"1"}/id("mainPopupSet")/id("PopupAutoComplete")/anon({"anonid":"tree"})/{"class":"autocomplete-treebody"}');
+  var popDownAutoCompList = new elementslib.Lookup(
+                              controller.tabs.activeTab, 
+                              '/id("main-window")' + 
+                              '/id("mainPopupSet")' + 
+                              '/id("PopupAutoComplete")' + 
+                              '/anon({"anonid":"tree"})' + 
+                              '/{"class":"autocomplete-treebody"}'
+  );
 
-  controller.type(firstName, fname.substring(0,2));
-  controller.sleep(gTimeout);
+  controller.type(firstName, FNAME.substring(0,2));
+  controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);
-  controller.assertValue(firstName, fname.substring(0,2));
+  controller.assertValue(firstName, FNAME.substring(0,2));
 
-  controller.type(lastName, lname.substring(0,2));
-  controller.sleep(gTimeout);
+  controller.type(lastName, LNAME.substring(0,2));
+  controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);
-  controller.assertValue(lastName, lname.substring(0,2));
+  controller.assertValue(lastName, LNAME.substring(0,2));
 }
 
 /**
@@ -108,7 +118,6 @@ var prefDialogFormCallback = function(controller) {
 
   var rememberForms = new elementslib.ID(controller.window.document, "rememberForms");
   controller.waitThenClick(rememberForms);
-  controller.sleep(gDelay);
 
   prefDialog.close(true);
 }
