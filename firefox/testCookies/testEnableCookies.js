@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,38 +37,41 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module)
-{
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  module.cm = Cc["@mozilla.org/cookiemanager;1"]
-                 .getService(Ci.nsICookieManager2);
+  cm = Cc["@mozilla.org/cookiemanager;1"].
+       getService(Ci.nsICookieManager2);
   cm.removeAll();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function() {
   cm.removeAll();
+  persisted.hostName = undefined;
 }
 
 /**
  * Tests enabling cookies from the preferences dialog
  */
-var testEnableCookies = function()
-{
+var testEnableCookies = function() {
   // Call preferences dialog and disable cookies
   PrefsAPI.openPreferencesDialog(prefEnableCookieDialogCallback);
 
-  // Go to mozilla.org to build a list of cookies
-  controller.open("http://www.mozilla.org/");
+  // Go to a test page to build a cookie
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
+  // Get the test page hostname
+  persisted.hostName = controller.window.content.location.hostname;
+  
   // Call preferences dialog and check cookies
   PrefsAPI.openPreferencesDialog(prefCheckEnableDialogCallback);
 }
@@ -77,8 +81,7 @@ var testEnableCookies = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefEnableCookieDialogCallback = function(controller)
-{
+var prefEnableCookieDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
@@ -86,7 +89,6 @@ var prefEnableCookieDialogCallback = function(controller)
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
-  controller.sleep(gDelay);
 
   // Enable cookies
   var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
@@ -101,8 +103,7 @@ var prefEnableCookieDialogCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefCheckEnableDialogCallback = function(controller)
-{
+var prefCheckEnableDialogCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   // Go to custom history settings and click on the show cookies button
@@ -130,15 +131,18 @@ var prefCheckEnableDialogCallback = function(controller)
 function checkSavedCookies(controller) {
   controller.sleep(1000);
 
-  // Search for cookies from mozilla.org and verify cookies are saved
+  // Verify that the single cookie is saved
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
-  controller.waitForElement(removeCookieButton, gTimeout);
+  controller.waitForElement(removeCookieButton, TIMEOUT);
   controller.assertProperty(removeCookieButton, "disabled", false);
 
-  controller.assertJS("subject.cookieExists == true",
-                      {cookieExists: cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"})});
-  controller.assertJS("subject.cookieCount > 0",
-                      {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
+  controller.assertJS("subject.cookieExists == true", {
+    cookieExists: cm.cookieExists({
+      host: persisted.hostName,
+      name: "litmus_1", 
+      path: "/cookies/"
+    })
+  });
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
