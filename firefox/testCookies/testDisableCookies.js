@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,23 +37,27 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  module.cm = Cc["@mozilla.org/cookiemanager;1"]
-                 .getService(Ci.nsICookieManager2);
+  cm = Cc["@mozilla.org/cookiemanager;1"].
+       getService(Ci.nsICookieManager2);
   cm.removeAll();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function() {
   PrefsAPI.preferences.clearUserPref("network.cookie.cookieBehavior");
   cm.removeAll();
+  
+  persisted.hostName = undefined;
 }
 
 /**
@@ -62,10 +67,13 @@ var testDisableCookies = function() {
   // Call preferences dialog and disable cookies
   PrefsAPI.openPreferencesDialog(prefDisableCookieDialogCallback);
 
-  // Go to mozilla.org to build a list of cookies
-  controller.open("http://www.mozilla.org/");
+  // Go to a test page to build a cookie
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
+  // Get the test page hostname
+  persisted.hostName = controller.window.content.location.hostname;
+  
   // Call preferences dialog and check cookies
   PrefsAPI.openPreferencesDialog(prefCheckDisableDialogCallback);
 }
@@ -81,7 +89,7 @@ var prefDisableCookieDialogCallback = function(controller) {
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode, gTimeout);
+  controller.waitForElement(historyMode, TIMEOUT);
   controller.select(historyMode, null, null, "custom");
 
   // The Disable Cookies button doesn't receive focus that fast. Means a click will
@@ -110,24 +118,24 @@ var prefCheckDisableDialogCallback = function(controller) {
   controller.sleep(500);
   controller.click(showCookies);
 
-  UtilsAPI.handleWindow("type", "Browser:Cookies", checkCookiesNotSaved);
+  UtilsAPI.handleWindow("type", "Browser:Cookies", checkCookieNotSaved);
 
   prefDialog.close(true);
 }
 
 /**
- * Check that cookies are not saved
+ * Check that the cookie is not saved
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-function checkCookiesNotSaved(controller) {
+function checkCookieNotSaved(controller) {
   // XXX: Bug 513820 - Remove Cookies button is not cleared when cookie list is cleared
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   //controller.assertProperty(removeCookieButton, "disabled", true);
 
-  // Search for a cookie from mozilla.org and verify cookies are not saved
+  // Verify that the cookie is not saved
   controller.assertJS("subject.cookieCount == 0",
-                      {cookieCount : cm.countCookiesFromHost(".mozilla.org")});
+                      {cookieCount : cm.countCookiesFromHost(persisted.hostName)});
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
