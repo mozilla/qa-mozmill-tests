@@ -215,6 +215,7 @@ tabBrowser.prototype = {
    * @type {ElemBase}
    */
   getElement : function tabBrowser_getElement(spec) {
+    var document = this._controller.window.document;
     var elem = null;
 
     switch(spec.type) {
@@ -254,10 +255,21 @@ tabBrowser.prototype = {
         }
         break;
       case "tabs_tabCloseButton":
-        elem = new elementslib.Elem(spec.value.getNode().boxObject.lastChild);
+        var node = document.getAnonymousElementByAttribute(
+                     spec.value.getNode(),
+                     "anonid",
+                     "close-button"
+                   );
+        elem = new elementslib.Elem(node);
         break;
       case "tabs_tabFavicon":
-        elem = new elementslib.Elem(spec.value.getNode().boxObject.firstChild);
+        var node = document.getAnonymousElementByAttribute(
+                     spec.value.getNode(),
+                     "class",
+                     "tab-icon-image"
+                   );
+
+        elem = new elementslib.Elem(node);
         break;
       case "tabs_tabPanel":
         var panelId = spec.value.getNode().getAttribute("linkedpanel");
