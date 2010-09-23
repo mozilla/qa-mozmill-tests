@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,19 +36,19 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI','UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['ModalDialogAPI','UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var sampleFormSite = "http://www-archive.mozilla.org/wallet/samples/sample9.html";
-var fname = "John";
-var lname = "Smith";
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
+const FNAME = "John";
+const LNAME = "Smith";
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
 
   // Clear complete form history so we don't interfere with already added entries
   try {
@@ -60,48 +61,48 @@ var setupModule = function(module)
 /**
  * Verify saving and filling in form information
  */
-var testSaveFormInformation = function()
-{
-  // Go to the sample form website and submit form data
-  controller.open(sampleFormSite);
+var testSaveFormInformation = function() {
+  // Go to the sample page and submit form data
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  var firstName = new elementslib.Name(controller.tabs.activeTab, "ship_fname");
-  var lastName = new elementslib.Name(controller.tabs.activeTab, "ship_lname");
+  var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
+  var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
+  var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
 
-  controller.type(firstName, fname);
-  controller.type(lastName, lname);
+  controller.type(firstName, FNAME);
+  controller.type(lastName, LNAME);
 
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "SubmitButton"));
+  controller.click(submitButton);
   controller.waitForPageLoad();
-  controller.waitForElement(firstName, gTimeout);
+  controller.waitForElement(firstName, TIMEOUT);
 
   // Verify form completion in each inputted field
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  controller.type(firstName, fname.substring(0,2));
-  controller.sleep(500);
-
-  controller.assertProperty(popDownAutoCompList, "popupOpen", true);
+  controller.type(firstName, FNAME.substring(0,2));
+  controller.waitFor(function() {
+    return popDownAutoCompList.getNode().popupOpen == true;
+  }, TIMEOUT, 100, "Autocomplete popup is open");
   controller.keypress(firstName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
-  controller.assertValue(firstName, fname);
+  controller.assertValue(firstName, FNAME);
 
-  controller.type(lastName, lname.substring(0,2));
-  controller.sleep(500);
-  controller.assertProperty(popDownAutoCompList, "popupOpen", true);
+  controller.type(lastName, LNAME.substring(0,2));
+  controller.waitFor(function() {
+    return popDownAutoCompList.getNode().popupOpen == true;
+  }, TIMEOUT, 100, "Autocomplete popup is open");
   controller.keypress(lastName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
-  controller.assertValue(lastName, lname);
+  controller.assertValue(lastName, LNAME);
 }
 
 /**
  * Verify clearing form and search history
  */
-var testClearFormHistory = function()
-{
-  var firstName = new elementslib.Name(controller.tabs.activeTab, "ship_fname");
-  var lastName = new elementslib.Name(controller.tabs.activeTab, "ship_lname");
+var testClearFormHistory = function() {
+  var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
+  var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
 
   // Call clear recent history dialog and clear all form history
   var md = new ModalDialogAPI.modalDialog(clearHistoryHandler);
@@ -112,15 +113,16 @@ var testClearFormHistory = function()
   // Verify forms are cleared
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  controller.open(sampleFormSite);
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  controller.waitForElement(firstName, gTimeout);
+  controller.waitForElement(firstName, TIMEOUT);
 
-  controller.type(firstName,fname.substring(0,2));
+  // Begin typing into the name fields and verify no popup
+  controller.type(firstName, FNAME.substring(0,2));
   controller.sleep(500);
   controller.assertProperty(popDownAutoCompList, "popupOpen", false);
 
-  controller.type(lastName, lname.substring(0,2));
+  controller.type(lastName, LNAME.substring(0,2));
   controller.sleep(500);
   controller.assertProperty(popDownAutoCompList, "popupOpen", false);
 }
@@ -128,14 +130,20 @@ var testClearFormHistory = function()
 /**
  * Accesses the clear recent history dialog and accepts the default options to clear
  */
-var clearHistoryHandler = function(controller)
-{
+var clearHistoryHandler = function(controller) {
   // Verify the checkbox to clear form data is checked
-  var checkBox = new elementslib.XPath(controller.window.document, "/*[name()='prefwindow']/*[name()='prefpane'][1]/*[name()='listbox'][1]/*[name()='listitem'][2]");
-  controller.waitForElement(checkBox, gTimeout);
+  var checkBox = new elementslib.XPath(controller.window.document, 
+                                       "/*[name()='prefwindow']" +
+                                       "/*[name()='prefpane'][1]" +
+                                       "/*[name()='listbox'][1]" +
+                                       "/*[name()='listitem'][2]");
+  controller.waitForElement(checkBox, TIMEOUT);
   controller.assertChecked(checkBox);
 
-  var clearButton = new elementslib.Lookup(controller.window.document, '/id("SanitizeDialog")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}');
+  var clearButton = new elementslib.Lookup(controller.window.document,
+                                           '/id("SanitizeDialog")' +
+                                           '/anon({"anonid":"dlg-buttons"})' +
+                                           '/{"dlgtype":"accept"}');
   controller.waitThenClick(clearButton);
 }
 
