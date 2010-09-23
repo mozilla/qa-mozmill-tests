@@ -21,6 +21,7 @@
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,52 +38,52 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI', 'ToolbarAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI', 'ToolbarAPI'];
 
-var testSite = {url : 'https://litmus.mozilla.org/', string: 'litmus'};
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = {
+  url: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
+  string: 'grants'
+};
 
-const gTimeout = 5000;
-const gDelay = 200;
+const TIMEOUT = 5000;
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.locationBar =  new ToolbarAPI.locationBar(controller);
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
+  locationBar =  new ToolbarAPI.locationBar(controller);
 
   PlacesAPI.removeAllHistory();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function() {
   PlacesAPI.restoreDefaultBookmarks();
 }
 
 /**
  * Check history and bookmarked (done in testStarInAutocomplete()) items appear in autocomplete list.
  */
-var testSuggestHistoryAndBookmarks = function()
-{
+var testSuggestHistoryAndBookmarks = function() {
   // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
   PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
 
   // Open the test page
-  locationBar.loadURL(testSite.url);
+  locationBar.loadURL(LOCAL_TEST_PAGE.url);
   controller.waitForPageLoad();
 
-  // wait for 4 seconds to work around Firefox LAZY ADD of items to the db
+  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
 
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
   // Type in each letter of the test string to allow the autocomplete to populate with results.
-  for each (letter in testSite.string) {
+  for each (var letter in LOCAL_TEST_PAGE.string) {
     locationBar.type(letter);
-    controller.sleep(gDelay);
+    controller.sleep(200);
   }
 
-  // defines the path to the first auto-complete result
+  // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Get the visible results from the autocomplete list. Verify it is 1
@@ -93,26 +94,26 @@ var testSuggestHistoryAndBookmarks = function()
 
   // For the page title check matched text is underlined
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  for each (entry in entries) {
+  for each (var entry in entries) {
     controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: testSite.string, underlinedTitle: entry.toLowerCase()});
+                        {enteredTitle: LOCAL_TEST_PAGE.string, 
+                         underlinedTitle: entry.toLowerCase()});
   }
 }
 
 /**
  * Check a star appears in autocomplete list for a bookmarked page.
  */
-var testStarInAutocomplete = function()
-{
+var testStarInAutocomplete = function() {
   // Bookmark the test page via bookmarks menu
   controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded, then close the dialog
-  controller.waitForEval("subject._overlayLoaded == true", gTimeout, gDelay, controller.window.top.StarUI);
+  controller.waitForEval("subject._overlayLoaded == true", TIMEOUT, 200, controller.window.top.StarUI);
   var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
   controller.click(doneButton);
 
-  // defines the path to the first auto-complete result
+  // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Clear history
@@ -122,18 +123,19 @@ var testStarInAutocomplete = function()
   locationBar.clear();
 
   // Type in each letter of the test string to allow the autocomplete to populate with results.
-  for each (letter in testSite.string) {
+  for each (var letter in LOCAL_TEST_PAGE.string) {
     locationBar.type(letter);
-    controller.sleep(gDelay);
+    controller.sleep(200);
   }
 
   // For the page title check matched text is underlined
   controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  for each (entry in entries) {
+  for each (var entry in entries) {
     controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: testSite.string, underlinedTitle: entry.toLowerCase()});
+                        {enteredTitle: LOCAL_TEST_PAGE.string, 
+                         underlinedTitle: entry.toLowerCase()});
   }
 
   // For icons, check that the bookmark star is present
@@ -147,15 +149,14 @@ var testStarInAutocomplete = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogSuggestsCallback = function(controller)
-{
+var prefDialogSuggestsCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
   controller.waitForElement(suggests);
   controller.select(suggests, null, null, 0);
-  controller.sleep(gDelay);
+  controller.sleep(200);
 
   prefDialog.close(true);
 }
