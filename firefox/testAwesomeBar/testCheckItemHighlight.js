@@ -20,6 +20,8 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,16 +38,20 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
 
-const gTimeout = 5000;
-const gDelay = 200;
+const TIMEOUT = 5000;
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.locationBar =  new ToolbarAPI.locationBar(controller);
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
+  'about:blank'
+];
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
+  locationBar =  new ToolbarAPI.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
   PlacesAPI.removeAllHistory();
@@ -54,54 +60,70 @@ var setupModule = function(module)
 /**
  * Check matched awesomebar items are highlighted.
  */
-var testCheckItemHighlight = function()
-{
-  // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
+var testCheckItemHighlight = function() {
+  // Use preferences dialog to select:
+  // "When Using the location bar suggest:" History and Bookmarks
   PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
 
-  var websites = ['http://www.google.com/', 'about:blank'];
-
   // Open the test page then about:blank to set up the test test environment
-  for (var k = 0; k < websites.length; k++) {
-    locationBar.loadURL(websites[k]);
+  for each (var page in LOCAL_TEST_PAGES) {
+    locationBar.loadURL(page);
     controller.waitForPageLoad();
   }
 
-  // wait for 4 seconds to work around Firefox LAZY ADD of items to the db
+  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
-
-  var testString = "google";
 
   // Focus the locationbar, delete any contents there, then type in a match string
   locationBar.clear();
 
   // Use type and sleep on each letter to allow the autocomplete to populate with results.
-  for (var i = 0; i < testString.length; i++) {
-    locationBar.type(testString[i]);
-    controller.sleep(gDelay);
+  var testString = "community";
+  
+  for each (var letter in testString) {
+    locationBar.type(letter);
+    controller.sleep(100);
   }
 
   // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
-  // For the page title check matched text is underlined
-  controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
+  // Check the autocomplete list is open
+  controller.waitForEval('subject.isOpened == true', TIMEOUT, 100, 
+                         locationBar.autoCompleteResults);
   
-  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  controller.assertJS("subject.underlinedTextCount == 1",
-                      {underlinedTextCount: entries.length})
-  for each (entry in entries) {
-    controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: testString, underlinedTitle: entry.toLowerCase()});
+  // Get a list of any underlined autocomplete titles
+  var titleEntries = locationBar.autoCompleteResults.
+                     getUnderlinedText(richlistItem, "title");
+  
+  // Check that there is only 1 entry
+  controller.assertJS("subject.underliedTextCount == 1", {
+    underliedTextCount: titleEntries.length
+  });
+
+  // Check that the underlined title matches the entered title
+  for each (var entry in titleEntries) {
+    controller.assertJS("subject.enteredTitle == subject.underlinedTitle", {
+      enteredTitle: testString, 
+      underlinedTitle: entry.toLowerCase()
+    });
   }
 
-  // For the url check matched text is underlined
-  entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "url");
-  controller.assertJS("subject.underlinedUrlCount == 1",
-                      {underlinedUrlCount: entries.length})
-  for each (entry in entries) {
-    controller.assertJS("subject.enteredUrl == subject.underlinedUrl",
-                        {enteredUrl: testString, underlinedUrl: entry.toLowerCase()});
+  // Get a list of any underlined autocomplete URLs
+  var URLEntries = locationBar.autoCompleteResults.
+                   getUnderlinedText(richlistItem, "url");
+  
+  // Check that there is only 1 entry
+  controller.assertJS("subject.underlinedUrlCount == 1", {
+    underlinedUrlCount: URLEntries.length
+  });
+
+  // Check that the underlined URL matches the entered URL
+  for each (var entry in URLEntries) {
+    controller.assertJS("subject.enteredUrl == subject.underlinedUrl", {
+      enteredUrl: testString, 
+      underlinedUrl: entry.toLowerCase()
+    });
   }
 }
 
@@ -111,15 +133,14 @@ var testCheckItemHighlight = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogSuggestsCallback = function(controller)
-{
+var prefDialogSuggestsCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
   controller.waitForElement(suggests);
   controller.select(suggests, null, null, 0);
-  controller.sleep(gDelay);
+  controller.sleep(100);
 
   prefDialog.close(true);
 }
