@@ -19,6 +19,8 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ashughes@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,14 +37,15 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'SearchAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PrefsAPI', 'SearchAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module)
-{
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html';
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
@@ -50,8 +53,7 @@ var setupModule = function(module)
   tabs.closeAllTabs();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function() {
   search.clear();
 
   PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
@@ -60,20 +62,18 @@ var teardownModule = function(module)
 /**
  * Use a search engine to search for the currently selected text.
  */
-var testSearchSelectionViaContextMenu = function()
-{
+var testSearchSelectionViaContextMenu = function() {
   var engines = search.visibleEngines;
   var engineName = engines[engines.length - 1].name;
 
   // Use the last engine for the search
   search.selectedEngine = engineName;
 
-  controller.open("http://www.mozilla.org/about/mission.html");
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get text element from web page, which will be used for the search
-  var textElem = new elementslib.XPath(controller.tabs.activeTab,
-                                       "//div[@id='main-content-container']/div[2]/p");
+  var textElem = new elementslib.ID(controller.tabs.activeTab, "mission_statement");
 
   // Start search which opens a new tab in the background
   startSearch(textElem, engineName, true);
@@ -92,8 +92,7 @@ var testSearchSelectionViaContextMenu = function()
  * @param {boolean} loadInBackground
  *        Whether the search results should open in a forground or background tab
  */
-var startSearch = function(element, engineName, loadInBackground)
-{
+var startSearch = function(element, engineName, loadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
@@ -114,16 +113,22 @@ var startSearch = function(element, engineName, loadInBackground)
   UtilsAPI.closeContentAreaContextMenu(controller);
 
   // A new tab will be opened in the background
-  controller.waitForEval("subject.hasNewTabOpened == true", gTimeout, 100,
-                         {hasNewTabOpened: tabs.length == (tabCount + 1)});
+  controller.waitForEval("subject.tabCount == subject.expectedCount", TIMEOUT, 100, {
+    tabCount: tabs.length,
+    expectedCount: tabCount + 1
+  });
 
   if (loadInBackground) {
-    controller.waitForEval("subject.isNewBackgroundTab == true", gTimeout, 100,
-                           {isNewBackgroundTab: tabs.selectedIndex == tabIndex});
+    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
+      selectedTabIndex: tabs.selectedIndex,
+      expectedIndex: tabIndex
+    });
     tabs.selectedIndex = tabs.selectedIndex + 1;
   } else {
-    controller.waitForEval("subject.isNewForegroundTab == true", gTimeout, 100,
-                           {isNewForegroundTab: tabs.selectedIndex == tabIndex + 1});
+    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
+      selectedTabIndex: tabs.selectedIndex,
+      expectedIndex: tabIndex + 1
+    });
   }
 
   controller.waitForPageLoad();
