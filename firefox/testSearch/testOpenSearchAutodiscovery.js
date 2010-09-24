@@ -19,6 +19,8 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,35 +37,35 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['SearchAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-const searchEngine = {name: "YouTube Video Search",
-                      url : "http://www.youtube.com/"};
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 
-var setupModule = function(module)
-{
+const SEARCH_ENGINE = {
+  name: "OpenSearch Test",
+  url : LOCAL_TEST_FOLDER + 'search/opensearch.html'
+};
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
 
   search = new SearchAPI.searchBar(controller);
 }
 
-var teardownModule = function(module)
-{
-  search.removeEngine(searchEngine.name);
+var teardownModule = function() {
+  search.removeEngine(SEARCH_ENGINE.name);
   search.restoreDefaultEngines();
 }
 
 /**
  * Autodiscovery of OpenSearch search engines
  */
-var testOpenSearchAutodiscovery = function()
-{
-  // Open the web page with the test OpenSearch plugin
-  controller.open(searchEngine.url);
+var testOpenSearchAutodiscovery = function() {
+  // Open the test page with the test OpenSearch plugin
+  controller.open(SEARCH_ENGINE.url);
   controller.waitForPageLoad();
 
   // Open search engine drop down and check for installable engines
@@ -73,11 +75,17 @@ var testOpenSearchAutodiscovery = function()
                       {installableEngines: addEngines});
 
   // Install the new search engine which gets automatically selected
-  var engine = search.getElement({type: "engine", subtype: "title", value: addEngines[0].name});
+  var engine = search.getElement({
+    type: "engine", 
+    subtype: "title", 
+    value: addEngines[0].name
+  });
   controller.waitThenClick(engine);
 
-  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", gTimeout, 100,
-                         {search: search, newEngine: searchEngine.name});
+  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", TIMEOUT, 100, {
+    search: search, 
+    newEngine: SEARCH_ENGINE.name
+  });
 
   // Check if a search redirects to the YouTube website
   search.search({text: "Firefox", action: "goButton"});
@@ -85,9 +93,10 @@ var testOpenSearchAutodiscovery = function()
   // Clear search term and check the placeholder text
   var inputField = search.getElement({type: "searchBar_input"});
   search.clear();
-  controller.assertJS("subject.placeholder == subject.engineName",
-                      {placeholder: inputField.getNode().placeholder,
-                       engineName: searchEngine.name});
+  controller.assertJS("subject.placeholder == subject.engineName", {
+    placeholder: inputField.getNode().placeholder,
+    engineName: SEARCH_ENGINE.name
+  });
 }
 
 /**
