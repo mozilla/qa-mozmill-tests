@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,19 +37,23 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI',
+const RELATIVE_ROOT = '../../../shared-modules';
+const MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI',
                        'UtilsAPI'];
 
-const gDelay = 500;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
+
+
+var setupModule = function() {
   controller = mozmill.getBrowserController();
   tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function() {
   // Remove all logins set by the testscript
   var pm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
   pm.removeAllLogins();
@@ -58,31 +63,36 @@ var teardownModule = function(module) {
  * Test saving login information and setting a master password
  */
 var testSetMasterPassword = function() {
-  var testSite = "http://www-archive.mozilla.org/quality/browser/front-end/testcases/wallet/login.html";
 
   // Go to the sample login page and perform a test log-in with inputted fields
-  controller.open(testSite);
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, gTimeout);
+  controller.waitForElement(userField, TIMEOUT);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
-  controller.waitThenClick(new elementslib.ID(controller.tabs.activeTab, "LogIn"), gTimeout);
-  controller.sleep(gDelay);
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
+  controller.waitThenClick(loginButton, TIMEOUT);
+  controller.sleep(500);
 
-  // After logging in, remember the login information
-  var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties",
-                                   "notifyBarRememberButtonText");
-  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                             '/{"value":"password-save"}/{"label":"' + label + '"}');
+  // Get the label of the Remember Password button
+  var label = UtilsAPI.getProperty(
+                "chrome://passwordmgr/locale/passwordmgr.properties",
+                "notifyBarRememberButtonText"
+              );
+  // Get the Remember Password button based on the above label              
+  var button = tabBrowser.getTabPanelElement(
+                 tabBrowser.selectedIndex,
+                '/{"value":"password-save"}/{"label":"' + label + '"}'
+               );
 
   UtilsAPI.assertElementVisible(controller, button, true);
-  controller.waitThenClick(button, gTimeout);
-  controller.sleep(gDelay);
+  controller.waitThenClick(button, TIMEOUT);
+  controller.sleep(500);
   controller.assertNodeNotExist(button);
 
   // Call preferences dialog and invoke master password functionality
@@ -118,11 +128,11 @@ var prefDialogSetMasterPasswordCallback = function(controller)
   prefDialog.paneId = 'paneSecurity';
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
-  controller.waitForElement(masterPasswordCheck, gTimeout);
+  controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and set a master password to your profile
   var md = new ModalDialogAPI.modalDialog(masterPasswordHandler);
-  md.start(gDelay);
+  md.start(500);
 
   controller.click(masterPasswordCheck);
 
@@ -140,17 +150,17 @@ var masterPasswordHandler = function(controller) {
   var pw2 = new elementslib.ID(controller.window.document, "pw2");
 
   // Fill in the master password into both input fields and click ok
-  controller.waitForElement(pw1, gTimeout);
+  controller.waitForElement(pw1, TIMEOUT);
   controller.type(pw1, "test1");
   controller.type(pw2, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
-  md.start(gDelay);
+  md.start(500);
 
   var button = new elementslib.Lookup(controller.window.document,
                            '/id("changemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button, gTimeout);
+  controller.waitThenClick(button, TIMEOUT);
 }
 
 /**
@@ -162,7 +172,7 @@ var confirmHandler = function(controller)
 {
   var button = new elementslib.Lookup(controller.window.document,
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button, gTimeout);
+  controller.waitThenClick(button, TIMEOUT);
 }
 
 /**
@@ -175,11 +185,11 @@ var prefDialogInvokeMasterPasswordCallback = function(controller)
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   var showPasswordButton = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitForElement(showPasswordButton, gTimeout);
+  controller.waitForElement(showPasswordButton, TIMEOUT);
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
-  md.start(gDelay);
+  md.start(500);
 
   controller.click(showPasswordButton);
 
@@ -198,12 +208,12 @@ function checkPasswordManager(controller) {
   var togglePasswords = new elementslib.ID(controller.window.document, "togglePasswords");
   var passwordCol = new elementslib.ID(controller.window.document, "passwordCol");
 
-  controller.waitForElement(togglePasswords, gTimeout);
+  controller.waitForElement(togglePasswords, TIMEOUT);
   UtilsAPI.assertElementVisible(controller, passwordCol, false);
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
-  md.start(gDelay);
+  md.start(500);
 
   controller.click(togglePasswords);
 
@@ -223,7 +233,7 @@ function checkPasswordManager(controller) {
 var checkMasterHandler = function(controller) {
   var passwordBox = new elementslib.ID(controller.window.document, "password1Textbox");
 
-  controller.waitForElement(passwordBox, gTimeout);
+  controller.waitForElement(passwordBox, TIMEOUT);
   controller.type(passwordBox, "test1");
 
   var button = new elementslib.Lookup(controller.window.document,
@@ -240,11 +250,11 @@ var prefDialogDeleteMasterPasswordCallback = function(controller) {
   var prefDialog = new PrefsAPI.preferencesDialog(controller);
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
-  controller.waitForElement(masterPasswordCheck, gTimeout);
+  controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and remove the master password to your profile
   var md = new ModalDialogAPI.modalDialog(removeMasterHandler);
-  md.start(gDelay);
+  md.start(500);
 
   controller.click(masterPasswordCheck);
 
@@ -260,12 +270,12 @@ var prefDialogDeleteMasterPasswordCallback = function(controller) {
 var removeMasterHandler = function(controller) {
   var removePwdField = new elementslib.ID(controller.window.document, "password");
 
-  controller.waitForElement(removePwdField, gTimeout);
+  controller.waitForElement(removePwdField, TIMEOUT);
   controller.type(removePwdField, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
   var md = new ModalDialogAPI.modalDialog(confirmHandler);
-  md.start(gDelay);
+  md.start(500);
 
   controller.click(new elementslib.Lookup(controller.window.document,
                          '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
