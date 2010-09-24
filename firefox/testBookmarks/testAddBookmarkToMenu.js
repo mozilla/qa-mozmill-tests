@@ -19,7 +19,8 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
-*
+ *   Aaron Train <atrain@mozilla.com>
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -35,49 +36,58 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
+const RELATIVE_ROOT = '../../shared-modules';
+const MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
 
-const gDelay = 0;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
+
+var setupModule = function() {
+  controller = mozmill.getBrowserController();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function() {
   PlacesAPI.restoreDefaultBookmarks();
 }
 
 var testAddBookmarkToBookmarksMenu = function() {
-  var uri = UtilsAPI.createURI("http://www.mozilla.org");
+  var uri = UtilsAPI.createURI(LOCAL_TEST_PAGE);
 
   // Fail if the URI is already bookmarked
-  controller.assertJS("subject.isBookmarked == false",
-                      {isBookmarked: PlacesAPI.bookmarksService.isBookmarked(uri)});
+  controller.assertJS("subject.isBookmarked == false", {
+    isBookmarked: PlacesAPI.bookmarksService.isBookmarked(uri)
+  });
 
   // Open URI and wait until it has been finished loading
   controller.open(uri.spec);
   controller.waitForPageLoad();
 
   // Open the bookmark panel via bookmarks menu
-  controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
+  var bookmarkMenuItem = new elementslib.Elem(controller.menus.bookmarksMenu.
+                                              menu_bookmarkThisPage);
+  controller.click(bookmarkMenuItem);
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
-  controller.waitForEval("subject._overlayLoaded == true", 2000, 100, controller.window.top.StarUI);
+  controller.waitForEval("subject._overlayLoaded == true", TIMEOUT, 100, 
+                         controller.window.top.StarUI);
 
   // Bookmark should automatically be stored under the Bookmark Menu
-  // XXX: We should give a unique name too when controller.type will send oninput events (bug 474667)
-  var nameField = new elementslib.ID(controller.window.document, "editBMPanel_namePicker");
-  var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
+  var nameField = new elementslib.ID(controller.window.document, 
+                                     "editBMPanel_namePicker");
+  var doneButton = new elementslib.ID(controller.window.document, 
+                                      "editBookmarkPanelDoneButton");
 
   controller.type(nameField, "Mozilla");
-  controller.sleep(gDelay);
   controller.click(doneButton);
 
   // Check if bookmark was created in the Bookmarks Menu
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
-  controller.assertJS("subject.isBookmarkInBookmarksMenu == true",
-                      {isBookmarkInBookmarksMenu: PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarksService.bookmarksMenuFolder)});
+  controller.assertJS("subject.isBookmarkInBookmarksMenu == true", {
+    isBookmarkInBookmarksMenu: 
+      PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarksService.bookmarksMenuFolder)
+  });
 }
 
 /**
