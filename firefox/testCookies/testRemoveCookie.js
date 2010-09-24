@@ -55,15 +55,19 @@ var setupModule = function() {
 
 var teardownModule = function() {
   cm.removeAll();
+  persisted.hostName = undefined;
 }
 
 /**
  * Tests removing a single cookie via the cookie manager
  */
 var testRemoveCookie = function() {
-  // Go to a local test page to build a list of cookies
+  // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
+  
+  // Get the test page hostname
+  persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and delete the created cookie
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
@@ -101,10 +105,10 @@ var prefDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 function deleteCookie(controller) {
-  // Search for a cookie from mozilla.org and delete it
+  // Check for a cookie and delete it
   var filterField = new elementslib.ID(controller.window.document, "filter");
   controller.waitForElement(filterField, TIMEOUT);
-  controller.type(filterField, "__utmz");
+  controller.type(filterField, "litmus_1");
   controller.sleep(500);
 
   // Get the number of cookies in the file manager before removing a single cookie
@@ -113,11 +117,20 @@ function deleteCookie(controller) {
 
   controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
 
-  var removed = !cm.cookieExists({host: ".mozilla.org", name: "__utmz", path: "/"});
-  controller.assertJS("subject.isCookieRemoved == true",
-                      {isCookieRemoved: removed});
-  controller.assertJS("subject.list.view.rowCount == subject.numberCookies",
-                        {list: cookiesList, numberCookies: origNumCookies - 1});
+  var removed = !cm.cookieExists({
+    host: persisted.hostName, 
+    name: "litmus_1", 
+    path: "/cookies/"
+  });
+  
+  controller.assertJS("subject.isCookieRemoved == true", {
+    isCookieRemoved: removed
+  });
+  
+  controller.assertJS("subject.list.view.rowCount == subject.numberCookies", {
+    list: cookiesList, 
+    numberCookies: origNumCookies - 1
+  });
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
