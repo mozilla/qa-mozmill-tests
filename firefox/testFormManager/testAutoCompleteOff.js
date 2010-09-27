@@ -69,7 +69,7 @@ var testAutoCompleteOff = function() {
 
   // Verify source autocomplete=off
   var popupAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
-  controller.assertProperty(popupAutoCompList, "popupOpen", false);
+  controller.assertJSProperty(popupAutoCompList, "popupOpen", false);
 }
 
 /**

@@ -163,7 +163,7 @@ var handleSecurityWarningDialog = function(controller)
   controller.waitForElement(infoBody);
 
   // Verify the message text
-  controller.assertProperty(infoBody, "textContent", enterSecureMessage);
+  controller.assertJSProperty(infoBody, "textContent", enterSecureMessage);
 
   // Verify the "Alert me whenever" checkbox is checked by default
   var checkbox = new elementslib.ID(controller.window.document, "checkbox");

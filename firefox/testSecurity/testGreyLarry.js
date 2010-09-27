@@ -57,7 +57,7 @@ var testLarryGrey = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertProperty(favicon, "src" ,"http://www.mozilla.org/favicon.ico");
+  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/favicon.ico");
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,
@@ -71,7 +71,7 @@ var testLarryGrey = function() {
   controller.waitForEval("subject.state == 'open'", 2000, 100, doorhanger.getNode());
 
   // Check that the Larry UI is unknown (aka Grey)
-  controller.assertProperty(doorhanger, "className", "unknownIdentity");
+  controller.assertJSProperty(doorhanger, "className", "unknownIdentity");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document,
@@ -89,7 +89,7 @@ var testLarryGrey = function() {
 function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertProperty(securityTab, "selected", "true");
+  controller.assertJSProperty(securityTab, "selected", "true");
 
   // Check the Web Site label for "www.mozilla.org"
   var webIDDomainLabel = new elementslib.ID(controller.window.document,

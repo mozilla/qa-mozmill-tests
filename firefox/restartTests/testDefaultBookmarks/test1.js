@@ -61,12 +61,12 @@ var testVerifyDefaultBookmarks = function() {
   // Check if the Most Visited folder is visible and has the correct title
   var mostVisited = new elementslib.XPath(controller.window.document,
                                           elemString.replace("%1", "1"));
-  controller.assertProperty(mostVisited, "label", toolbarNodes.getChild(0).title);
+  controller.assertJSProperty(mostVisited, "label", toolbarNodes.getChild(0).title);
 
   // Check Getting Started bookmarks title and URI
   var gettingStarted = new elementslib.XPath(controller.window.document,
                                              elemString.replace("%1", "2"));
-  controller.assertProperty(gettingStarted, "label", toolbarNodes.getChild(1).title);
+  controller.assertJSProperty(gettingStarted, "label", toolbarNodes.getChild(1).title);
 
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
   controller.click(gettingStarted);
@@ -80,7 +80,7 @@ var testVerifyDefaultBookmarks = function() {
 
   // Check the title of the default RSS feed toolbar button
   var RSS = new elementslib.XPath(controller.window.document, elemString.replace("%1", "3"));
-  controller.assertProperty(RSS, "label", toolbarNodes.getChild(2).title);
+  controller.assertJSProperty(RSS, "label", toolbarNodes.getChild(2).title);
 
   // Close container again
   toolbarNodes.containerOpen = false;

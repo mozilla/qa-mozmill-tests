@@ -92,7 +92,7 @@ var testPermissionsDisabled = function() {
               );
 
   controller.waitForElement(allow);
-  controller.assertProperty(allow, "disabled", true);
+  controller.assertJSProperty(allow, "disabled", true);
 
   controller.keypress(null, "VK_ESCAPE", {});
 
@@ -104,7 +104,7 @@ var testPermissionsDisabled = function() {
   var blockImages = new elementslib.ID(controller.window.document, "context-blockimage");
 
   controller.rightClick(image);
-  controller.assertProperty(blockImages, "hidden", true);
+  controller.assertJSProperty(blockImages, "hidden", true);
 
   // Enable the "Ask me every time" cookie behavior
   PrefsAPI.openPreferencesDialog(prefCookieHandler);
