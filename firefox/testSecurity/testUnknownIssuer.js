@@ -53,7 +53,7 @@ var testUnknownIssuer = function() {
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
   controller.waitForElement(link, gTimeout);
-  controller.assertProperty(link, "textContent", "secure.mur.at");
+  controller.assertJSProperty(link, "textContent", "secure.mur.at");
 
   // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));

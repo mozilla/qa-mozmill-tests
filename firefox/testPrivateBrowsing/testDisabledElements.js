@@ -65,7 +65,7 @@ var testCheckAboutPrivateBrowsing = function() {
 
   // File -> Import should be disabled
   var importItem = new elementslib.ID(controller.window.document, "menu_import");
-  controller.assertProperty(importItem, "disabled", true);
+  controller.assertJSProperty(importItem, "disabled", true);
 
   // On Mac we also have to check the menu item when the Library is open
   if (mozmill.isMac) {
@@ -84,11 +84,11 @@ var testCheckAboutPrivateBrowsing = function() {
 function checkImportMenu(controller) {
   // Check File -> Import entry again
   var importItem = new elementslib.ID(controller.window.document, "menu_import");
-  controller.assertProperty(importItem, "disabled", true);
+  controller.assertJSProperty(importItem, "disabled", true);
 
   // Check that "Import HTML" is available
   var importHTML = new elementslib.ID(controller.window.document, "fileImport");
-  controller.assertPropertyNotExist(importHTML, "disabled");
+  controller.assertNotJSProperty(importHTML, "disabled");
 
   var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});

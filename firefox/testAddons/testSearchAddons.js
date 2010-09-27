@@ -67,7 +67,7 @@ var testSearchForAddons = function()
   // Wait for search results to populate and verify elements of search functionality
   var footer = addonsManager.getElement({type: "search_status", subtype: "footer"});
   controller.waitForElement(footer, gSearchTimeout);
-  controller.assertProperty(footer, "hidden", false);
+  controller.assertJSProperty(footer, "hidden", false);
 
   // Check if we show the x button in the search field
   var searchButton = addonsManager.getElement({type: "search_fieldButton"});
@@ -97,7 +97,7 @@ var testSearchForAddons = function()
 
   // We still have to show the footer with recommended addons
   controller.waitForElement(footer, gSearchTimeout);
-  controller.assertProperty(footer, "hidden", false);
+  controller.assertJSProperty(footer, "hidden", false);
 
   // Verify the number of recommended addons is in-between 0 and the maxResults pref
   addonsManager.controller.assertJS("subject.numSearchResults > 0",

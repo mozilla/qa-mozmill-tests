@@ -92,7 +92,7 @@ var testPermissionsDisabled = function() {
                                     '/*[name()="menuitem"][1]');
 
   controller.waitForElement(allow);
-  controller.assertProperty(allow, "disabled", true);
+  controller.assertJSProperty(allow, "disabled", true);
 
   controller.keypress(null, "VK_ESCAPE", {});
 

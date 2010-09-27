@@ -120,11 +120,11 @@ var testClearFormHistory = function() {
   // Begin typing into the name fields and verify no popup
   controller.type(firstName, FNAME.substring(0,2));
   controller.sleep(500);
-  controller.assertProperty(popDownAutoCompList, "popupOpen", false);
+  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
 
   controller.type(lastName, LNAME.substring(0,2));
   controller.sleep(500);
-  controller.assertProperty(popDownAutoCompList, "popupOpen", false);
+  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
 }
 
 /**
