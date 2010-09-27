@@ -85,7 +85,7 @@ var testThemeChange = function()
   addonsManager.controller.waitForElement(restartButton, gTimeout);
 
   // Verify useThemeButton is not visible
-  addonsManager.controller.assertProperty(useThemeButton, "disabled", "true");
+  addonsManager.controller.assertJSProperty(useThemeButton, "disabled", "true");
 
   // ... and theme description has changed
   var description = theme.getNode().getAttribute('description');

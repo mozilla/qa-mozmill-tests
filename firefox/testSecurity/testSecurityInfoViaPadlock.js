@@ -76,7 +76,7 @@ var testSecurityInfoViaPadlock = function() {
 function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertProperty(securityTab, "selected", "true");
+  controller.assertJSProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,

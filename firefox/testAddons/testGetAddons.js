@@ -89,14 +89,14 @@ var testGetAddonsTab = function()
   addonsManager.paneId = "search";
 
   var searchField = addonsManager.getElement({type: "search_field"});
-  addonsManager.controller.assertProperty(searchField, "hidden", "false");
+  addonsManager.controller.assertJSProperty(searchField, "hidden", "false");
 
   var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
-  addonsManager.controller.assertProperty(browseAllAddons, "hidden", "false");
+  addonsManager.controller.assertJSProperty(browseAllAddons, "hidden", "false");
 
   var footer = addonsManager.getElement({type: "search_status", subtype: "footer"});
   addonsManager.controller.waitForElement(footer, gSearchTimeout);
-  addonsManager.controller.assertProperty(footer, "hidden", false);
+  addonsManager.controller.assertJSProperty(footer, "hidden", false);
 
   // Verify the number of addons is in-between 0 and the maxResults pref
   var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);

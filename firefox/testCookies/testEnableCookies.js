@@ -134,7 +134,7 @@ function checkSavedCookies(controller) {
   // Verify that the single cookie is saved
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   controller.waitForElement(removeCookieButton, TIMEOUT);
-  controller.assertProperty(removeCookieButton, "disabled", false);
+  controller.assertJSProperty(removeCookieButton, "disabled", false);
 
   controller.assertJS("subject.cookieExists == true", {
     cookieExists: cm.cookieExists({

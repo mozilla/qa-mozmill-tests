@@ -67,7 +67,7 @@ var testSecNotification = function()
 
   // Identity box should have a green background
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.assertProperty(identityBox, "className", "verifiedIdentity");
+  controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
 
   // Go to an unsecure (HTTP) site
   controller.open("http://www.mozilla.org/");
@@ -80,7 +80,7 @@ var testSecNotification = function()
   controller.assertJS("subject.getPropertyValue('list-style-image') == 'none'", cssSecButton);
 
   // Identity box should have a gray background
-  controller.assertProperty(identityBox, "className", "unknownIdentity");
+  controller.assertJSProperty(identityBox, "className", "unknownIdentity");
 
   // Go to a website which does not have a valid cert
   controller.open("https://mozilla.org/");
@@ -89,7 +89,7 @@ var testSecNotification = function()
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
   controller.waitForElement(link, gTimeout);
-  controller.assertProperty(link, "textContent", "*.mozilla.org");
+  controller.assertJSProperty(link, "textContent", "*.mozilla.org");
 
   // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));

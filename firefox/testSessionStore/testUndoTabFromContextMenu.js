@@ -64,7 +64,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Check if 'Undo Close Tab' is hidden
   var contextMenuItem = new elementslib.ID(controller.window.document, 'context_undoCloseTab');
-  controller.assertProperty(contextMenuItem, 'hidden', true);
+  controller.assertJSProperty(contextMenuItem, 'hidden', true);
   UtilsAPI.closeContentAreaContextMenu(controller);
 
   // Check 'Recently Closed Tabs' count, should be 0
@@ -93,7 +93,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Check if 'Undo Close Tab' is visible
   controller.rightClick(tabBar);
-  controller.assertProperty(contextMenuItem, 'hidden', false);
+  controller.assertJSProperty(contextMenuItem, 'hidden', false);
 
   // Restore recently closed tab via tab browser context menu'
   controller.click(contextMenuItem);
@@ -110,6 +110,6 @@ var testUndoTabFromContextMenu = function() {
 
   // Check if 'Undo Close Tab' is hidden
   controller.rightClick(tabBar);
-  controller.assertProperty(contextMenuItem, 'hidden', true);
+  controller.assertJSProperty(contextMenuItem, 'hidden', true);
   UtilsAPI.closeContentAreaContextMenu(controller);
 }

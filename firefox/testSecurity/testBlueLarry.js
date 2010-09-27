@@ -67,11 +67,11 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertProperty(favicon, "src" ,"https://wiki.mozilla.org/favicon.ico");
+  controller.assertJSProperty(favicon, "src" ,"https://wiki.mozilla.org/favicon.ico");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.assertProperty(identityBox, "className", "verifiedDomain");
+  controller.assertJSProperty(identityBox, "className", "verifiedDomain");
 
   // Click the identity button to display Larry
   controller.click(identityBox);
@@ -81,7 +81,7 @@ var testLarryBlue = function() {
   controller.waitForEval("subject.state == 'open'", 2000, 100, doorhanger.getNode());
 
   // Check that the Larry UI is domain verified (aka Blue)
-  controller.assertProperty(doorhanger, "className", "verifiedDomain");
+  controller.assertJSProperty(doorhanger, "className", "verifiedDomain");
 
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
@@ -92,26 +92,26 @@ var testLarryBlue = function() {
   // XXX: Larry strips the 'www.' from the CName using the eTLDService
   //      This is expected behaviour for the time being (Bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  controller.assertProperty(host, "textContent", gETLDService.getBaseDomainFromHost(cert.commonName));
+  controller.assertJSProperty(host, "textContent", gETLDService.getBaseDomainFromHost(cert.commonName));
 
   // Check the owner identifier string, should be "(unknown)"
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
   var property = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
                                       "identity.ownerUnknown2");
-  controller.assertProperty(owner, "textContent", property);
+  controller.assertJSProperty(owner, "textContent", property);
 
   // Check the "Verified by: %S" string
   var l10nVerifierLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
                                                "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document, "identity-popup-content-verifier");
-  controller.assertProperty(verifier, "textContent", l10nVerifierLabel);
+  controller.assertJSProperty(verifier, "textContent", l10nVerifierLabel);
 
   // Check the Encryption Label text
   var l10nEncryptionLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
                                                  "identity.encrypted");
   var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
-  controller.assertProperty(encryptionLabel, "textContent", l10nEncryptionLabel);
+  controller.assertJSProperty(encryptionLabel, "textContent", l10nEncryptionLabel);
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
@@ -128,7 +128,7 @@ var testLarryBlue = function() {
 function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertProperty(securityTab, "selected", "true");
+  controller.assertJSProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
   // XXX: This cert uses a wildcard (*) in the CName
