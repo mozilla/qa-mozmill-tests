@@ -380,10 +380,18 @@ softwareUpdate.prototype = {
       browserController.click(aboutItem);
 
       this._UtilsAPI.handleWindow("type", "Browser:About", function(controller) {
+        // XXX: Bug 599290 - Check for updates has been completely relocated
+        // into the about window. We can't check the in-about ui yet.
         var updateButton = new elementslib.ID(controller.window.document,
                                               "checkForUpdatesButton");
-        controller.click(updateButton);
+        //controller.click(updateButton);
+        controller.waitForElement(updateButton, gTimeout);
       });
+
+      // For now just call the old ui until we have a fix.
+      var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"].
+                         createInstance(Ci.nsIUpdatePrompt);
+      updatePrompt.checkForUpdates();
     } else {
       updateItem = new elementslib.Elem(browserController.menus.helpMenu.checkForUpdates);
       browserController.click(updateItem);
