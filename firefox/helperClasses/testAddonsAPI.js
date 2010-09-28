@@ -38,25 +38,69 @@
 var RELATIVE_ROOT = '../../shared-modules';
 var MODULE_REQUIRES = ['AddonsAPI'];
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
-var setupModule = function(module) {
+const MOZMILL = {
+  name : "MozMill",
+  id : "mozmill@mozilla.com"
+};
+
+function setupModule() {
   controller = mozmill.getBrowserController();
-  am = new AddonsAPI.addonsManager();
+
+  am = new AddonsAPI.addonsManager(controller);
 }
 
-var teardownModule = function(module) {
-  am.close(true);
-}
+function testAddonsAPI() {
+  am.open({type: "shortcut"});
 
-var testAddonsManager = function() {
-  am.open(controller);
+  // Switch to the extension pane
+  var category = am.getCategoryById({id: "extensions"});
+  am.setCategory({category: category});
 
-  am.paneId = "themes";
+  var addonsList = am.getElement({type: "addonsList"});
+  controller.assertJSProperty(addonsList, "localName", "richlistbox");
 
-  am.search("rss");
-  am.clearSearchField();
+  // Check some properties of the Mozmill extension
+  var addon = am.getAddons({attribute: "value", value: MOZMILL.id})[0];
+  controller.assertDOMProperty(addon, "name", MOZMILL.name);
+  controller.assertDOMProperty(addon, "type", "extension");
+
+  // Disable Mozmill in the list view and re-enable it in the details view
+  am.disableAddon({addon: addon});
+  controller.click(am.getAddonLink({addon: addon, link: "more"}));
+  am.enableAddon({addon: addon});
+
+  // Disable automatic updates (Doesn't work at the moment)
+  var updateCheck = am.getAddonRadiogroup({addon: addon, radiogroup: "findUpdates"});
+
+  // Open recent updates via utils button
+  am.handleUtilsButton({item: "viewUpdates"});
+
+  var recentUpdates = am.getCategoryById({id: "recentUpdates"});
+  am.waitForCategory({category: recentUpdates});
+
+  // The search result for Mozmill should only appear with the local filter set
+  am.search({value: MOZMILL.name});
+  controller.assert(function() {
+    return am.getSearchFilterValue({filter: am.selectedSearchFilter}) == "local";
+  });
+  controller.assert(function() {
+    return am.getSearchResults().length == 1;
+  }, "A local search list one entry");
+
+  am.selectedSearchFilter = "remote";
+  controller.assert(function() {
+    return am.getSearchFilterValue({filter: am.selectedSearchFilter}) == "remote";
+  }, "The remote search filter is active");
+  controller.assert(function() {
+    return am.getSearchResults().length == 0;
+  }, "Installed add-ons are not shown in search pane with remote filter active");
+
+  am.search({value: "rss", waitFor: false});
+  controller.assert(function() {
+    return am.isSearching == true;
+  }, "Search has to be active");
 
   am.close();
 }
