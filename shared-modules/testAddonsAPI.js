@@ -221,8 +221,8 @@ addonsManager.prototype = {
     if (!item)
       throw new Error(arguments.callee.name + ": Menu item not specified.");
 
-    var button = am.getElement({type: "utilsButton"});
-    var menu = am.getElement({type: "utilsButton_menu"});
+    var button = this.getElement({type: "utilsButton"});
+    var menu = this.getElement({type: "utilsButton_menu"});
 
     try {
       this._controller.click(button);
@@ -824,8 +824,8 @@ addonsManager.prototype = {
    * @type {ElemBase}
    */
   getSearchResults : function addonsManager_getSearchResults() {
-    var filterValue = am.getSearchFilterValue({
-      filter: am.selectedSearchFilter
+    var filterValue = this.getSearchFilterValue({
+      filter: this.selectedSearchFilter
     });
 
     switch (filterValue) {
