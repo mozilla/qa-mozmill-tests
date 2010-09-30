@@ -155,7 +155,7 @@ nodeCollector.prototype = {
     var node = this._document.getAnonymousElementByAttribute(this._root,
                                                              aAttribute,
                                                              aValue);
-    this.nodes = [node];
+    this.nodes = node ? [node] : [ ];
 
     return this;
   },
