@@ -54,6 +54,22 @@ function nodeCollector(aRoot) {
  */
 nodeCollector.prototype = {
   /**
+   * Converts current nodes to elements
+   *
+   * @returns List of elements
+   * @type {array of ElemBase}
+   */
+  get elements() {
+    var elements = [ ];
+
+    Array.forEach(this._nodes, function(element) {
+      elements.push(new elementslib.Elem(element));
+    });
+
+    return elements;
+  },
+
+  /**
    * Get the current list of DOM nodes
    *
    * @returns List of nodes
@@ -80,19 +96,26 @@ nodeCollector.prototype = {
   },
 
   /**
-   * Converts current nodes to elements
+   * Get the root node used as parent for a node collection
    *
-   * @returns List of elements
-   * @type {array of ElemBase}
+   * @returns Current root node
+   * @type {object}
    */
-  get elements() {
-    var elements = [ ];
+  get root() {
+    return this._root;
+  },
 
-    Array.forEach(this._nodes, function(element) {
-      elements.push(new elementslib.Elem(element));
-    });
-
-    return elements;
+  /**
+   * Sets root node to the specified DOM node
+   * 
+   * @param {object} aRoot
+   *        DOM node to use as root for node collection
+   */
+  set root(aRoot) {
+    if (aRoot) {
+      this._root = aRoot;
+      this._nodes = [ ];
+    }
   },
 
   /**
