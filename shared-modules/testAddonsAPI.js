@@ -41,6 +41,7 @@ const MODULE_REQUIRES = ['DOMUtilsAPI', 'PrefsAPI', 'TabbedBrowsingAPI',
                          'UtilsAPI'];
 
 const TIMEOUT = 5000;
+const TIMEOUT_DOWNLOAD = 15000;
 const TIMEOUT_SEARCH = 30000;
 
 // Available search filters
@@ -295,6 +296,28 @@ addonsManager.prototype = {
   },
 
   /**
+   * Check if the specified add-on is installed
+   *
+   * @param {object} aSpec
+   *        Information on which add-on to operate on
+   *        Elements: addon - Add-on element
+   *
+   * @returns True if the add-on is installed
+   * @type {ElemBase}
+   */
+  isAddonInstalled : function addonsManager_isAddonInstalled(aSpec) {
+    var spec = aSpec || { };
+    var addon = spec.addon;
+
+    if (!addon)
+      throw new Error(arguments.callee.name + ": Add-on not specified.");
+
+    // Bug 600502 : Add-ons in search view are not initialized correctly
+    return addon.getNode().getAttribute("remote") == "false" &&
+           addon.getNode().getAttribute("status") == "installed";
+  },
+
+  /**
    * Enables the specified add-on
    *
    * @param {object} aSpec
@@ -306,7 +329,7 @@ addonsManager.prototype = {
     spec.button = "enable";
 
     var button = this.getAddonButton(spec);
-    controller.click(button);
+    this._controller.click(button);
   },
 
   /**
@@ -321,7 +344,32 @@ addonsManager.prototype = {
     spec.button = "disable";
 
     var button = this.getAddonButton(spec);
-    controller.click(button);
+    this._controller.click(button);
+  },
+
+  /**
+   * Installs the specified add-on
+   *
+   * @param {object} aSpec
+   *        Information on which add-on to operate on
+   *        Elements: addon   - Add-on element
+   *                  waitFor - Wait until the category has been selected
+   *                            [optional - default: true]
+   *                  timeout - Duration to wait for the download
+   *                            [optional - default: 15s]
+   */
+  installAddon : function addonsManager_installAddon(aSpec) {
+    var spec = aSpec || { };
+    var addon = spec.addon;
+    var timeout = spec.timeout;
+    var button = "install";
+    var waitFor = (spec.waitFor == undefined) ? true : spec.waitFor;
+
+    var button = this.getAddonButton({addon: addon, button: button});
+    this._controller.click(button);
+
+    if (waitFor)
+      this.waitForDownloaded({addon: addon, timeout: timeout});
   },
 
   /**
@@ -336,7 +384,22 @@ addonsManager.prototype = {
     spec.button = "remove";
 
     var button = this.getAddonButton(spec);
-    controller.click(button);
+    this._controller.click(button);
+  },
+
+  /**
+   * Undo the last action performed for the given add-on
+   *
+   * @param {object} aSpec
+   *        Information on which add-on to operate on
+   *        Elements: addon - Add-on element
+   */
+  undo : function addonsManager_undo(aSpec) {
+    var spec = aSpec || { };
+    spec.link = "undo";
+
+    var link = this.getAddonLink(spec);
+    this._controller.click(link);
   },
 
   /**
@@ -439,6 +502,8 @@ addonsManager.prototype = {
    * @param {object} aSpec
    *        Information for getting the add-ons child node
    *        Elements: addon     - Add-on element
+   *                  type      - Type of the element
+   *                              [optional - default: use attribute/value]
    *                  attribute - DOM attribute of the node
    *                  value     - Value of the DOM attribute
    *
@@ -481,6 +546,31 @@ addonsManager.prototype = {
         parent: addon
       });
     }
+  },
+
+  /**
+   * Wait until the specified add-on has been downloaded
+   * 
+   * @param {object} aSpec
+   *        Object with parameters for customization
+   *        Elements: addon   - Add-on element to wait for being downloaded
+   *                  timeout - Duration to wait for the target state
+   *                            [optional - default: 15s]
+   */
+  waitForDownloaded : function addonsManager_waitForDownloaded(aSpec) {
+    var spec = aSpec || { };
+    var addon = spec.addon;
+    var timeout = (spec.timeout == undefined) ? TIMEOUT_DOWNLOAD : spec.timeout;
+
+    if (!addon)
+      throw new Error(arguments.callee.name + ": Add-on not specified.");
+
+    var self = this;
+    var node = addon.getNode();
+    mozmill.utils.waitFor(function () {
+      return node.getAttribute("pending") == "install" &&
+             node.getAttribute("status") != "installing";
+    }, timeout, 100, "'" + node.getAttribute("name") + "' has been downloaded");
   },
 
 
@@ -982,6 +1072,9 @@ addonsManager.prototype = {
       case "detailView_enableButton":
         nodeCollector.queryNodes("#detail-enable");
         break;
+      case "detailView_installButton":
+        nodeCollector.queryNodes("#detail-install");
+        break;
       case "detailView_preferencesButton":
         nodeCollector.queryNodes("#detail-prefs");
         break;
@@ -1011,6 +1104,12 @@ addonsManager.prototype = {
       case "listView_enableButton":
         nodeCollector.queryAnonymousNodes("anonid", "enable-btn");
         break;
+      case "listView_installButton":
+        // There is another binding we will have to skip
+        nodeCollector.queryAnonymousNodes("anonid", "install-status");
+        nodeCollector.root = nodeCollector.nodes[0];
+        nodeCollector.queryAnonymousNodes("anonid", "install-remote");
+        break;
       case "listView_preferencesButton":
         nodeCollector.queryAnonymousNodes("anonid", "preferences-btn");
         break;
@@ -1027,6 +1126,24 @@ addonsManager.prototype = {
       //  break;
       case "listView_undoLink":
         nodeCollector.queryAnonymousNodes("anonid", "undo");
+        break;
+      case "listView_cancelDownload":
+        // There is another binding we will have to skip
+        nodeCollector.queryAnonymousNodes("anonid", "install-status");
+        nodeCollector.root = nodeCollector.nodes[0];
+        nodeCollector.queryAnonymousNodes("anonid", "cancel");
+        break;
+      case "listView_pauseDownload":
+        // There is another binding we will have to skip
+        nodeCollector.queryAnonymousNodes("anonid", "install-status");
+        nodeCollector.root = nodeCollector.nodes[0];
+        nodeCollector.queryAnonymousNodes("anonid", "pause");
+        break;
+      case "listView_progressDownload":
+        // There is another binding we will have to skip
+        nodeCollector.queryAnonymousNodes("anonid", "install-status");
+        nodeCollector.root = nodeCollector.nodes[0];
+        nodeCollector.queryAnonymousNodes("anonid", "progress");
         break;
       // Search
       // Bug 599775 - Controller needs to handle radio groups correctly

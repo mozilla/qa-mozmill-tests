@@ -89,6 +89,11 @@ function testAddonsAPI() {
     return am.getSearchResults().length == 1;
   }, "A local search list one entry");
 
+  // Mozmill should be marked as installed
+  controller.assert(function() {
+    return am.isAddonInstalled({addon: addon});
+  }, "MozMill is marked as being installed");
+
   am.selectedSearchFilter = "remote";
   controller.assert(function() {
     return am.getSearchFilterValue({filter: am.selectedSearchFilter}) == "remote";
@@ -97,10 +102,23 @@ function testAddonsAPI() {
     return am.getSearchResults().length == 0;
   }, "Installed add-ons are not shown in search pane with remote filter active");
 
-  am.search({value: "rss", waitFor: false});
+  am.search({value: "feed", waitFor: false});
   controller.assert(function() {
     return am.isSearching == true;
   }, "Search has to be active");
+
+  // Wait for search finished
+  am.waitForSearchFinished();
+
+  // Get first search result and check it is not installed
+  addon = am.getAddons()[0];
+  controller.assert(function() {
+    return !am.isAddonInstalled({addon: addon});
+  }, "First search result is marked as not being installed");
+
+  // Install the first search result and undo the action immediately
+  am.installAddon({addon: addon});
+  am.undo({addon: addon});
 
   am.close();
 }
