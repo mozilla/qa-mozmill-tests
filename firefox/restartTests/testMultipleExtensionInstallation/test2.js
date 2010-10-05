@@ -57,5 +57,5 @@ var testCheckInstalledExtensions = function() {
 }
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
-setupModule.skipped = true;
-setupModule.skipped_reason = "Bug 569813: New add-ons manager not supported yet";
+setupModule.__force_skip__ = "Bug 569813: New add-ons manager not supported yet";
+teardownModule.__force_skip__ = true;
