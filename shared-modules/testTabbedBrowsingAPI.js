@@ -208,7 +208,7 @@ tabBrowser.prototype = {
       case "closeButton":
         var button = this.getElement({type: "tabs_tabCloseButton",
                                      subtype: "tab", value: this.getTab()});
-        controller.click(button);
+        this._controller.click(button);
         break;
       case "menu":
         var menuitem = new elementslib.Elem(this._controller.menus['file-menu'].menu_close);
@@ -285,7 +285,7 @@ tabBrowser.prototype = {
                                       TABS_ARROW_SCROLLBOX + '/anon({"class":"tabs-newtab-button"})');
         break;
       case "tabs_scrollButton":
-        elem = new elementslib.Lookup(controller.window.document,
+        elem = new elementslib.Lookup(this._controller.window.document,
                                       TABS_ARROW_SCROLLBOX +
                                       '/anon({"anonid":"scrollbutton-' + spec.subtype + '"})');
         break;
@@ -361,7 +361,7 @@ tabBrowser.prototype = {
 
     // Get the tab panel and check if an element has to be fetched
     var panel = this.getElement({type: "tabs_tabPanel", subtype: "tab", value: this.getTab(index)});
-    var elem = new elementslib.Lookup(controller.window.document, panel.expression + elemStr);
+    var elem = new elementslib.Lookup(this._controller.window.document, panel.expression + elemStr);
 
     return elem;
   },
