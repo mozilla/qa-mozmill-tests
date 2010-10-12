@@ -58,9 +58,9 @@ var teardownModule = function(module) {
 }
 
 var testUndoTabFromContextMenu = function() {
-  // Open the tab browser context menu
-  var tabBar = tabBrowser.getElement({type: 'tabs'});
-  controller.rightClick(tabBar);
+  // Open the tab browser context menu on the current tab
+  var currentTab = tabBrowser.getTab();
+  controller.rightClick(currentTab);
 
   // Check if 'Undo Close Tab' is hidden
   var contextMenuItem = new elementslib.ID(controller.window.document, 'context_undoCloseTab');
@@ -92,7 +92,7 @@ var testUndoTabFromContextMenu = function() {
                       {closedTabCount: SessionStoreAPI.getClosedTabCount(controller)});
 
   // Check if 'Undo Close Tab' is visible
-  controller.rightClick(tabBar);
+  controller.rightClick(currentTab);
   controller.assertJSProperty(contextMenuItem, 'hidden', false);
 
   // Restore recently closed tab via tab browser context menu'
@@ -109,7 +109,7 @@ var testUndoTabFromContextMenu = function() {
                       {closedTabCount: SessionStoreAPI.getClosedTabCount(controller)});
 
   // Check if 'Undo Close Tab' is hidden
-  controller.rightClick(tabBar);
+  controller.rightClick(currentTab);
   controller.assertJSProperty(contextMenuItem, 'hidden', true);
   UtilsAPI.closeContentAreaContextMenu(controller);
 }
