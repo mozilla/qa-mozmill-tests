@@ -147,7 +147,7 @@ nodeCollector.prototype = {
    *        Property to filter for
    * @param {string} aValue
    *        Expected value of the DOM property
-   *        [optional - default: ""]
+   *        [optional - default: n/a]
    *
    * @returns The class instance
    * @type {object}
@@ -158,6 +158,29 @@ nodeCollector.prototype = {
         return node.getAttribute(aProperty) == aValue;
       else if (aProperty)
         return node.hasAttribute(aProperty);
+      else
+        return true;
+    });
+  },
+
+  /**
+   * Filter nodes by JS property and its value
+   *
+   * @param {string} aProperty
+   *        Property to filter for
+   * @param {string} aValue
+   *        Expected value of the JS property
+   *        [optional - default: n/a]
+   *
+   * @returns The class instance
+   * @type {object}
+   */
+  filterByJSProperty : function nodeCollector_filterByJSProperty(aProperty, aValue) {
+    return this.filter(function(node) {
+      if (aProperty && aValue)
+        return node.aProperty == aValue;
+      else if (aProperty)
+        return node.aProperty !== undefined;
       else
         return true;
     });
