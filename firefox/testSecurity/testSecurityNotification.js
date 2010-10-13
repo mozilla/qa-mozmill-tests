@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -58,11 +59,6 @@ var testSecNotification = function() {
   var query = new elementslib.ID(controller.tabs.activeTab, "query");
   controller.assertNode(query);
 
-  // The security button should be visible in the status bar
-  var securityButton = controller.window.document.getElementById("security-button");
-  var cssSecButton = controller.window.getComputedStyle(securityButton, "");
-  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssSecButton);
-
   // Identity box should have a green background
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
@@ -73,9 +69,6 @@ var testSecNotification = function() {
 
   var projects = new elementslib.Link(controller.tabs.activeTab, "Our Projects");
   controller.assertNode(projects);
-
-  // Security button should not be visible
-  controller.assertJS("subject.getPropertyValue('list-style-image') == 'none'", cssSecButton);
 
   // Identity box should have a gray background
   controller.assertJSProperty(identityBox, "className", "unknownIdentity");
