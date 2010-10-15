@@ -38,7 +38,7 @@
 
 // Include necessary modules
 const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'ToolbarAPI', 'UtilsAPI'];
 
 const TIMEOUT = 5000;
 
@@ -47,7 +47,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  locationBar = new ToolbarAPI.locationBar(controller);
 
   pm = Cc["@mozilla.org/login-manager;1"].
        getService(Ci.nsILoginManager);
@@ -60,7 +60,7 @@ var teardownModule = function() {
 }
 
 /**
- * Test saving a password using the notification bar
+ * Test saving a password using the notification
  */
 var testSavePassword = function() {
   // Go to the sample login page and log-in with inputted fields
@@ -79,15 +79,19 @@ var testSavePassword = function() {
   controller.sleep(500);
 
   // After logging in, remember the login information
-  var label = UtilsAPI.getProperty("chrome://passwordmgr/locale/passwordmgr.properties", 
-                                   "notifyBarRememberButtonText");
-  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                             '/{"value":"password-save"}' + 
-                                             '/{"label":"' + label + '"}');
-
-  controller.waitThenClick(button, TIMEOUT);
-  controller.sleep(500);
-  controller.assertNodeNotExist(button);
+  var button = locationBar.getNotificationElement(
+                 "password-save-notification",
+                 '/anon({"anonid":"button"})'
+               );
+  var notification = locationBar.getNotificationElement(
+                       "password-save-notification"
+                     );
+  controller.waitThenClick(button);
+  
+  // After clicking the 'Remember Password' button, check notification state
+  controller.assert(function() {
+    return notification.getNode().parentNode.state == "closed";
+  }, "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
   controller.open(LOCAL_TEST_PAGE);
