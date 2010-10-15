@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -170,10 +171,14 @@ addonsManager.prototype = {
     var spec = aSpec || { };
     var timeout = (spec.timeout == undefined) ? TIMEOUT : spec.timeout;
 
-    var self = this;
-    mozmill.utils.waitFor(function() {
-      return self.isOpen;
-    }, timeout, 100, "Add-ons Manager has been opened");
+    // TODO: restore after 1.5.1 has landed
+    // var self = this;
+    //
+    // mozmill.utils.waitFor(function() {
+    //   return self.isOpen;
+    // }, timeout, 100, "Add-ons Manager has been opened");
+    
+    mozmill.utils.waitForEval("subject.isOpen", timeout, 100, this);
 
     // The first tab found will be the selected one
     var tab = this.getTabs()[0];
@@ -229,9 +234,14 @@ addonsManager.prototype = {
       this._controller.click(button);
 
       // Click the button and wait until menu has been opened
-      mozmill.utils.waitFor(function() {
-        return menu.getNode() && menu.getNode().state == "open";
-      }, TIMEOUT, 100, "Menu of utils button has been opened.");
+      
+      // TODO: restore after 1.5.1 has landed
+      // mozmill.utils.waitFor(function() {
+      //   return menu.getNode() && menu.getNode().state == "open";
+      // }, TIMEOUT, 100, "Menu of utils button has been opened.");
+      
+      mozmill.utils.waitForEval("subject && subject.state == 'open'",
+                                TIMEOUT, 100, menu.getNode());
 
       // Click the given menu entry and make sure the 
       var menuItem = this.getElement({
@@ -243,9 +253,14 @@ addonsManager.prototype = {
     } finally {
       // Make sure the menu has been closed
       this._controller.keypress(menu, "VK_ESCAPE", {});
-      mozmill.utils.waitFor(function() {
-        return menu.getNode() && menu.getNode().state == "closed";
-      }, TIMEOUT, 100, "Menu of utils button has been closed.");
+      
+      // TODO: restore after 1.5.1 has landed
+      // mozmill.utils.waitFor(function() {
+      //   return menu.getNode() && menu.getNode().state == "closed";
+      // }, TIMEOUT, 100, "Menu of utils button has been closed.");
+      
+      mozmill.utils.waitForEval("subject && subject.state == 'closed'",
+                                TIMEOUT, 100, menu.getNode());
     }
   },
 
@@ -567,10 +582,16 @@ addonsManager.prototype = {
 
     var self = this;
     var node = addon.getNode();
-    mozmill.utils.waitFor(function () {
-      return node.getAttribute("pending") == "install" &&
-             node.getAttribute("status") != "installing";
-    }, timeout, 100, "'" + node.getAttribute("name") + "' has been downloaded");
+    
+    // TODO: restore after 1.5.1 has landed
+    // mozmill.utils.waitFor(function () {
+    //   return node.getAttribute("pending") == "install" &&
+    //          node.getAttribute("status") != "installing";
+    // }, timeout, 100, "'" + node.getAttribute("name") + "' has been downloaded");
+    
+    mozmill.utils.waitForEval("subject.getAttribute('pending') == 'install' &&" +
+                              "subject.getAttribute('status') != 'installing'",
+                              timeout, 100, node);
   },
 
 
@@ -728,10 +749,15 @@ addonsManager.prototype = {
     if (!category)
       throw new Error(arguments.callee.name + ": Category not specified.");
 
-    var self = this;
-    mozmill.utils.waitFor(function () {
-      return self.selectedCategory.getNode() == category.getNode();
-    }, timeout, 100, "Category '" + category.getNode().id + "' has been set");
+    // TODO: restore after 1.5.1 has landed
+    // var self = this;
+    // mozmill.utils.waitFor(function () {
+    //   return self.selectedCategory.getNode() == category.getNode();
+    // }, timeout, 100, "Category '" + category.getNode().id + "' has been set");
+    
+    mozmill.utils.waitForEval("subject.self.selectedCategory.getNode() == subject.aCategory.getNode()",
+                               timeout, 100, 
+                               {self: this, aCategory: category});
   },
 
   ///////////////////////////////
@@ -901,10 +927,16 @@ addonsManager.prototype = {
     if (!filter)
       throw new Error(arguments.callee.name + ": Search filter not specified.");
 
-    var self = this;
-    mozmill.utils.waitFor(function () {
-      return self.selectedSearchFilter.getNode() == filter.getNode();
-    }, timeout, 100, "Search filter '" + filter.getNode().value + "' has been set");
+    // TODO: restore after 1.5.1 has landed
+    // var self = this;
+    // 
+    // mozmill.utils.waitFor(function () {
+    //   return self.selectedSearchFilter.getNode() == filter.getNode();
+    // }, timeout, 100, "Search filter '" + filter.getNode().value + "' has been set");
+    
+    mozmill.utils.waitForEval("subject.self.selectedSearchFilter.getNode() == subject.aFilter.getNode()",
+                              timeout, 100,
+                              {self: this, aFilter: filter});
   },
 
   /**
@@ -940,10 +972,15 @@ addonsManager.prototype = {
     var spec = aSpec || { };
     var timeout = (spec.timeout == undefined) ? TIMEOUT_SEARCH : spec.timeout;
 
-    var self = this;
-    mozmill.utils.waitFor(function () {
-      return self.isSearching == false;
-    }, timeout, 100, "Search has been finished");
+    // TODO: restore after 1.5.1 has landed
+    // var self = this;
+    // 
+    // mozmill.utils.waitFor(function () {
+    //   return self.isSearching == false;
+    // }, timeout, 100, "Search has been finished");
+    
+    mozmill.utils.waitForEval("subject.isSearching == false", 
+                              timeout, 100, this);
   },
 
   ///////////////////////////////

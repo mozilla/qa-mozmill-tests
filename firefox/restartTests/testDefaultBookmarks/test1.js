@@ -70,9 +70,14 @@ var testVerifyDefaultBookmarks = function() {
   controller.mouseUp(bookmarkBarItem);
   
   // Make sure bookmarks toolbar is now open
-  controller.waitFor(function() {
-    return toolbar.getNode().collapsed == false;
-  }, gTimeout, 100, 'Bookmarks toolbar is open' );
+  
+  // TODO: Restore this after 1.5.1 lands
+  // controller.waitFor(function() {
+  //   return toolbar.getNode().collapsed == false;
+  // }, gTimeout, 100, 'Bookmarks toolbar is open' );
+  
+  controller.waitForEval("subject.collapsed == false", gTimeout, 100,
+                         toolbar.getNode());
 
   // Get list of items on the bookmarks toolbar and open container
   var toolbarNodes = getBookmarkToolbarItems();
