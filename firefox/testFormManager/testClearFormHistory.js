@@ -81,17 +81,29 @@ var testSaveFormInformation = function() {
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
   controller.type(firstName, FNAME.substring(0,2));
-  controller.waitFor(function() {
-    return popDownAutoCompList.getNode().popupOpen == true;
-  }, TIMEOUT, 100, "Autocomplete popup is open");
+  
+  // TODO: Restore after 1.5.1 lands
+  // controller.waitFor(function() {
+  //   return popDownAutoCompList.getNode().popupOpen == true;
+  // }, TIMEOUT, 100, "Autocomplete popup is open");
+  
+  controller.waitForEval("subject.popupOpen", TIMEOUT, 100,
+                         popDownAutoCompList.getNode());
+
   controller.keypress(firstName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
   controller.assertValue(firstName, FNAME);
 
   controller.type(lastName, LNAME.substring(0,2));
-  controller.waitFor(function() {
-    return popDownAutoCompList.getNode().popupOpen == true;
-  }, TIMEOUT, 100, "Autocomplete popup is open");
+  
+  // TODO: Restore after 1.5.1 lands
+  // controller.waitFor(function() {
+  //   return popDownAutoCompList.getNode().popupOpen == true;
+  // }, TIMEOUT, 100, "Autocomplete popup is open");
+  
+  controller.waitForEval("subject.popupOpen", TIMEOUT, 100,
+                         popDownAutoCompList.getNode());
+
   controller.keypress(lastName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
   controller.assertValue(lastName, LNAME);
