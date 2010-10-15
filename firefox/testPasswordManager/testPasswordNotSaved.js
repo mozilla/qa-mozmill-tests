@@ -38,7 +38,7 @@
 
 // Include necessary modules
 const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+const MODULE_REQUIRES = ['PrefsAPI', 'ToolbarAPI', 'UtilsAPI'];
 
 const TIMEOUT = 5000;
 
@@ -47,7 +47,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  locationBar =  new ToolbarAPI.locationBar(controller);
 
   pm = Cc["@mozilla.org/login-manager;1"].
        getService(Ci.nsILoginManager);
@@ -60,7 +60,7 @@ var teardownModule = function(module) {
 }
 
 /**
- * Test the password post-submit bar
+ * Test the password post-submit notification
  */
 var testPasswordNotificationBar = function() {
   // Go to the sample login page and perform a test log-in with input fields
@@ -75,19 +75,21 @@ var testPasswordNotificationBar = function() {
   controller.type(passField, "foo");
 
   // After logging in, close the notification bar
-  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                             '/{"value":"password-save"}/anon({"type":"info"})' +
-                                             '/{"class":"messageCloseButton tabbable"}');
+  var passwordNotification = locationBar.getNotificationElement(
+                               "password-save-notification"
+                             );
 
-  // The notification bar should not be visible before submitting the credentials
-  controller.assertNodeNotExist(button);
+  // The notification should not be visible before submitting the credentials
+  controller.assertNodeNotExist(passwordNotification);
 
   controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
   controller.waitForPageLoad();
 
-  controller.waitThenClick(button, TIMEOUT);
-  controller.sleep(500);
-  controller.assertNodeNotExist(button);
+  // Close the notification and check its state
+  controller.keypress(passwordNotification, "VK_ESCAPE", {});
+  controller.assert(function() {
+    return passwordNotification.getNode().parentNode.state == "closed";
+  }, "Password notification should be closed");
 }
 
 /**
