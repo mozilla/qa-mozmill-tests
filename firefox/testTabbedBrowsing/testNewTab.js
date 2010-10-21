@@ -55,11 +55,11 @@ var setupModule = function(module)
 
 var testNewTab = function()
 {
-  // Ensure current tab does not have blank page loaded
-  var section = new elementslib.ID(controller.tabs.activeTab, "organization");
-
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
+
+  // Ensure current tab does not have blank page loaded
+  var section = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.waitForElement(section, TIMEOUT);
 
   // Test all different ways to open a tab

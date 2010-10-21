@@ -68,17 +68,21 @@ var testToggleFormManager = function() {
   // Go to the sample form page and submit form data
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
- 
+
   var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
   var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
-  var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
 
   controller.type(firstName, FNAME);
   controller.type(lastName, LNAME);
 
+  var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
   controller.click(submitButton);
   controller.waitForPageLoad();
+
+  firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
   controller.waitForElement(firstName, TIMEOUT);
+  controller.type(firstName, FNAME.substring(0,2));
+  controller.sleep(TIMEOUT);
 
   // Verify no form completion in each submitted form field
   var popDownAutoCompList = new elementslib.Lookup(
@@ -90,11 +94,10 @@ var testToggleFormManager = function() {
                               '/{"class":"autocomplete-treebody"}'
   );
 
-  controller.type(firstName, FNAME.substring(0,2));
-  controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);
   controller.assertValue(firstName, FNAME.substring(0,2));
 
+  lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
   controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);

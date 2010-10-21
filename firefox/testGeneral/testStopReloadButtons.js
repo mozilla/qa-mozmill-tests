@@ -72,6 +72,7 @@ var testStopAndReload = function()
   controller.open(url);
   controller.waitForPageLoad();
 
+  elem = new elementslib.ID(controller.tabs.activeTab, "query");
   controller.waitForElement(elem, gTimeout);
 }
 

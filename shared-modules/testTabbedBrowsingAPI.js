@@ -168,7 +168,7 @@ tabBrowser.prototype = {
    *        Index of the tab which should be selected
    */
   set selectedIndex(index) {
-    this._controller.click(this.getTab(index), 2, 2);
+    this._controller.click(this.getTab(index));
   },
 
   /**
