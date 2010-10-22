@@ -77,6 +77,7 @@ var testFormCompletion = function() {
   controller.waitForPageLoad();
 
   // Verify name field element, and type in a portion of the field
+  inputField = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
   controller.type(inputField, inputText);
 
   // Select the first element of the drop down

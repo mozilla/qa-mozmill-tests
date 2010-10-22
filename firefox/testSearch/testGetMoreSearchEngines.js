@@ -42,7 +42,7 @@ var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
 const TIMEOUT = 5000;
 
 const searchEngine = {name: "SearchGeek",
-                      url : "https://preview.addons.mozilla.org/en-US/firefox/addon/10772"};
+                      url : "https://addons.mozilla.org/en-US/firefox/addon/10772"};
 
 var setupModule = function(module)
 {
@@ -80,11 +80,11 @@ var testGetMoreEngines = function()
   
   // XXX: Bug 575241
   // AMO Lazy install buttons: wait for class change
-  var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
-                                          "//div[@id='addon-summary']/div/div/div/p/a");
+  var installButton = new elementslib.XPath(controller.tabs.activeTab,
+                                            "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
-                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
+  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+                        {installButtonClass: installButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
   var md = new ModalDialogAPI.modalDialog(handleSearchInstall);

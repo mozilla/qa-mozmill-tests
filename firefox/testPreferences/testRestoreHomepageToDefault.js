@@ -72,6 +72,8 @@ var testRestoreHomeToDefault = function() {
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
   controller.waitForPageLoad();
+
+  link = new elementslib.Link(controller.tabs.activeTab, "Organization");
   controller.assertNode(link);
 
   // Open Preferences dialog and reset home page to default
