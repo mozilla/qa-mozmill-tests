@@ -48,7 +48,7 @@ var setupModule = function(module) {
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
   controller.open('https://mur.at');
-  controller.waitForPageLoad(1000);
+  controller.waitForPageLoad();
 
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");

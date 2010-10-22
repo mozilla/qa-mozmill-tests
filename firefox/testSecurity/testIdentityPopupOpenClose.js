@@ -37,19 +37,28 @@
 
 // Include necessary modules
 var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
 
 var gDelay = 0;
 var gTimeout = 5000;
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_PAGES = [
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html'},
+];
+
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+  TabbedBrowsingAPI.closeAllTabs(controller);
 }
 
 /**
  * Test that the identity popup can be opened and closed
  */
 var testIdentityPopupOpenClose = function() {
+  controller.open(LOCAL_TEST_PAGES[0].url);
+  controller.waitForPageLoad();
+
   // Click the identity box
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.click(identityBox);
@@ -64,7 +73,7 @@ var testIdentityPopupOpenClose = function() {
   UtilsAPI.assertElementVisible(controller, button, true);
 
   // Click inside the content area to close the popup
-  var contentArea = new elementslib.XPath(controller.tabs.activeTab, "/html/body");
+  var contentArea = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.click(contentArea);
 
   // Check the popup state again

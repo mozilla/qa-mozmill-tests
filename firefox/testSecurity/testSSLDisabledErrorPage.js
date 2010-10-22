@@ -76,7 +76,7 @@ var testDisableSSL = function() {
   PrefsAPI.openPreferencesDialog(prefDialogCallback);
 
   controller.open("https://www.google.com");
-  controller.waitForPageLoad(1000);
+  controller.waitForPageLoad();
 
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");

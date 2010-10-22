@@ -75,13 +75,14 @@ var testSaveFormInformation = function() {
 
   controller.click(submitButton);
   controller.waitForPageLoad();
+
+  firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
   controller.waitForElement(firstName, TIMEOUT);
+  controller.type(firstName, FNAME.substring(0,2));
 
   // Verify form completion in each inputted field
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  controller.type(firstName, FNAME.substring(0,2));
-  
   // TODO: Restore after 1.5.1 lands
   // controller.waitFor(function() {
   //   return popDownAutoCompList.getNode().popupOpen == true;
@@ -94,8 +95,9 @@ var testSaveFormInformation = function() {
   controller.click(popDownAutoCompList);
   controller.assertValue(firstName, FNAME);
 
+  lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
-  
+
   // TODO: Restore after 1.5.1 lands
   // controller.waitFor(function() {
   //   return popDownAutoCompList.getNode().popupOpen == true;
@@ -113,9 +115,6 @@ var testSaveFormInformation = function() {
  * Verify clearing form and search history
  */
 var testClearFormHistory = function() {
-  var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
-  var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
-
   // Call clear recent history dialog and clear all form history
   var md = new ModalDialogAPI.modalDialog(clearHistoryHandler);
   md.start();
@@ -127,9 +126,12 @@ var testClearFormHistory = function() {
 
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  controller.waitForElement(firstName, TIMEOUT);
+
+  var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
+  var lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
 
   // Begin typing into the name fields and verify no popup
+  controller.waitForElement(firstName, TIMEOUT);
   controller.type(firstName, FNAME.substring(0,2));
   controller.sleep(500);
   controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);

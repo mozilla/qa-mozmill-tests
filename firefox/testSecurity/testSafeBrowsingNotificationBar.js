@@ -59,7 +59,7 @@ var testNotificationBar = function() {
   for (var i = 0; i < badSites.length; i++ ) {
     // Go to one of mozilla's phishing protection test pages
     controller.open(badSites[i]);
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
 
     // Wait for the ignoreWarning button to be loaded onto the page and then click on the button
     checkIgnoreWarningButton(badSites[i]);
@@ -67,7 +67,7 @@ var testNotificationBar = function() {
 
     // Go back to the notification bar
     controller.goBack();
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
     checkIgnoreWarningButton(badSites[i]);
 
     // Test the get me out of here button
@@ -75,7 +75,7 @@ var testNotificationBar = function() {
 
     // Go back to the notification bar
     controller.goBack();
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
     checkIgnoreWarningButton(badSites[i]);
 
     // Test the x button on the drop down bar

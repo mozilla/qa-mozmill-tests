@@ -84,7 +84,7 @@ var testSecNotification = function()
 
   // Go to a website which does not have a valid cert
   controller.open("https://mozilla.org/");
-  controller.waitForPageLoad(1000);
+  controller.waitForPageLoad();
 
   // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");

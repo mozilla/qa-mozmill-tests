@@ -74,6 +74,8 @@ var testAllTabsClosedOnStop = function() {
   var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
   for each (var page in LOCAL_TEST_PAGES) {
     controller.open(page.url);
+    controller.waitForPageLoad();
+
     controller.click(newTab);
   }
 

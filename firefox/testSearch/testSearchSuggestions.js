@@ -63,15 +63,15 @@ var testMultipleEngines = function()
   }
 
   // Check that at least one suggestion is different
-  var difference = false;
+  var different = false;
   var maxIndex = Math.max(suggestions[0].length, suggestions[1].length);
   for (ii = 0; ii < maxIndex; ii++) {
     if (suggestions[0][ii] != suggestions[1][ii]) {
-      difference = true;
+      different = true;
       break;
     }
   }
 
   controller.assertJS("subject.suggestionsDifferent == true",
-                      {suggestionsDifferent: difference});
+                      {suggestionsDifferent: different});
 }

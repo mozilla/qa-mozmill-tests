@@ -83,6 +83,8 @@ var testCloseWindow = function() {
 
   // Wait until all tabs have been finished loading
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    controller.waitForPageLoad(controller.tabs.getTab(i));
+
     var elem = new elementslib.Name(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].name);
     controller.waitForElement(elem, TIMEOUT);
   }

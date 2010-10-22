@@ -55,21 +55,21 @@ var testWarningPages = function() {
   for (var i = 0; i < urls.length; i++ ) {
     // Open one of the mozilla phishing protection test pages
     controller.open(urls[i]);
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
 
     // Test the getMeOutButton
     checkGetMeOutOfHereButton();
 
     // Go back to the warning page
     controller.open(urls[i]);
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
 
     // Test the reportButton
     checkReportButton(i, urls[i]);
 
     // Go back to the warning page
     controller.open(urls[i]);
-    controller.waitForPageLoad(1000);
+    controller.waitForPageLoad();
 
     // Test the ignoreWarning button
     checkIgnoreWarningButton(urls[i]);
@@ -100,9 +100,8 @@ var checkGetMeOutOfHereButton = function()
  *        URL of malware site to check
  */
 var checkReportButton = function(type, badUrl) {
-  var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
-
   // Wait for the reportButton to be safely loaded onto the warning page
+  var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
   controller.waitThenClick(reportButton, gTimeout);
   controller.waitForPageLoad();
 
@@ -113,7 +112,7 @@ var checkReportButton = function(type, badUrl) {
     // Build phishing URL be replacing identifiers with actual locale of browser
     url = UtilsAPI.formatUrlPref("browser.safebrowsing.warning.infoURL");
 
-    var phishingElement = new elementslib.XPath(controller.tabs.activeTab, "/html/body[@id='phishing-protection']")
+    var phishingElement = new elementslib.ID(controller.tabs.activeTab, "phishing-protection")
     controller.assertNode(phishingElement);
 
   } else if (type == 1) {

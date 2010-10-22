@@ -51,7 +51,8 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new PrivateBrowsingAPI.privateBrowsing(controller);
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function(module) {
@@ -66,19 +67,12 @@ var testTabRestoration = function() {
   pb.enabled = false;
   pb.showPrompt = false;
 
-  // Open websites in separate tabs after closing existing tabs
-  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-
-  for each (var page in LOCAL_TEST_PAGES) {
+  LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
-    controller.click(newTab);
-  }
+    controller.waitForPageLoad();
 
-  // Wait until all tabs have been finished loading
-  for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
-    var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
-    controller.waitForElement(elem, TIMEOUT);
-  }
+    tabBrowser.openTab();
+  });
 
   // Start Private Browsing
   pb.start();
@@ -93,8 +87,10 @@ var testTabRestoration = function() {
 
   // Check if all pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    controller.waitForPageLoad(controller.tabs.getTab(i));
+
     var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
-    controller.waitForElement(elem, TIMEOUT);
+    controller.assertNode(elem);
   }
 }
 
