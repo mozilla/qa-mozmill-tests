@@ -97,6 +97,9 @@ var testSavePassword = function() {
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
+  userField = new elementslib.ID(controller.tabs.activeTab, "uname");
+  passField = new elementslib.ID(controller.tabs.activeTab, "Password");
+
   controller.waitForElement(userField, TIMEOUT);
   controller.assertValue(userField, "bar");
   controller.assertValue(passField, "foo");
