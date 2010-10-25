@@ -182,3 +182,12 @@ modalDialog.prototype.getDialog = function modalDialog_getDialog()
 
   return false;
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of classes
+exports.modalDialog = modalDialog;
+exports.modalDialog.prototype = modalDialog.prototype;

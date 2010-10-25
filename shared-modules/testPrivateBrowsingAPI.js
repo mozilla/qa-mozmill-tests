@@ -43,8 +43,10 @@
 
 const MODULE_NAME = 'PrivateBrowsingAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var modalDialog = require("testModalDialogAPI");
+var prefs = require("testPrefsAPI");
+var utils = require("testUtilsAPI");
 
 // Preference for confirmation dialog when entering Private Browsing mode
 const PB_NO_PROMPT_PREF = 'browser.privatebrowsing.dont_prompt_on_enter';
@@ -58,12 +60,8 @@ const gTimeout = 5000;
  * @param {MozMillController} controller
  *        MozMillController to use for the modal entry dialog
  */
-function privateBrowsing(controller)
-{
-  this._prefs = collector.getModule('PrefsAPI').preferences;
-  this._controller = controller;
-  
-  this._UtilsAPI = collector.getModule('UtilsAPI');
+function privateBrowsing(controller) {
+    this._controller = controller;
 
   /**
    * Menu item in the main menu to enter/leave Private Browsing mode
@@ -126,7 +124,7 @@ privateBrowsing.prototype = {
    * @type {boolean}
    */
   get showPrompt() {
-    return !this._prefs.getPref(PB_NO_PROMPT_PREF, true);
+    return !prefs.preferences.getPref(PB_NO_PROMPT_PREF, true);
   },
 
   /**
@@ -136,7 +134,7 @@ privateBrowsing.prototype = {
    *        New enabled state of the confirmation dialog
    */
   set showPrompt(value){
-    this._prefs.setPref(PB_NO_PROMPT_PREF, !value);
+    prefs.preferences.setPref(PB_NO_PROMPT_PREF, !value);
   },
 
   /**
@@ -182,13 +180,12 @@ privateBrowsing.prototype = {
       if (!this._handler)
         throw new Error("Private Browsing mode not enabled due to missing callback handler");
 
-      var md = collector.getModule('ModalDialogAPI');
-      dialog = new md.modalDialog(this._handler);
+      dialog = new modalDialog.modalDialog(this._handler);
       dialog.start();
     }
 
     if (useShortcut) {
-      var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "privateBrowsingCmd.commandkey");
+      var cmdKey = utils.getEntity(this.getDtds(), "privateBrowsingCmd.commandkey");
       this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
     } else {
       this._controller.click(this._pbMenuItem);
@@ -209,7 +206,7 @@ privateBrowsing.prototype = {
       return;
 
     if (useShortcut) {
-      var privateBrowsingCmdKey = this._UtilsAPI.getEntity(this.getDtds(), "privateBrowsingCmd.commandkey");
+      var privateBrowsingCmdKey = utils.getEntity(this.getDtds(), "privateBrowsingCmd.commandkey");
       this._controller.keypress(null, privateBrowsingCmdKey, {accelKey: true, shiftKey: true});
     } else {
       this._controller.click(this._pbMenuItem);
@@ -232,3 +229,12 @@ privateBrowsing.prototype = {
                                  {privateBrowsing: this, state: state});
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of classes
+exports.privateBrowsing = privateBrowsing;
+exports.privateBrowsing.prototype = privateBrowsing.prototype;

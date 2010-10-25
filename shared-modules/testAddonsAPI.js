@@ -42,8 +42,9 @@
 
 var MODULE_NAME = 'AddonsAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("testPrefsAPI");
+var utils = require("testUtilsAPI");
 
 const gTimeout = 5000;
 
@@ -75,7 +76,6 @@ const AMO_PREFERENCES = [
 function addonsManager()
 {
   this._controller = null;
-  this._UtilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -129,7 +129,7 @@ addonsManager.prototype = {
     this.paneId = 'search';
 
     var searchInput = this.getElement({type: "search_fieldInput"});
-    var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "selectAllCmd.key");
+    var cmdKey = utils.getEntity(this.getDtds(), "selectAllCmd.key");
     this._controller.keypress(searchInput, cmdKey, {accelKey: true});
     this._controller.keypress(searchInput, 'VK_DELETE', {});
   },
@@ -148,7 +148,7 @@ addonsManager.prototype = {
       if (force) {
         this._controller.window.close();
       } else {
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "closeCmd.key");
+        var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
         this._controller.keypress(null, cmdKey, {accelKey: true});
       }
 
@@ -378,7 +378,7 @@ addonsManager.prototype = {
    *        MozMillController of the window to operate on
    */
   waitForOpened : function addonsManager_waitforOpened(controller) {
-    this._controller = this._UtilsAPI.handleWindow("type", "Extension:Manager",
+    this._controller = utils.handleWindow("type", "Extension:Manager",
                                                    null, true);
   }
 };
@@ -387,7 +387,7 @@ addonsManager.prototype = {
  *  Updates all necessary preferences to the preview sub domain
  */
 function useAmoPreviewUrls() {
-  var prefSrv = collector.getModule('PrefsAPI').preferences;
+  var prefSrv = prefs.preferences;
 
   for each (preference in AMO_PREFERENCES) {
     var pref = prefSrv.getPref(preference.name, "");
@@ -399,9 +399,22 @@ function useAmoPreviewUrls() {
  * Reset all preferences which point to the preview sub domain
  */
 function resetAmoPreviewUrls() {
-  var prefSrv = collector.getModule('PrefsAPI').preferences;
+  var prefSrv = prefs.preferences;
 
   for each (preference in AMO_PREFERENCES) {
     prefSrv.clearUserPref(preference.name);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of functions
+exports.useAmoPreviewUrls = useAmoPreviewUrls;
+exports.resetAmoPreviewUrls = resetAmoPreviewUrls;
+
+// Export of classes
+exports.addonsManager = addonsManager;
+exports.addonsManager.prototype = addonsManager.prototype;

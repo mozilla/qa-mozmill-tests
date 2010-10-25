@@ -41,8 +41,9 @@
 
 const MODULE_NAME = 'SoftwareUpdateAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("testPrefsAPI");
+var utils = require("testUtilsAPI");
 
 const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
@@ -104,9 +105,6 @@ function softwareUpdate()
 {
   this._controller = null;
   this._wizard = null;
-
-  this._prefsAPI = collector.getModule('PrefsAPI');
-  this._utilsAPI = collector.getModule('UtilsAPI');
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"].
               getService(Ci.nsIApplicationUpdateService);
@@ -261,7 +259,7 @@ softwareUpdate.prototype = {
     waitForFinish = waitForFinish ? waitForFinish : true;
 
     // Check that the correct channel has been set
-    var prefChannel = this._prefsAPI.preferences.getPref('app.update.channel', '');
+    var prefChannel = prefs.preferences.getPref('app.update.channel', '');
     this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
                               {currentChannel: channel, expectedChannel: prefChannel});
 
@@ -406,8 +404,7 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
-    this._controller = this._utilsAPI.handleWindow("type", "Update:Wizard",
-                                                   null, true);
+    this._controller = utils.handleWindow("type", "Update:Wizard", null, true);
     this._wizard = this.getElement({type: "wizard"});
 
     // Wait until the dummy wizard page isn't visible anymore
@@ -441,3 +438,15 @@ softwareUpdate.prototype = {
                                  gTimeout, 100, this);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.WIZARD_PAGES = WIZARD_PAGES;
+
+// Export of classes
+exports.softwareUpdate = softwareUpdate;
+exports.softwareUpdate.prototype = softwareUpdate.prototype;
