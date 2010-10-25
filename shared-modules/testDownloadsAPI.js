@@ -45,8 +45,8 @@
 
 var MODULE_NAME = 'DownloadsAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("testUtilsAPI");
 
 const gTimeout = 5000;
 
@@ -72,9 +72,6 @@ const downloadState = {
  */
 function downloadManager() {
   this._controller = null;
-
-  this._UtilsAPI = collector.getModule('UtilsAPI');
-
   this.downloadState = downloadState;
 
   this._dms = Cc["@mozilla.org/download-manager;1"].
@@ -165,7 +162,7 @@ downloadManager.prototype = {
       if (force) {
         this._controller.window.close();
       } else {
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "cmd.close.commandKey");
+        var cmdKey = utils.getEntity(this.getDtds(), "cmd.close.commandKey");
         this._controller.keypress(null, cmdKey, {accelKey: true});
       }
 
@@ -307,10 +304,10 @@ downloadManager.prototype = {
   open : function downloadManager_open(controller, shortcut) {
     if (shortcut) {
       if (mozmill.isLinux) {
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "downloadsUnix.commandkey");
+        var cmdKey = utils.getEntity(this.getDtds(), "downloadsUnix.commandkey");
         controller.keypress(null, cmdKey, {ctrlKey: true, shiftKey: true});
       } else {
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "downloads.commandkey");
+        var cmdKey = utils.getEntity(this.getDtds(), "downloads.commandkey");
         controller.keypress(null, cmdKey, {accelKey: true});
       }
     } else {
@@ -343,7 +340,7 @@ downloadManager.prototype = {
    *        MozMillController of the window to operate on
    */
   waitForOpened : function downloadManager_waitForOpened(controller) {
-    this._controller = this._UtilsAPI.handleWindow("type", "Download:Manager",
+    this._controller = utils.handleWindow("type", "Download:Manager",
                                                    null, true);
   }
 };
@@ -358,15 +355,13 @@ downloadManager.prototype = {
  *        URL of the file which has to be downloaded
  */
 var downloadFileOfUnknownType = function(controller, url) {
-  var utilsAPI = collector.getModule('UtilsAPI');
-
   controller.open(url);
 
   // Wait until the unknown content type dialog has been opened
   controller.waitForEval("subject.getMostRecentWindow('').document.documentElement.id == 'unknownContentType'",
                          gTimeout, 100, mozmill.wm);
 
-  utilsAPI.handleWindow("type", "", function (controller) {
+  utils.handleWindow("type", "", function (controller) {
     // Select to save the file directly
     var saveFile = new elementslib.ID(controller.window.document, "save");
     controller.waitThenClick(saveFile, gTimeout);
@@ -406,3 +401,19 @@ function getLocalFileFromNativePathOrUrl(aPathOrUrl) {
     return f;
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.downloadState = downloadState;
+
+// Export of functions
+exports.downloadFileOfUnknownType = downloadFileOfUnknownType;
+exports.getLocalFileFromNativePathOrUrl = getLocalFileFromNativePathOrUrl;
+
+// Export of classes
+exports.downloadManager = downloadManager;
+exports.downloadManager.prototype = downloadManager.prototype;

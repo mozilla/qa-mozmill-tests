@@ -40,13 +40,7 @@
  */
 
 var EventUtils = {};
-try {
-  // The location of EventUtils has been changed with Mozmill 1.4.2. For the
-  // interim time lets check both locations.
-  Components.utils.import('resource://mozmill/stdlib/EventUtils.js', EventUtils);
-} catch (e) {
-  Components.utils.import('resource://mozmill/modules/EventUtils.js', EventUtils);
-}
+Components.utils.import('resource://mozmill/stdlib/EventUtils.js', EventUtils);
 
 var MODULE_NAME = 'WidgetsAPI';
 
@@ -85,3 +79,12 @@ function clickTreeCell(controller, tree, rowIndex, columnIndex, eventDetails)
                              eventDetails, tree.ownerDocument.defaultView);
   controller.sleep(0);
 }
+
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of functions
+exports.clickTreeCell = clickTreeCell;

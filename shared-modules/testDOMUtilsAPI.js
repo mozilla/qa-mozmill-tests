@@ -221,3 +221,12 @@ nodeCollector.prototype = {
     return this;
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Exports of classes
+exports.nodeCollector = nodeCollector;
+exports.nodeCollector.prototype = nodeCollector.prototype;
