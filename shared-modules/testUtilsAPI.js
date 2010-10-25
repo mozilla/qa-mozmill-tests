@@ -190,8 +190,7 @@ function assertElementVisible(controller, elem, expectedVisibility) {
  * @param {string} targetURL
  *        URL to check
  */
-function assertLoadedUrlEqual(controller, targetUrl)
-{
+function assertLoadedUrlEqual(controller, targetUrl) {
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
   var currentURL = locationBar.getNode().value;
 
@@ -210,8 +209,7 @@ function assertLoadedUrlEqual(controller, targetUrl)
  * @param {MozmillController} controller
  *        MozMillController of the window to operate on
  */
-function closeContentAreaContextMenu(controller)
-{
+function closeContentAreaContextMenu(controller) {
   var contextMenu = new elementslib.ID(controller.window.document, "contentAreaContextMenu");
   controller.keypress(contextMenu, "VK_ESCAPE", {});
 }
@@ -230,8 +228,9 @@ function closeContentAreaContextMenu(controller)
  * @param {number} timeout
  *        The timeout value for the single tests
  */
-function checkSearchField(controller, searchField, searchTerm, submitButton, timeout)
-{
+function checkSearchField(controller, searchField,
+                                                     searchTerm, submitButton,
+                                                     timeout) {
   controller.waitThenClick(searchField, timeout);
   controller.type(searchField, searchTerm);
 
@@ -278,8 +277,7 @@ function emptyClipboard() {
  * @return The formatted URL
  * @type string
  */
-function formatUrlPref(prefName)
-{
+function formatUrlPref(prefName) {
   var formatter = Cc["@mozilla.org/toolkit/URLFormatterService;1"]
                      .getService(Ci.nsIURLFormatter);
 
@@ -311,8 +309,7 @@ function getDefaultHomepage() {
  * @return The value of the requested entity
  * @type string
  */
-function getEntity(urls, entityId)
-{
+function getEntity(urls, entityId) {
   // Add xhtml11.dtd to prevent missing entity errors with XHTML files
   urls.push("resource:///res/dtd/xhtml11.dtd");
 
@@ -347,8 +344,7 @@ function getEntity(urls, entityId)
  * @return The value of the requested property
  * @type string
  */
-function getProperty(url, prefName)
-{
+function getProperty(url, prefName) {
   var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
             .getService(Ci.nsIStringBundleService);
   var bundle = sbs.createBundle(url);
@@ -418,3 +414,24 @@ function handleWindow(type, text, callback, dontClose) {
     return ctrl;
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.appInfo = appInfo;
+
+// Export of functions
+exports.assertElementVisible = assertElementVisible;
+exports.assertLoadedUrlEqual = assertLoadedUrlEqual;
+exports.closeContentAreaContextMenu = closeContentAreaContextMenu;
+exports.checkSearchField = checkSearchField;
+exports.createURI = createURI;
+exports.formatUrlPref = formatUrlPref;
+exports.emptyClipboard = emptyClipboard;
+exports.getDefaultHomepage = getDefaultHomepage;
+exports.getEntity = getEntity;
+exports.getProperty = getProperty;
+exports.handleWindow = handleWindow;

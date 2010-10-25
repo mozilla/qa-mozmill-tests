@@ -37,9 +37,12 @@
 
 var MODULE_NAME = 'AddonsAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['DOMUtilsAPI', 'PrefsAPI', 'TabbedBrowsingAPI',
-                         'UtilsAPI'];
+// Include required modules
+var domUtils = require("testDOMUtilsAPI");
+var prefs = require("testPrefsAPI");
+var tabs = require("testTabbedBrowsingAPI");
+var utils = require("testUtilsAPI");
+
 
 const TIMEOUT = 5000;
 const TIMEOUT_DOWNLOAD = 15000;
@@ -66,12 +69,8 @@ const AMO_PREFERENCES = [
  * Constructor
  */
 function addonsManager(aController) {
-  this._DOMUtilsAPI = collector.getModule('DOMUtilsAPI');
-  this._TabbedBrowsingAPI = collector.getModule('TabbedBrowsingAPI');
-  this._UtilsAPI = collector.getModule('UtilsAPI');
-
   this._controller = aController;
-  this._tabBrowser = new this._TabbedBrowsingAPI.tabBrowser(this._controller);
+  this._tabBrowser = new tabBrowser.tabBrowser(this._controller);
 }
 
 /**
@@ -136,7 +135,7 @@ addonsManager.prototype = {
         this._controller.click(menuItem);
         break;
       case "shortcut":
-        var cmdKey = this._UtilsAPI.getEntity(this.dtds, "addons.commandkey");
+        var cmdKey = utils.getEntity(this.dtds, "addons.commandkey");
         this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
         break;
       default:
@@ -207,7 +206,7 @@ addonsManager.prototype = {
    *                 index      - Index of the tab
    */
   getTabs : function addonsManager_getTabs() {
-    return this._TabbedBrowsingAPI.getTabsWithURL("about:addons");
+    return tabBrowser.getTabsWithURL("about:addons");
   },
 
   /**
@@ -769,7 +768,7 @@ addonsManager.prototype = {
    */
   clearSearchField : function addonsManager_clearSearchField() {
     var textbox = this.getElement({type: "search_textbox"});
-    var cmdKey = this._UtilsAPI.getEntity(this.dtds, "selectAllCmd.key");
+    var cmdKey = utils.getEntity(this.dtds, "selectAllCmd.key");
 
     this._controller.keypress(textbox, cmdKey, {accelKey: true});
     this._controller.keypress(textbox, 'VK_DELETE', {});
@@ -1082,7 +1081,7 @@ addonsManager.prototype = {
     var parent = spec.parent;
 
     var root = parent ? parent.getNode() : this._controller.tabs.activeTab;
-    var nodeCollector = new this._DOMUtilsAPI.nodeCollector(root);
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch (type) {
       // Add-ons
@@ -1226,7 +1225,7 @@ addonsManager.prototype = {
  *  Updates all necessary preferences to the preview sub domain
  */
 function useAmoPreviewUrls() {
-  var prefSrv = collector.getModule('PrefsAPI').preferences;
+  var prefSrv = prefs.preferences;
 
   for each (var preference in AMO_PREFERENCES) {
     var pref = prefSrv.getPref(preference.name, "");
@@ -1239,9 +1238,22 @@ function useAmoPreviewUrls() {
  * Reset all preferences which point to the preview sub domain
  */
 function resetAmoPreviewUrls() {
-  var prefSrv = collector.getModule('PrefsAPI').preferences;
+  var prefSrv = prefs.preferences;
 
   for each (var preference in AMO_PREFERENCES) {
     prefSrv.clearUserPref(preference.name);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of functions
+exports.useAmoPreviewUrls = useAmoPreviewUrls;
+exports.resetAmoPreviewUrls = resetAmoPreviewUrls;
+
+// Export of classes
+exports.addonsManager = addonsManager;
+exports.addonsManager.prototype = addonsManager.prototype;

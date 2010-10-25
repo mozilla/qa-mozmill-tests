@@ -44,9 +44,10 @@
 
 var MODULE_NAME = 'SessionStoreAPI';
 
-// Include necessary modules
-var RELATIVE_ROOT = '.';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI', 'WidgetsAPI'];
+// Load required modules
+var prefs = require("testPrefsAPI");
+var utils = require("testUtilsAPI");
+var widgets = require("testWidgetsAPI");
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
@@ -66,8 +67,6 @@ const gTimeout = 5000;
 function aboutSessionRestore(controller)
 {
   this._controller = controller;
-  this._utilsApi = collector.getModule('UtilsAPI');
-  this._WidgetsAPI = collector.getModule('WidgetsAPI');
 }
 
 /**
@@ -222,7 +221,7 @@ aboutSessionRestore.prototype = {
   toggleRestoreState : function aboutSessionRestore_toggleRestoreState(element) {
     var state = this.getRestoreState(element);
 
-    this._WidgetsAPI.clickTreeCell(this._controller, this.tabList, element.listIndex, 0, {});
+    widgets.clickTreeCell(this._controller, this.tabList, element.listIndex, 0, {});
     this._controller.sleep(0);
 
     this._controller.assertJS("subject.newState != subject.oldState",
@@ -235,10 +234,8 @@ aboutSessionRestore.prototype = {
  */
 function resetRecentlyClosedTabs()
 {
-  var prefs = collector.getModule('PrefsAPI').preferences;
-
-  prefs.setPref(SESSIONSTORE_MAXTABS_PREF, 0);
-  prefs.clearUserPref(SESSIONSTORE_MAXTABS_PREF);
+  prefs.preferences.setPref(SESSIONSTORE_MAXTABS_PREF, 0);
+  prefs.preferences.clearUserPref(SESSIONSTORE_MAXTABS_PREF);
 }
 
 /**
@@ -270,7 +267,7 @@ function undoClosedTab(controller, event)
       throw new Error("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
-      var cmdKey = this._utilsApi.getEntity(this.getDtds(), "tabCmd.commandkey");
+      var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
       controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
@@ -300,7 +297,7 @@ function undoClosedWindow(controller, event)
       throw new Error("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
-      var cmdKey = this._utilsApi.getEntity(this.getDtds(), "newNavigatorCmd.key");
+      var cmdKey = utils.getEntity(this.getDtds(), "newNavigatorCmd.key");
       controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
@@ -312,3 +309,18 @@ function undoClosedWindow(controller, event)
                          oldWindowCount : count
                         });
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of functions
+exports.getClosedTabCount = getClosedTabCount;
+exports.resetRecentlyClosedTabs = resetRecentlyClosedTabs;
+exports.undoClosedTab = undoClosedTab;
+exports.undoClosedWindow = undoClosedWindow;
+
+// Export of classes
+exports.aboutSessionRestore = aboutSessionRestore;
+exports.aboutSessionRestore.prototype = aboutSessionRestore.prototype;

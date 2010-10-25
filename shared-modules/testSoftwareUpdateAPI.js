@@ -41,8 +41,9 @@
 
 const MODULE_NAME = 'SoftwareUpdateAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Load required modules
+var prefs = require("testPrefsAPI");
+var utils = require("testUtilsAPI");
 
 const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
@@ -104,9 +105,6 @@ function softwareUpdate()
 {
   this._controller = null;
   this._wizard = null;
-
-  this._PrefsAPI = collector.getModule('PrefsAPI');
-  this._UtilsAPI = collector.getModule('UtilsAPI');
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"].
               getService(Ci.nsIApplicationUpdateService);
@@ -255,7 +253,7 @@ softwareUpdate.prototype = {
     waitForFinish = waitForFinish ? waitForFinish : true;
 
     // Check that the correct channel has been set
-    var prefChannel = this._PrefsAPI.preferences.getPref('app.update.channel', '');
+    var prefChannel = prefs.preferences.getPref('app.update.channel', '');
     this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
                               {currentChannel: channel, expectedChannel: prefChannel});
 
@@ -372,14 +370,14 @@ softwareUpdate.prototype = {
 
     // With version >= 4.0b7pre the update dialog is reachable from within the
     // about window now. It only applies to Windows and Linux.
-    var appVersion = this._UtilsAPI.appInfo.version;
+    var appVersion = utils.appInfo.version;
 
     if (!mozmill.isMac && this._vc.compare(appVersion, "4.0b7pre") >= 0) {
       // Open the about window and click the update button
       aboutItem = new elementslib.Elem(browserController.menus.helpMenu.aboutName);
       browserController.click(aboutItem);
 
-      this._UtilsAPI.handleWindow("type", "Browser:About", function(controller) {
+      utils.handleWindow("type", "Browser:About", function(controller) {
         // XXX: Bug 599290 - Check for updates has been completely relocated
         // into the about window. We can't check the in-about ui yet.
         var updateButton = new elementslib.ID(controller.window.document,
@@ -418,7 +416,7 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
-    this._controller = this._UtilsAPI.handleWindow("type", "Update:Wizard",
+    this._controller = utils.handleWindow("type", "Update:Wizard",
                                                    null, true);
     this._wizard = this.getElement({type: "wizard"});
 
@@ -453,3 +451,15 @@ softwareUpdate.prototype = {
                                  gTimeout, 100, this);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.WIZARD_PAGES = WIZARD_PAGES;
+
+// Export of classes
+exports.softwareUpdate = softwareUpdate;
+exports.softwareUpdate.prototype = softwareUpdate.prototype;

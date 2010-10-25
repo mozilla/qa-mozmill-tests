@@ -41,9 +41,10 @@
 
 const MODULE_NAME = 'SearchAPI';
 
-// Include necessary modules
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
+// Load required modules
+var modalDialog = require("testModalDialogAPI");
+var utils = require("testUtilsAPI");
+var widgets = require("testWidgetsAPI");
 
 const TIMEOUT = 5000;
 
@@ -75,9 +76,6 @@ const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAut
 function engineManager(controller)
 {
   this._controller = controller;
-
-  this._ModalDialogAPI = collector.getModule('ModalDialogAPI');
-  this._WidgetsAPI = collector.getModule('WidgetsAPI');
 }
 
 /**
@@ -171,7 +169,7 @@ engineManager.prototype = {
     var treeNode = tree.getNode();
 
     if (index < treeNode.view.rowCount) {
-      this._WidgetsAPI.clickTreeCell(this._controller, tree, index, 0, {});
+      widgets.clickTreeCell(this._controller, tree, index, 0, {});
     }
 
     this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", TIMEOUT, 100,
@@ -227,7 +225,7 @@ engineManager.prototype = {
     this.selectedEngine = name;
 
     // Setup the modal dialog handler
-    md = new this._ModalDialogAPI.modalDialog(handler);
+    md = new modalDialog.modalDialog(handler);
     md.start(200);
 
     var button = this.getElement({type: "engine_button", subtype: "edit"});
@@ -382,9 +380,6 @@ function searchBar(controller)
   this._controller = controller;
   this._bss = Cc["@mozilla.org/browser/search-service;1"]
                  .getService(Ci.nsIBrowserSearchService);
-
-  this._ModalDialogAPI = collector.getModule('ModalDialogAPI');
-  this._utilsAPI = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -548,7 +543,7 @@ searchBar.prototype = {
     var activeElement = this._controller.window.document.activeElement;
 
     var searchInput = this.getElement({type: "searchBar_input"});
-    var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "selectAllCmd.key");
+    var cmdKey = utils.getEntity(this.getDtds(), "selectAllCmd.key");
     this._controller.keypress(searchInput, cmdKey, {accelKey: true});
     this._controller.keypress(searchInput, 'VK_DELETE', {});
 
@@ -572,9 +567,9 @@ searchBar.prototype = {
         break;
       case "shortcut":
         if (mozmill.isLinux) {
-          var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "searchFocusUnix.commandkey");
+          var cmdKey = utils.getEntity(this.getDtds(), "searchFocusUnix.commandkey");
         } else {
-          var cmdKey = this._utilsAPI.getEntity(this.getDtds(), "searchFocus.commandkey");
+          var cmdKey = utils.getEntity(this.getDtds(), "searchFocus.commandkey");
         }
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
@@ -739,7 +734,7 @@ searchBar.prototype = {
     var engineManager = this.getElement({type: "engine_manager"});
 
     // Setup the modal dialog handler
-    md = new this._ModalDialogAPI.modalDialog(handler);
+    md = new modalDialog.modalDialog(handler);
     md.start();
 
     // XXX: Bug 555347 - Process any outstanding events before clicking the entry
@@ -829,3 +824,14 @@ searchBar.prototype = {
     this._controller.type(searchBar, searchTerm);
   }
 };
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of classes
+exports.engineManager = engineManager;
+exports.engineManager.prototype = engineManager.prototype;
+exports.searchBar = searchBar;
+exports.searchBar.prototype = searchBar.prototype;

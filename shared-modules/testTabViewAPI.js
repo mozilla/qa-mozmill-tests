@@ -36,9 +36,10 @@
 
 const MODULE_NAME = 'TabViewAPI';
 
-// Include necessary modules
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['DOMUtilsAPI', 'UtilsAPI'];
+// Load required modules
+var domUtils = require("testdomUtilsAPI");
+var tabs = require("testTabbedBrowsingAPI");
+var utils = require("testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -46,10 +47,6 @@ const TIMEOUT = 5000;
  * Constructor
  */
 function tabView(aController) {
-  this._DOMUtilsAPI = collector.getModule('DOMUtilsAPI');
-  this._TabbedBrowsingAPI = collector.getModule('TabbedBrowsingAPI');
-  this._UtilsAPI = collector.getModule('UtilsAPI');
-
   this._controller = aController;
   this._tabView = null;
   this._tabViewDoc = this._controller.window.document;
@@ -464,7 +461,7 @@ tabView.prototype = {
     var parent = spec.parent;
 
     var root = parent ? parent.getNode() : this._tabViewDoc;
-    var nodeCollector = new this._DOMUtilsAPI.nodeCollector(root);
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch(type) {
       // Top level elements
@@ -525,8 +522,8 @@ tabView.prototype = {
             case "title":
               // If no title is given the default name is used
               if (!value) {
-                value = this._UtilsAPI.getProperty("chrome://browser/locale/tabview.properties",
-                                                   "tabview.groupItem.defaultName");
+                value = utils.getProperty("chrome://browser/locale/tabview.properties",
+                                  "tabview.groupItem.defaultName");
               }
               var title = node.querySelector(".name");
               return (value == title.value);
@@ -586,3 +583,7 @@ tabView.prototype = {
     return nodeCollector.elements;
   }
 }
+
+// Export of classes
+exports.tabView = tabView;
+exports.tabView.prototype = tabView.prototype;

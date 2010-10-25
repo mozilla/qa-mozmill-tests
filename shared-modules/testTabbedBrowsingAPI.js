@@ -43,9 +43,9 @@
 
 const MODULE_NAME = 'TabbedBrowsingAPI';
 
-// Include necessary modules
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Load required modules
+var utils = require("testUtilsAPI");
+var prefs = require("testPrefsAPI");
 
 const TIMEOUT = 5000;
 
@@ -81,8 +81,7 @@ function closeAllTabs(controller)
 function getTabsWithURL(aUrl) {
   var tabs = [ ];
 
-  var utilsAPI = collector.getModule('UtilsAPI');
-  var uri = utilsAPI.createURI(aUrl, null, null);
+  var uri = utils.createURI(aUrl, null, null);
 
   var wm = Cc["@mozilla.org/appshell/window-mediator;1"].
            getService(Ci.nsIWindowMediator);
@@ -122,9 +121,6 @@ function tabBrowser(controller)
 {
   this._controller = controller;
   this._tabs = this.getElement({type: "tabs"});
-
-  this._UtilsAPI = collector.getModule('UtilsAPI');
-  this._PrefsAPI = collector.getModule('PrefsAPI');
 }
 
 /**
@@ -197,7 +193,7 @@ tabBrowser.prototype = {
     var type = (event.type == undefined) ? "menu" : event.type;
 
     // Disable tab closing animation for default behavior
-    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been closed
     var self = { closed: false };
@@ -219,7 +215,7 @@ tabBrowser.prototype = {
         this._controller.middleClick(tab);
         break;
       case "shortcut":
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "closeCmd.key");
+        var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
@@ -231,7 +227,7 @@ tabBrowser.prototype = {
                                    {tab: self});
     } finally {
       this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
-      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
+      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
@@ -379,7 +375,7 @@ tabBrowser.prototype = {
     var type = (event.type == undefined) ? "middleClick" : event.type;
 
     // Disable tab closing animation for default behavior
-    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been opened
     var self = { opened: false };
@@ -392,7 +388,7 @@ tabBrowser.prototype = {
                                                  "context-openlinkintab");
         this._controller.rightClick(event.target);
         this._controller.click(contextMenuItem);
-        this._UtilsAPI.closeContentAreaContextMenu(this._controller);
+        utils.closeContentAreaContextMenu(this._controller);
         break;
       case "middleClick":
         this._controller.middleClick(event.target);
@@ -406,7 +402,7 @@ tabBrowser.prototype = {
                                    {tab: self});
     } finally {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
-      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
+      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
@@ -423,7 +419,7 @@ tabBrowser.prototype = {
     var type = (event.type == undefined) ? "menu" : event.type;
 
     // Disable tab closing animation for default behavior
-    this._PrefsAPI.preferences.setPref(PREF_TABS_ANIMATE, false);
+    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been opened
     var self = { opened: false };
@@ -436,7 +432,7 @@ tabBrowser.prototype = {
         this._controller.click(menuitem);
         break;
       case "shortcut":
-        var cmdKey = this._UtilsAPI.getEntity(this.getDtds(), "tabCmd.commandkey");
+        var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       case "newTabButton":
@@ -447,7 +443,7 @@ tabBrowser.prototype = {
         var tabStrip = this.getElement({type: "tabs_strip"});
         
         // RTL-locales need to be treated separately
-        if (this._UtilsAPI.getEntity(this.getDtds(), "locale.dir") == "rtl") {
+        if (utils.getEntity(this.getDtds(), "locale.dir") == "rtl") {
           // XXX: Workaround until bug 537968 has been fixed
           this._controller.click(tabStrip, 100, 3);
           // Todo: Calculate the correct x position
@@ -468,7 +464,20 @@ tabBrowser.prototype = {
                                    {tab: self});
     } finally {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
-      this._PrefsAPI.preferences.clearUserPref(PREF_TABS_ANIMATE);
+      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of functions
+exports.closeAllTabs = closeAllTabs;
+exports.getTabsWithURL = getTabsWithURL;
+
+// Export of classes
+exports.tabBrowser = tabBrowser;
+exports.tabBrowser.prototype = tabBrowser.prototype;

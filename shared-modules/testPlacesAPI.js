@@ -145,3 +145,19 @@ function removeAllHistory() {
   browserHistory.removeAllPages();
   mozmill.controller.waitForEval("subject.state == true", gTimeout, 100, finishedFlag);
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.bookmarksService = bookmarksService;
+exports.historyService = historyService;
+exports.livemarkService = livemarkService;
+exports.browserHistory = browserHistory;
+
+// Export of functions
+exports.isBookmarkInFolder = isBookmarkInFolder;
+exports.restoreDefaultBookmarks = restoreDefaultBookmarks;
+exports.removeAllHistory = removeAllHistory;

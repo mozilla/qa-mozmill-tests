@@ -45,8 +45,10 @@
 
 var MODULE_NAME = 'PrefsAPI';
 
-const RELATIVE_ROOT = '.'
-const MODULE_REQUIRES = ['ModalDialogAPI', 'UtilsAPI'];
+// Load required modules
+var modalDialog = require("testModalDialogAPI");
+var utils = require("testUtilsAPI");
+
 
 const gTimeout = 5000;
 
@@ -55,14 +57,14 @@ const PREF_DIALOG_BUTTONS  = '/{"type":"prefwindow"}/anon({"anonid":"dlg-buttons
 const PREF_DIALOG_DECK     = '/{"type":"prefwindow"}/anon({"class":"paneDeckContainer"})/anon({"anonid":"paneDeck"})';
 const PREF_DIALOG_SELECTOR = '/{"type":"prefwindow"}/anon({"orient":"vertical"})/anon({"anonid":"selector"})';
 
+
 /**
  * Constructor
  * 
  * @param {MozMillController} controller
  *        MozMill controller of the browser window to operate on.
  */
-function preferencesDialog(controller)
-{
+function preferencesDialog(controller) {
   this._controller = controller;
 }
 
@@ -336,15 +338,13 @@ var preferences = {
  * @param {function} launcher
  *        (Optional) A callback handler to launch the preference dialog
  */
-function openPreferencesDialog(callback, launcher)
-{
+function openPreferencesDialog(callback, launcher) {
   if(!callback)
     throw new Error("No callback given for Preferences Dialog");
 
   if (mozmill.isWindows) {
     // Preference dialog is modal on windows, set up our callback
-    var md = collector.getModule('ModalDialogAPI');
-    var prefModal = new md.modalDialog(callback);
+    var prefModal = new modalDialog.modalDialog(callback);
     prefModal.start();
   }
 
@@ -367,7 +367,21 @@ function openPreferencesDialog(callback, launcher)
 
   // If the dialog is not modal, run the callback directly
   if (!mozmill.isWindows) {
-    var utilsAPI = collector.getModule('UtilsAPI');
-    utilsAPI.handleWindow("type", prefWindowType, callback);
+    utils.handleWindow("type", prefWindowType, callback);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of variables
+exports.preferences = preferences;
+
+// Export of functions
+exports.openPreferencesDialog = openPreferencesDialog;
+
+// Export of classes
+exports.preferencesDialog = preferencesDialog;
+exports.preferencesDialog.prototype = preferencesDialog.prototype;

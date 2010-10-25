@@ -43,8 +43,8 @@
 
 const MODULE_NAME = 'ToolbarAPI';
 
-const RELATIVE_ROOT = '.';
-const MODULE_REQUIRES = ['UtilsAPI'];
+// Load required modules
+var utils = require("testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -63,10 +63,9 @@ const CONTEXT_MENU = URLBAR_INPUTBOX + '/anon({"anonid":"input-box-contextmenu"}
  * @param {MozmillController} controller
  *        MozMillController of the window to operate on
  */
-function autoCompleteResults(controller)
-{
+function autoCompleteResults(controller) {
   this._controller = controller;
-  this.popup = this.getElement({type: "popup"});
+  this._popup = this.getElement({type: "popup"});
   this._results = this.getElement({type: "results"});
 }
 
@@ -105,7 +104,7 @@ autoCompleteResults.prototype = {
    * @type {boolean}
    */
   get isOpened() {
-    return (this.popup.getNode().state == 'open');
+    return (this._popup.getNode().state == 'open');
   },
 
   /**
@@ -252,7 +251,6 @@ function locationBar(controller)
 {
   this._controller = controller;
   this._autoCompleteResults = new autoCompleteResults(controller);
-  this._utilsApi = collector.getModule('UtilsAPI');
 }
 
 /**
@@ -339,7 +337,7 @@ locationBar.prototype = {
         this._controller.click(this.urlbar);
         break;
       case "shortcut":
-        var cmdKey = this._utilsApi.getEntity(this.getDtds(), "openCmd.commandkey");
+        var cmdKey = utils.getEntity(this.getDtds(), "openCmd.commandkey");
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
@@ -482,3 +480,16 @@ locationBar.prototype = {
     this.contains(text);
   }
 }
+
+// XXX: temporary until we have completely switched over to Common JS
+if (exports == undefined) {
+  var exports = {};
+}
+
+// Export of classes
+exports.locationBar = locationBar;
+exports.locationBar.prototype = locationBar.prototype;
+
+exports.autoCompleteResults = autoCompleteResults;
+exports.autoCompleteResults.prototype = autoCompleteResults.prototype;
+
