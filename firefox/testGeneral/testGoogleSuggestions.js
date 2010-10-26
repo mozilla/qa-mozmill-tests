@@ -37,10 +37,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['UtilsAPI'];
-
 const TIMEOUT = 5000;
 
 var setupModule = function() {

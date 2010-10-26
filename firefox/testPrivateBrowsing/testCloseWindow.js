@@ -35,9 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -49,10 +50,10 @@ const LOCAL_TEST_PAGES = [
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
@@ -94,7 +95,7 @@ var testCloseWindow = function() {
   pb.start();
 
   // One single window will be opened in PB mode which has to be closed now
-  var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
+  var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
   
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
@@ -108,7 +109,7 @@ var testCloseWindow = function() {
                          TIMEOUT, 100,
                          {utils: mozmill.utils, expectedCount: windowCount});
 
-  UtilsAPI.handleWindow("type", "navigator:browser", checkWindowOpen, true);
+  utils.handleWindow("type", "navigator:browser", checkWindowOpen, true);
 }
 
 function checkWindowOpen(controller) {

@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -52,7 +52,7 @@ var setupModule = function(module) {
 var testOpenCloseOptionsDialog = function()
 {
   // Reset pane to the main pane before starting the test
-  PrefsAPI.openPreferencesDialog(prefPaneResetCallback);
+  prefs.openPreferencesDialog(prefPaneResetCallback);
 }
 
 /**
@@ -61,10 +61,10 @@ var testOpenCloseOptionsDialog = function()
 var testOptionsDialogRetention = function()
 {
   // Choose the Privacy pane
-  PrefsAPI.openPreferencesDialog(prefPaneSetCallback);
+  prefs.openPreferencesDialog(prefPaneSetCallback);
 
   // And check if the Privacy pane is still selected
-  PrefsAPI.openPreferencesDialog(prefPaneCheckCallback);
+  prefs.openPreferencesDialog(prefPaneCheckCallback);
 }
 
 /**
@@ -75,7 +75,7 @@ var testOptionsDialogRetention = function()
  */
 var prefPaneResetCallback = function(controller)
 {
-  let prefDialog = new PrefsAPI.preferencesDialog(controller);
+  let prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneMain';
   prefDialog.close();
@@ -89,7 +89,7 @@ var prefPaneResetCallback = function(controller)
  */
 var prefPaneSetCallback = function(controller)
 {
-  let prefDialog = new PrefsAPI.preferencesDialog(controller);
+  let prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneAdvanced';
   prefDialog.paneId = 'panePrivacy';
@@ -104,7 +104,7 @@ var prefPaneSetCallback = function(controller)
  */
 var prefPaneCheckCallback = function(controller)
 {
-  let prefDialog = new PrefsAPI.preferencesDialog(controller);
+  let prefDialog = new prefs.preferencesDialog(controller);
 
   controller.assertJS("subject.paneId == 'panePrivacy'",
                       {paneId: prefDialog.paneId});

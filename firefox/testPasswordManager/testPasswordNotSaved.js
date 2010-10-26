@@ -36,9 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'ToolbarAPI', 'UtilsAPI'];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -47,7 +48,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
 
   pm = Cc["@mozilla.org/login-manager;1"].
        getService(Ci.nsILoginManager);
@@ -108,7 +109,7 @@ var testPasswordNotSaved = function() {
   controller.assertValue(passField, "");
 
   // Call preferences dialog and check that no password has been saved
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -118,13 +119,13 @@ var testPasswordNotSaved = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
   controller.waitThenClick(showPasswords, TIMEOUT);
 
-  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
+  utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
   prefDialog.close(true);
 }
@@ -143,7 +144,7 @@ function checkPasswordsNotSaved(controller) {
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 

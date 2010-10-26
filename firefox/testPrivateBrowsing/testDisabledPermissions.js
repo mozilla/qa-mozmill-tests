@@ -36,10 +36,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 
-                         'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [
@@ -53,14 +55,14 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
 }
 
 var teardownModule = function(module) {
   pb.reset();
 
   // Reset the user cookie pref
-  PrefsAPI.preferences.clearUserPref("network.cookie.lifetimePolicy");
+  prefs.preferences.clearUserPref("network.cookie.lifetimePolicy");
 }
 
 /**
@@ -71,7 +73,7 @@ var testPermissionsDisabled = function() {
   pb.enabled = false;
   pb.showPrompt = false;
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 
   pb.start();
 
@@ -81,7 +83,7 @@ var testPermissionsDisabled = function() {
 
   // Open context menu and check "Allow Popups" is disabled
   var property = mozmill.isWindows ? "popupWarningButton.accesskey" : "popupWarningButtonUnix.accesskey";
-  var accessKey = UtilsAPI.getProperty("chrome://browser/locale/browser.properties", property);
+  var accessKey = utils.getProperty("chrome://browser/locale/browser.properties", property);
 
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
@@ -97,7 +99,7 @@ var testPermissionsDisabled = function() {
   controller.keypress(null, "VK_ESCAPE", {});
 
   // Enable the "Ask me every time" cookie behavior
-  PrefsAPI.openPreferencesDialog(prefCookieHandler);
+  prefs.openPreferencesDialog(prefCookieHandler);
 
   // No cookie dialog should show up
   controller.open(LOCAL_TEST_PAGES[1]);
@@ -111,7 +113,7 @@ var testPermissionsDisabled = function() {
  *        MozMillController of the window to operate on
  */
 var prefCookieHandler = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and select ask me every time for cookies

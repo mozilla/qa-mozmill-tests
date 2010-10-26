@@ -36,9 +36,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'ToolbarAPI', 'UtilsAPI'];
+// Include the required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -47,7 +49,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar = new ToolbarAPI.locationBar(controller);
+  locationBar = new toolbars.locationBar(controller);
 
   pm = Cc["@mozilla.org/login-manager;1"].
        getService(Ci.nsILoginManager);
@@ -110,7 +112,7 @@ var testSavePassword = function() {
  */
 var testDeletePassword = function() {
   // Call preferences dialog and delete the saved password
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -119,13 +121,13 @@ var testDeletePassword = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
   controller.waitThenClick(showPasswords, TIMEOUT);
 
-  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
+  utils.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
 
   // Close the preferences dialog
@@ -144,7 +146,7 @@ function deleteAllPasswords(controller) {
   controller.assertJS("subject.view.rowCount == 1", signOnsTree);
 
   // Delete all passwords and accept the deletion of the saved passwords
-  var md = new ModalDialogAPI.modalDialog(confirmHandler);
+  var md = new modalDialog.modalDialog(confirmHandler);
   md.start(200);
 
   controller.click(new elementslib.ID(controller.window.document, "removeAllSignons"));
@@ -152,7 +154,7 @@ function deleteAllPasswords(controller) {
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
