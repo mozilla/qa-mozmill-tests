@@ -73,15 +73,16 @@ var testEnablePrivateBrowsingMode = function() {
   pb.enabled = false;
   pb.showPrompt = true;
 
-  // Open websites in separate tabs
-  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-  
-  for each (var page in LOCAL_TEST_PAGES) {
+  // Open local pages in separate tabs and wait for each to finish loading
+  LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
-
-    controller.click(newTab);
-  }
+    
+    var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
+    controller.assertNode(elem);
+    
+    tabBrowser.openTab();
+  });
 
   // Start the Private Browsing mode
   pb.start();
