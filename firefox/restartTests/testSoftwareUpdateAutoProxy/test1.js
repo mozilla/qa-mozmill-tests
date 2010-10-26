@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI'];
+// Include required modules
+var prefs = require("../../../shared-modules/testPrefsAPI");
 
 const BROWSER_HOME_PAGE = 'browser.startup.homepage';
 const BROWSER_STARTUP_PAGE = 'browser.startup.page';
@@ -47,11 +46,11 @@ const PROXY_TYPE = 'network.proxy.type';
  */
 var setupModule = function() {
  // Set browser home page to about:blank
- PrefsAPI.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
+ prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
  
  // Set browser start up to display current home page
- PrefsAPI.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
+ prefs.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
  
  // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
- PrefsAPI.preferences.setPref(PROXY_TYPE, 4); 
+ prefs.preferences.setPref(PROXY_TYPE, 4); 
 }

@@ -37,9 +37,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI'];
+// Include required modules
+var addons = require("../../shared-modules/testAddonsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -53,7 +52,7 @@ var plugins = {"darwin": "DefaultPlugin.plugin",
 var setupModule = function(module) 
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 }
 
 var teardownModule = function(module)

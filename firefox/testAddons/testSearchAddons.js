@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI'];
+// Include required modules
+var addons = require("../../shared-modules/testAddonsAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,7 +46,7 @@ const gSearchTimeout = 30000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 }
 
 var teardownModule = function(module)
@@ -76,7 +76,7 @@ var testSearchForAddons = function()
                       {isClearButtonShown: buttonPanel.getAttribute('class') == 'textbox-search-clear'});
 
   // Verify the number of addons is in-between 0 and the maxResults pref
-  var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
+  var maxResults = prefs.preferences.getPref("extensions.getAddons.maxResults", -1);
   var listBox = addonsManager.getElement({type: "listbox"});
 
   addonsManager.controller.assertJS("subject.numSearchResults > 0",

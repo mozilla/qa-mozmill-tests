@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['DownloadsAPI'];
+// Include required modules
+var downloads = require("../../shared-modules/testDownloadsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -44,7 +43,7 @@ const gTimeout = 5000;
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
-  module.dm = new DownloadsAPI.downloadManager();
+  module.dm = new downloads.downloadManager();
 }
 
 var teardownModule = function(module)
@@ -58,7 +57,7 @@ var testOpenDownloadManager = function()
 {
   var url = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/mac/en-US/Firefox%203.6.dmg";
 
-  DownloadsAPI.downloadFileOfUnknownType(controller, url);
+  downloads.downloadFileOfUnknownType(controller, url);
 
   // Open the download manager
   dm.open(controller, true);
@@ -72,9 +71,9 @@ var testOpenDownloadManager = function()
   
   // Pause the download
   dm.controller.click(pauseButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.paused);
+  dm.waitForDownloadState(download, downloads.downloadState.paused);
 
   // Resume the download
   dm.controller.click(resumeButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.downloading);
+  dm.waitForDownloadState(download, downloads.downloadState.downloading);
 }

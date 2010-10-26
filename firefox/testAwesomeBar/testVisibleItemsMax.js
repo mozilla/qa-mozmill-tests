@@ -36,9 +36,10 @@
  *
  * ***** END LICENSE BLOCK *****/
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI','ToolbarAPI'];
+// Include required modules
+var places = require("../../shared-modules/testPlacesAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_PAGES = [
@@ -55,10 +56,10 @@ const LOCAL_PAGES = [
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
-  PlacesAPI.removeAllHistory();
+  places.removeAllHistory();
 }
 
 /**
@@ -66,7 +67,7 @@ var setupModule = function() {
  */
 var testVisibleItemsMax = function() {
   // Use preferences dialog to ensure "When Using the location bar suggest:" History and Bookmarks is selected
-  PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
 
   // Open some local pages to set up the test environment
   for each (var page in LOCAL_PAGES) {
@@ -100,7 +101,7 @@ var testVisibleItemsMax = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogSuggestsCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");

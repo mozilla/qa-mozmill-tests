@@ -36,15 +36,14 @@
 
 var jum = {}; Components.utils.import('resource://mozmill/modules/jum.js', jum);
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ToolbarAPI'];
+// Include required modules
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const TIMEOUT = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  locationBar = new ToolbarAPI.locationBar(controller);
+  locationBar = new toolbars.locationBar(controller);
 }
 
 var testLocationBarAPI = function() {

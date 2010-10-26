@@ -36,9 +36,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../../shared-modules';
-const MODULE_REQUIRES = ['ModalDialogAPI','PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
+var prefs = require("../../../shared-modules/testPrefsAPI");
+var tabs = require("../../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 const DELAY_MODAL_DIALOG = 500;
@@ -48,7 +50,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
@@ -78,7 +80,7 @@ var testSetMasterPassword = function() {
   
 
   // Get the label of the Remember Password button
-  var label = UtilsAPI.getProperty(
+  var label = utils.getProperty(
                 "chrome://passwordmgr/locale/passwordmgr.properties",
                 "notifyBarRememberButtonText"
               );
@@ -89,7 +91,7 @@ var testSetMasterPassword = function() {
   );
 
   // Check that the Remember Password button is visible
-  UtilsAPI.assertElementVisible(controller, button, true);
+  utils.assertElementVisible(controller, button, true);
   
   // Click the Remember Password button
   controller.waitThenClick(button, TIMEOUT);
@@ -97,7 +99,7 @@ var testSetMasterPassword = function() {
   controller.assertNodeNotExist(button);
 
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.openPreferencesDialog(prefDialogSetMasterPasswordCallback);
+  prefs.openPreferencesDialog(prefDialogSetMasterPasswordCallback);
 }
 
 /**
@@ -105,7 +107,7 @@ var testSetMasterPassword = function() {
  */
 var testInvokeMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.openPreferencesDialog(prefDialogInvokeMasterPasswordCallback);
+  prefs.openPreferencesDialog(prefDialogInvokeMasterPasswordCallback);
 }
 
 /**
@@ -113,7 +115,7 @@ var testInvokeMasterPassword = function() {
  */
 var testRemoveMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  PrefsAPI.openPreferencesDialog(prefDialogDeleteMasterPasswordCallback);
+  prefs.openPreferencesDialog(prefDialogDeleteMasterPasswordCallback);
 }
 
 /**
@@ -122,7 +124,7 @@ var testRemoveMasterPassword = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogSetMasterPasswordCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneSecurity';
 
@@ -130,7 +132,7 @@ var prefDialogSetMasterPasswordCallback = function(controller) {
   controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and set a master password to your profile
-  var md = new ModalDialogAPI.modalDialog(masterPasswordHandler);
+  var md = new modalDialog.modalDialog(masterPasswordHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   controller.click(masterPasswordCheck);
@@ -154,7 +156,7 @@ var masterPasswordHandler = function(controller) {
   controller.type(pw2, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new ModalDialogAPI.modalDialog(confirmHandler);
+  var md = new modalDialog.modalDialog(confirmHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   var button = new elementslib.Lookup(controller.window.document,
@@ -179,7 +181,7 @@ var confirmHandler = function(controller) {
  *        MozMillController of the window to operate on
  */
 var prefDialogInvokeMasterPasswordCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneSecurity';
 
@@ -187,13 +189,13 @@ var prefDialogInvokeMasterPasswordCallback = function(controller) {
   controller.waitForElement(showPasswordButton, TIMEOUT);
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
+  var md = new modalDialog.modalDialog(checkMasterHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   controller.click(showPasswordButton);
 
   // Check if the password manager has been opened
-  UtilsAPI.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
+  utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
 
   prefDialog.close(true);
 }
@@ -208,19 +210,19 @@ function checkPasswordManager(controller) {
   var passwordCol = new elementslib.ID(controller.window.document, "passwordCol");
 
   controller.waitForElement(togglePasswords, TIMEOUT);
-  UtilsAPI.assertElementVisible(controller, passwordCol, false);
+  utils.assertElementVisible(controller, passwordCol, false);
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new ModalDialogAPI.modalDialog(checkMasterHandler);
+  var md = new modalDialog.modalDialog(checkMasterHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   controller.click(togglePasswords);
 
-  UtilsAPI.assertElementVisible(controller, passwordCol, true);
+  utils.assertElementVisible(controller, passwordCol, true);
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
@@ -246,7 +248,7 @@ var checkMasterHandler = function(controller) {
  *        MozMillController of the window to operate on
  */
 var prefDialogDeleteMasterPasswordCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneSecurity';
 
@@ -254,7 +256,7 @@ var prefDialogDeleteMasterPasswordCallback = function(controller) {
   controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and remove the master password to your profile
-  var md = new ModalDialogAPI.modalDialog(removeMasterHandler);
+  var md = new modalDialog.modalDialog(removeMasterHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   controller.click(masterPasswordCheck);
@@ -275,7 +277,7 @@ var removeMasterHandler = function(controller) {
   controller.type(removePwdField, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new ModalDialogAPI.modalDialog(confirmHandler);
+  var md = new modalDialog.modalDialog(confirmHandler);
   md.start(DELAY_MODAL_DIALOG);
 
   controller.click(new elementslib.Lookup(controller.window.document,

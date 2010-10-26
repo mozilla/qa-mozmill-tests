@@ -36,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI'];
+// Include required modules
+var addons = require("../../../shared-modules/testAddonsAPI");
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
 
 const TIMEOUT = 5000;
 const gInstallTimeout = 10000;
@@ -55,7 +55,7 @@ const gAddons = [
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = gAddons;
@@ -78,7 +78,7 @@ var testInstallExtensions = function() {
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
     // Create a modal dialog instance to handle the Software Installation dialog
-    var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
+    var md = new modalDialog.modalDialog(handleTriggerDialog);
     md.start();
 
     // Click the link to install the extension

@@ -34,13 +34,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
+// Include required modules
+var softwareUpdate = require("../../../shared-modules/testSoftwareUpdateAPI");
+var utils = require("../../../shared-modules/testUtilsAPI");
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  update = new SoftwareUpdateAPI.softwareUpdate();
+  update = new softwareUpdate.softwareUpdate();
 }
 
 /**
@@ -53,7 +53,7 @@ var testFallbackUpdate_ErrorPatching = function() {
   // Complete updates have to be handled differently
   if (persisted.isCompletePatch) {
     // Wait for the error page and close the software update dialog
-    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errors);
+    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
     update.closeDialog();
 
     // Open the software update dialog again and wait until the check has been finished
@@ -65,7 +65,7 @@ var testFallbackUpdate_ErrorPatching = function() {
                                   {update: update});
     update.download(persisted.channel);
   } else {
-    update.waitForWizardPage(SoftwareUpdateAPI.WIZARD_PAGES.errorPatching);
+    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
 
     // Start downloading the fallback patch
     update.download(persisted.channel);

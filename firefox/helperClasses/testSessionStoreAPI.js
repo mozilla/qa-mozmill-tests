@@ -34,9 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SessionStoreAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var sessionStore = require("../../shared-modules/testSessionStoreAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -45,8 +46,8 @@ var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
 
-  module.session = new SessionStoreAPI.aboutSessionRestore(controller);
-  module.tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  module.session = new sessionStore.aboutSessionRestore(controller);
+  module.tabBrowser = new tabs.tabBrowser(controller);
 }
 
 var testAboutSessionRestoreErrorPage = function()
@@ -83,6 +84,5 @@ var testAboutSessionRestoreErrorPage = function()
   controller.waitForPageLoad();
   tabBrowser.closeTab({type: "shortcut"});
 
-  SessionStoreAPI.undoClosedTab(controller, {type: "shortcut"});
-  
+  sessionStore.undoClosedTab(controller, {type: "shortcut"});
 }

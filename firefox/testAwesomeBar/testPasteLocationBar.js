@@ -2,9 +2,10 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI', 'UtilsAPI'];
+// Include required modules
+var places = require("../../shared-modules/testPlacesAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -12,10 +13,10 @@ const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
-  PlacesAPI.removeAllHistory();
+  places.removeAllHistory();
 }
 
 var teardownModule = function() {
@@ -38,7 +39,7 @@ var testPasteLocationBar = function() {
 
   // Copy "ipsum" into clipboard
   var dtds = ["chrome://browser/locale/browser.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "copyCmd.key");
+  var cmdKey = utils.getEntity(dtds, "copyCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 
   // Clear the locationBar
