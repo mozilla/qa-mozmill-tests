@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
+// Include required modules
+var addons = require("../../../shared-modules/testAddonsAPI");
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
 
 const gTimeout = 5000;
 const gSearchTimeout = 30000;
@@ -46,17 +46,17 @@ const gInstallTimeout = 30000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 
   persisted.extensionName = "Nightly Tester Tools";
   persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
 
-  AddonsAPI.useAmoPreviewUrls();
+  addons.useAmoPreviewUrls();
 }
 
 var teardownModule = function(module)
 {
-  AddonsAPI.resetAmoPreviewUrls();
+  addons.resetAmoPreviewUrls();
 }
 
 /*
@@ -79,7 +79,7 @@ var testInstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gSearchTimeout);
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
+  var md = new modalDialog.modalDialog(handleTriggerDialog);
   md.start();
 
   // Trigger the extension installation

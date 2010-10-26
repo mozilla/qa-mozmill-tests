@@ -34,14 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
+// Include required modules
+var softwareUpdate = require("../../../shared-modules/testSoftwareUpdateAPI");
+var utils = require("../../../shared-modules/testUtilsAPI");
 
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
-  module.update = new SoftwareUpdateAPI.softwareUpdate();
+  module.update = new softwareUpdate.softwareUpdate();
 }
 
 /**

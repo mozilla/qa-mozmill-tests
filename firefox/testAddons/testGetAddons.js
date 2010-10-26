@@ -35,9 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var addons = require("../../shared-modules/testAddonsAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,9 +48,9 @@ const gSearchTimeout = 30000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var teardownModule = function(module)
@@ -71,7 +73,7 @@ var testLaunchAddonsManager = function()
     // Verify the update button is visible for extensions and themes
     if (pane == "extensions" || pane == "themes") {
       var updatesButton = addonsManager.getElement({type: "button_findUpdates"});
-      UtilsAPI.assertElementVisible(addonsManager.controller, updatesButton, true);
+      utils.assertElementVisible(addonsManager.controller, updatesButton, true);
     }
   }
 
@@ -99,7 +101,7 @@ var testGetAddonsTab = function()
   addonsManager.controller.assertJSProperty(footer, "hidden", false);
 
   // Verify the number of addons is in-between 0 and the maxResults pref
-  var maxResults = PrefsAPI.preferences.getPref("extensions.getAddons.maxResults", -1);
+  var maxResults = prefs.preferences.getPref("extensions.getAddons.maxResults", -1);
   var listBox = addonsManager.getElement({type: "listbox"});
 
   addonsManager.controller.assertJS("subject.numSearchResults > 0",
@@ -113,20 +115,20 @@ var testGetAddonsTab = function()
   // XXX: Bug 529412 - Mozmill cannot operate on XUL elements which are outside of the view
   // So we can only compare the URLs for now.
   var footerLabel = addonsManager.getElement({type: "search_statusLabel", value: footer});
-  var recommendedUrl = UtilsAPI.formatUrlPref("extensions.getAddons.recommended.browseURL");
+  var recommendedUrl = utils.formatUrlPref("extensions.getAddons.recommended.browseURL");
   addonsManager.controller.assertJS("subject.correctRecommendedURL",
                                     {correctRecommendedURL:
                                      footerLabel.getNode().getAttribute('recommendedURL') == recommendedUrl}
                                    );
 
   // Check if the browse all addons link goes to the correct page on AMO
-  var browseAddonUrl = UtilsAPI.formatUrlPref("extensions.getAddons.browseAddons");
+  var browseAddonUrl = utils.formatUrlPref("extensions.getAddons.browseAddons");
   addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
 
   // The target web page is loaded lazily so wait for the newly created tab first
   controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
   controller.waitForPageLoad();
-  UtilsAPI.assertLoadedUrlEqual(controller, browseAddonUrl);
+  utils.assertLoadedUrlEqual(controller, browseAddonUrl);
 }
 
 /**

@@ -36,9 +36,9 @@
  *
  * **** END LICENSE BLOCK *****/
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'ToolbarAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const gTimeout = 5000;
 
@@ -47,13 +47,13 @@ const prefName = "keyword.URL";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
 
-  PrefsAPI.preferences.setPref(prefName, localTestFolder + "search/searchresults.html?q=");
+  prefs.preferences.setPref(prefName, localTestFolder + "search/searchresults.html?q=");
 }
 
 var teardownModule = function() {
-  PrefsAPI.preferences.clearUserPref(prefName);
+  prefs.preferences.clearUserPref(prefName);
 }
 
 /**

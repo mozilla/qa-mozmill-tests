@@ -35,15 +35,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'UtilsAPI'];
+// Include required modules
+var addons = require("../../../shared-modules/testAddonsAPI");
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
 
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 }
 
 var testCheckInstalledExtension = function() 
@@ -81,7 +81,7 @@ var testUninstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gTimeout);
 
   // Create a modal dialog instance to handle the software uninstallation dialog
-  var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
+  var md = new modalDialog.modalDialog(handleTriggerDialog);
   md.start();
 
   var uninstallButton = addonsManager.getElement({type: "listbox_button", subtype: "uninstall", value: extension});

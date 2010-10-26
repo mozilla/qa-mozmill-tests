@@ -34,9 +34,9 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'ModalDialogAPI'];
+// Include required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
 
 const gTimeout = 5000;
 
@@ -50,7 +50,7 @@ var setupModule = function(module)
 */
 var testCrashRemoveCookieAfterPrivateBrowsingMode = function()
 {
-  var pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  var pb = new privateBrowsing.privateBrowsing(controller);
 
   pb.enabled = false;
   pb.showPrompt = false;
@@ -62,7 +62,7 @@ var testCrashRemoveCookieAfterPrivateBrowsingMode = function()
   pb.enabled = false;
 
   // Call clear recent history dialog and clear all form history
-  var md = new ModalDialogAPI.modalDialog(clearHistoryHandler);
+  var md = new modalDialog.modalDialog(clearHistoryHandler);
   md.start();
 
   controller.click(new elementslib.Elem(controller.menus["tools-menu"].sanitizeItem));

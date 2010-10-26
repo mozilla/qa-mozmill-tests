@@ -34,9 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
+// Include required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var search = require("../../shared-modules/testSearchAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -45,14 +46,14 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
-  search.clear();
+  searchBar = new search.searchBar(controller);
+  searchBar.clear();
 }
 
 var teardownModule = function(module)
 {
-  search.clear();
-  search.restoreDefaultEngines();
+  searchBar.clear();
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -62,21 +63,21 @@ var testSearchAPI = function()
 {
   // Check if Google is installed and there is no Googl engine present
   controller.assertJS("subject.isGoogleInstalled == true",
-                      {isGoogleInstalled: search.isEngineInstalled("Google")});
+                      {isGoogleInstalled: searchBar.isEngineInstalled("Google")});
   controller.assertJS("subject.isGooglInstalled == false",
-                      {isGooglInstalled: search.isEngineInstalled("Googl")});
+                      {isGooglInstalled: searchBar.isEngineInstalled("Googl")});
 
   // Do some stuff in the Search Engine Manager
-  search.openEngineManager(handlerManager);
+  searchBar.openEngineManager(handlerManager);
 
   // Select another engine and start search
-  search.selectedEngine = "Yahoo";
-  search.search({text: "Firefox", action: "returnKey"});
+  searchBar.selectedEngine = "Yahoo";
+  searchBar.search({text: "Firefox", action: "returnKey"});
 }
 
 var handlerManager = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
   var engines = manager.engines;
 
   // Remove the first search engine

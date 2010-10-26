@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['DownloadsAPI', 'UtilsAPI'];
+// Include required modules
+var downloads = require("../../shared-modules/testDownloadsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -47,7 +47,7 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
 
   // Get an instance of the Download Manager class
-  module.dm = new DownloadsAPI.downloadManager();
+  module.dm = new downloads.downloadManager();
 }
 
 var teardownModule = function(module)
@@ -79,7 +79,7 @@ var testCloseDownloadManager = function()
   // Test ACCEL+SHIFT+Y
   // NOTE: This test is only performed on Linux
   if (mozmill.isLinux) {
-    var cmdKey = UtilsAPI.getEntity(dm.getDtds(), "cmd.close2Unix.commandKey");
+    var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2Unix.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {shiftKey:true, accelKey:true});
     controller.waitForEval("subject.getWindows().length == " + windowCount,
@@ -89,7 +89,7 @@ var testCloseDownloadManager = function()
   // Test ACCEL+J
   // NOTE: This test is only performed on Windows and Mac
   if (!mozmill.isLinux) {
-    var cmdKey = UtilsAPI.getEntity(dm.getDtds(), "cmd.close2.commandKey");
+    var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {accelKey:true});
     controller.waitForEval("subject.getWindows().length == " + windowCount,

@@ -37,9 +37,10 @@
  *
  * ***** END LICENSE BLOCK *****/
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PlacesAPI', 'PrefsAPI', 'ToolbarAPI'];
+// Include required modules
+var places = require("../../shared-modules/testPlacesAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGE = {
@@ -51,13 +52,13 @@ const TIMEOUT = 5000;
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
 
-  PlacesAPI.removeAllHistory();
+  places.removeAllHistory();
 }
 
 var teardownModule = function() {
-  PlacesAPI.restoreDefaultBookmarks();
+  places.restoreDefaultBookmarks();
 }
 
 /**
@@ -65,7 +66,7 @@ var teardownModule = function() {
  */
 var testSuggestHistoryAndBookmarks = function() {
   // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
-  PrefsAPI.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
 
   // Open the test page
   locationBar.loadURL(LOCAL_TEST_PAGE.url);
@@ -117,7 +118,7 @@ var testStarInAutocomplete = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Clear history
-  PlacesAPI.removeAllHistory();
+  places.removeAllHistory();
 
   // Focus the locationbar, delete any contents there
   locationBar.clear();
@@ -150,7 +151,7 @@ var testStarInAutocomplete = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogSuggestsCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");

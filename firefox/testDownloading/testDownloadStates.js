@@ -34,16 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['DownloadsAPI'];
+// Include required modules
+var downloads = require("../../shared-modules/testDownloadsAPI");
 
 var URL = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
 
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
-  module.dm = new DownloadsAPI.downloadManager();
+  module.dm = new downloads.downloadManager();
   
   // Make sure Download Manager is clean before starting
   dm.cleanAll();
@@ -62,7 +61,7 @@ var teardownModule = function(module)
 var testDownloadStates = function()
 {
   // Download a file
-  DownloadsAPI.downloadFileOfUnknownType(controller, URL);
+  downloads.downloadFileOfUnknownType(controller, URL);
   
   // Wait for the Download Manager to open
   dm.waitForOpened(controller);
@@ -74,21 +73,21 @@ var testDownloadStates = function()
   // Click the pause button and verify the download is paused
   var pauseButton = dm.getElement({type: "download_button", subtype: "pause", value: download});
   controller.click(pauseButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.paused);
+  dm.waitForDownloadState(download, downloads.downloadState.paused);
 
   // Click the resume button and verify the download is active
   var resumeButton = dm.getElement({type: "download_button", subtype: "resume", value: download});
   controller.click(resumeButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.downloading);
+  dm.waitForDownloadState(download, downloads.downloadState.downloading);
 
   // Click the cancel button and verify the download is canceled
   var cancelButton = dm.getElement({type: "download_button", subtype: "cancel", value: download});
   controller.click(cancelButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.canceled);
+  dm.waitForDownloadState(download, downloads.downloadState.canceled);
 
   // Click the retry button and verify the download is active
   var retryButton = dm.getElement({type: "download_button", subtype: "retry", value: download});
   controller.click(retryButton);
-  dm.waitForDownloadState(download, DownloadsAPI.downloadState.downloading);
+  dm.waitForDownloadState(download, downloads.downloadState.downloading);
 }
 

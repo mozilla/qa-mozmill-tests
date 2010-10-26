@@ -36,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK *****/
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PlacesAPI', 'ToolbarAPI'];
+// Include required modules
+var places = require("../../shared-modules/testPlacesAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [
@@ -50,10 +50,10 @@ const TEST_STRING = "mozilla";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar =  new ToolbarAPI.locationBar(controller);
+  locationBar =  new toolbars.locationBar(controller);
   
   // Clear complete history so we don't get interference from previous entries
-  PlacesAPI.removeAllHistory();
+  places.removeAllHistory();
 }
 
 /**
