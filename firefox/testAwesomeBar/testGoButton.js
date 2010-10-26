@@ -36,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ToolbarAPI', 'UtilsAPI'];
+// Include required modules
+var toolbars = require("../../shared-modules/testToolbarAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [
@@ -48,7 +48,7 @@ const LOCAL_TEST_PAGES = [
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  locationBar = new ToolbarAPI.locationBar(controller);
+  locationBar = new toolbars.locationBar(controller);
 
   goButton = locationBar.getElement({type: "goButton"});
 }
@@ -62,17 +62,17 @@ var testGoButtonOnTypeOnly = function() {
   controller.waitForPageLoad();
 
   // Verify GO button is hidden
-  UtilsAPI.assertElementVisible(controller, goButton, false);
+  utils.assertElementVisible(controller, goButton, false);
 
   // Typing a single character should show the GO button
   locationBar.focus({type: "shortcut"});
   locationBar.type("w");
-  UtilsAPI.assertElementVisible(controller, goButton, true);
+  utils.assertElementVisible(controller, goButton, true);
 
   // Removing content and focus should hide the Go button
   locationBar.clear();
   controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
-  UtilsAPI.assertElementVisible(controller, goButton, false);
+  utils.assertElementVisible(controller, goButton, false);
 }
 
 /**
@@ -96,7 +96,7 @@ var testClickLocationBarAndGo = function()
   // Check if an element with an id of 'organization' exists and the Go button is hidden
   var pageElement = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.assertNode(pageElement);
-  UtilsAPI.assertElementVisible(controller, goButton, false);
+  utils.assertElementVisible(controller, goButton, false);
 
   // Check if the URL bar matches the expected domain name
   controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGES[1]);

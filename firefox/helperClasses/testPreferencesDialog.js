@@ -35,16 +35,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
 var testPrefHelperClass = function () {
-  PrefsAPI.openPreferencesDialog(handlePrefDialog);
+  prefs.openPreferencesDialog(handlePrefDialog);
 }
 
 /**
@@ -55,7 +54,7 @@ var testPrefHelperClass = function () {
  */
 function handlePrefDialog(controller)
 {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   var pane = prefDialog.pane;
   prefDialog.paneId = 'paneContent';

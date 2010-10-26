@@ -34,16 +34,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'SoftwareUpdateAPI'];
+// Include required modules
+var prefs = require("../../../shared-modules/testPrefsAPI");
+var softwareUpdate = require("../../../shared-modules/testSoftwareUpdateAPI");
 
 const TIMEOUT = 5000;
 
 var setupModule = function() {
  controller = mozmill.getBrowserController();
  
- update = new SoftwareUpdateAPI.softwareUpdate();
+ update = new softwareUpdate.softwareUpdate();
 }
 
 /**
@@ -66,7 +66,7 @@ var testSoftwareUpdateAutoProxy = function() {
  } catch(ex) {
    controller.assertJS("subject.currentPage == subject.noUpdatesFoundPage",
                       {currentPage: update.currentPage, noUpdatesFoundPage: 
-                      SoftwareUpdateAPI.WIZARD_PAGES.noUpdatesFound});
+                       softwareUpdate.WIZARD_PAGES.noUpdatesFound});
  }
  
  update.closeDialog();

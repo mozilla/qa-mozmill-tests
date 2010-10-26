@@ -35,13 +35,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'UtilsAPI'];
+// Include required modules
+var addons = require("../../../shared-modules/testAddonsAPI");
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 }
 
 var testCheckInstalledExtensions = function() {

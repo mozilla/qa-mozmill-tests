@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['TabViewAPI'];
+// Include required modules
+var tabViews = require("../../shared-modules/testTabViewAPI");
 
 const TIMEOUT = 5000;
 
@@ -50,7 +49,7 @@ const NODES = [
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  tabView = new TabViewAPI.tabView(controller);
+  tabView = new tabViews.tabView(controller);
 }
 
 var testtabViewClass = function() {

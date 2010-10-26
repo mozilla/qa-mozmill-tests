@@ -34,9 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['DownloadsAPI', 'UtilsAPI'];
+// Include required modules
+var downloads = require("../../shared-modules/testDownloadsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -46,7 +46,7 @@ var setupModule = function(module)
   module.controller = mozmill.getBrowserController();
 
   // Get an instance of the Download Manager class
-  module.dm = new DownloadsAPI.downloadManager();
+  module.dm = new downloads.downloadManager();
 }
 
 var teardownModule = function(module)

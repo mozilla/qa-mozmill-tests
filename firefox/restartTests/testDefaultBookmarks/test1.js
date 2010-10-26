@@ -35,18 +35,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PlacesAPI', 'UtilsAPI'];
+// Include required modules
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
+var places = require("../../../shared-modules/testPlacesAPI");
+var utils = require("../../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  module.bs = PlacesAPI.bookmarksService;
-  module.hs = PlacesAPI.historyService;
-  module.ls = PlacesAPI.livemarkService;
+  module.bs = places.bookmarksService;
+  module.hs = places.historyService;
+  module.ls = places.livemarkService;
 }
 
 var testVerifyDefaultBookmarks = function() {
@@ -102,8 +103,8 @@ var testVerifyDefaultBookmarks = function() {
   controller.waitForPageLoad();
 
   // Check for the correct path in the URL which also includes the locale
-  var uriSource = UtilsAPI.createURI(toolbarNodes.getChild(1).uri, null, null);
-  var uriTarget = UtilsAPI.createURI(locationBar.getNode().value, null, null);
+  var uriSource = utils.createURI(toolbarNodes.getChild(1).uri, null, null);
+  var uriTarget = utils.createURI(locationBar.getNode().value, null, null);
   controller.assertJS("subject.source.path == subject.target.path",
                       {source: uriSource, target: uriTarget});
 
@@ -115,7 +116,7 @@ var testVerifyDefaultBookmarks = function() {
   toolbarNodes.containerOpen = false;
 
   // Create modal dialog observer
-  var md = new ModalDialogAPI.modalDialog(feedHandler);
+  var md = new modalDialog.modalDialog(feedHandler);
   md.start();
 
   // Open the properties dialog of the feed

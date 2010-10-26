@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI'];
+// Include required modules
+var addons = require("../../shared-modules/testAddonsAPI");
 
 const TIMEOUT = 5000;
 
@@ -48,7 +47,7 @@ const MOZMILL = {
 function setupModule() {
   controller = mozmill.getBrowserController();
 
-  am = new AddonsAPI.addonsManager(controller);
+  am = new addons.addonsManager(controller);
 }
 
 function testAddonsAPI() {

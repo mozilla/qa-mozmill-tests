@@ -34,19 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['SoftwareUpdateAPI', 'UtilsAPI'];
+// Include required modules
+var softwareUpdate = require("../../../shared-modules/testSoftwareUpdateAPI");
+var utils = require("../../../shared-modules/testUtilsAPI");
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  update = new SoftwareUpdateAPI.softwareUpdate();
+  update = new softwareUpdate.softwareUpdate();
 
   // Collect some data of the current build
-  persisted.postBuildId = UtilsAPI.appInfo.buildID;
-  persisted.postLocale = UtilsAPI.appInfo.locale;
-  persisted.postUserAgent = UtilsAPI.appInfo.userAgent;
-  persisted.postVersion = UtilsAPI.appInfo.version;
+  persisted.postBuildId = utils.appInfo.buildID;
+  persisted.postLocale = utils.appInfo.locale;
+  persisted.postUserAgent = utils.appInfo.userAgent;
+  persisted.postVersion = utils.appInfo.version;
 }
 
 /**

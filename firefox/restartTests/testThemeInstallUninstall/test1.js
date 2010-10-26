@@ -35,22 +35,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../../shared-modules';
-var MODULE_REQUIRES = ['AddonsAPI', 'ModalDialogAPI', 'TabbedBrowsingAPI'];
+// Include required modules
+var addons = require("../../../shared-modules/testAddonsAPI");
+var modalDialog = require("../../../shared-modules/testModalDialogAPI");
+var tabs = require("../../../shared-modules/testTabbedBrowsingAPI");
 
 const TIMEOUT = 5000;
 const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  addonsManager = new AddonsAPI.addonsManager();
+  addonsManager = new addons.addonsManager();
 
   persisted.themeName = "Walnut for Firefox";
   persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
   persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 /*
@@ -82,7 +83,7 @@ var testInstallTheme = function()
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new ModalDialogAPI.modalDialog(handleTriggerDialog);
+  var md = new modalDialog.modalDialog(handleTriggerDialog);
   md.start();
 
   // Click link to install the theme which triggers a modal dialog
