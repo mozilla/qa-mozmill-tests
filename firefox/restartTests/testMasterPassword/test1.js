@@ -39,7 +39,7 @@
 // Include required modules
 var modalDialog = require("../../../shared-modules/testModalDialogAPI");
 var prefs = require("../../../shared-modules/testPrefsAPI");
-var tabBrowser = require("../../../shared-modules/testTabbedBrowsingAPI");
+var tabs = require("../../../shared-modules/testTabbedBrowsingAPI");
 var utils = require("../../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
@@ -50,7 +50,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  tabBrowser = new tabBrowser.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 

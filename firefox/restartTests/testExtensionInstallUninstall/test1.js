@@ -38,7 +38,6 @@
 // Include required modules
 var addons = require("../../../shared-modules/testAddonsAPI");
 var modalDialog = require("../../../shared-modules/testModalDialogAPI");
-var tabBrowser = require("../../../shared-modules/testTabbedBrowsingAPI");
 
 const TIMEOUT = 5000;
 
