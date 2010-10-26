@@ -37,8 +37,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'SearchAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+var prefs = require("../../shared-modules/testPrefsAPI");
+var search = require("../../shared-modules/testSearchAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
+
 
 const TIMEOUT = 5000;
 
@@ -48,26 +51,26 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html';
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
-  tabs = new TabbedBrowsingAPI.tabBrowser(controller);
+  searchBar = new search.searchBar(controller);
+  tabs = new tabs.tabBrowser(controller);
   tabs.closeAllTabs();
 }
 
 var teardownModule = function() {
-  search.clear();
+  searchBar.clear();
 
-  PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
+  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
 }
 
 /**
  * Use a search engine to search for the currently selected text.
  */
 var testSearchSelectionViaContextMenu = function() {
-  var engines = search.visibleEngines;
+  var engines = searchBar.visibleEngines;
   var engineName = engines[engines.length - 1].name;
 
   // Use the last engine for the search
-  search.selectedEngine = engineName;
+  searchBar.selectedEngine = engineName;
 
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -96,7 +99,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
-  PrefsAPI.preferences.setPref("browser.tabs.loadInBackground", loadInBackground);
+  prefs.preferences.setPref("browser.tabs.loadInBackground", loadInBackground);
 
   // Select a word and remember the selection
   controller.doubleClick(element, 5, 5);
@@ -110,7 +113,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   controller.assertJS("subject.isEngineNameInContextMenu == true",
                       {isEngineNameInContextMenu: contextLabel.indexOf(engineName) != -1});
   controller.click(contextEntry);
-  UtilsAPI.closeContentAreaContextMenu(controller);
+  utils.closeContentAreaContextMenu(controller);
 
   // A new tab will be opened in the background
   controller.waitForEval("subject.tabCount == subject.expectedCount", TIMEOUT, 100, {
@@ -134,7 +137,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   controller.waitForPageLoad();
 
   // Check the loaded page
-  search.checkSearchResultPage(selection);
+  searchBar.checkSearchResultPage(selection);
 
   tabs.closeTab({type: "shortcut"});
   tabs.selectedIndex = tabIndex;

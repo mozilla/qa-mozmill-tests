@@ -36,9 +36,10 @@
  * **** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI',
-                       'TabbedBrowsingAPI', 'UtilsAPI'];
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -51,7 +52,7 @@ var gPreferences = new Array("security.warn_entering_secure",
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 
   persisted.modalWarningShown = false;
 }
@@ -59,7 +60,7 @@ var setupModule = function(module) {
 var teardownModule = function(module)
 {
   for each (p in gPreferences)
-    PrefsAPI.preferences.clearUserPref(p);
+    prefs.preferences.clearUserPref(p);
 
   persisted = {}
 }
@@ -70,10 +71,10 @@ var teardownModule = function(module)
 var testSubmitUnencryptedInfoWarning = function() {
   // Enable the 'warn_submit_insecure' pref only
   for (var i = 0; i < gPreferences.length; i++)
-    PrefsAPI.preferences.setPref(gPreferences[i], (i == 3));
+    prefs.preferences.setPref(gPreferences[i], (i == 3));
 
   // Create a listener for the warning dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
+  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
   md.start();
 
   // Load an unencrypted page
@@ -109,8 +110,8 @@ var handleSecurityWarningDialog = function(controller) {
   persisted.modalWarningShown = true;
 
   // Get the message text
-  var message = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
-                                     "PostToInsecureFromInsecureMessage");
+  var message = utils.getProperty("chrome://pipnss/locale/security.properties",
+                                  "PostToInsecureFromInsecureMessage");
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");

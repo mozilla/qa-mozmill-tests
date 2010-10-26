@@ -35,8 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
  
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['UtilsAPI'];
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -72,7 +71,7 @@ var testSecurityInfoViaMoreInformation = function() {
                                     "identity-popup-more-info-button");
   controller.click(moreInfoButton);
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**

@@ -35,8 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+var search = require("../../shared-modules/testSearchAPI");
 
 const gDelay = 0;
 
@@ -44,12 +43,12 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownTest = function()
 {
-  search.clear();
+  searchBar.clear();
 }
 
 /**
@@ -57,8 +56,8 @@ var teardownTest = function()
  */
 var testClickAndSearch = function()
 {
-  search.focus({type: "click"});
-  search.search({text: "Firefox", action: "returnKey"});
+  searchBar.focus({type: "click"});
+  searchBar.search({text: "Firefox", action: "returnKey"});
 }
 
 /**
@@ -66,8 +65,8 @@ var testClickAndSearch = function()
  */
 var testShortcutAndSearch = function()
 {
-  search.focus({type: "shortcut"});
-  search.search({text: "Mozilla", action: "goButton"});
+  searchBar.focus({type: "shortcut"});
+  searchBar.search({text: "Mozilla", action: "goButton"});
 }
 
 /**

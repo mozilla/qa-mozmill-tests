@@ -37,8 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['SearchAPI'];
+var search = require("../../shared-modules/testSearchAPI");
 
 const TIMEOUT = 5000;
 
@@ -52,12 +51,12 @@ const SEARCH_ENGINE = {
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function() {
-  search.removeEngine(SEARCH_ENGINE.name);
-  search.restoreDefaultEngines();
+  searchBar.removeEngine(SEARCH_ENGINE.name);
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -69,30 +68,30 @@ var testOpenSearchAutodiscovery = function() {
   controller.waitForPageLoad();
 
   // Open search engine drop down and check for installable engines
-  search.enginesDropDownOpen = true;
-  var addEngines = search.installableEngines;
+  searchBar.enginesDropDownOpen = true;
+  var addEngines = searchBar.installableEngines;
   controller.assertJS("subject.installableEngines.length == 1",
                       {installableEngines: addEngines});
 
   // Install the new search engine which gets automatically selected
-  var engine = search.getElement({
+  var engine = searchBar.getElement({
     type: "engine", 
     subtype: "title", 
     value: addEngines[0].name
   });
   controller.waitThenClick(engine);
 
-  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", TIMEOUT, 100, {
-    search: search, 
+  controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", TIMEOUT, 100, {
+    searchBar: searchBar, 
     newEngine: SEARCH_ENGINE.name
   });
 
   // Check if a search redirects to the YouTube website
-  search.search({text: "Firefox", action: "goButton"});
+  searchBar.search({text: "Firefox", action: "goButton"});
 
   // Clear search term and check the placeholder text
-  var inputField = search.getElement({type: "searchBar_input"});
-  search.clear();
+  var inputField = searchBar.getElement({type: "searchBar_input"});
+  searchBar.clear();
   controller.assertJS("subject.placeholder == subject.engineName", {
     placeholder: inputField.getNode().placeholder,
     engineName: SEARCH_ENGINE.name

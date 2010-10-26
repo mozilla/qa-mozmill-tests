@@ -36,8 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var search = require("../../shared-modules/testSearchAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 
@@ -51,13 +52,13 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  search.removeEngine(searchEngine.name);
-  search.restoreDefaultEngines();
+  searchBar.removeEngine(searchEngine.name);
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -70,23 +71,23 @@ var testAddMozSearchPlugin = function()
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the installation dialog
-  var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
+  var md = new modalDialog.modalDialog(handleSearchInstall);
   md.start();
 
   // Add the search engine
   var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
   controller.click(addButton);
 
-  controller.waitForEval("subject.search.isEngineInstalled(subject.engine) == true", gTimeout, 100,
-                         {search: search, engine: searchEngine.name});
+  controller.waitForEval("subject.searchBar.isEngineInstalled(subject.engine) == true", gTimeout, 100,
+                         {searchBar: searchBar, engine: searchEngine.name});
 
   // The engine should not be selected by default
   controller.assertJS("subject.newEngineNotSelected == true",
-                      {newEngineNotSelected: search.selectedEngine != searchEngine.name});
+                      {newEngineNotSelected: searchBar.selectedEngine != searchEngine.name});
 
   // Select search engine and start a search
-  search.selectedEngine = searchEngine.name;
-  search.search({text: "Firefox", action: "goButton"});
+  searchBar.selectedEngine = searchEngine.name;
+  searchBar.search({text: "Firefox", action: "goButton"});
 }
 
 /**
@@ -98,8 +99,8 @@ var testAddMozSearchPlugin = function()
 var handleSearchInstall = function(controller)
 {
   // Installation successful?
-  var confirmTitle = UtilsAPI.getProperty("chrome://global/locale/search/search.properties",
-                                          "addEngineConfirmTitle");
+  var confirmTitle = utils.getProperty("chrome://global/locale/search/search.properties",
+                                       "addEngineConfirmTitle");
 
   if (mozmill.isMac)
     var title = controller.window.document.getElementById("info.title").textContent;

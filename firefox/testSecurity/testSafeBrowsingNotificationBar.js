@@ -38,8 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -48,7 +48,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
@@ -110,8 +110,8 @@ var checkIgnoreWarningButton = function(badUrl) {
 var checkNoPhishingButton = function(badUrl) {
   if (badUrl == 'http://www.mozilla.com/firefox/its-a-trap.html' ) {
     // Click on the web forgery report button
-    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                     "safebrowsing.notAForgeryButton.label");
+    var label = utils.getProperty("chrome://browser/locale/browser.properties",
+                                  "safebrowsing.notAForgeryButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
     controller.waitThenClick(button, gTimeout);
@@ -124,8 +124,8 @@ var checkNoPhishingButton = function(badUrl) {
 
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
     // Click on the attack site report button
-    var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                     "safebrowsing.notAnAttackButton.label");
+    var label = utils.getProperty("chrome://browser/locale/browser.properties",
+                                  "safebrowsing.notAnAttackButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
     controller.waitThenClick(button, gTimeout);
@@ -137,7 +137,7 @@ var checkNoPhishingButton = function(badUrl) {
 	                    {urlbar: locationBar.getNode().value});
   }
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 /**
@@ -145,8 +145,8 @@ var checkNoPhishingButton = function(badUrl) {
  */
 var checkGetMeOutOfHereButton = function() {
   // Click on the get me out of here button
-  var label = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                   "safebrowsing.getMeOutOfHereButton.label");
+  var label = utils.getProperty("chrome://browser/locale/browser.properties",
+                                "safebrowsing.getMeOutOfHereButton.label");
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
   controller.waitThenClick(button, gTimeout);
@@ -154,8 +154,8 @@ var checkGetMeOutOfHereButton = function() {
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
 
-  var defaultHomepage = UtilsAPI.getDefaultHomepage();
-  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomepage);  
+  var defaultHomepage = utils.getDefaultHomepage();
+  utils.assertLoadedUrlEqual(controller, defaultHomepage);  
 }
 
 /**

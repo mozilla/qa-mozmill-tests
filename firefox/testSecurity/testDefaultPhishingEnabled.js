@@ -35,8 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+var prefs = require("../../shared-modules/testPrefsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -49,7 +48,7 @@ var setupModule = function(module) {
  * Verify phishing detection is enabled
  */
 var testDefaultPhishingEnabled = function() {
-  PrefsAPI.openPreferencesDialog(prefPaneSetCallback);
+  prefs.openPreferencesDialog(prefPaneSetCallback);
 }
 
 /**
@@ -59,7 +58,7 @@ var testDefaultPhishingEnabled = function() {
  *        MozMillController of the window to operate on
  */
 var prefPaneSetCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
   // Check if the Security pane is active
