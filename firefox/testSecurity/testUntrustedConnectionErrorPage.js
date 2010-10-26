@@ -37,8 +37,6 @@
 // Include necessary modules
 var utils = require("../../shared-modules/utils");
 
-var gDelay = 2000;
-
 var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
@@ -51,7 +49,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
 {
   // Go to an untrusted website
   controller.open("https://mozilla.org");
-  controller.sleep(gDelay);
+  controller.waitForPageLoad();
   
   // Get a reference to the Get Me Out Of Here button
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, 
