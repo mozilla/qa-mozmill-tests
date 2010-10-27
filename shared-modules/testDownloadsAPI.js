@@ -45,7 +45,7 @@
 
 var MODULE_NAME = 'DownloadsAPI';
 
-// Load required modules
+// Include required modules
 var utils = require("testUtilsAPI");
 
 const gTimeout = 5000;

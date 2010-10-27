@@ -41,7 +41,7 @@
 
 const MODULE_NAME = 'SoftwareUpdateAPI';
 
-// Load required modules
+// Include required modules
 var prefs = require("testPrefsAPI");
 var utils = require("testUtilsAPI");
 

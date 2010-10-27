@@ -46,6 +46,9 @@
 
 var MODULE_NAME = 'UtilsAPI';
 
+// Include required modules
+var prefs = require("testPrefsAPI");
+
 const gTimeout = 5000;
 
 /**
@@ -291,10 +294,10 @@ function formatUrlPref(prefName) {
  * @type string
  */
 function getDefaultHomepage() {
-  var prefs = collector.getModule('PrefsAPI').preferences;
+  var preferences = prefs.preferences;
 
-  var prefValue = prefs.getPref("browser.startup.homepage", "",
-                                true, Ci.nsIPrefLocalizedString);
+  var prefValue = preferences.getPref("browser.startup.homepage", "",
+                                      true, Ci.nsIPrefLocalizedString);
   return prefValue.data;
 }
 

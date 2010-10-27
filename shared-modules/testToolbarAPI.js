@@ -43,7 +43,7 @@
 
 const MODULE_NAME = 'ToolbarAPI';
 
-// Load required modules
+// Include required modules
 var utils = require("testUtilsAPI");
 
 const TIMEOUT = 5000;

@@ -43,7 +43,7 @@
 
 const MODULE_NAME = 'PrivateBrowsingAPI';
 
-// Load required modules
+// Include required modules
 var modalDialog = require("testModalDialogAPI");
 var prefs = require("testPrefsAPI");
 var utils = require("testUtilsAPI");

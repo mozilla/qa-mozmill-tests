@@ -44,7 +44,7 @@
 
 var MODULE_NAME = 'SessionStoreAPI';
 
-// Load required modules
+// Include required modules
 var prefs = require("testPrefsAPI");
 var utils = require("testUtilsAPI");
 var widgets = require("testWidgetsAPI");

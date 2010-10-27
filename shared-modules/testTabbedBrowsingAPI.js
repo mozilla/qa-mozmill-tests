@@ -43,7 +43,7 @@
 
 const MODULE_NAME = 'TabbedBrowsingAPI';
 
-// Load required modules
+// Include required modules
 var utils = require("testUtilsAPI");
 var prefs = require("testPrefsAPI");
 

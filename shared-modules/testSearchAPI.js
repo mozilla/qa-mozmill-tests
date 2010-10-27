@@ -41,7 +41,7 @@
 
 const MODULE_NAME = 'SearchAPI';
 
-// Load required modules
+// Include required modules
 var modalDialog = require("testModalDialogAPI");
 var utils = require("testUtilsAPI");
 var widgets = require("testWidgetsAPI");

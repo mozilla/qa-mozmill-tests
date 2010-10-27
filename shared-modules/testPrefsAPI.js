@@ -45,7 +45,7 @@
 
 var MODULE_NAME = 'PrefsAPI';
 
-// Load required modules
+// Include required modules
 var modalDialog = require("testModalDialogAPI");
 var utils = require("testUtilsAPI");
 

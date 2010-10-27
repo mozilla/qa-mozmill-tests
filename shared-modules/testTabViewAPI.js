@@ -36,7 +36,7 @@
 
 const MODULE_NAME = 'TabViewAPI';
 
-// Load required modules
+// Include required modules
 var domUtils = require("testdomUtilsAPI");
 var tabs = require("testTabbedBrowsingAPI");
 var utils = require("testUtilsAPI");
