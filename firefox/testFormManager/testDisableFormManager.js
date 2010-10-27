@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,9 +37,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
 
 const TIMEOUT = 5000;
 
@@ -58,12 +58,12 @@ var setupModule = function() {
 }
 
 var teardownModule = function() {
-  PrefsAPI.preferences.clearUserPref("browser.formfill.enable");
+  prefs.preferences.clearUserPref("browser.formfill.enable");
 }
 
 var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
-  PrefsAPI.openPreferencesDialog(prefDialogFormCallback);
+  prefs.openPreferencesDialog(prefDialogFormCallback);
 
   // Go to the sample form page and submit form data
   controller.open(LOCAL_TEST_PAGE);
@@ -110,7 +110,7 @@ var testToggleFormManager = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogFormCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Select custom settings for history and uncheck remember search and form history

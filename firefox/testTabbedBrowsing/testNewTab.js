@@ -21,6 +21,7 @@
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,9 +37,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -49,7 +50,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
@@ -84,8 +85,8 @@ var checkOpenTab = function(event)
                       controller.tabs);
 
   // The tabs title should be 'Untitled'
-  var title = UtilsAPI.getProperty("chrome://browser/locale/tabbrowser.properties",
-                                   "tabs.untitled");
+  var title = utils.getProperty("chrome://browser/locale/tabbrowser.properties",
+                                "tabs.untitled");
   var tab = tabBrowser.getTab();
   controller.assertJS("subject.label == '" + title + "'", tab.getNode());
 

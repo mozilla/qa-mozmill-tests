@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,9 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -71,8 +71,8 @@ var testNewWindow = function () {
   // Bug 555347: We have to wait no not accidentally grab the wrong browser window
   controller.sleep(0);
 
-  controller2 = UtilsAPI.handleWindow("type", "navigator:browser",
-                                      checkDefaultHomepage, true);
+  controller2 = utils.handleWindow("type", "navigator:browser",
+                                   checkDefaultHomepage, true);
 }
 
 /**
@@ -81,10 +81,10 @@ var testNewWindow = function () {
  *        MozMillController of the window to operate on
  */
 function checkDefaultHomepage(controller) {
-  var defaultHomepage = UtilsAPI.getDefaultHomepage();
+  var defaultHomepage = utils.getDefaultHomepage();
 
   controller.waitForPageLoad();
-  UtilsAPI.assertLoadedUrlEqual(controller, defaultHomepage);
+  utils.assertLoadedUrlEqual(controller, defaultHomepage);
 }
 
 /**
