@@ -47,7 +47,7 @@ const RELATIVE_ROOT = '.';
 const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gTimeout                = 5000;
-const gTimeoutUpdateCheck     = 10000;
+const gTimeoutUpdateCheck     = 30000;
 const gTimeoutUpdateDownload  = 360000;
 
 /**
