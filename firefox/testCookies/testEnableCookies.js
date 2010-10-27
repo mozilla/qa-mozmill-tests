@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,9 +37,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -63,7 +64,7 @@ var teardownModule = function() {
  */
 var testEnableCookies = function() {
   // Call preferences dialog and disable cookies
-  PrefsAPI.openPreferencesDialog(prefEnableCookieDialogCallback);
+  prefs.openPreferencesDialog(prefEnableCookieDialogCallback);
 
   // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
@@ -73,7 +74,7 @@ var testEnableCookies = function() {
   persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and check cookies
-  PrefsAPI.openPreferencesDialog(prefCheckEnableDialogCallback);
+  prefs.openPreferencesDialog(prefCheckEnableDialogCallback);
 }
 
 /**
@@ -82,7 +83,7 @@ var testEnableCookies = function() {
  *        MozMillController of the window to operate on
  */
 var prefEnableCookieDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
@@ -104,7 +105,7 @@ var prefEnableCookieDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 var prefCheckEnableDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
@@ -118,7 +119,7 @@ var prefCheckEnableDialogCallback = function(controller) {
   controller.sleep(500);
   controller.click(showCookies);
 
-  UtilsAPI.handleWindow("type", "Browser:Cookies", checkSavedCookies);
+  utils.handleWindow("type", "Browser:Cookies", checkSavedCookies);
 
   prefDialog.close(true);
 }
@@ -145,7 +146,7 @@ function checkSavedCookies(controller) {
   });
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 

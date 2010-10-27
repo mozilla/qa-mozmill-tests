@@ -36,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 
@@ -49,7 +49,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 
   container = tabBrowser.getElement({type: "tabs_container"});
@@ -60,7 +60,7 @@ var setupModule = function(module)
 
 var teardownModule = function()
 {
-  PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
+  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
   tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
@@ -70,7 +70,7 @@ var teardownModule = function()
 var testScrollBackgroundTabIntoView = function()
 {
   // Check that we open new tabs in the background
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Open the testcase
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
@@ -134,7 +134,7 @@ var testScrollBackgroundTabIntoView = function()
  */
 var prefDialogCallback = function(controller)
 {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneTabs';
 
   // Ensure that 'Switch to tabs immediately' is unchecked:

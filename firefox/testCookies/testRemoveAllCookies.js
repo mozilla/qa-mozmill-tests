@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,9 +40,9 @@
  * Testcase ID #6012 - Clearing Cookies/Remove All Cookies
  */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -66,7 +67,7 @@ var testRemoveAllCookies = function() {
   controller.waitForPageLoad();
 
   // Call preferences dialog and delete the created cookies
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -75,7 +76,7 @@ var testRemoveAllCookies = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
@@ -90,7 +91,7 @@ var prefDialogCallback = function(controller) {
   controller.sleep(500);
   controller.click(showCookies);
 
-  UtilsAPI.handleWindow("type", "Browser:Cookies", deleteAllCookies);
+  utils.handleWindow("type", "Browser:Cookies", deleteAllCookies);
 
   prefDialog.close(true);
 }
@@ -113,7 +114,7 @@ function deleteAllCookies(controller) {
                       {cookieCount: cookiesList.view.rowCount});
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 

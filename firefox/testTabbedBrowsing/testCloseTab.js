@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *  Henrik Skupin <hskupin@mozilla.com>
+ *  Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,9 +37,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI'];
+// Include required modules
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -47,7 +47,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
