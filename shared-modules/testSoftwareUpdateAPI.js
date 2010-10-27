@@ -269,11 +269,15 @@ softwareUpdate.prototype = {
     var next = this.getElement({type: "button", subtype: "next"});
     this._controller.click(next);
 
-    // Wait for the download page
-    this.waitForWizardPage(WIZARD_PAGES.downloading);
+    // Wait for the download page - if it fails the update was already cached
+    try {
+      this.waitForWizardPage(WIZARD_PAGES.downloading);
 
-    if (waitForFinish)
-      this.waitforDownloadFinished(timeout);
+      if (waitForFinish)
+        this.waitforDownloadFinished(timeout);
+    } catch (ex) {
+      this.waitForWizardPage(WIZARD_PAGES.finished);
+    }
   },
 
   /**
