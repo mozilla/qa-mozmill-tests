@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PlacesAPI', 'UtilsAPI'];
+// Include required modules
+var places = require("../../shared-modules/testPlacesAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -49,15 +50,15 @@ var setupModule = function() {
 }
 
 var teardownModule = function() {
-  PlacesAPI.restoreDefaultBookmarks();
+  places.restoreDefaultBookmarks();
 }
 
 var testAddBookmarkToBookmarksMenu = function() {
-  var uri = UtilsAPI.createURI(LOCAL_TEST_PAGE);
+  var uri = utils.createURI(LOCAL_TEST_PAGE);
 
   // Fail if the URI is already bookmarked
   controller.assertJS("subject.isBookmarked == false", {
-    isBookmarked: PlacesAPI.bookmarksService.isBookmarked(uri)
+    isBookmarked: places.bookmarksService.isBookmarked(uri)
   });
 
   // Open URI and wait until it has been finished loading
@@ -86,7 +87,7 @@ var testAddBookmarkToBookmarksMenu = function() {
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
   controller.assertJS("subject.isBookmarkInBookmarksMenu == true", {
     isBookmarkInBookmarksMenu: 
-      PlacesAPI.isBookmarkInFolder(uri, PlacesAPI.bookmarksService.bookmarksMenuFolder)
+      places.isBookmarkInFolder(uri, places.bookmarksService.bookmarksMenuFolder)
   });
 }
 

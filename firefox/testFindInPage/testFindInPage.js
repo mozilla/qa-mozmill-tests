@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Tobias Markus <tobbi.bugs@googlemail.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,8 +38,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -66,7 +67,7 @@ var teardownModule = function(module) {
   try {
      // Just press Ctrl/Cmd + F to select the whole search string
     var dtds = ["chrome://browser/locale/browser.dtd"];
-    var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
+    var cmdKey = utils.getEntity(dtds, "findOnCmd.commandkey");
     controller.keypress(null, cmdKey, {accelKey: true});
 
     // Clear search text from the text field
@@ -93,7 +94,7 @@ var testFindInPage = function() {
 
   // Press Ctrl/Cmd + F to open the find bar
   var dtds = ["chrome://browser/locale/browser.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "findOnCmd.commandkey");
+  var cmdKey = utils.getEntity(dtds, "findOnCmd.commandkey");
   controller.keypress(null, cmdKey, {accelKey: true});
 
   // Check that the find bar is visible

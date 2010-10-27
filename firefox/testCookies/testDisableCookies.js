@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -36,9 +37,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -54,7 +55,7 @@ var setupModule = function() {
 }
 
 var teardownModule = function() {
-  PrefsAPI.preferences.clearUserPref("network.cookie.cookieBehavior");
+  prefs.preferences.clearUserPref("network.cookie.cookieBehavior");
   cm.removeAll();
   
   persisted.hostName = undefined;
@@ -65,7 +66,7 @@ var teardownModule = function() {
  */
 var testDisableCookies = function() {
   // Call preferences dialog and disable cookies
-  PrefsAPI.openPreferencesDialog(prefDisableCookieDialogCallback);
+  prefs.openPreferencesDialog(prefDisableCookieDialogCallback);
 
   // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
@@ -75,7 +76,7 @@ var testDisableCookies = function() {
   persisted.hostName = controller.window.content.location.hostname;
   
   // Call preferences dialog and check cookies
-  PrefsAPI.openPreferencesDialog(prefCheckDisableDialogCallback);
+  prefs.openPreferencesDialog(prefCheckDisableDialogCallback);
 }
 
 /**
@@ -84,7 +85,7 @@ var testDisableCookies = function() {
  *        MozMillController of the window to operate on
  */
 var prefDisableCookieDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
@@ -109,7 +110,7 @@ var prefDisableCookieDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 var prefCheckDisableDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   // The Show Cookies button doesn't receive focus that fast. Means a click will
   // fail if sent too early. There is no property we can check so far. So lets
@@ -118,7 +119,7 @@ var prefCheckDisableDialogCallback = function(controller) {
   controller.sleep(500);
   controller.click(showCookies);
 
-  UtilsAPI.handleWindow("type", "Browser:Cookies", checkCookieNotSaved);
+  utils.handleWindow("type", "Browser:Cookies", checkCookieNotSaved);
 
   prefDialog.close(true);
 }
@@ -138,7 +139,7 @@ function checkCookieNotSaved(controller) {
                       {cookieCount : cm.countCookiesFromHost(persisted.hostName)});
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
-  var cmdKey = UtilsAPI.getEntity(dtds, "windowClose.key");
+  var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 

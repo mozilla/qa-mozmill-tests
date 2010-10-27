@@ -36,9 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['ModalDialogAPI','UtilsAPI'];
+// Include required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
 
 const TIMEOUT = 5000;
 
@@ -117,7 +116,7 @@ var testSaveFormInformation = function() {
  */
 var testClearFormHistory = function() {
   // Call clear recent history dialog and clear all form history
-  var md = new ModalDialogAPI.modalDialog(clearHistoryHandler);
+  var md = new modalDialog.modalDialog(clearHistoryHandler);
   md.start();
 
   controller.click(new elementslib.Elem(controller.menus["tools-menu"].sanitizeItem));

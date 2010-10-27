@@ -22,6 +22,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,9 +38,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -55,18 +57,18 @@ const TAB_ORDER = [
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function() {
-  PrefsAPI.preferences.clearUserPref("browser.tabs.loadInBackground");
-  UtilsAPI.closeContentAreaContextMenu(controller);
+  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
+  utils.closeContentAreaContextMenu(controller);
   tabBrowser.closeAllTabs();
 }
 
 var testOpenInBackgroundTab = function() {
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Open the HTML testcase:
   controller.open(LOCAL_TEST_PAGE);
@@ -112,7 +114,7 @@ var testOpenInBackgroundTab = function() {
 }
 
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneTabs';
 
   //Ensure that 'Switch to tabs immediately' is unchecked:
