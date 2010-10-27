@@ -188,9 +188,14 @@ softwareUpdate.prototype = {
                                       this._buttons.next);
     this._controller.click(next);
 
-    // Wait until update has been downloaded
-    var progress = this._controller.window.document.getElementById("downloadProgress");
-    this._controller.waitForEval("subject.value == 100", timeout, 100, progress);
+    // Wait for the download page - if it fails the update was already cached
+    try {
+      this.waitForWizardStep("downloading");
+
+      this.waitforDownloadFinished(timeout);
+    } catch (ex) {
+      this.waitForWizardStep("finished");
+    }
   },
 
   /**
@@ -283,5 +288,29 @@ softwareUpdate.prototype = {
     // Wait until the dummy wizard page isn't visible anymore
     this._controller.waitForEval("subject.currentStep != 'dummy'", gTimeout, 100, this);
     this._controller.window.focus();
+  },
+
+  /**
+   * Wait until the download has been finished
+   *
+   * @param {number} timeout
+   *        Timeout the download has to stop
+   */
+  waitforDownloadFinished: function softwareUpdate_waitForDownloadFinished(timeout) {
+    timeout = timeout ? timeout : gTimeoutUpdateDownload;
+
+    // Wait until update has been downloaded
+    var progress = this._controller.window.document.getElementById("downloadProgress");
+    this._controller.waitForEval("subject.value == 100", timeout, 100, progress);
+
+    this.waitForWizardStep("finished");
+  },
+
+  /**
+   * Waits for the given step of the update dialog wizard
+   */
+  waitForWizardStep : function softwareUpdate_waitForWizardStep(step) {
+    this._controller.waitForEval("subject.currentStep == '" + step + "'",
+                                 gTimeout, 100, this);
   }
 }
