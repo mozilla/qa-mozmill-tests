@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];  
+// Include the required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 var gDelay = 2000;
 
@@ -66,7 +65,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
   controller.waitForPageLoad();
   
   // Verify the loaded page is the homepage
-  UtilsAPI.assertLoadedUrlEqual(controller, UtilsAPI.getDefaultHomepage());
+  utils.assertLoadedUrlEqual(controller, utils.getDefaultHomepage());
   
 }
 

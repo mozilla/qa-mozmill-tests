@@ -36,9 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['SearchAPI'];
+// Include the required modules
+var search = require("../../shared-modules/testSearchAPI");
 
 const TIMEOUT = 5000;
 
@@ -51,12 +50,12 @@ const SEARCH_ENGINE = {
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function() {
-  search.removeEngine(SEARCH_ENGINE.name);
-  search.restoreDefaultEngines();
+  searchBar.removeEngine(SEARCH_ENGINE.name);
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -68,18 +67,18 @@ var testOpenSearchAutodiscovery = function() {
   controller.waitForPageLoad();
 
   // Check that the drop down icon glows
-  var engineButton = search.getElement({type: "searchBar_dropDown"});
+  var engineButton = searchBar.getElement({type: "searchBar_dropDown"});
   controller.assertJS("subject.dropDownGlows == 'true'",
                       {dropDownGlows: engineButton.getNode().getAttribute('addengines')});
 
   // Open search engine drop down and check for installable engines
-  search.enginesDropDownOpen = true;
-  var addEngines = search.installableEngines;
+  searchBar.enginesDropDownOpen = true;
+  var addEngines = searchBar.installableEngines;
   controller.assertJS("subject.installableEngines.length == 1",
                       {installableEngines: addEngines});
 
   // Install the new search engine which gets automatically selected
-  var engine = search.getElement({
+  var engine = searchBar.getElement({
     type: "engine", 
     subtype: "title", 
     value: addEngines[0].name
@@ -87,16 +86,16 @@ var testOpenSearchAutodiscovery = function() {
   controller.waitThenClick(engine);
 
   controller.waitForEval("subject.search.selectedEngine == subject.newEngine", TIMEOUT, 100, {
-    search: search, 
+    search: searchBar, 
     newEngine: SEARCH_ENGINE.name
   });
 
   // Check if a search redirects to the YouTube website
-  search.search({text: "Firefox", action: "goButton"});
+  searchBar.search({text: "Firefox", action: "goButton"});
 
   // Clear search term and check the empty text
-  var inputField = search.getElement({type: "searchBar_input"});
-  search.clear();
+  var inputField = searchBar.getElement({type: "searchBar_input"});
+  searchBar.clear();
   controller.assertValue(inputField, SEARCH_ENGINE.name);
 }
 

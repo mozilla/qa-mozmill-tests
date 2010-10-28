@@ -36,10 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI', 'PrefsAPI'];
-
 const gDelay = 0;
 const gTimeout = 5000;
 

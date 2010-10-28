@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI', 'WidgetsAPI'];
+// Include the required modules
+var search = require("../../shared-modules/testSearchAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -45,12 +44,12 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  search.restoreDefaultEngines();
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -58,13 +57,13 @@ var teardownModule = function(module)
  */
 var testRemoveEngine = function()
 {
-  var engine = search.visibleEngines[1];
+  var engine = searchBar.visibleEngines[1];
 
   // Remove the first engine in the list
-  search.openEngineManager(handleEngines);
+  searchBar.openEngineManager(handleEngines);
 
-  controller.waitForEval("subject.oldEngine != subject.search.visibleEngines[1].name", gTimeout, 100,
-                         {oldEngine: engine.name, search: search});
+  controller.waitForEval("subject.oldEngine != subject.searchBar.visibleEngines[1].name", gTimeout, 100,
+                         {oldEngine: engine.name, searchBar: searchBar});
 }
 
 /**
@@ -75,7 +74,7 @@ var testRemoveEngine = function()
  */
 var handleEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
 
   // Remove the second search engine
   var engines = manager.engines;

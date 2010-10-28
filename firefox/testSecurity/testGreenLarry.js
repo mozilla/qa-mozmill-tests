@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include the required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 var gTimeout = 5000;
 
@@ -115,8 +114,8 @@ var testLarryGreen = function() {
                                            cert.subjectName.indexOf(",serialNumber="));
   // Arabic locales have it's own comma: http://www.w3.org/International/Spread/raw.txt
   var commaList = {'ar': '\u060c', 'fa': '\u060c'};
-  if (UtilsAPI.appInfo.locale in commaList)
-    var comma = commaList[UtilsAPI.appInfo.locale];
+  if (utils.appInfo.locale in commaList)
+    var comma = commaList[utils.appInfo.locale];
   else
     var comma = ',';
   var location = city + '\n' + state + comma + ' ' + country;
@@ -125,16 +124,16 @@ var testLarryGreen = function() {
   controller.assertJSProperty(ownerLocation, "textContent", location);
 
   // Check the "Verified by: %S" string
-  var l10nVerifierLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                               "identity.identified.verifier");
+  var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                            "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document,
                                     "identity-popup-content-verifier");
   controller.assertJSProperty(verifier, "textContent", l10nVerifierLabel);
 
   // Check the Encryption Label text
-  var l10nEncryptionLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                                 "identity.encrypted");
+  var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                              "identity.encrypted");
   var label = new elementslib.ID(controller.window.document,
                                  "identity-popup-encryption-label");
   controller.assertJSProperty(label, "textContent", l10nEncryptionLabel);
@@ -144,7 +143,7 @@ var testLarryGreen = function() {
                                           "identity-popup-more-info-button");
   controller.click(moreInfoButton);
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**

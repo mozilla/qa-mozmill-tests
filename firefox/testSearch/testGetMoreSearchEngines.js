@@ -35,9 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'SearchAPI', 'UtilsAPI'];
+// Include the required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var search = require("../../shared-modules/testSearchAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -48,13 +49,13 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  search.removeEngine(searchEngine.name);
-  search.restoreDefaultEngines();
+  searchBar.removeEngine(searchEngine.name);
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -64,11 +65,11 @@ var testGetMoreEngines = function()
 {
   // Check that the search engine is not installed yet
   controller.assertJS("subject.isEngineInstalled == false",
-                      {isEngineInstalled: search.isEngineInstalled(searchEngine.name)});
+                      {isEngineInstalled: searchBar.isEngineInstalled(searchEngine.name)});
 
   // Open the engine manager to browse the search directory
   var tabCount = controller.tabs.length;
-  search.openEngineManager(enginesHandler);
+  searchBar.openEngineManager(enginesHandler);
 
   controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", TIMEOUT, 100,
                          {tabs: controller.tabs, preCount: tabCount});
@@ -87,7 +88,7 @@ var testGetMoreEngines = function()
                         {installButtonClass: installButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
-  var md = new ModalDialogAPI.modalDialog(handleSearchInstall);
+  var md = new modalDialog.modalDialog(handleSearchInstall);
   md.start();
 
   // Install the search engine
@@ -96,10 +97,10 @@ var testGetMoreEngines = function()
   controller.waitThenClick(triggerLink, TIMEOUT);
 
   controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", TIMEOUT, 100,
-                         {engine: search, name: searchEngine.name});
+                         {engine: searchBar, name: searchEngine.name});
 
-  search.selectedEngine = searchEngine.name;
-  search.search({text: "Firefox", action: "returnKey"});
+  searchBar.selectedEngine = searchEngine.name;
+  searchBar.search({text: "Firefox", action: "returnKey"});
 }
 
 /**
@@ -124,8 +125,8 @@ var enginesHandler = function(controller)
 var handleSearchInstall = function(controller)
 {
   // Installation successful?
-  var confirmTitle = UtilsAPI.getProperty("chrome://global/locale/search/search.properties",
-                                          "addEngineConfirmTitle");
+  var confirmTitle = utils.getProperty("chrome://global/locale/search/search.properties",
+                                       "addEngineConfirmTitle");
 
   if (mozmill.isMac)
     var title = controller.window.document.getElementById("info.title").textContent;

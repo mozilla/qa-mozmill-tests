@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+// Include the required modules
+var search = require("../../shared-modules/testSearchAPI");
 
 const gDelay = 0;
 
@@ -44,7 +43,7 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 /**
@@ -52,14 +51,14 @@ var setupModule = function(module)
  */
 var testMultipleEngines = function()
 {
-  var engines = search.visibleEngines;
+  var engines = searchBar.visibleEngines;
   var suggestions = [ ];
 
   // Get suggested auto-complete results for two engines
   for (var ii = 0; ii < 2; ii++) {
-    search.selectedEngine = engines[ii].name;
-    suggestions[ii] = search.getSuggestions("Moz");
-    search.clear();
+    searchBar.selectedEngine = engines[ii].name;
+    suggestions[ii] = searchBar.getSuggestions("Moz");
+    searchBar.clear();
   }
 
   // Check that at least one suggestion is different

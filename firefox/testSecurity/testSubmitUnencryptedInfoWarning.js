@@ -34,10 +34,11 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI',
-                       'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -53,13 +54,13 @@ var setupModule = function(module)
 var teardownModule = function(module)
 {
   // Reset the warning prefs
-  var prefs = new Array("security.warn_entering_secure",
+  var gPrefs = new Array("security.warn_entering_secure",
                         "security.warn_entering_weak",
                         "security.warn_leaving_secure",
                         "security.warn_submit_insecure",
                         "security.warn_viewing_mixed");
-  for each (p in prefs)
-    PrefsAPI.preferences.clearUserPref(p);
+  for each (p in gPrefs)
+    prefs.preferences.clearUserPref(p);
 }
 
 /**
@@ -69,13 +70,13 @@ var testSubmitUnencryptedInfoWarning = function()
 {
   // Close the page because the warnings don't appear if you are on the page
   // where the warning was triggered
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 
   // Make sure the prefs are set
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Create a listener for the warning dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
+  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
   md.start();
 
   // Load an unencrypted page
@@ -109,7 +110,7 @@ var testSubmitUnencryptedInfoWarning = function()
  */
 var prefDialogCallback = function(controller)
 {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
   // Click the Warning Messages Settings button
@@ -118,7 +119,7 @@ var prefDialogCallback = function(controller)
   controller.waitForElement(warningSettingsButton, gTimeout);
 
   // Create a listener for the Warning Messages Settings dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningSettingsDialog);
+  var md = new modalDialog.modalDialog(handleSecurityWarningSettingsDialog);
   md.start(500);
 
   // Click the Warning Messages Settings button
@@ -170,8 +171,8 @@ var handleSecurityWarningDialog = function(controller)
   modalWarningShown = true;
 
   // Get the message text
-  var message = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
-                                     "PostToInsecureFromInsecureMessage");
+  var message = utils.getProperty("chrome://pipnss/locale/security.properties",
+                                  "PostToInsecureFromInsecureMessage");
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
