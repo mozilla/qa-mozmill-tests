@@ -35,20 +35,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI', 'UtilsAPI'];
+// Include the required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  module.browserLocale = UtilsAPI.appInfo.locale;
+  module.browserLocale = utils.appInfo.locale;
 }
 
 var teardownModule = function(module) {
-  PrefsAPI.preferences.clearUserPref("intl.accept_languages");
+  prefs.preferences.clearUserPref("intl.accept_languages");
 }
 
 /**
@@ -58,7 +59,7 @@ var testSetLanguages = function () {
   controller.open("about:blank");
 
   // Call preferences dialog and set primary language to Italian
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Open the Google Home page
   controller.open('http://www.google.com/');
@@ -86,11 +87,11 @@ var testSetLanguages = function () {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneContent';
 
   // Call language dialog and set Italian as primary language
-  var md = new ModalDialogAPI.modalDialog(langHandler);
+  var md = new modalDialog.modalDialog(langHandler);
   md.start(200);
 
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
@@ -108,10 +109,10 @@ var prefDialogCallback = function(controller) {
 var langHandler = function(controller) {
   // Add the Italian Language, or Polish, if it is an Italian build
   if (browserLocale == "it") {
-    var language = UtilsAPI.getProperty("chrome://global/locale/languageNames.properties",
+    var language = utils.getProperty("chrome://global/locale/languageNames.properties",
                                         "pl");
   } else {
-    var language = UtilsAPI.getProperty("chrome://global/locale/languageNames.properties",
+    var language = utils.getProperty("chrome://global/locale/languageNames.properties",
                                         "it");
   }
 

@@ -35,9 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -49,9 +50,9 @@ const LOCAL_TEST_PAGES = [
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {

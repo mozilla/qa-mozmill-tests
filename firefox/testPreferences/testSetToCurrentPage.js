@@ -36,9 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'ToolbarAPI'];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var toolbars = require("../../shared-modules/testToolbarAPI");
 
 const TIMEOUT = 5000;
 
@@ -51,14 +52,14 @@ const LOCAL_TEST_PAGES = [
 var setupModule = function()
 {
   controller = mozmill.getBrowserController();
-  locationBar = new ToolbarAPI.locationBar(controller);
+  locationBar = new toolbars.locationBar(controller);
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var teardownModule = function(module)
 {
-  PrefsAPI.preferences.clearUserPref("browser.startup.homepage");
+  prefs.preferences.clearUserPref("browser.startup.homepage");
 }
 
 /**
@@ -74,7 +75,7 @@ var testSetHomePage = function()
   controller.assertNode(link);
 
   // Call Prefs Dialog and set Home Page
-  PrefsAPI.openPreferencesDialog(prefDialogHomePageCallback);
+  prefs.openPreferencesDialog(prefDialogHomePageCallback);
 }
 
 var testHomeButton = function()
@@ -99,7 +100,7 @@ var testHomeButton = function()
  */
 var prefDialogHomePageCallback = function(controller)
 {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneMain';
 
   // Set Home Page to the current page

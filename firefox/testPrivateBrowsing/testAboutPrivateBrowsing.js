@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -47,7 +47,7 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance and set handler
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
 }
 
 var setupTest = function(module)
@@ -71,7 +71,7 @@ var testCheckRegularMode = function()
   controller.waitForPageLoad();
   
   // Check descriptions on the about:privatebrowsing page
-  var issueDesc = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
+  var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
   controller.waitForElement(statusText, gTimeout);
   controller.assertText(statusText, issueDesc);
@@ -97,11 +97,11 @@ var testCheckPrivateBrowsingMode = function()
   controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
-  var targetUrl = UtilsAPI.formatUrlPref("app.support.baseURL") + "private-browsing";
+  var targetUrl = utils.formatUrlPref("app.support.baseURL") + "private-browsing";
 
   controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
   controller.waitForPageLoad();
-  UtilsAPI.assertLoadedUrlEqual(controller, targetUrl);
+  utils.assertLoadedUrlEqual(controller, targetUrl);
 }
 
 /**

@@ -34,19 +34,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
 
   // Create Private Browsing instance and set handler
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
 }
 
 var teardownModule = function(module) {
@@ -72,7 +73,7 @@ var testCheckImportDisabled = function() {
     var libraryItem = new elementslib.ID(controller.window.document, "bookmarksShowAll");
     controller.click(libraryItem);
 
-    UtilsAPI.handleWindow("type", "Places:Organizer", checkImportMenu);
+    utils.handleWindow("type", "Places:Organizer", checkImportMenu);
   }
 }
 
@@ -90,7 +91,7 @@ function checkImportMenu(controller) {
   var importHTML = new elementslib.ID(controller.window.document, "fileImport");
   controller.assertNotJSProperty(importHTML, "disabled");
 
-  var cmdKey = UtilsAPI.getEntity(tabBrowser.getDtds(), "closeCmd.key");
+  var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 

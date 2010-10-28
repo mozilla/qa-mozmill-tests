@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['UtilsAPI'];
+// Include the required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
@@ -49,7 +48,7 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  UtilsAPI.closeContentAreaContextMenu(controller);
+  utils.closeContentAreaContextMenu(controller);
 }
 
 var testAccessPageInfo = function () {
@@ -63,7 +62,7 @@ var testAccessPageInfo = function () {
   var contextMenu = new elementslib.ID(controller.window.document, "context-viewinfo");
   controller.click(contextMenu);
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
+  utils.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
 }
 
 function checkPageInfoWindow(controller) {
