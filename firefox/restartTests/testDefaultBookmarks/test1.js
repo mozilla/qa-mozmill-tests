@@ -109,8 +109,8 @@ function feedHandler(controller) {
     var child = toolbarNodes.getChild(2);
 
     // Check if the child is a Livemark
-	controller.assertJS("subject.isLivemark == true",
-	                    {isLivemark: ls.isLivemark(child.itemId)});
+    controller.assertJS("subject.isLivemark == true",
+                        {isLivemark: ls.isLivemark(child.itemId)});
 
     // Compare the site and feed URI's
     var siteLocation = new elementslib.ID(controller.window.document, "editBMPanel_siteLocationField");
@@ -135,8 +135,9 @@ function getBookmarkToolbarItems() {
   var query = hs.getNewQuery();
 
   query.setFolders([bs.toolbarFolder], 1);
+  var root = hs.executeQuery(query, options).root;
 
-  return hs.executeQuery(query, options).root;
+  return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
 
 /**
