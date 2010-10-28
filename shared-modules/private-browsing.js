@@ -41,12 +41,10 @@
  * @version 1.0.0
  */
 
-const MODULE_NAME = 'PrivateBrowsingAPI';
-
 // Include required modules
-var modalDialog = require("testModalDialogAPI");
-var prefs = require("testPrefsAPI");
-var utils = require("testUtilsAPI");
+var modalDialog = require("modal-dialog");
+var prefs = require("prefs");
+var utils = require("utils");
 
 // Preference for confirmation dialog when entering Private Browsing mode
 const PB_NO_PROMPT_PREF = 'browser.privatebrowsing.dont_prompt_on_enter';
@@ -228,11 +226,6 @@ privateBrowsing.prototype = {
     this._controller.waitForEval("subject.privateBrowsing.enabled == subject.state", gTimeout, 100,
                                  {privateBrowsing: this, state: state});
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of classes

@@ -36,8 +36,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var downloads = require("../../shared-modules/testDownloadsAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var downloads = require("../../shared-modules/downloads");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

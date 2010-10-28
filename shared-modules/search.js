@@ -39,12 +39,10 @@
  * The SearchAPI adds support for search related functions like the search bar.
  */
 
-const MODULE_NAME = 'SearchAPI';
-
 // Include required modules
-var modalDialog = require("testModalDialogAPI");
-var utils = require("testUtilsAPI");
-var widgets = require("testWidgetsAPI");
+var modalDialog = require("modal-dialog");
+var utils = require("utils");
+var widgets = require("widgets");
 
 const TIMEOUT = 5000;
 
@@ -824,11 +822,6 @@ searchBar.prototype = {
     this._controller.type(searchBar, searchTerm);
   }
 };
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
-}
 
 // Export of classes
 exports.engineManager = engineManager;

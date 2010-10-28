@@ -38,9 +38,9 @@
 
 
 // Include necessary modules
-var sessionStore = require("../../shared-modules/testSessionStoreAPI");
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var sessionStore = require("../../shared-modules/sessionstore");
+var tabs = require("../../shared-modules/tabs");
+var utils = require("../../shared-modules/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 

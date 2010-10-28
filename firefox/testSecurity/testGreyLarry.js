@@ -40,7 +40,7 @@
  */
 
 // Include necessary modules
-var utils = require("../../shared-modules/testUtilsAPI");
+var utils = require("../../shared-modules/utils");
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();

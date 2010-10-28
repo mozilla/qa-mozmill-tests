@@ -36,9 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var modalDialog = require("../../shared-modules/testModalDialogAPI");
-var prefs = require("../../shared-modules/testPrefsAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var modalDialog = require("../../shared-modules/modal-dialog");
+var prefs = require("../../shared-modules/prefs");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

@@ -34,12 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const MODULE_NAME = 'TabViewAPI';
-
 // Include required modules
-var domUtils = require("testdomUtilsAPI");
-var tabs = require("testTabbedBrowsingAPI");
-var utils = require("testUtilsAPI");
+var domUtils = require("dom-utils");
+var tabs = require("tabs");
+var utils = require("utils");
 
 const TIMEOUT = 5000;
 

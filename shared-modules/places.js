@@ -43,8 +43,6 @@
  * @version 1.0.2
  */
 
-var MODULE_NAME = 'PlacesAPI';
-
 const gTimeout = 5000;
 
 /**
@@ -144,11 +142,6 @@ function removeAllHistory() {
   // Remove the pages, then block until we're done or until timeout is reached
   browserHistory.removeAllPages();
   mozmill.controller.waitForEval("subject.state == true", gTimeout, 100, finishedFlag);
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of variables

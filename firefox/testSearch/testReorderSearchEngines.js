@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var search = require("../../shared-modules/testSearchAPI");
+var search = require("../../shared-modules/search");
 
 const gDelay   = 0;
 const gTimeout = 5000;
@@ -96,7 +96,7 @@ var testReorderEngines = function()
  */
 var reorderEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
   var engines = manager.engines;
 
   // Move two of the engines down

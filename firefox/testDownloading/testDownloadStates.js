@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var downloads = require("../../shared-modules/testDownloadsAPI");
+var downloads = require("../../shared-modules/downloads");
 
 var URL = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
 

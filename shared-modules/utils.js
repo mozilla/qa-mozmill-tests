@@ -44,10 +44,8 @@
  * @version 1.0.3
  */
 
-var MODULE_NAME = 'UtilsAPI';
-
 // Include required modules
-var prefs = require("testPrefsAPI");
+var prefs = require("prefs");
 
 const gTimeout = 5000;
 
@@ -416,11 +414,6 @@ function handleWindow(type, text, callback, dontClose) {
 
     return ctrl;
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of variables

@@ -38,8 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../shared-modules/testPrefsAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var prefs = require("../../shared-modules/prefs");
+var utils = require("../../shared-modules/utils");
 
 const TIMEOUT = 5000;
 

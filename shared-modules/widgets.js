@@ -42,8 +42,6 @@
 var EventUtils = {};
 Components.utils.import('resource://mozmill/stdlib/EventUtils.js', EventUtils);
 
-var MODULE_NAME = 'WidgetsAPI';
-
 const gTimeout = 5000;
 
 /**
@@ -78,12 +76,6 @@ function clickTreeCell(controller, tree, rowIndex, columnIndex, eventDetails)
   EventUtils.synthesizeMouse(tree.body, x.value + 4, y.value + 4,
                              eventDetails, tree.ownerDocument.defaultView);
   controller.sleep(0);
-}
-
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of functions

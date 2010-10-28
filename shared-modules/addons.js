@@ -35,13 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var MODULE_NAME = 'AddonsAPI';
-
 // Include required modules
-var domUtils = require("testDOMUtilsAPI");
-var prefs = require("testPrefsAPI");
-var tabs = require("testTabbedBrowsingAPI");
-var utils = require("testUtilsAPI");
+var domUtils = require("dom-utils");
+var prefs = require("prefs");
+var tabs = require("tabs");
+var utils = require("utils");
 
 
 const TIMEOUT = 5000;
@@ -1243,11 +1241,6 @@ function resetAmoPreviewUrls() {
   for each (var preference in AMO_PREFERENCES) {
     prefSrv.clearUserPref(preference.name);
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of functions
