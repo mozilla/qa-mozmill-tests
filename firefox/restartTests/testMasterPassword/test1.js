@@ -40,6 +40,7 @@
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var prefs = require("../../../shared-modules/prefs");
 var tabs = require("../../../shared-modules/tabs");
+var toolbars = require("../../../shared-modules/toolbars");
 var utils = require("../../../shared-modules/utils");
 
 const TIMEOUT = 5000;
@@ -50,6 +51,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
+  locationBar = new toolbars.locationBar(controller);
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
@@ -78,26 +80,24 @@ var testSetMasterPassword = function() {
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.waitThenClick(loginButton, TIMEOUT);
   
-
-  // Get the label of the Remember Password button
-  var label = utils.getProperty(
-                "chrome://passwordmgr/locale/passwordmgr.properties",
-                "notifyBarRememberButtonText"
-              );
-  // Get the Remember Password button based on the above label              
-  var button = tabBrowser.getTabPanelElement(
-                 tabBrowser.selectedIndex,
-                '/{"value":"password-save"}/{"label":"' + label + '"}'
-  );
-
+  // After logging in, remember the login information
+  var button = locationBar.getNotificationElement(
+                 "password-save-notification",
+                 '/anon({"anonid":"button"})'
+               );
   // Check that the Remember Password button is visible
   utils.assertElementVisible(controller, button, true);
   
   // Click the Remember Password button
-  controller.waitThenClick(button, TIMEOUT);
-  controller.sleep(500);
-  controller.assertNodeNotExist(button);
-
+  controller.waitThenClick(button);
+  
+  // After clicking the 'Remember Password' button, check notification state
+  var notification = locationBar.getNotification();
+  
+  controller.waitFor(function() { 
+    return notification.getNode().state == 'closed';
+  }, "Password notification should be closed");
+ 
   // Call preferences dialog and invoke master password functionality
   prefs.openPreferencesDialog(prefDialogSetMasterPasswordCallback);
 }

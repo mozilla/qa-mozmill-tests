@@ -405,6 +405,9 @@ locationBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP +
                                       spec.subtype);
         break;
+      case "notification_popup":
+        elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP);
+        break;
       case "starButton":
         elem = new elementslib.ID(this._controller.window.document, "star-button");
         break;
@@ -420,6 +423,16 @@ locationBar.prototype = {
     }
 
     return elem;
+  },
+
+  /**
+   * Retrieves the notification popup
+   * 
+   * @return The notification popup element
+   * @type {ElemBase}
+   */
+  getNotification : function locationBar_getNotification() { 
+    return this.getElement({type: "notification_popup"});
   },
 
   /**
