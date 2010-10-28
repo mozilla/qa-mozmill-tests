@@ -135,8 +135,9 @@ function getBookmarkToolbarItems() {
   var query = hs.getNewQuery();
 
   query.setFolders([bs.toolbarFolder], 1);
+  var root = hs.executeQuery(query, options).root;
 
-  return hs.executeQuery(query, options).root;
+  return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
 
 /**
