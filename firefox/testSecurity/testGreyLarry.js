@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -74,7 +73,7 @@ var testLarryGrey = function() {
                                           "identity-popup-more-info-button");
   controller.click(moreInfoButton);
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**
@@ -95,15 +94,15 @@ function checkSecurityTab(controller) {
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  var securityOwner = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties",
-                                           "securityNoOwner");
+  var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
+                                        "securityNoOwner");
   controller.assertValue(webIDOwnerLabel, securityOwner);
 
   // Check the Verifier label for "Not Specified"
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  var securityIdentifier = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties",
-                                                "notset");
+  var securityIdentifier = utils.getProperty("chrome://browser/locale/pageInfo.properties",
+                                             "notset");
   controller.assertValue(webIDVerifierLabel, securityIdentifier);
 
   controller.keypress(null, 'VK_ESCAPE', {});

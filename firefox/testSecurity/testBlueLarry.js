@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -96,20 +95,20 @@ var testLarryBlue = function() {
 
   // Check the owner identifier string, should be "(unknown)"
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
-  var property = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                      "identity.ownerUnknown2");
+  var property = utils.getProperty("chrome://browser/locale/browser.properties",
+                                   "identity.ownerUnknown2");
   controller.assertJSProperty(owner, "textContent", property);
 
   // Check the "Verified by: %S" string
-  var l10nVerifierLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                               "identity.identified.verifier");
+  var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                            "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document, "identity-popup-content-verifier");
   controller.assertJSProperty(verifier, "textContent", l10nVerifierLabel);
 
   // Check the Encryption Label text
-  var l10nEncryptionLabel = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
-                                                 "identity.encrypted");
+  var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                              "identity.encrypted");
   var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
   controller.assertJSProperty(encryptionLabel, "textContent", l10nEncryptionLabel);
 
@@ -117,7 +116,7 @@ var testLarryBlue = function() {
   var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
   controller.click(moreInfoButton);
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**
@@ -140,8 +139,8 @@ function checkSecurityTab(controller) {
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  var securityOwner = UtilsAPI.getProperty("chrome://browser/locale/pageInfo.properties",
-                                           "securityNoOwner");
+  var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
+                                        "securityNoOwner");
   controller.assertValue(webIDOwnerLabel, securityOwner);
 
   // Check the Verifier label against the Cert Issuer

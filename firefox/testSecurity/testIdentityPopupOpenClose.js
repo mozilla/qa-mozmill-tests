@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 var gDelay = 0;
 var gTimeout = 5000;
@@ -49,7 +49,7 @@ const LOCAL_TEST_PAGES = [
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 /**
@@ -70,7 +70,7 @@ var testIdentityPopupOpenClose = function() {
 
   // Check the visibility of the more info button
   var button = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
-  UtilsAPI.assertElementVisible(controller, button, true);
+  utils.assertElementVisible(controller, button, true);
 
   // Click inside the content area to close the popup
   var contentArea = new elementslib.ID(controller.tabs.activeTab, "organization");

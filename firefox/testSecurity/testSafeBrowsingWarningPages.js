@@ -35,9 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -45,7 +46,7 @@ const gTimeout = 5000;
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var testWarningPages = function() {
@@ -88,7 +89,7 @@ var checkGetMeOutOfHereButton = function()
   controller.waitForPageLoad();
 
   // Check that the default home page has been opened
-  UtilsAPI.assertLoadedUrlEqual(controller, UtilsAPI.getDefaultHomepage());
+  utils.assertLoadedUrlEqual(controller, utils.getDefaultHomepage());
 }
 
 /*
@@ -105,25 +106,25 @@ var checkReportButton = function(type, badUrl) {
   controller.waitThenClick(reportButton, gTimeout);
   controller.waitForPageLoad();
 
-  var locale = PrefsAPI.preferences.getPref("general.useragent.locale", "");
+  var locale = prefs.preferences.getPref("general.useragent.locale", "");
   var url = "";
 
   if (type == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
-    url = UtilsAPI.formatUrlPref("browser.safebrowsing.warning.infoURL");
+    url = utils.formatUrlPref("browser.safebrowsing.warning.infoURL");
 
     var phishingElement = new elementslib.ID(controller.tabs.activeTab, "phishing-protection")
     controller.assertNode(phishingElement);
 
   } else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
-    url = UtilsAPI.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
+    url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
 
     var malwareElement = new elementslib.ID(controller.tabs.activeTab, "date");
     controller.assertNode(malwareElement);
   }
 
-  UtilsAPI.assertLoadedUrlEqual(controller, url);
+  utils.assertLoadedUrlEqual(controller, url);
 }
 
 /*

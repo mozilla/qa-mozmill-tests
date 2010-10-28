@@ -35,10 +35,11 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['ModalDialogAPI', 'PrefsAPI',
-                       'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include required modules
+var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -53,15 +54,15 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  var prefs = new Array("security.warn_entering_secure",
-                        "security.warn_entering_weak",
-                        "security.warn_leaving_secure",
-                        "security.warn_submit_insecure",
-                        "security.warn_viewing_mixed");
+  var gPrefs = new Array("security.warn_entering_secure",
+                         "security.warn_entering_weak",
+                         "security.warn_leaving_secure",
+                         "security.warn_submit_insecure",
+                         "security.warn_viewing_mixed");
 
   // Reset the warning blocking prefs
-  for each (p in prefs)
-    PrefsAPI.preferences.clearUserPref(p);
+  for each (p in gPrefs)
+    prefs.preferences.clearUserPref(p);
 }
 
 /**
@@ -72,13 +73,13 @@ var testEncryptedPageWarning = function()
   // Make sure the test starts from a blank page because
   // the warnings don't appear if you are on the page
   // where the warning was triggered
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 
   // Make sure the prefs are set
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Create a listener for the warning dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningDialog);
+  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
   md.start();
 
   // Load an encrypted page
@@ -100,7 +101,7 @@ var testEncryptedPageWarning = function()
  */
 var prefDialogCallback = function(controller)
 {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
   // Click the Warning Messages Settings button
@@ -109,7 +110,7 @@ var prefDialogCallback = function(controller)
   controller.waitForElement(warningSettingsButton, gTimeout);
 
   // Create a listener for the Warning Messages Settings dialog
-  var md = new ModalDialogAPI.modalDialog(handleSecurityWarningSettingsDialog);
+  var md = new modalDialog.modalDialog(handleSecurityWarningSettingsDialog);
   md.start(500);
 
   controller.click(warningSettingsButton);
@@ -127,14 +128,14 @@ var prefDialogCallback = function(controller)
  */
 var handleSecurityWarningSettingsDialog = function(controller)
 {
-  var prefs = new Array("warn_entering_secure",
-                        "warn_entering_weak",
-                        "warn_leaving_secure",
-                        "warn_submit_insecure",
-                        "warn_viewing_mixed");
+  var gPrefs = new Array("warn_entering_secure",
+                         "warn_entering_weak",
+                         "warn_leaving_secure",
+                         "warn_submit_insecure",
+                         "warn_viewing_mixed");
 
   // Make sure only the "encrypted page" checkbox is set
-  for each (p in prefs) {
+  for each (p in gPrefs) {
     var element = new elementslib.ID(controller.window.document, p);
     controller.waitForElement(element, gTimeout);
     controller.check(element, (p == "warn_entering_secure"));
@@ -155,8 +156,8 @@ var handleSecurityWarningDialog = function(controller)
 {
   modalWarningShown = true;
 
-  var enterSecureMessage = UtilsAPI.getProperty("chrome://pipnss/locale/security.properties",
-                                                "EnterSecureMessage");
+  var enterSecureMessage = utils.getProperty("chrome://pipnss/locale/security.properties",
+                                             "EnterSecureMessage");
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");

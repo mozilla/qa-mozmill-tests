@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+// Include required modules
+var search = require("../../shared-modules/testSearchAPI");
 
 const gDelay   = 200;
 const gTimeout = 5000;
@@ -48,12 +47,12 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  search.restoreDefaultEngines();
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -62,16 +61,16 @@ var teardownModule = function(module)
 var testRestoreDefaultEngines = function()
 {
   // Remove some default search engines
-  search.openEngineManager(removeEngines);
+  searchBar.openEngineManager(removeEngines);
 
   // Reopen the dialog to restore the defaults
-  search.openEngineManager(restoreEngines);
+  searchBar.openEngineManager(restoreEngines);
 
   // XXX: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
 
   // Check the ordering in the drop down menu
-  var engines = search.visibleEngines;
+  var engines = searchBar.visibleEngines;
   for (var ii = 0; ii < engines.length; ii++) {
     controller.assertJS("subject.visibleEngine.name == subject.expectedEngine.name",
                         {visibleEngine: engines[ii], expectedEngine: gSharedData.preEngines[ii]});
@@ -86,7 +85,7 @@ var testRestoreDefaultEngines = function()
  */
 var removeEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
 
   // Save initial state
   gSharedData.preEngines = manager.engines;
@@ -110,7 +109,7 @@ var removeEngines = function(controller)
  */
 var restoreEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
 
   manager.controller.assertJS("subject.numberOfEngines == 3",
                               {numberOfEngines: manager.engines.length});

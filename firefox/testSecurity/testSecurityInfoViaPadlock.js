@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -65,7 +64,7 @@ var testSecurityInfoViaPadlock = function() {
   controller.doubleClick(new elementslib.ID(controller.window.document,
                                             "security-button"));
 
-  UtilsAPI.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**

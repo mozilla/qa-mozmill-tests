@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -51,17 +51,17 @@ var setupModule = function(module) {
   
   // XXX: Bug 513129
   //      Disable Keep-alive connections
-  PrefsAPI.preferences.setPref("network.http.keep-alive", false);
+  prefs.preferences.setPref("network.http.keep-alive", false);
 }
 
 var teardownModule = function(module) {
   // Reset the SSL and TLS pref
-  PrefsAPI.preferences.clearUserPref("security.enable_ssl3");
-  PrefsAPI.preferences.clearUserPref("security.enable_tls");
+  prefs.preferences.clearUserPref("security.enable_ssl3");
+  prefs.preferences.clearUserPref("security.enable_tls");
   
   // XXX: Bug 513129
   //      Re-enable Keep-alive connections
-  PrefsAPI.preferences.clearUserPref("network.http.keep-alive");
+  prefs.preferences.clearUserPref("network.http.keep-alive");
 }
 
 /**
@@ -73,7 +73,7 @@ var testDisableSSL = function() {
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   controller.open("https://www.google.com");
   controller.waitForPageLoad();
@@ -81,7 +81,7 @@ var testDisableSSL = function() {
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title, gTimeout);
-  var nssFailure2title = UtilsAPI.getEntity(dtds, "nssFailure2.title")
+  var nssFailure2title = utils.getEntity(dtds, "nssFailure2.title")
   controller.assertJS("subject.errorTitle == subject.nssFailure2title",
                       {errorTitle: title.getNode().textContent,
                        nssFailure2title: nssFailure2title});
@@ -98,7 +98,7 @@ var testDisableSSL = function() {
   controller.assertJS("subject.errorMessage.indexOf('www.google.com') != -1",
                       {errorMessage: text.getNode().textContent});
 
-  var PSMERR_SSL_Disabled = UtilsAPI.getProperty(property, 'PSMERR_SSL_Disabled')
+  var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled')
   controller.assertJS('subject.errorMessage.indexOf(subject.PSMERR_SSL_Disabled) != -1',
                       {errorMessage: text.getNode().textContent,
                        PSMERR_SSL_Disabled: PSMERR_SSL_Disabled});
@@ -111,7 +111,7 @@ var testDisableSSL = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneAdvanced';
 
   // Get the Encryption tab

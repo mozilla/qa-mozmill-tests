@@ -34,9 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['SearchAPI'];
+// Include required modules
+var search = require("../../shared-modules/testSearchAPI");
 
 const gDelay   = 0;
 const gTimeout = 5000;
@@ -48,12 +47,12 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  search = new SearchAPI.searchBar(controller);
+  searchBar = new search.searchBar(controller);
 }
 
 var teardownModule = function(module)
 {
-  search.restoreDefaultEngines();
+  searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -62,10 +61,10 @@ var teardownModule = function(module)
 var testReorderEngines = function()
 {
   // Reorder the search engines a bit
-  search.openEngineManager(reorderEngines);
+  searchBar.openEngineManager(reorderEngines);
 
   // Reopen the dialog to retrieve the current sorting
-  search.openEngineManager(retrieveEngines);
+  searchBar.openEngineManager(retrieveEngines);
 
   // Check the if the engines were sorted correctly in the manager
   controller.assertJS("subject.preEngines[0].name == subject.postEngines[2].name",
@@ -82,7 +81,7 @@ var testReorderEngines = function()
   controller.sleep(0);
 
   // Check the ordering in the drop down menu
-  var engines = search.visibleEngines;
+  var engines = searchBar.visibleEngines;
   for (var ii = 0; ii < engines.length; ii++) {
     controller.assertJS("subject.visibleEngine.name == subject.expectedEngine.name",
                         {visibleEngine: engines[ii], expectedEngine: gSharedData.postEngines[ii]});
@@ -97,7 +96,7 @@ var testReorderEngines = function()
  */
 var reorderEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
   var engines = manager.engines;
 
   // Move two of the engines down
@@ -126,7 +125,7 @@ var reorderEngines = function(controller)
  */
 var retrieveEngines = function(controller)
 {
-  var manager = new SearchAPI.engineManager(controller);
+  var manager = new search.engineManager(controller);
 
   // Save current state
   gSharedData.postEngines = manager.engines;

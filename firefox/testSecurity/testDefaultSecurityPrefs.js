@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -52,14 +51,14 @@ var setupModule = function(module)
  */
 var testDefaultSecurityPreferences = function()
 {
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
  * Call-back handler for preferences dialog
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneAdvanced';
 
   // Get the Encryption tab
