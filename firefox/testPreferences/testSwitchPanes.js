@@ -39,9 +39,9 @@
  * Litmus test #8013: Main Menu of Options (Preferences)
  */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 100;
 const gTimeout = 5000;
@@ -54,7 +54,7 @@ var setupModule = function(module) {
  * Switching through all panes of the preferences dialog
  */
 var testPreferencesPanes = function() {
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 }
 
 /**
@@ -64,7 +64,7 @@ var testPreferencesPanes = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   // List of all available panes inside the Preferences window
   var panes = [

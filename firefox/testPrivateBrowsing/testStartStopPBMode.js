@@ -36,9 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
-const MODULE_REQUIRES = ['PrivateBrowsingAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const TIMEOUT = 5000;
 
@@ -54,10 +55,10 @@ var setupModule = function() {
              getAttribute("titlemodifier_privatebrowsing");
 
   // Create Private Browsing instance and set handler
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
   pb.handler = pbStartHandler;
 
-  TabbedBrowsingAPI.closeAllTabs(controller);
+  tabs.closeAllTabs(controller);
 }
 
 var teardownModule = function() {
@@ -101,8 +102,8 @@ var testEnablePrivateBrowsingMode = function() {
                                          title.indexOf(modifier) != -1});
 
   // Check descriptions on the about:privatebrowsing page
-  var description = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.description");
-  var learnMore = UtilsAPI.getEntity(pb.getDtds(), "privatebrowsingpage.learnMore");
+  var description = utils.getEntity(pb.getDtds(), "privatebrowsingpage.description");
+  var learnMore = utils.getEntity(pb.getDtds(), "privatebrowsingpage.learnMore");
   var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText");
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
   controller.waitForElement(longDescElem, TIMEOUT);  

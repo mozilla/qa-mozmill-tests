@@ -35,9 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['DownloadsAPI', 'PrefsAPI', 'PrivateBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var downloads = require("../../shared-modules/testDownloadsAPI");
+var prefs = require("../../shared-modules/testPrefsAPI");
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const DELAY = 100;
 const TIMEOUT = 5000;
@@ -56,14 +58,14 @@ var setupModule = function(module) {
 
   // Make sure there are no active downloads, downloaded files
   // or data in the Download Manager database before beginning
-  dm = new DownloadsAPI.downloadManager();
+  dm = new downloads.downloadManager();
   dm.cleanAll();
 
   // Array for downloaded files
   downloadedFiles = [];
 
   // Make sure we are not in PB mode and don't show a prompt
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
   pb.enabled = false;
   pb.showPrompt = false;
 }
@@ -76,7 +78,7 @@ var teardownModule = function(module) {
   pb.reset();
 
   // Reset the "Show Downloads When Downloading" pref
-  PrefsAPI.preferences.clearUserPref("browser.download.manager.showWhenStarting");
+  prefs.preferences.clearUserPref("browser.download.manager.showWhenStarting");
 }
 
 /**
@@ -84,11 +86,11 @@ var teardownModule = function(module) {
  */
 var testDownloadManagerClosed = function() {
   // Disable the opening of the Downloads Manager when starting a download
-  PrefsAPI.openPreferencesDialog(handlePrefDialog);
+  prefs.openPreferencesDialog(handlePrefDialog);
 
   // Download two files of unknown type
   for (var i = 0; i < DOWNLOADS.length; i++) {
-    DownloadsAPI.downloadFileOfUnknownType(controller, DOWNLOADS[i]);
+    downloads.downloadFileOfUnknownType(controller, DOWNLOADS[i]);
   }
 
   // Save information of currently downloaded files
@@ -115,7 +117,7 @@ var testDownloadManagerClosed = function() {
   dm.close();
 
   // Download a file in Private Browsing mode
-  DownloadsAPI.downloadFileOfUnknownType(controller, DOWNLOAD_PB);
+  downloads.downloadFileOfUnknownType(controller, DOWNLOAD_PB);
 
   // Track the download from Private Browsing mode too
   downloadedFiles = downloadedFiles.concat(dm.getAllDownloads());
@@ -156,7 +158,7 @@ var testDownloadManagerClosed = function() {
 var handlePrefDialog = function(controller)
 {
   // Set the Preferences dialog to the Main pane
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneMain';
 
   // Don't show the download manager when a download starts

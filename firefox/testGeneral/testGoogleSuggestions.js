@@ -36,9 +36,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['UtilsAPI'];
+// Include the required modules
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gTimeout = 5000;
 
@@ -57,7 +56,7 @@ var testGoogleSuggestedTerms = function() {
 
   // The auto-complete box has a different markup for nightly builds
   // Official releases will not have the 'pre' suffix in the version number
-  if (UtilsAPI.appInfo.platformVersion.indexOf("pre") == -1) {
+  if (utils.appInfo.platformVersion.indexOf("pre") == -1) {
     var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "//span[@id='body']/center/form/table[1]/tbody/tr/td[2]");
   } else {
     var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[1]/tbody/tr/td[2]");

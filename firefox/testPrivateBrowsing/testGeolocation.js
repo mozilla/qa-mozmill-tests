@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'PrivateBrowsingAPI',
-                       'TabbedBrowsingAPI', 'UtilsAPI'
-                      ];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const gDelay = 0;
 const gTimeout = 7000;
@@ -52,8 +52,8 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  pb = new PrivateBrowsingAPI.privateBrowsing(controller);
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  pb = new privateBrowsing.privateBrowsing(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
 }
 
 var teardownModule = function(module)
@@ -80,7 +80,7 @@ var testTabRestoration = function()
   controller.open(localTestFolder + "geolocation/position.html");
   controller.waitForPageLoad();
 
-  var shortcut = UtilsAPI.getProperty("chrome://browser/locale/browser.properties",
+  var shortcut = utils.getProperty("chrome://browser/locale/browser.properties",
                                       "geolocation.shareLocation.accesskey");
   controller.keypress(null, shortcut, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
@@ -93,7 +93,7 @@ var testTabRestoration = function()
 
   // If a position has been returned check for geo access tokens
   if (available) {
-    PrefsAPI.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
+    prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
     controller.assertJS("subject.hasGeoTokens == true",
                         {hasGeoTokens: tokens.value > 0});
   }
@@ -102,7 +102,7 @@ var testTabRestoration = function()
   pb.stop();
 
   // No geo access tokens should be present
-  PrefsAPI.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
+  prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
   controller.assertJS("subject.hasNoGeoTokens == true",
                       {hasNoGeoTokens: tokens.value == 0});
 }

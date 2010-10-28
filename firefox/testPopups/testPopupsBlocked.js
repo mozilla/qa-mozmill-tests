@@ -35,9 +35,10 @@
  *
  * **** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-var RELATIVE_ROOT = '../../shared-modules';
-var MODULE_REQUIRES = ['PrefsAPI', 'TabbedBrowsingAPI', 'UtilsAPI'];
+// Include the required modules
+var prefs = require("../../shared-modules/testPrefsAPI");
+var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var utils = require("../../shared-modules/testUtilsAPI");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 
@@ -47,13 +48,13 @@ const gTimeout = 5000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  tabBrowser = new TabbedBrowsingAPI.tabBrowser(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
 }
 
 var teardownModule = function(module)
 {
   // Reset the pop-up blocking pref and close all open tabs
-  PrefsAPI.preferences.clearUserPref("dom.disable_open_during_load");
+  prefs.preferences.clearUserPref("dom.disable_open_during_load");
   tabBrowser.closeAllTabs();
 
   for each (window in mozmill.utils.getWindows("navigator:browser")) {
@@ -70,7 +71,7 @@ var testPopUpBlocked = function()
 {
   var windowCount = mozmill.utils.getWindows().length;
 
-  PrefsAPI.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(prefDialogCallback);
 
   // Open the Pop-up test site
   controller.open(localTestFolder + "popups/popups_2.html");
@@ -100,7 +101,7 @@ var testPopUpBlocked = function()
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneContent';
 
   // Make sure the pref is checked
