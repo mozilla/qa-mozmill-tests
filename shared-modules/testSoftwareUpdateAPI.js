@@ -45,7 +45,7 @@ const RELATIVE_ROOT = '.';
 const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
 
 const gTimeout                = 5000;
-const gTimeoutUpdateCheck     = 30000;
+const gTimeoutUpdateCheck     = 10000;
 const gTimeoutUpdateDownload  = 360000;
 
 // Helper lookup constants for elements of the software update dialog
