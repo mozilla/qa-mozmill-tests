@@ -37,7 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var utils = require("../../shared-modules/testUtilsAPI");
+var utils = require("../../shared-modules/utils");
 
 const gTimeout = 5000;
 

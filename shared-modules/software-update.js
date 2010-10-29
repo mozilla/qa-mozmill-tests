@@ -41,11 +41,9 @@
  * @version 1.0.0
  */
 
-const MODULE_NAME = 'SoftwareUpdateAPI';
-
 // Include required modules
-var prefs = require("testPrefsAPI");
-var utils = require("testUtilsAPI");
+var prefs = require("prefs");
+var utils = require("utils");
 
 const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
@@ -310,11 +308,6 @@ softwareUpdate.prototype = {
     this._controller.waitForEval("subject.currentStep == '" + step + "'",
                                  gTimeout, 100, this);
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of classes

@@ -41,10 +41,8 @@
  * @version 1.0.0
  */
 
-const MODULE_NAME = 'TabbedBrowsingAPI';
-
 // Include required modules
-var utils = require("testUtilsAPI");
+var utils = require("utils");
 
 const TIMEOUT = 5000;
 
@@ -449,11 +447,6 @@ tabBrowser.prototype = {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
     }
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of functions

@@ -35,9 +35,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var sessionStore = require("../../shared-modules/testSessionStoreAPI");
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var sessionStore = require("../../shared-modules/sessionstore");
+var tabs = require("../../shared-modules/tabs");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

@@ -36,9 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../shared-modules/testModalDialogAPI");
-var search = require("../../shared-modules/testSearchAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var modalDialog = require("../../shared-modules/modal-dialog");
+var search = require("../../shared-modules/search");
+var utils = require("../../shared-modules/utils");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 

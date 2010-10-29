@@ -35,9 +35,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var addons = require("../../../shared-modules/testAddonsAPI");
-var modalDialog = require("../../../shared-modules/testModalDialogAPI");
-var tabs = require("../../../shared-modules/testTabbedBrowsingAPI");
+var addons = require("../../../shared-modules/addons");
+var modalDialog = require("../../../shared-modules/modal-dialog");
+var tabs = require("../../../shared-modules/tabs");
 
 const gTimeout = 5000;
 

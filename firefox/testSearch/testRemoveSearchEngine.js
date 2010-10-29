@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var search = require("../../shared-modules/testSearchAPI");
+var search = require("../../shared-modules/search");
 
 const gDelay = 0;
 const gTimeout = 5000;

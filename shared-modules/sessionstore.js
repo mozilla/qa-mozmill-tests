@@ -42,12 +42,10 @@
  * @version 1.0.0
  */
 
-var MODULE_NAME = 'SessionStoreAPI';
-
 // Include required modules
-var prefs = require("testPrefsAPI");
-var utils = require("testUtilsAPI");
-var widgets = require("testWidgetsAPI");
+var prefs = require("prefs");
+var utils = require("utils");
+var widgets = require("widgets");
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
@@ -311,11 +309,6 @@ function undoClosedWindow(controller, event)
                          newWindowCount : sessionStoreService.getClosedWindowCount(controller.window),
                          oldWindowCount : count
                         });
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of functions

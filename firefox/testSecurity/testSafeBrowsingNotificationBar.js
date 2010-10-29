@@ -38,8 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var tabs = require("../../shared-modules/tabs");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -136,6 +136,7 @@ var checkNoPhishingButton = function(badUrl) {
     var locationBar = new elementslib.ID(controller.window.document, "urlbar");
     controller.assertJS("subject.urlbar.indexOf('http://www.stopbadware.org/') != -1",
                         {urlbar: locationBar.getNode().value}); 
+  }
 
   tabs.closeAllTabs(controller);
 }

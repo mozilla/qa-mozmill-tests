@@ -36,13 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Testcase ID #6012 - Clearing Cookies/Remove All Cookies
- */
-
 // Include required modules
-var prefs = require("../../shared-modules/testPrefsAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var prefs = require("../../shared-modules/prefs");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

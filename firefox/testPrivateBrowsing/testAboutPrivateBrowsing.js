@@ -36,8 +36,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var privateBrowsing = require("../../shared-modules/private-browsing");
+var utils = require("../../shared-modules/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

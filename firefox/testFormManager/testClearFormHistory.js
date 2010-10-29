@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../shared-modules/testModalDialogAPI");
+var modalDialog = require("../../shared-modules/modal-dialog");
 
 const TIMEOUT = 5000;
 
