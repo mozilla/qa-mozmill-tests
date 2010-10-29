@@ -171,11 +171,11 @@ softwareUpdate.prototype = {
 
     var patchCount = this.activeUpdate.patchCount;
     // Test that the update snippet created by releng has less than 3 patches
-    controller.assertJS("subject.patchCount < 3",
-                        {patchCount: patchCount < 3});
+    this._controller.assertJS("subject.patchCount < 3",
+                              {patchCount: patchCount < 3});
     // Test that the update snippet created by releng has more than 0 patches
-    controller.assertJS("subject.patchCount > 0",
-                        {patchCount: patchCount > 0});
+    this._controller.assertJS("subject.patchCount > 0",
+                              {patchCount: patchCount > 0});
 
 // After bug 514040 is fixed remove this line and uncomment out the following
 // code
@@ -220,18 +220,22 @@ softwareUpdate.prototype = {
              getService(Ci.nsIVersionComparator);
     var check = vc.compare(updateData.postVersion, updateData.preVersion);
   
-    controller.assertJS("subject.newVersionGreater == true",
-                        {newVersionGreater: check >= 0});
+    this._controller.assertJS("subject.newVersionGreater == true",
+                              {newVersionGreater: check >= 0});
   
     // If we have the same version number we should check the build id instead
     if (check == 0) {
-      controller.assertJS("subject.postBuildId == subject.updateBuildId",
-                          {postBuildId: updateData.postBuildId, updateBuildId: updateData.updateBuildId});
+      this._controller.assertJS("subject.postBuildId == subject.updateBuildId", {
+        postBuildId: updateData.postBuildId,
+        updateBuildId: updateData.updateBuildId
+      });
     }
   
     // An upgrade should not change the builds locale
-    controller.assertJS("subject.postLocale == subject.preLocale",
-                        {postLocale: updateData.postLocale, preLocale: updateData.preLocale});
+    this._controller.assertJS("subject.postLocale == subject.preLocale", {
+      postLocale: updateData.postLocale,
+      preLocale: updateData.preLocale
+    });
   },
 
   /**
