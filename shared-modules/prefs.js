@@ -43,12 +43,9 @@
  * @version 1.0.1
  */
 
-var MODULE_NAME = 'PrefsAPI';
-
 // Include required modules
-var modalDialog = require("testModalDialogAPI");
-var utils = require("testUtilsAPI");
-
+var modalDialog = require("modal-dialog");
+var utils = require("utils");
 
 const gTimeout = 5000;
 
@@ -369,11 +366,6 @@ function openPreferencesDialog(callback, launcher) {
   if (!mozmill.isWindows) {
     utils.handleWindow("type", prefWindowType, callback);
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of variables

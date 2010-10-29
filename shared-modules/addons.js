@@ -40,11 +40,9 @@
  * access to the Addons Manager.
  */
 
-var MODULE_NAME = 'AddonsAPI';
-
 // Include required modules
-var prefs = require("testPrefsAPI");
-var utils = require("testUtilsAPI");
+var prefs = require("prefs");
+var utils = require("utils");
 
 const gTimeout = 5000;
 
@@ -404,11 +402,6 @@ function resetAmoPreviewUrls() {
   for each (preference in AMO_PREFERENCES) {
     prefSrv.clearUserPref(preference.name);
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of functions

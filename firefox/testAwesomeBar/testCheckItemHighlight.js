@@ -38,9 +38,9 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include required modules
-var places = require("../../shared-modules/testPlacesAPI");
-var prefs = require("../../shared-modules/testPrefsAPI");
-var toolbars = require("../../shared-modules/testToolbarAPI");
+var places = require("../../shared-modules/places");
+var prefs = require("../../shared-modules/prefs");
+var toolbars = require("../../shared-modules/toolbars");
 
 const TIMEOUT = 5000;
 

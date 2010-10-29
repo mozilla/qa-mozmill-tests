@@ -43,8 +43,6 @@
  * @version 1.0.2
  */
 
-var MODULE_NAME = 'PlacesAPI';
-
 const gTimeout = 5000;
 
 /**
@@ -125,11 +123,6 @@ function restoreDefaultBookmarks() {
  */
 function removeAllHistory() {
   browserHistory.removeAllPages();
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of variables

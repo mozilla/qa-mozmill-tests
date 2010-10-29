@@ -37,7 +37,7 @@
 var jum = {}; Components.utils.import('resource://mozmill/modules/jum.js', jum);
 
 // Include required modules
-var toolbars = require("../../shared-modules/testToolbarAPI");
+var toolbars = require("../../shared-modules/toolbars");
 
 const TIMEOUT = 5000;
 

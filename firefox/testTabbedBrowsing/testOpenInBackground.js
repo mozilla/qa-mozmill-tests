@@ -39,9 +39,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../shared-modules/testPrefsAPI");
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var prefs = require("../../shared-modules/prefs");
+var tabs = require("../../shared-modules/tabs");
+var utils = require("../../shared-modules/utils");
 
 const TIMEOUT = 5000;
 

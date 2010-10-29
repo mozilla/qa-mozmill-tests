@@ -36,11 +36,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var modalDialog = require("../../shared-modules/testModalDialogAPI");
-var prefs = require("../../shared-modules/testPrefsAPI");
-var privateBrowsing = require("../../shared-modules/testPrivateBrowsingAPI");
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var modalDialog = require("../../shared-modules/modal-dialog");
+var prefs = require("../../shared-modules/prefs");
+var privateBrowsing = require("../../shared-modules/private-browsing");
+var tabs = require("../../shared-modules/tabs");
+var utils = require("../../shared-modules/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [

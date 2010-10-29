@@ -49,8 +49,6 @@
 
 var frame = {}; Components.utils.import('resource://mozmill/modules/frame.js', frame);
 
-const MODULE_NAME = 'ModalDialogAPI';
-
 /**
  * Observer object to find the modal dialog
  */
@@ -181,11 +179,6 @@ modalDialog.prototype.getDialog = function modalDialog_getDialog()
   }
 
   return false;
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of classes

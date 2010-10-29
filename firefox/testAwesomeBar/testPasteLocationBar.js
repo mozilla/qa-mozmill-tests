@@ -3,9 +3,9 @@
  */
 
 // Include required modules
-var places = require("../../shared-modules/testPlacesAPI");
-var toolbars = require("../../shared-modules/testToolbarAPI");
-var utils = require("../../shared-modules/testUtilsAPI");
+var places = require("../../shared-modules/places");
+var toolbars = require("../../shared-modules/toolbars");
+var utils = require("../../shared-modules/utils");
 
 const TIMEOUT = 5000;
 

@@ -37,8 +37,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../shared-modules/testPrefsAPI");
-var tabs = require("../../shared-modules/testTabbedBrowsingAPI");
+var prefs = require("../../shared-modules/prefs");
+var tabs = require("../../shared-modules/tabs");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 

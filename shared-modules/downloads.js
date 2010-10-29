@@ -43,10 +43,8 @@
  * @version 1.0.1
  */
 
-var MODULE_NAME = 'DownloadsAPI';
-
 // Include required modules
-var utils = require("testUtilsAPI");
+var utils = require("utils");
 
 const gTimeout = 5000;
 
@@ -400,11 +398,6 @@ function getLocalFileFromNativePathOrUrl(aPathOrUrl) {
     var f = new nsLocalFile(aPathOrUrl);
     return f;
   }
-}
-
-// XXX: temporary until we have completely switched over to Common JS
-if (exports == undefined) {
-  var exports = {};
 }
 
 // Export of variables
