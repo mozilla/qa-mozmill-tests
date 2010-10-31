@@ -59,7 +59,7 @@ var setupModule = function() {
   pb.handler = pbStartHandler;
 
   tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function() {

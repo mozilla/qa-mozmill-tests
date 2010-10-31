@@ -53,7 +53,7 @@ var setupModule = function(module) {
   pb = new privateBrowsing.privateBrowsing(controller);
 
   tabBrowser = new tabs.tabBrowser(controller);  
-  tabBrowser.closeAllTabs(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function(module) {
