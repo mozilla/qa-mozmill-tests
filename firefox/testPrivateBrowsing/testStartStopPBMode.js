@@ -58,7 +58,8 @@ var setupModule = function() {
   pb = new privateBrowsing.privateBrowsing(controller);
   pb.handler = pbStartHandler;
 
-  tabs.closeAllTabs(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
+  tabBrowser.closeAllTabs(controller);
 }
 
 var teardownModule = function() {

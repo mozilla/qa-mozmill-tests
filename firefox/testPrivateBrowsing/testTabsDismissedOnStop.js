@@ -52,7 +52,8 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new privateBrowsing.privateBrowsing(controller);
 
-  tabs.closeAllTabs(controller);
+  tabBrowser = new tabs.tabBrowser(controller);  
+  tabBrowser.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
