@@ -51,9 +51,9 @@ const LOCAL_TEST_PAGES = [
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new privateBrowsing.privateBrowsing(controller);
+  
   tabBrowser = new tabs.tabBrowser(controller);
-
-  tabs.closeAllTabs(controller);
+  tabBrowser.closeAllTabs(controller);
 }
 
 var teardownModule = function(module) {
