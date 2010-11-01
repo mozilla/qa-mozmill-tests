@@ -101,7 +101,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   prefs.preferences.setPref("browser.tabs.loadInBackground", loadInBackground);
 
   // Select a word and remember the selection
-  controller.doubleClick(element);
+  controller.doubleClick(element, 5, 5);
   var selection = controller.tabs.activeTabWindow.getSelection().toString().trim();
 
   // Use the context menu to start a search
