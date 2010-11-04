@@ -17,9 +17,9 @@ var setupModule = function(module) {
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
-  
+
   // Clear the clipboard so we don't get data from previous tests in clipboard
-  utils.emptyClipboard() 
+  utils.emptyClipboard();
 }
 
 var teardownModule = function() {
