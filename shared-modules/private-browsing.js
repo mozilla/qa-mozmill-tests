@@ -230,4 +230,3 @@ privateBrowsing.prototype = {
 
 // Export of classes
 exports.privateBrowsing = privateBrowsing;
-exports.privateBrowsing.prototype = privateBrowsing.prototype;

@@ -410,4 +410,3 @@ exports.resetAmoPreviewUrls = resetAmoPreviewUrls;
 
 // Export of classes
 exports.addonsManager = addonsManager;
-exports.addonsManager.prototype = addonsManager.prototype;

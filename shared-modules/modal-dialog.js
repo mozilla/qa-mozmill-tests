@@ -183,4 +183,3 @@ modalDialog.prototype.getDialog = function modalDialog_getDialog()
 
 // Export of classes
 exports.modalDialog = modalDialog;
-exports.modalDialog.prototype = modalDialog.prototype;

@@ -312,4 +312,3 @@ softwareUpdate.prototype = {
 
 // Export of classes
 exports.softwareUpdate = softwareUpdate;
-exports.softwareUpdate.prototype = softwareU

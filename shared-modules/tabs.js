@@ -455,4 +455,3 @@ exports.getTabsWithURL = getTabsWithURL;
 
 // Export of classes
 exports.tabBrowser = tabBrowser;
-exports.tabBrowser.prototype = tabBrowser.prototype;

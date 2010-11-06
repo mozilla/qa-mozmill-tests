@@ -319,4 +319,3 @@ exports.undoClosedWindow = undoClosedWindow;
 
 // Export of classes
 exports.aboutSessionRestore = aboutSessionRestore;
-exports.aboutSessionRestore.prototype = aboutSessionRestore.prototype;
