@@ -222,4 +222,3 @@ nodeCollector.prototype = {
 
 // Exports of classes
 exports.nodeCollector = nodeCollector;
-exports.nodeCollector.prototype = nodeCollector.prototype;

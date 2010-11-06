@@ -409,4 +409,3 @@ exports.getLocalFileFromNativePathOrUrl = getLocalFileFromNativePathOrUrl;
 
 // Export of classes
 exports.downloadManager = downloadManager;
-exports.downloadManager.prototype = downloadManager.prototype;

@@ -376,4 +376,3 @@ exports.openPreferencesDialog = openPreferencesDialog;
 
 // Export of classes
 exports.preferencesDialog = preferencesDialog;
-exports.preferencesDialog.prototype = preferencesDialog.prototype;
