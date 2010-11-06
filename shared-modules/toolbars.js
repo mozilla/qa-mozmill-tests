@@ -494,8 +494,5 @@ locationBar.prototype = {
 
 // Export of classes
 exports.locationBar = locationBar;
-exports.locationBar.prototype = locationBar.prototype;
-
 exports.autoCompleteResults = autoCompleteResults;
-exports.autoCompleteResults.prototype = autoCompleteResults.prototype;
 

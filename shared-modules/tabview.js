@@ -584,4 +584,3 @@ tabView.prototype = {
 
 // Export of classes
 exports.tabView = tabView;
-exports.tabView.prototype = tabView.prototype;

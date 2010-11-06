@@ -825,6 +825,4 @@ searchBar.prototype = {
 
 // Export of classes
 exports.engineManager = engineManager;
-exports.engineManager.prototype = engineManager.prototype;
 exports.searchBar = searchBar;
-exports.searchBar.prototype = searchBar.prototype;

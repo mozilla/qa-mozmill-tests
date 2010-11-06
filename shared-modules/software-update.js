@@ -463,4 +463,3 @@ exports.WIZARD_PAGES = WIZARD_PAGES;
 
 // Export of classes
 exports.softwareUpdate = softwareUpdate;
-exports.softwareUpdate.prototype = softwareUpdate.prototype;
