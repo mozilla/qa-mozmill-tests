@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Mark Locklear <marklocklear@gmail.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -46,31 +47,26 @@ var setupModule = function(module) {
 }
 
 var testGoogleSuggestedTerms = function() {
+  // Switch to Google SSL Beta for lack of Google Instant search
   // Open the Google web page
-  controller.open("http://www.google.com/webhp?complete=1&hl=en");
+  controller.open("https://encrypted.google.com/");
   controller.waitForPageLoad();
 
   // Enter a search term into the Google search field
   var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.type(searchField, "area");
 
-  // The auto-complete box has a different markup for nightly builds
-  // Official releases will not have the 'pre' suffix in the version number
-  if (utils.appInfo.platformVersion.indexOf("pre") == -1) {
-    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "//span[@id='body']/center/form/table[1]/tbody/tr/td[2]");
-  } else {
-    var autoComplete = new elementslib.XPath(controller.tabs.activeTab, "/html/body/center/form/table[1]/tbody/tr/td[2]");
-  }
+  var autoComplete = new elementslib.XPath(controller.tabs.activeTab, 
+                       "/html/body/div[2]/div/table/tbody/tr[1]/td"
+                     );
 
   // Click the first element in the pop-down autocomplete
   controller.waitThenClick(autoComplete, gTimeout);
-
-  // Start the search
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "btnG"));
   controller.waitForPageLoad();
 
   // Check if Search page has come up
   var nextField = new elementslib.Link(controller.tabs.activeTab, "Next");
+  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
 
   controller.waitForElement(searchField, gTimeout);
   controller.waitForElement(nextField, gTimeout);
