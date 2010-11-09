@@ -44,8 +44,8 @@ var setupModule = function() {
 }
 
 var testGoogleSuggestedTerms = function() {
-  // Open the Google web page
-  controller.open("http://www.google.com/webhp?complete=1&hl=en");
+  // Switch to Google SSL Beta for lack of Google Instant search
+  controller.open("https://encrypted.google.com/");
   controller.waitForPageLoad();
 
   // Enter a search term into the Google search field
@@ -53,22 +53,17 @@ var testGoogleSuggestedTerms = function() {
   controller.type(searchField, "area");
 
   // Get a reference to the autocomplete results 
-  var autoComplete = new elementslib.XPath(
-                       controller.tabs.activeTab, 
-                       "/html/body/div[@id='gac_scont']" + 
-                       "/div/div/table/tbody/tr/td/" + 
-                       "table/tbody/tr/td[1]"
-  );
+  var autoComplete = new elementslib.XPath(controller.tabs.activeTab, 
+                       "/html/body/div[2]/div/table/tbody/tr[1]/td"
+                     );
 
   // Click the first element in the pop-down autocomplete
   controller.waitThenClick(autoComplete, TIMEOUT);
-
-  // Start the search
-  controller.click(new elementslib.Name(controller.tabs.activeTab, "btnG"));
   controller.waitForPageLoad();
 
   // Check if Search page has come up
   var nextField = new elementslib.Link(controller.tabs.activeTab, "Next");
+  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
 
   controller.waitForElement(searchField, TIMEOUT);
   controller.waitForElement(nextField, TIMEOUT);
