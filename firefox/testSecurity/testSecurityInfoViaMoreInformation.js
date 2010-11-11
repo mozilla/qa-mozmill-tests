@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -50,7 +51,7 @@ var setupModule = function() {
  */
 var testSecurityInfoViaMoreInformation = function() {
   // Go to a secure website
-  controller.open("https://www.verisign.com/");
+  controller.open("https://addons.mozilla.org/pages/appversions/");
   controller.waitForPageLoad();
   
   // Get the information from the certificate for comparison
