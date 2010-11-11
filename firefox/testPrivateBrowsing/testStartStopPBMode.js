@@ -57,8 +57,9 @@ var setupModule = function() {
   // Create Private Browsing instance and set handler
   pb = new privateBrowsing.privateBrowsing(controller);
   pb.handler = pbStartHandler;
+  tabBrowser = new tabs.tabBrowser(controller);
 
-  tabs.closeAllTabs(controller);
+  tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function() {
@@ -73,21 +74,16 @@ var testEnablePrivateBrowsingMode = function() {
   pb.enabled = false;
   pb.showPrompt = true;
 
-  // Open test pages in separate tabs
-  var newTab = new elementslib.Elem(controller.menus['file-menu'].menu_newNavigatorTab);
-
-  for each(var page in LOCAL_TEST_PAGES) {
+  // Open local pages in separate tabs and wait for each to finish loading
+  LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
 
-    controller.click(newTab);
-  }
+    var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
+    controller.assertNode(elem);
 
-  // Wait until all tabs have been finished loading
-  for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
-   var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
-   controller.waitForElement(elem, TIMEOUT);
-  }
+    tabBrowser.openTab();
+  });
 
   // Start the Private Browsing mode
   pb.start();
@@ -126,9 +122,10 @@ var testStopPrivateBrowsingMode = function() {
                    {allTabsRestored: controller.tabs.length == LOCAL_TEST_PAGES.length + 1});
 
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
-    controller.waitForPageLoad(controller.tabs.getTab(i));
+    var tab = controller.tabs.getTab(i);
+    controller.waitForPageLoad(tab);
 
-    var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
+    var elem = new elementslib.ID(tab, LOCAL_TEST_PAGES[i].id);
     controller.assertNode(elem);
   }
 
