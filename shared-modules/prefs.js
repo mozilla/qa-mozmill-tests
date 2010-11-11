@@ -135,7 +135,7 @@ preferencesDialog.prototype = {
       var button = this.getElement({type: "button", subtype: (saveChanges ? "accept" : "cancel")});
       this._controller.click(button);
     } else {
-      this._controller.keypress(null, 'VK_ESCAPE', {});
+      this._controller.keypress(null, 'w', {accelKey: true});
     }
   },
 
