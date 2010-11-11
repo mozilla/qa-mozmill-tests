@@ -51,8 +51,8 @@ const LOCAL_TEST_PAGES = [
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new privateBrowsing.privateBrowsing(controller);
-
   tabBrowser = new tabs.tabBrowser(controller);
+
   tabBrowser.closeAllTabs();
 }
 
@@ -68,9 +68,13 @@ var testTabRestoration = function() {
   pb.enabled = false;
   pb.showPrompt = false;
 
+  // Open local pages in separate tabs and wait for each to finish loading
   LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
+
+    var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
+    controller.assertNode(elem);
 
     tabBrowser.openTab();
   });
@@ -88,9 +92,10 @@ var testTabRestoration = function() {
 
   // Check if all pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
-    controller.waitForPageLoad(controller.tabs.getTab(i));
+    var tab = controller.tabs.getTab(i);
+    controller.waitForPageLoad(tab);
 
-    var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
+    var elem = new elementslib.ID(tab, LOCAL_TEST_PAGES[i].id);
     controller.assertNode(elem);
   }
 }
