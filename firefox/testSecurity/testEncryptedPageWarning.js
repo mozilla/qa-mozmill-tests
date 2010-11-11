@@ -83,7 +83,7 @@ var testEncryptedPageWarning = function()
   md.start();
 
   // Load an encrypted page
-  controller.open("https://www.verisign.com");
+  controller.open("https://mail.mozilla.org");
 
   // Prevent the test from ending before the warning can appear
   controller.waitForPageLoad();

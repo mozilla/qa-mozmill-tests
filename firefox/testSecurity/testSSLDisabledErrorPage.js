@@ -75,7 +75,7 @@ var testDisableSSL = function() {
 
   prefs.openPreferencesDialog(prefDialogCallback);
 
-  controller.open("https://www.google.com");
+  controller.open("https://mail.mozilla.org");
   controller.waitForPageLoad();
 
   // Verify "Secure Connection Failed" error page title
@@ -95,7 +95,7 @@ var testDisableSSL = function() {
   controller.assertJS("subject.errorMessage.indexOf('ssl_error_ssl_disabled') != -1",
                       {errorMessage: text.getNode().textContent});
 
-  controller.assertJS("subject.errorMessage.indexOf('www.google.com') != -1",
+  controller.assertJS("subject.errorMessage.indexOf('mail.mozilla.org') != -1",
                       {errorMessage: text.getNode().textContent});
 
   var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled')

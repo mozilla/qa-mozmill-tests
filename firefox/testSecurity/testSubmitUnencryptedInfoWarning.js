@@ -80,17 +80,19 @@ var testSubmitUnencryptedInfoWarning = function()
   md.start();
 
   // Load an unencrypted page
-  controller.open("http://www.verisign.com");
+  controller.open("https://mail.mozilla.org");
   controller.waitForPageLoad();
 
   // Get the web page's search box
-  var searchbox = new elementslib.ID(controller.tabs.activeTab, "s");
+  var searchbox = new elementslib.ID(controller.tabs.activeTab, "q");
   controller.waitForElement(searchbox, gTimeout);
 
   // Use the web page search box to submit information
+  var goButton = new elementslib.ID(controller.tabs.activeTab, "submit");
+  
   controller.type(searchbox, "mozilla");
-  controller.keypress(searchbox, "VK_RETURN", {});
-
+  controller.click(goButton);
+  
   // Prevent the test from ending before the warning can appear
   controller.waitForPageLoad();
 
@@ -172,7 +174,7 @@ var handleSecurityWarningDialog = function(controller)
 
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
-                                  "PostToInsecureFromInsecureMessage");
+                                  "PostToInsecureFromSecureMessage");
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
@@ -184,10 +186,6 @@ var handleSecurityWarningDialog = function(controller)
 
   // Verify the message text
   controller.assertJSProperty(infoBody, "textContent", message);
-
-  // Verify the "Alert me whenever" checkbox is checked by default
-  var checkbox = new elementslib.ID(controller.window.document, "checkbox");
-  controller.assertChecked(checkbox);
 
   // Click the OK button
   var okButton = new elementslib.Lookup(controller.window.document,
