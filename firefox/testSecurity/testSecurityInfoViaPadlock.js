@@ -53,7 +53,7 @@ var setupModule = function(module) {
  */
 var testSecurityInfoViaPadlock = function() {
   // Go to a secure website
-  controller.open("https://www.verisign.com/");
+  controller.open("https://addons.mozilla.org/pages/appversions/");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
