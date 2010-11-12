@@ -78,7 +78,9 @@ var testSetMasterPassword = function() {
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.waitThenClick(loginButton, TIMEOUT);
   
-
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"password-save"}');
+  
   // Get the label of the Remember Password button
   var label = utils.getProperty(
                 "chrome://passwordmgr/locale/passwordmgr.properties",

@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -75,18 +76,22 @@ var testPasswordNotificationBar = function() {
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
-  // After logging in, close the notification bar
+  // The notification bar should not be visible before submitting the credentials
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"password-save"}/anon({"type":"info"})' +
                                              '/{"class":"messageCloseButton tabbable"}');
-
-  // The notification bar should not be visible before submitting the credentials
   controller.assertNodeNotExist(button);
 
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
+  // Click the login button
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn"); 
+  controller.click(loginButton);
   controller.waitForPageLoad();
 
+  // Wait for the notification bar and click the CLOSE button
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"password-save"}');
   controller.waitThenClick(button, TIMEOUT);
+  
   controller.sleep(500);
   controller.assertNodeNotExist(button);
 }
