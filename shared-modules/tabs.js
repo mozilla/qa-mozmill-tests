@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -464,6 +465,30 @@ tabBrowser.prototype = {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
       prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
+  },
+  
+  /**
+   * Waits for a particular tab panel element to display and stop animating
+   * 
+   * @param {number} tabIndex
+   *        Index of the tab to check
+   * @param {string} elemString
+   *        Lookup string of the tab panel element
+   */
+  waitForTabPanel: function tabBrowser_waitForTabPanel(tabIndex, elemString) {
+    // Get the specified tab panel element
+    var tabPanel = this.getTabPanelElement(tabIndex, elemString);
+    
+    // Get the style information for the tab panel element
+    var style = this._controller.window.getComputedStyle(tabPanel.getNode(), null);
+    
+    // Wait for the top margin to be 0px - ie. has stopped animating
+    // XXX: A notification bar starts at a negative pixel margin and drops down
+    //      to 0px.  This creates a race condition where a test may click
+    //      before the notification bar appears at it's anticipated screen location
+    this._controller.waitFor(function () {
+      return style.marginTop == '0px';
+    }, "Expected notification bar to be visible: '" + elemString + "' ");
   }
 }
 
