@@ -117,9 +117,9 @@ function checkWindowOpen(controller) {
   // Check if all pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
     var tab = controller.tabs.getTab(i);
-    var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].id);
-
     controller.waitForPageLoad(tab);
+
+    var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].id);
     controller.assertNode(elem);
   }
 }
