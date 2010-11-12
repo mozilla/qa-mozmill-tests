@@ -109,7 +109,10 @@ var startSearch = function(element, engineName, loadInBackground) {
   controller.rightClick(element);
 
   var contextEntry = new elementslib.ID(controller.window.document, "context-searchselect");
+  controller.waitForElement(contextEntry);
+
   var contextLabel = contextEntry.getNode().getAttribute('label');
+
   controller.assertJS("subject.isEngineNameInContextMenu == true",
                       {isEngineNameInContextMenu: contextLabel.indexOf(engineName) != -1});
   controller.click(contextEntry);
