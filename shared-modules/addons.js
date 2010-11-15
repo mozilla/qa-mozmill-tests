@@ -204,7 +204,7 @@ addonsManager.prototype = {
    *                 index      - Index of the tab
    */
   getTabs : function addonsManager_getTabs() {
-    return tabBrowser.getTabsWithURL("about:addons");
+    return tabs.getTabsWithURL("about:addons");
   },
 
   /**
