@@ -375,11 +375,11 @@ softwareUpdate.prototype = {
     // beta release anymore uncomment out the following code
 
     // With version >= 4.0b7pre the update dialog is reachable from within the
-    // about window now. It only applies to Windows and Linux.
+    // about window now.
     var appVersion = utils.appInfo.version;
 
-    if (!mozmill.isMac && this._vc.compare(appVersion, "4.0b7pre") >= 0) {
-      // Open the about window and click the update button
+    if (this._vc.compare(appVersion, "4.0b7pre") >= 0) {
+      // Open the about window and check the update button
       aboutItem = new elementslib.Elem(browserController.menus.helpMenu.aboutName);
       browserController.click(aboutItem);
 
@@ -392,11 +392,12 @@ softwareUpdate.prototype = {
         controller.waitForElement(updateButton, gTimeout);
       });
 
-      // For now just call the old ui until we have a fix.
+      // For now just call the old ui until we have support for the about window.
       var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"].
                          createInstance(Ci.nsIUpdatePrompt);
       updatePrompt.checkForUpdates();
     } else {
+      // For builds <4.0b7pre
       updateItem = new elementslib.Elem(browserController.menus.helpMenu.checkForUpdates);
       browserController.click(updateItem);
     }
