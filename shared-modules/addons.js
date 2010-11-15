@@ -68,7 +68,7 @@ const AMO_PREFERENCES = [
  */
 function addonsManager(aController) {
   this._controller = aController;
-  this._tabBrowser = new tabBrowser.tabBrowser(this._controller);
+  this._tabBrowser = new tabs.tabBrowser(this._controller);
 }
 
 /**
