@@ -292,7 +292,7 @@ locationBar.prototype = {
    * @type {string}
    */
   get value() {
-    return this.urlbar.value;
+    return this.urlbar.getNode().value;
   },
 
   /**
