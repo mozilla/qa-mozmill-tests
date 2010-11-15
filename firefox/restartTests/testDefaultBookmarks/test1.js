@@ -36,94 +36,87 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var domUtils = require("../../../shared-modules/dom-utils");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var places = require("../../../shared-modules/places");
-var utils = require("../../../shared-modules/utils");
+var toolbars = require("../../../shared-modules/toolbars");
 
-const gDelay = 0;
-const gTimeout = 5000;
+function setupModule(module) {
+  controller = mozmill.getBrowserController();
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.bs = places.bookmarksService;
-  module.hs = places.historyService;
-  module.ls = places.livemarkService;
+  locationbar = new toolbars.locationBar(controller);
+  nodeCollector = new domUtils.nodeCollector(controller.window.document);
+
+  bs = places.bookmarksService;
+  hs = places.historyService;
+  ls = places.livemarkService;
 }
 
-var testVerifyDefaultBookmarks = function() {
-  var toolbarElemString = "/*[name()='window']/*[name()='deck'][1]" +
-                          "/*[name()='vbox'][1]/*[name()='toolbox'][1]" +
-                          "/*[name()='toolbar'][3]";
-  var elemString = toolbarElemString + "/*[name()='toolbaritem'][1]" +
-                   "/*[name()='hbox'][1]/*[name()='hbox'][1]" +
-                   "/*[name()='scrollbox'][1]/*[name()='toolbarbutton'][%1]";
+function teardownModule(module) {
+  delete persisted.toolbarNodes;
+}
 
-  // Default bookmarks toolbar should be closed
-  var toolbar = new elementslib.XPath(controller.window.document, toolbarElemString);
-  controller.assertJSProperty(toolbar, "collapsed", true);
+function testVerifyDefaultBookmarks() {
+  var toolbar = new elementslib.ID(controller.window.document, "PersonalToolbar");
+  controller.waitFor(function() {
+    return toolbar.getNode().collapsed == true;
+  }, "Bookmarks Toolbar is hidden by default");
 
-  // Open the bookmarks toolbar via bookmarks button for the rest of the test
-  var bookmarksButton = new elementslib.ID(controller.window.document, "bookmarks-menu-button");
-  controller.click(bookmarksButton);
-  
-  var bookmarkBarItem = new elementslib.ID(controller.window.document, "BMB_viewBookmarksToolbar");
-  controller.mouseDown(bookmarkBarItem);
-  controller.mouseUp(bookmarkBarItem);
-  
+  // On Windows XP and 2000 the Bookmarks Toolbar button is not displayed. Use
+  // the toolbar's context menu to toggle the Bookmarks Toolbar
+  var navbar = new elementslib.ID(controller.window.document, "nav-bar");
+  controller.rightClick(navbar, 1, 1);
+
+  var toggle = new elementslib.ID(controller.window.document,
+                                  "toggle_PersonalToolbar");
+  controller.mouseDown(toggle);
+  controller.mouseUp(toggle);
+
   // Make sure bookmarks toolbar is now open
-  
-  // TODO: Restore this after 1.5.1 lands
-  // controller.waitFor(function() {
-  //   return toolbar.getNode().collapsed == false;
-  // }, gTimeout, 100, 'Bookmarks toolbar is open' );
-  
-  controller.waitForEval("subject.collapsed == false", gTimeout, 100,
-                         toolbar.getNode());
+  controller.waitFor(function() {
+    return toolbar.getNode().collapsed == false;
+  }, "Bookmarks Toolbar is visible");
 
   // Get list of items on the bookmarks toolbar and open container
-  var toolbarNodes = getBookmarkToolbarItems();
+  var toolbarNodes = persisted.toolbarNodes = getBookmarkToolbarItems();
   toolbarNodes.containerOpen = true;
 
+  nodeCollector.root = controller.window.document.getElementById("PlacesToolbarItems");
+  var items = nodeCollector.queryNodes("toolbarbutton").elements;
+
   // For a default profile there should be exactly 3 items
-  controller.assertJS("subject.toolbarItemCount == 3",
-                      {toolbarItemCount: toolbarNodes.childCount});
+  controller.assert(function() {
+    return items.length == 3;
+  }, "Bookmarks Toolbar contains 3 items");
 
   // Check if the Most Visited folder is visible and has the correct title
-  var mostVisited = new elementslib.XPath(controller.window.document,
-                                          elemString.replace("%1", "1"));
-  controller.assertJSProperty(mostVisited, "label", toolbarNodes.getChild(0).title);
+  controller.assertJSProperty(items[0], "label", toolbarNodes.getChild(0).title);
 
-  // Check Getting Started bookmarks title and URI
-  var gettingStarted = new elementslib.XPath(controller.window.document,
-                                             elemString.replace("%1", "2"));
-  controller.assertJSProperty(gettingStarted, "label", toolbarNodes.getChild(1).title);
-
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-  controller.click(gettingStarted);
+  // Check Getting Started bookmarks title and load the page
+  controller.assertJSProperty(items[1], "label", toolbarNodes.getChild(1).title);
+  controller.click(items[1]);
   controller.waitForPageLoad();
 
   // Check for the correct path in the URL which also includes the locale
-  var uriSource = utils.createURI(toolbarNodes.getChild(1).uri, null, null);
-  var uriTarget = utils.createURI(locationBar.getNode().value, null, null);
-  controller.assertJS("subject.source.path == subject.target.path",
-                      {source: uriSource, target: uriTarget});
+  controller.assertValue(locationbar.getElement({type: "urlbar"}),
+                         toolbarNodes.getChild(1).uri);
 
   // Check the title of the default RSS feed toolbar button
-  var RSS = new elementslib.XPath(controller.window.document, elemString.replace("%1", "3"));
-  controller.assertJSProperty(RSS, "label", toolbarNodes.getChild(2).title);
+  controller.assertJSProperty(items[2], "label", toolbarNodes.getChild(2).title);
 
-  // Close container again
+  // Close the container
   toolbarNodes.containerOpen = false;
 
   // Create modal dialog observer
   var md = new modalDialog.modalDialog(feedHandler);
   md.start();
 
+  // XXX: We can't use the new Menu API because of an invalid menu id (bug 612143)
   // Open the properties dialog of the feed
-  controller.rightClick(RSS);
-  controller.sleep(100);
-  controller.click(new elementslib.ID(controller.window.document, "placesContext_show:info"));
-}
+  var properties = new elementslib.ID(controller.window.document,
+                                      "placesContext_show:info");
+  controller.rightClick(items[2]);
+  controller.click(properties);}
 
 /**
  * Callback handler for modal bookmark properties dialog
@@ -133,27 +126,28 @@ var testVerifyDefaultBookmarks = function() {
 function feedHandler(controller) {
   try {
     // Get list of items on the bookmarks toolbar and open container
-    var toolbarNodes = getBookmarkToolbarItems();
-    toolbarNodes.containerOpen = true;
-    var child = toolbarNodes.getChild(2);
+    persisted.toolbarNodes.containerOpen = true;
+    var child = persisted.toolbarNodes.getChild(2);
 
     // Check if the child is a Livemark
-    controller.assertJS("subject.isLivemark == true",
-                        {isLivemark: ls.isLivemark(child.itemId)});
+    controller.assert(function() {
+      return ls.isLivemark(child.itemId);
+    }, "Feed item is a live mark");
 
     // Compare the site and feed URI's
-    var siteLocation = new elementslib.ID(controller.window.document, "editBMPanel_siteLocationField");
+    var siteLocation = new elementslib.ID(controller.window.document,
+                                          "editBMPanel_siteLocationField");
     controller.assertValue(siteLocation, ls.getSiteURI(child.itemId).spec);
 
-    var feedLocation = new elementslib.ID(controller.window.document, "editBMPanel_feedLocationField");
+    var feedLocation = new elementslib.ID(controller.window.document,
+                                          "editBMPanel_feedLocationField");
     controller.assertValue(feedLocation, ls.getFeedURI(child.itemId).spec);
 
-    // Close container again
-    toolbarNodes.containerOpen = false;
-  } catch(e) {
+  } finally {
+    // Close container and properties dialog
+    persisted.toolbarNodes.containerOpen = false;
+    controller.keypress(null, "VK_ESCAPE", {});
   }
-
-  controller.keypress(null, "VK_ESCAPE", {});
 }
 
 /**
