@@ -75,7 +75,9 @@ var testPopUpBlocked = function() {
   controller.waitForPageLoad();
 
   // Check for the close button in the notification bar
-  // A notification bar always exists in the DOM so check the visibility of the X button
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"password-save"}');
+  
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
                                              '/{"class":"messageCloseButton tabbable"}');

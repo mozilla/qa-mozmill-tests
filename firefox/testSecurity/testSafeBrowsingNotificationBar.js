@@ -109,7 +109,11 @@ var checkIgnoreWarningButton = function(badUrl) {
  */
 var checkNoPhishingButton = function(badUrl) {
   if (badUrl == 'http://www.mozilla.com/firefox/its-a-trap.html' ) {
-    // Click on the web forgery report button
+    // Wait for the notification bar to appear
+    tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                               '/{"value":"blocked-badware-page"}');
+    
+    // Get the Not a Forgery button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAForgeryButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
@@ -123,6 +127,10 @@ var checkNoPhishingButton = function(badUrl) {
     controller.assertValue(urlField, 'http://www.mozilla.com/firefox/its-a-trap.html');
 
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
+    // Wait for the notification bar to appear
+    tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                               '/{"value":"blocked-badware-page"}');
+    
     // Click on the attack site report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAnAttackButton.label");
@@ -145,6 +153,10 @@ var checkNoPhishingButton = function(badUrl) {
  * Check the "Get me out of here" button in the notification bar
  */
 var checkGetMeOutOfHereButton = function() {
+  // Wait for the notification bar to appear
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"blocked-badware-page"}');
+    
   // Click on the get me out of here button
   var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                 "safebrowsing.getMeOutOfHereButton.label");
@@ -163,6 +175,10 @@ var checkGetMeOutOfHereButton = function() {
  * Check the X button in the notification bar
  */
 var checkXButton = function() {
+  // Wait for the notification bar to appear
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"blocked-badware-page"}');
+    
   // Click on the x button and verify the notification bar dissapears
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +

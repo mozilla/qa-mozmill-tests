@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -78,7 +79,10 @@ var testSavePassword = function() {
 
   var logInButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.click(logInButton);
-  controller.sleep(500);
+  
+  // Wait for the notification bar to appear
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
+                             '/{"value":"password-save"}');
 
   // After logging in, remember the login information
   var label = utils.getProperty("chrome://passwordmgr/locale/passwordmgr.properties", 
