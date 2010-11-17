@@ -379,18 +379,21 @@ softwareUpdate.prototype = {
     var appVersion = utils.appInfo.version;
 
     if (this._vc.compare(appVersion, "4.0b7pre") >= 0) {
-      // Open the about window and check the update button
-      aboutItem = new elementslib.Elem(browserController.menus.helpMenu.aboutName);
-      browserController.click(aboutItem);
+      // XXX: We can't open the about window, otherwise a parallel download of
+      // the update will let us fallback to a complete one all the time
 
-      utils.handleWindow("type", "Browser:About", function(controller) {
-        // XXX: Bug 599290 - Check for updates has been completely relocated
-        // into the about window. We can't check the in-about ui yet.
-        var updateButton = new elementslib.ID(controller.window.document,
-                                              "checkForUpdatesButton");
-        //controller.click(updateButton);
-        controller.waitForElement(updateButton, gTimeout);
-      });
+      // Open the about window and check the update button
+      //var aboutItem = new elementslib.Elem(browserController.menus.helpMenu.aboutName);
+      //browserController.click(aboutItem);
+      //
+      //utils.handleWindow("type", "Browser:About", function(controller) {
+      //  // XXX: Bug 599290 - Check for updates has been completely relocated
+      //  // into the about window. We can't check the in-about ui yet.
+      //  var updateButton = new elementslib.ID(controller.window.document,
+      //                                        "checkForUpdatesButton");
+      //  //controller.click(updateButton);
+      //  controller.waitForElement(updateButton, gTimeout);
+      //});
 
       // For now just call the old ui until we have support for the about window.
       var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"].
