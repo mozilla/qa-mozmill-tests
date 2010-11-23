@@ -43,7 +43,19 @@
  * @version 1.0.2
  */
 
+// Include required modules
+var utils = require("utils");
+
 const gTimeout = 5000;
+
+// Default bookmarks.html file lives in omni.jar, get via resource URI
+const BOOKMARKS_RESOURCE = "resource:///defaults/profile/bookmarks.html";
+
+// Bookmarks can take up to ten seconds to restore
+const BOOKMARKS_TIMEOUT = 10000;
+
+// Observer topics we need to watch to know whether we're finished
+const TOPIC_BOOKMARKS_RESTORE_SUCCESS = "bookmarks-restore-success";
 
 /**
  * Instance of the bookmark service to gain access to the bookmark API.
@@ -79,6 +91,14 @@ var browserHistory = Cc["@mozilla.org/browser/nav-history-service;1"].
                      getService(Ci.nsIBrowserHistory);
 
 /**
+ * Instance of the observer service to gain access to the observer API
+ *
+ * @see http://mxr.mozilla.org/mozilla-central (nsIObserverService.idl)
+ */
+var observerService = Cc["@mozilla.org/observer-service;1"].
+                      getService(Ci.nsIObserverService);
+
+/**
  * Check if an URI is bookmarked within the specified folder
  *
  * @param (nsIURI) uri
@@ -103,17 +123,35 @@ function isBookmarkInFolder(uri, folderId)
  * Restore the default bookmarks for the current profile
  */
 function restoreDefaultBookmarks() {
-  // Get the default bookmarks.html
-  let dirService = Cc["@mozilla.org/file/directory_service;1"].
-                   getService(Ci.nsIProperties);
+  // Set up the observer -- we're only checking for success here, so we'll simply
+  // time out and throw on failure. It makes the code much clearer than handling
+  // finished state and success state separately.
+  var importSuccessful = false;
+  var importObserver = {
+    observe: function (aSubject, aTopic, aData) {
+      if (aTopic == TOPIC_BOOKMARKS_RESTORE_SUCCESS) {
+        importSuccessful = true;
+      }
+    }
+  }
+  observerService.addObserver(importObserver, TOPIC_BOOKMARKS_RESTORE_SUCCESS, false);
 
-  bookmarksFile = dirService.get("profDef", Ci.nsILocalFile);
-  bookmarksFile.append("bookmarks.html");
+  try {
+    // Fire off the import
+    var bookmarksURI = utils.createURI(BOOKMARKS_RESOURCE);
+    var importer = Cc["@mozilla.org/browser/places/import-export-service;1"].
+                   getService(Ci.nsIPlacesImportExportService);
+    importer.importHTMLFromURI(bookmarksURI, true);
 
-  // Run the import
-  let importer = Cc["@mozilla.org/browser/places/import-export-service;1"].
-                 getService(Ci.nsIPlacesImportExportService);
-  importer.importHTMLFromFile(bookmarksFile, true);
+    // Wait for it to be finished--the observer above will flip this flag
+    mozmill.utils.waitFor(function () {
+      return importSuccessful;
+    }, "Default bookmarks have finished importing", BOOKMARKS_TIMEOUT);
+  }
+  finally {
+    // Whatever happens, remove the observer afterwards
+    observerService.removeObserver(importObserver, TOPIC_BOOKMARKS_RESTORE_SUCCESS);
+  }
 }
 
 /**
@@ -129,8 +167,6 @@ function removeAllHistory() {
   }
 
   // Set up an observer so we get notified when remove completes
-  var observerService = Cc["@mozilla.org/observer-service;1"].
-                        getService(Ci.nsIObserverService);
   let observer = {
     observe: function(aSubject, aTopic, aData) {
       observerService.removeObserver(this, TOPIC_EXPIRATION_FINISHED);    
