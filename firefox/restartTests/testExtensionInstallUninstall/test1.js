@@ -46,9 +46,15 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  persisted.url = "https://preview.addons.mozilla.org/de/firefox/addon/6543/";
-  persisted.extensionName = "Nightly Tester Tools";
-  persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
+  persisted.url = addons.AMO_PREVIEW_SITE + "/firefox/addon/15003/";
+  persisted.extensionName = "Add-on Compatibility Reporter";
+  persisted.extensionId = "compatibility@addons.mozilla.org";
+  
+  // Store the AMO preview site
+  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
+  
+  // Whitelist add the AMO preview site
+  addons.addToWhiteList(persisted.amoPreviewSite);
 
   tabs.closeAllTabs(controller);
 }
@@ -67,7 +73,7 @@ var testInstallExtension = function()
   controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
   controller.waitForPageLoad();
 
-  // To avoid a broken test lets install Adblock directly
+  // To avoid a broken test lets install Add-On Compatibility Reporter directly
   controller.open(persisted.url);
   controller.waitForPageLoad();
 
@@ -115,9 +121,9 @@ var handleTriggerDialog = function(controller) {
   controller.assertJS("subject.extensions[0].name == subject.extensionName",
                       {extensions: itemElem.childNodes, extensionName: persisted.extensionName});
 
-  // Will the extension be installed from https://addons.mozilla.org/?
+  // Will the extension be installed from the original domain
   controller.assertJS("subject.isExtensionFromAMO == true",
-                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('addons.mozilla.org/') != -1});
+                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document,

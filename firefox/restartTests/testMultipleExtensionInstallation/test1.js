@@ -44,17 +44,23 @@ const gInstallTimeout = 10000;
 
 // Object of all add-ons we want to install
 const gAddons = [
-  {name: "Nightly Tester Tools",
-   id: "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}",
-   url: "https://preview.addons.mozilla.org/firefox/addon/6543/"},
+  {name: "Add-on Compatibility Reporter",
+   id: "compatibility@addons.mozilla.org",
+   url: addons.AMO_PREVIEW_SITE + "/firefox/addon/15003/"},
   {name: "Mozilla QA Companion",
    id: "{667e9f3d-0096-4d2b-b171-9a96afbabe20}",
-   url: "https://preview.addons.mozilla.org/firefox/addon/5428"}
+   url: addons.AMO_PREVIEW_SITE + "/firefox/addon/5428/"}
 ];
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
+
+  // Store the AMO preview site
+  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
+  
+  // Whitelist add the AMO preview site
+  addons.addToWhiteList(persisted.amoPreviewSite);
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = gAddons;
@@ -118,8 +124,8 @@ var handleTriggerDialog = function(controller) {
                       {extensions: itemElem.childNodes, 
                        extensionName: persisted.currentAddon.name});
 
-  // Will the extension be installed from https://preview.addons.mozilla.org/?
-  var isAMOUrl = itemElem.childNodes[0].url.indexOf('preview.addons.mozilla.org') != -1;
+  // Will the extension be installed from the original domain
+  var isAMOUrl = itemElem.childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1;
   controller.assertJS("subject.isExtensionFromAMO == true",
                       {isExtensionFromAMO: isAMOUrl});
 

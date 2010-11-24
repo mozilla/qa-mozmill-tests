@@ -46,6 +46,9 @@ var utils = require("utils");
 
 const gTimeout = 5000;
 
+var pm = Cc["@mozilla.org/permissionmanager;1"].
+         getService(Ci.nsIPermissionManager);
+
 // Addons Manager element templates
 const AM_TOPBAR       = '/id("extensionsManager")/{"orient":"vertical"}/id("topStackBar")';
 const AM_DECK         = '/id("extensionsManager")/id("addonsMsg")';
@@ -57,15 +60,19 @@ const AM_SEARCHINPUT  = AM_SEARCHFIELD + '/anon({"class":"textbox-input-box"})/a
 const AM_LISTBOX      = AM_DECK + '/id("extensionsBox")/[1]/id("extensionsView")';
 const AM_LISTBOX_BTN  = '/anon({"flex":"1"})/{"class":"addonTextBox"}/{"flex":"1"}';
 
+// AMO Preview site
+const AMO_PREVIEW_DOMAIN = "addons.allizom.org";
+const AMO_PREVIEW_SITE = "https://" + AMO_PREVIEW_DOMAIN;
+
 // Preferences which have to be changed to make sure we do not interact with the
-// official AMO page but preview.addons.mozilla.org instead
+// official AMO page but the preview site instead
 const AMO_PREFERENCES = [
-  {name: "extensions.getAddons.browseAddons", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
-  {name: "extensions.getAddons.recommended.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
-  {name: "extensions.getAddons.recommended.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
-  {name: "extensions.getAddons.search.browseURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"},
-  {name: "extensions.getAddons.search.url", old: "services.addons.mozilla.org", new: "preview.addons.mozilla.org"},
-  {name: "extensions.getMoreThemesURL", old: "addons.mozilla.org", new: "preview.addons.mozilla.org"}
+  {name: "extensions.getAddons.browseAddons", old: "addons.mozilla.org", new: AMO_PREVIEW_DOMAIN},
+  {name: "extensions.getAddons.recommended.browseURL", old: "addons.mozilla.org", new: AMO_PREVIEW_DOMAIN},
+  {name: "extensions.getAddons.recommended.url", old: "services.addons.mozilla.org", new: AMO_PREVIEW_DOMAIN},
+  {name: "extensions.getAddons.search.browseURL", old: "addons.mozilla.org", new: AMO_PREVIEW_DOMAIN},
+  {name: "extensions.getAddons.search.url", old: "services.addons.mozilla.org", new: AMO_PREVIEW_DOMAIN},
+  {name: "extensions.getMoreThemesURL", old: "addons.mozilla.org", new: AMO_PREVIEW_DOMAIN}
 ];
 
 /**
@@ -382,15 +389,23 @@ addonsManager.prototype = {
 };
 
 /**
- *  Updates all necessary preferences to the preview sub domain
+ * Whitelist permission for the specified domain
+ * @param {string} aDomain
+ *        The domain to add the permission for
  */
-function useAmoPreviewUrls() {
-  var prefSrv = prefs.preferences;
+function addToWhiteList(aDomain) { 
+  pm.add(utils.createURI(aDomain),
+         "install",
+         Ci.nsIPermissionManager.ALLOW_ACTION);
+}
 
-  for each (preference in AMO_PREFERENCES) {
-    var pref = prefSrv.getPref(preference.name, "");
-    prefSrv.setPref(preference.name, pref.replace(preference.old, preference.new));
-  }
+/**
+ * Remove whitelist permission for the specified host
+ * @param {string} aHost
+ *        The host whose permission will be removed
+ */
+function removeFromWhiteList(aHost) { 
+  pm.remove(aHost, "install");
 }
 
 /**
@@ -404,9 +419,27 @@ function resetAmoPreviewUrls() {
   }
 }
 
+/**
+ *  Updates all necessary preferences to the preview sub domain
+ */
+function useAmoPreviewUrls() {
+  var prefSrv = prefs.preferences;
+
+  for each (preference in AMO_PREFERENCES) {
+    var pref = prefSrv.getPref(preference.name, "");
+    prefSrv.setPref(preference.name, pref.replace(preference.old, preference.new));
+  }
+}
+
+// Export of variables
+exports.AMO_PREVIEW_DOMAIN = AMO_PREVIEW_DOMAIN;
+exports.AMO_PREVIEW_SITE = AMO_PREVIEW_SITE;
+
 // Export of functions
-exports.useAmoPreviewUrls = useAmoPreviewUrls;
+exports.addToWhiteList = addToWhiteList;
+exports.removeFromWhiteList = removeFromWhiteList;
 exports.resetAmoPreviewUrls = resetAmoPreviewUrls;
+exports.useAmoPreviewUrls = useAmoPreviewUrls;
 
 // Export of classes
 exports.addonsManager = addonsManager;
