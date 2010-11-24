@@ -50,6 +50,13 @@ var setupModule = function(module) {
   persisted.themeName = "Walnut for Firefox";
   persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
   persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
+  persisted.themeURL = addons.AMO_PREVIEW_SITE + "/firefox/addon/122/";
+
+  // Store the AMO preview site
+  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
+
+  // Whitelist add the AMO preview site
+  addons.addToWhiteList(persisted.amoPreviewSite);
 
   tabs.closeAllTabs(controller);
 }
@@ -71,7 +78,7 @@ var testInstallTheme = function()
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
-  controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/122");
+  controller.open(persisted.themeURL);
   controller.waitForPageLoad();
   
   // XXX: Bug 575241
@@ -129,8 +136,8 @@ var handleTriggerDialog = function(controller)
   controller.assertJS("subject.name == '" + persisted.themeName + "'",
                       itemElem.childNodes[0]);
 
-  // Will the theme be installed from https://addons.mozilla.org/?
-  controller.assertJS("subject.url.indexOf('addons.mozilla.org/') != -1",
+  // Will the theme be installed from the original domain
+  controller.assertJS("subject.url.indexOf('" + persisted.amoPreviewSite + "') != -1",
                       itemElem.childNodes[0]);
 
   // Check if the Cancel button is present

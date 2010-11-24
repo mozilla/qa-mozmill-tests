@@ -48,8 +48,11 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  persisted.extensionName = "Nightly Tester Tools";
-  persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
+  persisted.extensionName = "Add-on Compatibility Reporter";
+  persisted.extensionId = "compatibility@addons.mozilla.org";
+
+  // Store the AMO preview site
+  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
 
   addons.useAmoPreviewUrls();
 }
@@ -123,9 +126,9 @@ var handleTriggerDialog = function(controller)
   controller.assertJS("subject.extensions[0].name == subject.targetName",
                       {extensions: itemElem.childNodes, targetName: persisted.extensionName});
 
-  // Will the extension be installed from https://addons.mozilla.org/?
+  // Will the extension be installed from the original domain
   controller.assertJS("subject.isExtensionFromAMO == true",
-                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf('addons.mozilla.org/') != -1});
+                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document,
