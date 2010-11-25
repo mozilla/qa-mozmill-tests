@@ -90,7 +90,9 @@ var testAccessLocationBarHistory = function () {
   controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100,
                          locationBar.autoCompleteResults);
   locationBar.contains("mission");
-  controller.keypress(null, "VK_RETURN", {});
+
+  var goButton = locationBar.getElement({type: "goButton"});
+  controller.waitThenClick(goButton);
   controller.waitForPageLoad();
 
   // Finally - Check that the mozilla page was loaded by verifying the
