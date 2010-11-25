@@ -72,22 +72,22 @@ var testDownloadStates = function()
   
   // Click the pause button and verify the download is paused
   var pauseButton = dm.getElement({type: "download_button", subtype: "pause", value: download});
-  controller.click(pauseButton);
+  controller.waitThenClick(pauseButton);
   dm.waitForDownloadState(download, downloads.downloadState.paused);
 
   // Click the resume button and verify the download is active
   var resumeButton = dm.getElement({type: "download_button", subtype: "resume", value: download});
-  controller.click(resumeButton);
+  controller.waitThenClick(resumeButton);
   dm.waitForDownloadState(download, downloads.downloadState.downloading);
 
   // Click the cancel button and verify the download is canceled
   var cancelButton = dm.getElement({type: "download_button", subtype: "cancel", value: download});
-  controller.click(cancelButton);
+  controller.waitThenClick(cancelButton);
   dm.waitForDownloadState(download, downloads.downloadState.canceled);
 
   // Click the retry button and verify the download is active
   var retryButton = dm.getElement({type: "download_button", subtype: "retry", value: download});
-  controller.click(retryButton);
+  controller.waitThenClick(retryButton);
   dm.waitForDownloadState(download, downloads.downloadState.downloading);
 }
 
