@@ -67,7 +67,7 @@ var setupModule = function() {
  */
 var testVisibleItemsMax = function() {
   // Use preferences dialog to ensure "When Using the location bar suggest:" History and Bookmarks is selected
-  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
   // Open some local pages to set up the test environment
   for each (var page in LOCAL_PAGES) {

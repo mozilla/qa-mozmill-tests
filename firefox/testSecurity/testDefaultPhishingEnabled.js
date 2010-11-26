@@ -49,7 +49,7 @@ var setupModule = function(module) {
  * Verify phishing detection is enabled
  */
 var testDefaultPhishingEnabled = function() {
-  prefs.openPreferencesDialog(prefPaneSetCallback);
+  prefs.openPreferencesDialog(controller, prefPaneSetCallback);
 }
 
 /**

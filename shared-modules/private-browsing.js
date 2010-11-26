@@ -59,7 +59,8 @@ const gTimeout = 5000;
  *        MozMillController to use for the modal entry dialog
  */
 function privateBrowsing(controller) {
-    this._controller = controller;
+  this._controller = controller;
+  this._handler = null;
 
   /**
    * Menu item in the main menu to enter/leave Private Browsing mode
@@ -80,10 +81,14 @@ function privateBrowsing(controller) {
  */
 privateBrowsing.prototype = {
   /**
-   * Callback function for the modal enter dialog
-   * @private
+   * Returns the controller of the current window
+   *
+   * @returns Mozmill Controller
+   * @type {MozMillController}
    */
-  _handler: null,
+  get controller() {
+    return this._controller;
+  },
 
   /**
    * Checks the state of the Private Browsing mode
@@ -168,18 +173,15 @@ privateBrowsing.prototype = {
    * @param {boolean} useShortcut
    *        Use the keyboard shortcut if true otherwise the menu entry is used
    */
-  start: function privateBrowsing_start(useShortcut)
-  {
+  start: function privateBrowsing_start(useShortcut) {
+    var dialog = null;
+
     if (this.enabled)
       return;
 
     if (this.showPrompt) {
-      // Check if handler is set to prevent a hang when the modal dialog is opened
-      if (!this._handler)
-        throw new Error("Private Browsing mode not enabled due to missing callback handler");
-
-      dialog = new modalDialog.modalDialog(this._handler);
-      dialog.start();
+      dialog = new modalDialog.modalDialog(this._controller.window);
+      dialog.start(this._handler);
     }
 
     if (useShortcut) {
@@ -189,6 +191,9 @@ privateBrowsing.prototype = {
       this._controller.click(this._pbMenuItem);
     }
 
+    if (dialog) {
+      dialog.waitForDialog();
+    }
     this.waitForTransistionComplete(true);
   },
 

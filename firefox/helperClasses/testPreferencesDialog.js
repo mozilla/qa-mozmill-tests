@@ -43,7 +43,7 @@ var setupModule = function(module) {
 }
 
 var testPrefHelperClass = function () {
-  prefs.openPreferencesDialog(handlePrefDialog);
+  prefs.openPreferencesDialog(controller, handlePrefDialog);
 }
 
 /**

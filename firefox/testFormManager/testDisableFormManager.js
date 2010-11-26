@@ -63,7 +63,7 @@ var teardownModule = function() {
 
 var testToggleFormManager = function() {
   // Open Preferences dialog and uncheck save form and search history in the privacy pane
-  prefs.openPreferencesDialog(prefDialogFormCallback);
+  prefs.openPreferencesDialog(controller, prefDialogFormCallback);
 
   // Go to the sample form page and submit form data
   controller.open(LOCAL_TEST_PAGE);

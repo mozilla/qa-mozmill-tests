@@ -79,7 +79,7 @@ var testCloseWindow = function() {
   LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
-    
+
     var elem = new elementslib.Name(controller.tabs.activeTab, page.name);
     controller.assertNode(elem);
 
@@ -92,10 +92,10 @@ var testCloseWindow = function() {
   // One single window will be opened in PB mode which has to be closed now
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
-  
+
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
                          TIMEOUT, 100,
-                         {utils: mozmill.utils, 
+                         {utils: mozmill.utils,
                           expectedCount: (windowCount - 1)});
 
   // Without a window any keypress and menu click will fail.
@@ -103,7 +103,7 @@ var testCloseWindow = function() {
   pb.enabled = false;
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
                          TIMEOUT, 100,
-                         {utils: mozmill.utils, 
+                         {utils: mozmill.utils,
                           expectedCount: windowCount});
 
   utils.handleWindow("type", "navigator:browser", checkWindowOpen, true);
@@ -112,7 +112,7 @@ var testCloseWindow = function() {
 function checkWindowOpen(controller) {
   // All tabs should be restored
   controller.assertJS("subject.tabs.length == subject.expectedCount",
-                      {tabs: controller.tabs, expectedCount: (websites.length + 1)});
+                      {tabs: controller.tabs, expectedCount: (LOCAL_TEST_PAGES.length + 1)});
 
   // Check if all pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {

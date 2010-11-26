@@ -46,7 +46,7 @@ var setupModule = function(module) {
   addonsManager = new addons.addonsManager();
 }
 
-var testCheckInstalledExtension = function() 
+var testCheckInstalledExtension = function()
 {
   // Check if Add-ons Manager is automatically opened after restart
   addonsManager.waitForOpened(controller);
@@ -81,12 +81,13 @@ var testUninstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gTimeout);
 
   // Create a modal dialog instance to handle the software uninstallation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(addonsManager.controller.window);
+  md.start(handleTriggerDialog);
 
   var uninstallButton = addonsManager.getElement({type: "listbox_button", subtype: "uninstall", value: extension});
   addonsManager.controller.waitThenClick(uninstallButton, gTimeout);
- 
+  md.waitForDialog();
+
   // Wait for the restart button
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);

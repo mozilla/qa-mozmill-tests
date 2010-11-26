@@ -64,7 +64,7 @@ var setupModule = function() {
 var testCheckItemHighlight = function() {
   // Use preferences dialog to select:
   // "When Using the location bar suggest:" History and Bookmarks
-  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
   // Open the test page then about:blank to set up the test test environment
   for each (var page in LOCAL_TEST_PAGES) {

@@ -88,7 +88,7 @@ var testPermissionsDisabled = function() {
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
   var allow = new elementslib.XPath(
-                controller.window.document, 
+                controller.window.document,
                 "/*[name()='window']/*[name()='popupset'][1]" +
                 "/*[name()='popup'][2]/*[name()='menuitem'][1]"
               );
@@ -109,7 +109,7 @@ var testPermissionsDisabled = function() {
   controller.assertJSProperty(blockImages, "hidden", true);
 
   // Enable the "Ask me every time" cookie behavior
-  prefs.openPreferencesDialog(prefCookieHandler);
+  prefs.openPreferencesDialog(controller, prefCookieHandler);
 
   // No cookie dialog should show up
   controller.open(LOCAL_TEST_PAGES[2]);

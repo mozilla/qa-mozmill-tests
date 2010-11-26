@@ -68,7 +68,7 @@ var teardownModule = function() {
 }
 
 var testOpenInBackgroundTab = function() {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the HTML testcase:
   controller.open(LOCAL_TEST_PAGE);

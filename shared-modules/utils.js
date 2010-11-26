@@ -371,13 +371,8 @@ function getProperty(url, prefName) {
  * @returns The MozMillController of the window (if the window hasn't been closed)
  */
 function handleWindow(type, text, callback, dontClose) {
-  var func_ptr = null;
-  var window = null;
-
-  if (dontClose === undefined)
-    dontClose = false;
-
   // Set the window opener function to use depending on the type
+  var func_ptr = null;
   switch (type) {
     case "type":
       func_ptr = mozmill.utils.getWindowByType;
@@ -389,30 +384,43 @@ function handleWindow(type, text, callback, dontClose) {
       throw new Error(arguments.callee.name + ": Unknown opener type - " + type);
   }
 
+  var window = null;
+  var controller = null;
+
   try {
     // Wait until the window has been opened
-    mozmill.controller.waitForEval("subject.getWindow(subject.text) != null", gTimeout, 100,
-                                   {getWindow: func_ptr, text: text});
-    window = func_ptr(text);
+    mozmill.utils.waitFor(function () {
+      window = func_ptr(text);
+      return window != null;
+    }, "Window has been found.");
 
     // XXX: We still have to find a reliable way to wait until the new window
     // content has been finished loading. Let's wait for now.
-    var ctrl = new mozmill.controller.MozMillController(window);
-    ctrl.sleep(200);
+    controller = new mozmill.controller.MozMillController(window);
+    controller.sleep(200);
 
-    if (callback)
-      callback(ctrl);
-  } finally {
-    // If a failure happened make sure we close the window if wanted
-    if (dontClose != true & window != null) {
-      window.close();
-      mozmill.controller.waitForEval("subject.getWindow(subject.text) != subject.window",
-                                     gTimeout, 100,
-                                     {getWindow: func_ptr, text: text, window: window});
-      return null;
+    if (callback) {
+      callback(controller);
     }
 
-    return ctrl;
+    // Check if we have to close the window
+    dontClose = dontClose || false;
+    if (dontClose == false & window != null) {
+      controller.window.close();
+      mozmill.utils.waitFor(function () {
+        return func_ptr(text) != window;
+      }, "Window has been closed.");
+
+      window = null;
+      controller = null;
+    }
+
+    return controller;
+  } catch (ex) {
+    if (window)
+      window.close();
+
+    throw ex;
   }
 }
 

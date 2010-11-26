@@ -41,7 +41,8 @@ var modalDialog = require("../../../shared-modules/modal-dialog");
 var tabs = require("../../../shared-modules/tabs");
 
 const TIMEOUT = 5000;
-const gDownloadTimeout = 60000;
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -64,7 +65,7 @@ var setupModule = function(module) {
 /*
  * Tests theme installation
  */
-var testInstallTheme = function() 
+var testInstallTheme = function()
 {
   addonsManager.open(controller);
   addonsManager.paneId = "search";
@@ -80,31 +81,32 @@ var testInstallTheme = function()
   // Open the web page for the Walnut theme directly
   controller.open(persisted.themeURL);
   controller.waitForPageLoad();
-  
+
   // XXX: Bug 575241
   // AMO Lazy install buttons: wait for class change
   var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleTriggerDialog);
 
   // Click link to install the theme which triggers a modal dialog
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, TIMEOUT);
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
                                        {manager: addonsManager});
 
   // Wait until the Theme has been installed.
   var theme = addonsManager.getListboxItem("addonID", persisted.themeId);
-  addonsManager.controller.waitForElement(theme, gDownloadTimeout);
+  addonsManager.controller.waitForElement(theme, TIMEOUT_INSTALLATION);
 
   var themeName = theme.getNode().getAttribute('name');
   addonsManager.controller.assertJS("subject.isValidThemeName == true",
@@ -121,7 +123,7 @@ var testInstallTheme = function()
 /**
  * Handle the Software Installation dialog
  */
-var handleTriggerDialog = function(controller) 
+var handleTriggerDialog = function(controller)
 {
   // Get list of themes which should be installed
   var itemElem = controller.window.document.getElementById("itemList");

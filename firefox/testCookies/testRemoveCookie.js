@@ -66,12 +66,12 @@ var testRemoveCookie = function() {
   // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  
+
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and delete the created cookie
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**
@@ -119,17 +119,17 @@ function deleteCookie(controller) {
   controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
 
   var removed = !cm.cookieExists({
-    host: persisted.hostName, 
-    name: "litmus_1", 
+    host: persisted.hostName,
+    name: "litmus_1",
     path: "/cookies/"
   });
-  
+
   controller.assertJS("subject.isCookieRemoved == true", {
     isCookieRemoved: removed
   });
-  
+
   controller.assertJS("subject.list.view.rowCount == subject.numberCookies", {
-    list: cookiesList, 
+    list: cookiesList,
     numberCookies: origNumCookies - 1
   });
 

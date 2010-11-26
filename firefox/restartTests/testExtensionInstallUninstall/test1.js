@@ -41,6 +41,8 @@ var modalDialog = require("../../../shared-modules/modal-dialog");
 var tabs = require("../../../shared-modules/tabs");
 
 const TIMEOUT = 5000;
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -74,32 +76,32 @@ var testInstallExtension = function() {
   // To avoid a broken test lets install Add-On Compatibility Reporter directly
   controller.open(persisted.url);
   controller.waitForPageLoad();
-  
+
   // XXX: Bug 575241
   // AMO Lazy install buttons: wait for class change
   var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleTriggerDialog);
 
   // Click the link to install the extension
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitForElement(triggerLink, TIMEOUT);
-  controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
+  controller.waitThenClick(triggerLink);
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
                                        {manager: addonsManager});
 
   // Check if the installed extension is visible in the Add-ons Manager
   var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
-  addonsManager.controller.waitForElement(extension, TIMEOUT);
+  addonsManager.controller.waitForElement(extension, TIMEOUT_INSTALLATION);
 
   var extensionName = extension.getNode().getAttribute('name');
   addonsManager.controller.assertJS("subject.isValidExtensionName == true",

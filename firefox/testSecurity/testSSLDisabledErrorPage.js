@@ -73,7 +73,7 @@ var testDisableSSL = function() {
   controller.open("about:blank");
   controller.waitForPageLoad();
 
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   controller.open("https://mail.mozilla.org");
   controller.waitForPageLoad();

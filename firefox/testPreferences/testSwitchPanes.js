@@ -54,7 +54,7 @@ var setupModule = function(module) {
  * Switching through all panes of the preferences dialog
  */
 var testPreferencesPanes = function() {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

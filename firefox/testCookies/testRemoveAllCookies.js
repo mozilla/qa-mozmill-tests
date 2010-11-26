@@ -63,7 +63,7 @@ var testRemoveAllCookies = function() {
   controller.waitForPageLoad();
 
   // Call preferences dialog and delete the created cookies
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

@@ -112,7 +112,7 @@ var testSavePassword = function() {
  */
 var testDeletePassword = function() {
   // Call preferences dialog and delete the saved password
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**
@@ -146,10 +146,13 @@ function deleteAllPasswords(controller) {
   controller.assertJS("subject.view.rowCount == 1", signOnsTree);
 
   // Delete all passwords and accept the deletion of the saved passwords
-  var md = new modalDialog.modalDialog(confirmHandler);
-  md.start(200);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(confirmHandler);
 
   controller.click(new elementslib.ID(controller.window.document, "removeAllSignons"));
+  md.waitForDialog();
+
+  // No passwords should exist anymore
   controller.assertJS("subject.view.rowCount == 0", signOnsTree);
 
   // Close the password manager

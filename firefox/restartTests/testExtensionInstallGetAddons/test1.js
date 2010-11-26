@@ -41,7 +41,9 @@ var modalDialog = require("../../../shared-modules/modal-dialog");
 
 const gTimeout = 5000;
 const gSearchTimeout = 30000;
-const gInstallTimeout = 30000;
+
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module)
 {
@@ -82,25 +84,28 @@ var testInstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gSearchTimeout);
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(addonsManager.controller);
+  md.start(handleTriggerDialog);
 
   // Trigger the extension installation
-  var installButton = addonsManager.getElement({type: "listbox_button", subtype: "installSearchResult", value: extension});
+  var installButton = addonsManager.getElement({type: "listbox_button",
+                                                subtype: "installSearchResult",
+                                                value: extension});
   addonsManager.controller.waitThenClick(installButton);
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
-  // The lazy software dialog opening makes it hard for us to work with modal dialogs here.
-  // Until bug 560821 hasn't been fixed we have to do that workaround by setting the install
-  // panel manually if it hasn't been done automatically.
   addonsManager.controller.waitForEval("subject.manager.paneId == 'installs' || " +
-                                       "subject.extension.getAttribute('action') == 'installing'", gInstallTimeout, 100,
+                                       "subject.extension.getAttribute('action') == 'installing'",
+                                       gTimeout,
+                                       100,
                                        {manager: addonsManager, extension: extension.getNode()});
   addonsManager.paneId = "installs";
 
   // ... and that the installation has been finished
   extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
-  addonsManager.controller.waitForElement(extension, gInstallTimeout);
-  addonsManager.controller.waitForEval("subject.extension.getAttribute('state') == 'success'", gInstallTimeout, 100,
+  addonsManager.controller.waitForElement(extension, TIMEOUT_INSTALLATION);
+  addonsManager.controller.waitForEval("subject.extension.getAttribute('state') == 'success'",
+                                       gTimeout, 100,
                                        {extension: extension.getNode()});
 
   // Check if restart button is present
@@ -111,7 +116,7 @@ var testInstallExtension = function()
 /**
  * Handle the Software Installation dialog
  */
-var handleTriggerDialog = function(controller) 
+var handleTriggerDialog = function(controller)
 {
   // Get list of extensions which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
