@@ -19,6 +19,8 @@
  *
  * Contributor(s):
  *   Adrian Kalla <akalla@aviary.pl>
+ *   Axel Hecht <axel@pike.org>
+ *   Henrik Skupin <hskupin@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -87,22 +89,23 @@ function _saveCanvas(canvas) {
   // Use the path given on the command line and saved under
   // persisted.screenshotPath, if available. If not, use the path to the
   // temporary folder as a fallback.
+  var file = null;
   if ("screenshotPath" in persisted) {
-    var path = persisted.screenshotPath;
-    // convert the string file path to an nsIFile
-    var file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-    file.initWithPath(path);
-  } else {
-    var file = Cc["@mozilla.org/file/directory_service;1"].
-               getService(Ci.nsIProperties).
-               get("TmpD", Ci.nsIFile);
-    var fileName = utils.appInfo.name + "-" +
-                   utils.appInfo.locale + "." +
-                   utils.appInfo.version + "." +
-                   utils.appInfo.buildID + "." +
-                   utils.appInfo.os + ".png";
-    file.append(fileName);
+    file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+    file.initWithPath(persisted.screenshotPath);
   }
+  else {
+    file = Cc["@mozilla.org/file/directory_service;1"].
+           getService(Ci.nsIProperties).
+           get("TmpD", Ci.nsIFile);
+  }
+
+  var fileName = utils.appInfo.name + "-" +
+                 utils.appInfo.locale + "." +
+                 utils.appInfo.version + "." +
+                 utils.appInfo.buildID + "." +
+                 utils.appInfo.os + ".png";
+  file.append(fileName);
 
   // if a file already exists, don't overwrite it and create a new name
   file.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, parseInt("0666", 8));
