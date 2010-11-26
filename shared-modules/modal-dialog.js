@@ -35,151 +35,197 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include required modules
+var domUtils = require("dom-utils");
+
+const TIMEOUT_MODAL_DIALOG = 5000;
+const DELAY_CHECK = 100;
+
 /**
- * @fileoverview
- * The ModalDialogAPI adds support for handling modal dialogs. It
- * has to be used e.g. for alert boxes and other commonDialog instances.
+ * Observer object to find the modal dialog spawned by a controller
  *
- * @version 1.0.2
+ * @constructor
+ * @class Observer used to find a modal dialog
+ *
+ * @param {object} aOpener
+ *        Window which is the opener of the modal dialog
+ * @param {function} aCallback
+ *        The callback handler to use to interact with the modal dialog
  */
+function mdObserver(aOpener, aCallback) {
+  this._opener = aOpener;
+  this._callback = aCallback;
+  this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 
-/* Huge amounts of code have been leveraged from the password manager mochitest suite.
- * http://mxr.mozilla.org/mozilla-central/source/toolkit/components/passwordmgr/test/prompt_common.js
- */
+  this.exception = null;
+  this.finished = false;
+}
 
-var frame = {}; Components.utils.import('resource://mozmill/modules/frame.js', frame);
+mdObserver.prototype = {
 
-/**
- * Observer object to find the modal dialog
- */
-var mdObserver = {
-  QueryInterface : function (iid) {
-    const interfaces = [Ci.nsIObserver,
-                        Ci.nsISupports,
-                        Ci.nsISupportsWeakReference];
+  /**
+   * Check if the modal dialog has been opened
+   *
+   * @returns {object} The modal dialog window found, or null.
+   */
+  findWindow : function mdObserver_findWindow() {
+    // If a window has been opened from content, it has to be unwrapped.
+    var window = domUtils.unwrapNode(mozmill.wm.getMostRecentWindow(''));
 
-    if (!interfaces.some( function(v) { return iid.equals(v) } ))
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    return this;
+    // Get the WebBrowserChrome and check if it's a modal window
+    var chrome = window.QueryInterface(Ci.nsIInterfaceRequestor).
+                 getInterface(Ci.nsIWebNavigation).
+                 QueryInterface(Ci.nsIDocShellTreeItem).
+                 treeOwner.
+                 QueryInterface(Ci.nsIInterfaceRequestor).
+                 getInterface(Ci.nsIWebBrowserChrome);
+    if (!chrome.isWindowModal()) {
+      return null;
+    }
+
+    // Opening a modal dialog from a modal dialog would fail, if we wouldn't
+    // check for the opener of the modal dialog
+    var found = false;
+    if (window.opener) {
+      // XXX Bug 614757 - an already unwrapped node returns a wrapped node
+      var opener = domUtils.unwrapNode(window.opener);
+      found = (mozmill.utils.getChromeWindow(opener) == this._opener);
+    }
+    else {
+      // Also note that it could happen that dialogs don't have an opener
+      // (i.e. clear recent history). In such a case make sure that the most
+      // recent window is not the passed in reference opener
+      found = (window != this._opener);
+    }
+
+    return (found ? window : null);
   },
 
-  observe : function (subject, topic, data)
-  {
-    if (this.docFinder()) {
+  /**
+   * Called by the timer in the given interval to check if the modal dialog has
+   * been opened. Once it has been found the callback gets executed
+   *
+   * @param {object} aSubject Not used.
+   * @param {string} aTopic Not used.
+   * @param {string} aData Not used.
+   */
+  observe : function mdObserver_observe(aSubject, aTopic, aData) {
+    // Once the window has been found and loaded we can execute the callback
+    var window = this.findWindow();
+    if (window && ("documentLoaded" in window)) {
       try {
-        var window = mozmill.wm.getMostRecentWindow("");
-        this.handler(new mozmill.controller.MozMillController(window));
-      } catch (ex) {
-          window.close();
-          frame.events.fail({'function':ex});
+        this._callback(new mozmill.controller.MozMillController(window));
       }
-    } else {
-      // try again in a bit
-      this.startTimer(null, this);
+      catch (ex) {
+        // Store the exception, so it can be forwarded if a modal dialog has
+        // been opened by another modal dialog
+        this.exception = ex;
+      }
+
+      if (window) {
+        window.close();
+      }
+
+      this.finished = true;
+      this.stop();
+    }
+    else {
+      // otherwise try again in a bit
+      this._timer.init(this, DELAY_CHECK, Ci.nsITimer.TYPE_ONE_SHOT);
     }
   },
 
-  handler: null,
-  startTimer: null,
-  docFinder: null
+  /**
+   * Stop the timer which checks for new modal dialogs
+   */
+  stop : function mdObserver_stop() {
+    delete this._timer;
+  }
 };
 
+
 /**
- * Create a new modalDialog instance.
+ * Creates a new instance of modalDialog.
  *
- * @class A class to handle modal dialogs
  * @constructor
- * @param {function} callback
- *        The callback handler to use to interact with the modal dialog
+ * @class Handler for modal dialogs
+ *
+ * @param {object} aWindow [optional - default: null]
+ *        Window which is the opener of the modal dialog
  */
-function modalDialog(callback)
-{
-  this.observer = mdObserver;
-  this.observer.handler = callback;
-  this.observer.startTimer = this.start;
-  this.observer.docFinder = this.getDialog;
+function modalDialog(aWindow) {
+  this._window = aWindow || null;
 }
 
-/**
- * Set a new callback handler.
- *
- * @param {function} callback
- *        The callback handler to use to interact with the modal dialog
- */
-modalDialog.prototype.setHandler = function modalDialog_setHandler(callback)
-{
-  this.observer.handler = callback;
-}
+modalDialog.prototype = {
 
-/**
- * Start timer to wait for the modal dialog.
- *
- * @param {Number} delay
- *        Initial delay before the observer gets called
- * @param {object} observer
- *        (Optional) Observer for modal dialog checks
- */
-modalDialog.prototype.start = function modalDialog_start(delay, observer)
-{
-  const dialogDelay = (delay == undefined) ? 100 : delay;
+  /**
+   * Simply checks if the modal dialog has been processed
+   *
+   * @returns {boolean} True, if the dialog has been processed
+   */
+  get finished() {
+    return (!this._observer || this._observer.finished);
+  },
 
-  var modalDialogTimer = Cc["@mozilla.org/timer;1"].
-                         createInstance(Ci.nsITimer);
+  /**
+   * Start timer to wait for the modal dialog.
+   *
+   * @param {function} aCallback
+   *        The callback handler to use to interact with the modal dialog
+   */
+  start : function modalDialog_start(aCallback) {
+    if (!aCallback) {
+      throw new Error(arguments.callee.name + ": Callback not specified.");
+    }
 
-  // If we are not called from the observer, we have to use the supplied
-  // observer instead of this.observer
-  if (observer) {
-    modalDialogTimer.init(observer,
-                          dialogDelay,
-                          Ci.nsITimer.TYPE_ONE_SHOT);
-  } else {
-    modalDialogTimer.init(this.observer,
-                          dialogDelay,
-                          Ci.nsITimer.TYPE_ONE_SHOT);
-  }
-}
+    this._observer = new mdObserver(this._window, aCallback);
 
-/**
- * Check if the modal dialog has been opened
- *
- * @private
- * @return Returns if the modal dialog has been found or not
- * @type Boolean
- */
-modalDialog.prototype.getDialog = function modalDialog_getDialog()
-{
-  var enumerator = mozmill.wm.getXULWindowEnumerator("");
+    this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+    this._timer.init(this._observer, DELAY_CHECK, Ci.nsITimer.TYPE_ONE_SHOT);
+  },
 
-  // Find the <browser> which contains notifyWindow, by looking
-  // through all the open windows and all the <browsers> in each.
-  while (enumerator.hasMoreElements()) {
-    var win = enumerator.getNext();
-    var windowDocShell = win.QueryInterface(Ci.nsIXULWindow).docShell;
+  /**
+   * Stop the timer which checks for new modal dialogs
+   */
+  stop : function modalDialog_stop() {
+    delete this._timer;
 
-    var containedDocShells = windowDocShell.getDocShellEnumerator(
-                                      Ci.nsIDocShellTreeItem.typeChrome,
-                                      Ci.nsIDocShell.ENUMERATE_FORWARDS);
+    if (this._observer) {
+      this._observer.stop();
+      this._observer = null;
+    }
+  },
 
-    while (containedDocShells.hasMoreElements()) {
-      // Get the corresponding document for this docshell
-      var childDocShell = containedDocShells.getNext();
+  /**
+   * Wait until the modal dialog has been processed.
+   *
+   * @param {Number} aTimeout (optional - default 5s)
+   *        Duration to wait
+   */
+  waitForDialog : function modalDialog_waitForDialog(aTimeout) {
+    var timeout = aTimeout || TIMEOUT_MODAL_DIALOG;
 
-      // We don't want it if it's not done loading.
-      if (childDocShell.busyFlags != Ci.nsIDocShell.BUSY_FLAGS_NONE)
-        continue;
+    if (!this._observer) {
+      return;
+    }
 
-      // Ensure that we are only returning true if it is indeed the modal
-      // dialog we were looking for.
-      var chrome = win.QueryInterface(Ci.nsIInterfaceRequestor).
-                       getInterface(Ci.nsIWebBrowserChrome);
-      if (chrome.isWindowModal()) {
-        return true;
+    try {
+      mozmill.utils.waitFor(function () {
+        return this.finished;
+      }, "Modal dialog has been found and processed", timeout, undefined, this);
+
+      // Forward the raised exception so we can detect failures in modal dialogs
+      if (this._observer.exception) {
+        throw this._observer.exception;
       }
     }
+    finally {
+      this.stop();
+    }
   }
-
-  return false;
 }
+
 
 // Export of classes
 exports.modalDialog = modalDialog;

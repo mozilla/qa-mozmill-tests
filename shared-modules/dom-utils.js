@@ -36,6 +36,29 @@
 
 
 /**
+ * Unwraps a node which is wrapped into a XPCNativeWrapper or XrayWrapper
+ *
+ * @param {DOMnode} Wrapped DOM node
+ * @returns {DOMNode} Unwrapped DOM node
+ */
+function unwrapNode(aNode) {
+  var node = aNode;
+
+  if (node) {
+    // unwrap is not available on older branches (3.5 and 3.6) - Bug 533596
+    if ("unwrap" in XPCNativeWrapper) {
+      node = XPCNativeWrapper.unwrap(node);
+    }
+    else if ("wrappedJSObject" in node) {
+      node = node.wrappedJSObject;
+    }
+  }
+
+  return node;
+}
+
+
+/**
  * Default constructor
  *
  * @param {object} aRoot
@@ -79,7 +102,7 @@ nodeCollector.prototype = {
 
   /**
    * Sets current nodes to entries from the node list
-   * 
+   *
    * @param {array of objects} aNodeList
    *        List of DOM nodes to set
    */
@@ -105,7 +128,7 @@ nodeCollector.prototype = {
 
   /**
    * Sets root node to the specified DOM node
-   * 
+   *
    * @param {object} aRoot
    *        DOM node to use as root for node collection
    */
@@ -219,6 +242,10 @@ nodeCollector.prototype = {
     return this;
   }
 }
+
+
+// Exports of functions
+exports.unwrapNode = unwrapNode;
 
 // Exports of classes
 exports.nodeCollector = nodeCollector;
