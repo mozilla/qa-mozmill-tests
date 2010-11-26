@@ -94,8 +94,8 @@ function testVerifyDefaultBookmarks() {
   toolbarNodes.containerOpen = false;
 
   // Create modal dialog observer
-  var md = new modalDialog.modalDialog(feedHandler);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(feedHandler);
 
   // XXX: We can't use the new Menu API because of an invalid menu id (bug 612143)
   // Open the properties dialog of the feed
@@ -103,6 +103,7 @@ function testVerifyDefaultBookmarks() {
                                       "placesContext_show:info");
   controller.rightClick(items[2]);
   controller.click(properties);
+  md.waitForDialog();
 }
 
 

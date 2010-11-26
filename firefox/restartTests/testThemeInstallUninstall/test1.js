@@ -40,8 +40,9 @@ var addons = require("../../../shared-modules/addons");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var tabs = require("../../../shared-modules/tabs");
 
-const gTimeout = 5000;
-const gDownloadTimeout = 60000;
+const TIMEOUT = 5000;
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -51,10 +52,10 @@ var setupModule = function(module) {
   persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
   persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
   persisted.themeURL = addons.AMO_PREVIEW_SITE + "/firefox/addon/122/";
-  
+
   // Store the AMO preview site
   persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-  
+
   // Whitelist add the AMO preview site
   addons.addToWhiteList(persisted.amoPreviewSite);
 
@@ -64,39 +65,48 @@ var setupModule = function(module) {
 /*
  * Tests theme installation
  */
-var testInstallTheme = function() 
+var testInstallTheme = function()
 {
   addonsManager.open(controller);
   addonsManager.paneId = "search";
 
   // Wait for the Browse All Add-ons link and click on it
   var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
-  addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
+  addonsManager.controller.waitThenClick(browseAllAddons, TIMEOUT);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
+  controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
   controller.waitForPageLoad();
 
   // Open the web page for the Walnut theme directly
   controller.open(persisted.themeURL);
   controller.waitForPageLoad();
 
+  // XXX: Bug 575241
+  // AMO Lazy install buttons: wait for class change
+  var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
+                                          "//div[@id='addon-summary']/div/div/div/p/a");
+
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
+                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
+
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleTriggerDialog);
 
   // Click link to install the theme which triggers a modal dialog
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitThenClick(triggerLink, gTimeout);
+  controller.waitThenClick(triggerLink, TIMEOUT);
+  md.waitForDialog();
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
                                        {manager: addonsManager});
 
   // Wait until the Theme has been installed.
   var theme = addonsManager.getListboxItem("addonID", persisted.themeId);
-  addonsManager.controller.waitForElement(theme, gDownloadTimeout);
+  addonsManager.controller.waitForElement(theme, TIMEOUT_INSTALLATION);
 
   var themeName = theme.getNode().getAttribute('name');
   addonsManager.controller.assertJS("subject.isValidThemeName == true",
@@ -107,18 +117,18 @@ var testInstallTheme = function()
 
   // Check if restart button is present
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
-  addonsManager.controller.waitForElement(restartButton, gTimeout);
+  addonsManager.controller.waitForElement(restartButton, TIMEOUT);
 }
 
 /**
  * Handle the Software Installation dialog
  */
-var handleTriggerDialog = function(controller) 
+var handleTriggerDialog = function(controller)
 {
   // Get list of themes which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
-  controller.waitForElement(itemList, gTimeout);
+  controller.waitForElement(itemList, TIMEOUT);
 
   // There should be one theme for installation
   controller.assertJS("subject.themes.length == 1",

@@ -53,7 +53,7 @@ var setupModule = function(module)
 var testOpenCloseOptionsDialog = function()
 {
   // Reset pane to the main pane before starting the test
-  prefs.openPreferencesDialog(prefPaneResetCallback);
+  prefs.openPreferencesDialog(controller, prefPaneResetCallback);
 }
 
 /**
@@ -62,10 +62,10 @@ var testOpenCloseOptionsDialog = function()
 var testOptionsDialogRetention = function()
 {
   // Choose the Privacy pane
-  prefs.openPreferencesDialog(prefPaneSetCallback);
+  prefs.openPreferencesDialog(controller, prefPaneSetCallback);
 
   // And check if the Privacy pane is still selected
-  prefs.openPreferencesDialog(prefPaneCheckCallback);
+  prefs.openPreferencesDialog(controller, prefPaneCheckCallback);
 }
 
 /**

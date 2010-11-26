@@ -75,7 +75,7 @@ var testGetMoreEngines = function()
   controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", gTimeout, 100,
                          {tabs: controller.tabs, preCount: tabCount});
   controller.waitForPageLoad();
-  
+
   // Install the engine from the Open the search provider page before installing the engine
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
@@ -85,17 +85,18 @@ var testGetMoreEngines = function()
   var installButton = new elementslib.XPath(controller.tabs.activeTab,
                                             "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", gTimeout, 100, 
+  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", gTimeout, 100,
                         {installButtonClass: installButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
-  var md = new modalDialog.modalDialog(handleSearchInstall);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSearchInstall);
 
   // Install the search engine
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, gTimeout);
+  md.waitForDialog();
 
   controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", gTimeout, 100,
                          {engine: searchBar, name: searchEngine.name});

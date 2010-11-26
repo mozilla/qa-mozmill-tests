@@ -39,7 +39,9 @@ var addons = require("../../../shared-modules/addons");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var tabs = require("../../../shared-modules/tabs");
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module)
 {
@@ -49,10 +51,10 @@ var setupModule = function(module)
   persisted.url = addons.AMO_PREVIEW_SITE + "/firefox/addon/15003/";
   persisted.extensionName = "Add-on Compatibility Reporter";
   persisted.extensionId = "compatibility@addons.mozilla.org";
-  
+
   // Store the AMO preview site
   persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-  
+
   // Whitelist add the AMO preview site
   addons.addToWhiteList(persisted.amoPreviewSite);
 
@@ -67,10 +69,10 @@ var testInstallExtension = function()
 
   // Wait for the Browse All Add-ons link and click on it
   var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
-  addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
+  addonsManager.controller.waitThenClick(browseAllAddons, TIMEOUT);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
+  controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
   controller.waitForPageLoad();
 
   // To avoid a broken test lets install Add-On Compatibility Reporter directly
@@ -78,22 +80,22 @@ var testInstallExtension = function()
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleTriggerDialog);
 
   // Click the link to install the extension
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitForElement(triggerLink, gTimeout);
-  controller.click(triggerLink, triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
+  controller.waitThenClick(triggerLink);
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
                                        {manager: addonsManager});
 
   // Check if the installed extension is visible in the Add-ons Manager
   var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
-  addonsManager.controller.waitForElement(extension, gTimeout);
+  addonsManager.controller.waitForElement(extension, TIMEOUT_INSTALLATION);
 
   var extensionName = extension.getNode().getAttribute('name');
   addonsManager.controller.assertJS("subject.isValidExtensionName == true",
@@ -101,7 +103,7 @@ var testInstallExtension = function()
 
   // Check if restart button is present
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
-  addonsManager.controller.waitForElement(restartButton, gTimeout);
+  addonsManager.controller.waitForElement(restartButton, TIMEOUT);
 }
 
 /**
@@ -111,7 +113,7 @@ var handleTriggerDialog = function(controller) {
   // Get list of extensions which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
   var itemList = new elementslib.Elem(controller.window.document, itemElem);
-  controller.waitForElement(itemList, gTimeout);
+  controller.waitForElement(itemList, TIMEOUT);
 
   // There should be listed only one extension
   controller.assertJS("subject.extensionsCount == 1",

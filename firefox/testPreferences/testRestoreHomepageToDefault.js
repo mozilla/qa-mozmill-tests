@@ -71,7 +71,7 @@ var testRestoreHomeToDefault = function()
   controller.assertNode(link);
 
   // Call Preferences dialog and set home page
-  prefs.openPreferencesDialog(prefDialogHomePageCallback);
+  prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
 
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
@@ -81,7 +81,7 @@ var testRestoreHomeToDefault = function()
   controller.assertNode(link);
 
   // Open Preferences dialog and reset home page to default
-  prefs.openPreferencesDialog(prefDialogDefHomePageCallback);
+  prefs.openPreferencesDialog(controller, prefDialogDefHomePageCallback);
 }
 
 /**

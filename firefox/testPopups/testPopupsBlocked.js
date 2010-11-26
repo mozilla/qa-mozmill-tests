@@ -68,7 +68,7 @@ var teardownModule = function(module) {
 var testPopUpBlocked = function() {
   var windowCount = mozmill.utils.getWindows().length;
 
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the Pop-up test site
   controller.open(localTestFolder + "popups/popups_2.html");
@@ -77,7 +77,7 @@ var testPopUpBlocked = function() {
   // Check for the close button in the notification bar
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
                              '/{"value":"popup-blocked"}');
-  
+
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
                                              '/{"class":"messageCloseButton tabbable"}');

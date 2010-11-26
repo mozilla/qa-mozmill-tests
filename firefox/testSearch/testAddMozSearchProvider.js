@@ -71,12 +71,13 @@ var testAddMozSearchPlugin = function()
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the installation dialog
-  var md = new modalDialog.modalDialog(handleSearchInstall);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSearchInstall);
 
   // Add the search engine
   var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
   controller.click(addButton);
+  md.waitForDialog();
 
   controller.waitForEval("subject.search.isEngineInstalled(subject.engine) == true", gTimeout, 100,
                          {search: searchBar, engine: searchEngine.name});

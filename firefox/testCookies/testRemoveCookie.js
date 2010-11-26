@@ -66,12 +66,12 @@ var testRemoveCookie = function() {
   // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  
+
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and delete the created cookie
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

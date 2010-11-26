@@ -111,7 +111,7 @@ var testPasswordNotSaved = function() {
   controller.assertValue(passField, "");
 
   // Call preferences dialog and check that no password has been saved
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

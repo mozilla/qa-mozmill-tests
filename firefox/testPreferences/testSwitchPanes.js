@@ -52,7 +52,7 @@ var setupModule = function(module)
  */
 var testPreferencesPanes = function()
 {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

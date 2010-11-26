@@ -51,7 +51,7 @@ var setupModule = function(module)
  */
 var testDefaultSecurityPreferences = function()
 {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

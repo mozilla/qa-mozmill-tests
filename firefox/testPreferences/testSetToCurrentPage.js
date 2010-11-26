@@ -75,7 +75,7 @@ var testSetHomePage = function()
   controller.assertNode(link);
 
   // Call Prefs Dialog and set Home Page
-  prefs.openPreferencesDialog(prefDialogHomePageCallback);
+  prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
 }
 
 var testHomeButton = function()

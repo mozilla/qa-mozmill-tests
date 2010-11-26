@@ -115,10 +115,11 @@ var testSaveFormInformation = function() {
  */
 var testClearFormHistory = function() {
   // Call clear recent history dialog and clear all form history
-  var md = new modalDialog.modalDialog(clearHistoryHandler);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(clearHistoryHandler);
 
   controller.click(new elementslib.Elem(controller.menus["tools-menu"].sanitizeItem));
+  md.waitForDialog();
 
   // Verify forms are cleared
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");

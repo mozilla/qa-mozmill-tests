@@ -43,8 +43,7 @@ var utils = require("../../shared-modules/utils");
 const gDelay = 0;
 const gTimeout = 5000;
 
-// Used to indicate the modal warning dialog has been shown
-var modalWarningShown = false;
+const TIMEOUT_MODAL_DIALOG = 30000;
 
 var setupModule = function(module)
 {
@@ -73,15 +72,16 @@ var testSubmitUnencryptedInfoWarning = function()
   tabs.closeAllTabs(controller);
 
   // Make sure the prefs are set
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Create a listener for the warning dialog
-  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSecurityWarningDialog);
 
   // Load an unencrypted page
   controller.open("https://mail.mozilla.org");
   controller.waitForPageLoad();
+  md.waitForDialog();
 
   // Get the web page's search box
   var searchbox = new elementslib.ID(controller.tabs.activeTab, "q");
@@ -92,7 +92,7 @@ var testSubmitUnencryptedInfoWarning = function()
 
   controller.type(searchbox, "mozilla");
   controller.click(goButton);
-  
+
   // Prevent the test from ending before the warning can appear
   controller.waitForPageLoad();
 
@@ -121,11 +121,12 @@ var prefDialogCallback = function(controller)
   controller.waitForElement(warningSettingsButton, gTimeout);
 
   // Create a listener for the Warning Messages Settings dialog
-  var md = new modalDialog.modalDialog(handleSecurityWarningSettingsDialog);
-  md.start(500);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSecurityWarningSettingsDialog);
 
   // Click the Warning Messages Settings button
   controller.click(warningSettingsButton);
+  md.waitForDialog();
 
   // Close the preferences dialog
   prefDialog.close(true);
@@ -170,8 +171,6 @@ var handleSecurityWarningSettingsDialog = function(controller)
  */
 var handleSecurityWarningDialog = function(controller)
 {
-  modalWarningShown = true;
-
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
                                   "PostToInsecureFromSecureMessage");

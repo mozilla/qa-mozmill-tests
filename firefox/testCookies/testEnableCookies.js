@@ -64,17 +64,17 @@ var teardownModule = function() {
  */
 var testEnableCookies = function() {
   // Call preferences dialog and disable cookies
-  prefs.openPreferencesDialog(prefEnableCookieDialogCallback);
+  prefs.openPreferencesDialog(controller, prefEnableCookieDialogCallback);
 
   // Go to a test page to build a cookie
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
-  
+
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and check cookies
-  prefs.openPreferencesDialog(prefCheckEnableDialogCallback);
+  prefs.openPreferencesDialog(controller, prefCheckEnableDialogCallback);
 }
 
 /**

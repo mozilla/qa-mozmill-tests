@@ -22,7 +22,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
- *   Geo Mealer <gmealer@mozilla.com> 
+ *   Geo Mealer <gmealer@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -71,7 +71,7 @@ var teardownModule = function(module) {
  * Check that links open in background tabs
  */
 var testOpenInBackgroundTab = function() {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the HTML testcase:
   controller.open(LOCAL_TEST_PAGE);

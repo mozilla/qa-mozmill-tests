@@ -74,7 +74,7 @@ var teardownModule = function(module)
  */
 var testOpenInForegroundTab = function()
 {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the HTML testcase
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");

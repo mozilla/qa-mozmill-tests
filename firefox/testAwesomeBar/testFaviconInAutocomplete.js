@@ -63,7 +63,7 @@ var setupModule = function() {
  */
 var testFaviconInAutoComplete = function() {
   // Use preferences dialog to select "When Using the location bar suggest:" "History"
-  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
   // Open the local test page
   locationBar.loadURL(LOCAL_TEST_PAGE.url);

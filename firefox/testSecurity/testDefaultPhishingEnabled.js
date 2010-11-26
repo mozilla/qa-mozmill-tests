@@ -51,7 +51,7 @@ var setupModule = function(module)
  */
 var testDefaultPhishingEnabled = function()
 {
-  prefs.openPreferencesDialog(prefPaneSetCallback);
+  prefs.openPreferencesDialog(controller, prefPaneSetCallback);
 }
 
 /**

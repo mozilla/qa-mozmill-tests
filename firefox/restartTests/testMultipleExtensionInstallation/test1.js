@@ -39,8 +39,9 @@
 var addons = require("../../../shared-modules/addons");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 
-const gTimeout = 5000;
-const gInstallTimeout = 10000;
+const TIMEOUT = 5000;
+const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALLATION = 30000;
 
 // Object of all add-ons we want to install
 const gAddons = [
@@ -58,7 +59,7 @@ var setupModule = function() {
 
   // Store the AMO preview site
   persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-  
+
   // Whitelist add the AMO preview site
   addons.addToWhiteList(persisted.amoPreviewSite);
 
@@ -74,25 +75,32 @@ var testInstallExtensions = function() {
     controller.open(addon.url);
     controller.waitForPageLoad();
 
+    // XXX: Bug 575241
+    // AMO Lazy install buttons: wait for class change
+    var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
+                                           "//div[@id='addon-summary']/div/div/div/p/a");
+
+    controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
+                           {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
+
     // Create a modal dialog instance to handle the Software Installation dialog
-    var md = new modalDialog.modalDialog(handleTriggerDialog);
-    md.start();
+    var md = new modalDialog.modalDialog(controller.window);
+    md.start(handleTriggerDialog);
 
     // Click the link to install the extension
     var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                             "//div[@id='addon-summary']/div/div/div/p/a/span");
-    controller.waitForElement(triggerLink, gTimeout);
-    controller.click(triggerLink, 
-                     triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
+    controller.waitThenClick(triggerLink, TIMEOUT);
+    md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
     // Wait that the Installation pane is selected after the extension has been installed
     addonsManager.waitForOpened(controller);
-    addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,
+    addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
                                          {manager: addonsManager});
 
     // Check if the installed extension is visible in the Add-ons Manager
     var extension = addonsManager.getListboxItem("addonID", addon.id);
-    addonsManager.controller.waitForElement(extension, gInstallTimeout);
+    addonsManager.controller.waitForElement(extension, TIMEOUT_INSTALLATION);
 
     var matchNames = (extension.getNode().getAttribute('name') == addon.name);
     addonsManager.controller.assertJS("subject.isValidExtensionName == true",
@@ -100,7 +108,7 @@ var testInstallExtensions = function() {
 
     // Check if restart button is present
     var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
-    addonsManager.controller.waitForElement(restartButton, gTimeout);
+    addonsManager.controller.waitForElement(restartButton, TIMEOUT);
   }
 }
 
@@ -111,21 +119,20 @@ var testInstallExtensions = function() {
  */
 var handleTriggerDialog = function(controller) {
   // Get list of extensions which should be installed
-  var itemElem = controller.window.document.getElementById("itemList");
-  var itemList = new elementslib.Elem(controller.window.document, itemElem);
-  controller.waitForElement(itemList, gTimeout);
+  var list = new elementslib.ID(controller.window.document, "itemList");
+  controller.waitForElement(list, TIMEOUT);
 
   // There should be listed only one extension
   controller.assertJS("subject.extensions.length == 1",
-                      {extensions: itemElem.childNodes});
+                      {extensions: list.getNode().childNodes});
 
   // Check if the extension name is shown
   controller.assertJS("subject.extensions[0].name == subject.extensionName",
-                      {extensions: itemElem.childNodes, 
+                      {extensions: list.getNode().childNodes,
                        extensionName: persisted.currentAddon.name});
 
   // Will the extension be installed from the original domain
-  var isAMOUrl = itemElem.childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1;
+  var isAMOUrl = list.getNode().childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1;
   controller.assertJS("subject.isExtensionFromAMO == true",
                       {isExtensionFromAMO: isAMOUrl});
 
