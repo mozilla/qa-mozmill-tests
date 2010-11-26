@@ -128,6 +128,9 @@ function prefPaneInit(controller, prefDialog) {
           title : utils.getEntity(dtds, "historyHeader.custom.label"),
           subContent : [
             { getBy : GET_BY_ID,
+              id : "privateBrowsingAutoStart",
+              target : WINDOW_CURRENT},
+            { getBy : GET_BY_ID,
               id : "cookieExceptions",
               target : WINDOW_NEW,
               title : utils.getProperty(properties, "cookiepermissionstitle")},
