@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Adrian Kalla <akalla@aviary.pl>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,6 +34,415 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+// Include required modules
+var modalDialog = require("modal-dialog");
+var utils = require("utils");
+
+/**
+ * DOMWalker Constructor
+ *
+ * @param {MozMillController} controller
+ *        MozMill controller of the window to operate on.
+ * @param {Function} callbackFilter
+ *        callback-method to filter nodes
+ * @param {Function} callbackNodeTest
+ *        callback-method to test accepted nodes
+ * @param {Function} callbackResults
+ *        callback-method to process the results
+ *        [optional - default: undefined]
+ */
+function DOMWalker(controller, callbackFilter, callbackNodeTest,
+                   callbackResults) {
+
+  this._controller = controller;
+  this._callbackFilter = callbackFilter;
+  this._callbackNodeTest = callbackNodeTest;
+  this._callbackResults = callbackResults;
+}
+
+DOMWalker.FILTER_ACCEPT = 1;
+DOMWalker.FILTER_REJECT = 2;
+DOMWalker.FILTER_SKIP = 3;
+
+DOMWalker.GET_BY_ID = "id";
+DOMWalker.GET_BY_SELECTOR = "selector";
+
+DOMWalker.WINDOW_CURRENT = 1;
+DOMWalker.WINDOW_MODAL = 2;
+DOMWalker.WINDOW_NEW = 4;
+
+DOMWalker.prototype = {
+  /**
+   * Returns the filter-callback
+   *
+   * @returns Function
+   */
+  get callbackFilter() {
+    return this._callbackFilter;
+  },
+
+  /**
+   * Returns the node-testing-callback
+   *
+   * @returns Function
+   */
+  get callbackNodeTest() {
+    return this._callbackNodeTest;
+  },
+
+  /**
+   * Returns the results-callback
+   *
+   * @returns Function
+   */
+  get callbackResults() {
+    return this._callbackResults;
+  },
+
+  /**
+   * Returns the MozMill controller
+   *
+   * @returns Mozmill controller
+   * @type {MozMillController}
+   */
+  get controller() {
+    return this._controller;
+  },
+
+  /**
+   * The main DOMWalker function.
+   *
+   * It start's the _walk-method for a given window or other dialog, runs
+   * a callback to process the results for that window/dialog.
+   * After that switches to provided new windows/dialogs.
+   *
+   * @param {array of objects} ids
+   *        Contains informations on the elements to open while
+   *        Object-elements:  getBy         - attribute-name of the attribute
+   *                                          containing the identification
+   *                                          information for the opener-element
+   *                          subContent    - array of ids of the opener-elements
+   *                                          in the window with the value of
+   *                                          the above getBy-attribute
+   *                          target        - information, where the new
+   *                                          elements will be opened
+   *                                          [1|2|4]
+   *                          title         - title of the opened dialog/window
+   *                          waitFunction  - The function used as an argument
+   *                                          for MozmillController.waitFor to
+   *                                          wait before starting the walk.
+   *                                          [optional - default: no waiting]
+   *                          windowHandler - Window instance
+   *                                          [only needed for some tests]
+   *
+   * @param {Node} root
+   *        Node to start testing from
+   *        [optional - default: this._controller.window.document.documentElement]
+   * @param {Function} waitFunction
+   *        The function used as an argument for MozmillController.waitFor to
+   *        wait before starting the walk.
+   *        [optional - default: no waiting]
+   */
+  walk : function DOMWalker_walk(ids, root, waitFunction) {
+    if (typeof waitFunction == 'function')
+      this._controller.waitFor(waitFunction());
+
+    if (!root)
+      root = this._controller.window.document.documentElement;
+
+    var resultsArray = this._walk(root);
+
+    if (typeof this._callbackResults == 'function')
+      this._callbackResults(this._controller, resultsArray);
+
+    if (ids)
+      this._prepareTargetWindows(ids);
+  },
+
+  /**
+   * Retrieves and returns a wanted node based on the provided identification
+   * set.
+   *
+   * @param {array of objects} idSet
+   *        Contains informations on the elements to open while
+   *        Object-elements:  getBy         - attribute-name of the attribute
+   *                                          containing the identification
+   *                                          information for the opener-element
+   *                          subContent    - array of ids of the opener-elements
+   *                                          in the window with the value of
+   *                                          the above getBy-attribute
+   *                          target        - information, where the new
+   *                                          elements will be opened
+   *                                          [1|2|4]
+   *                          title         - title of the opened dialog/window
+   *                          waitFunction  - The function used as an argument
+   *                                          for MozmillController.waitFor to
+   *                                          wait before starting the walk.
+   *                                          [optional - default: no waiting]
+   *                          windowHandler - Window instance
+   *                                          [only needed for some tests]
+   *
+   * @returns Node
+   * @type {Node}
+   */
+  _getNode : function DOMWalker_getNode(idSet) {
+    var doc = this._controller.window.document;
+
+    // QuerySelector seems to be unusuale for id's in this case:
+    // https://developer.mozilla.org/En/Code_snippets/QuerySelector
+    switch (idSet.getBy) {
+      case DOMWalker.GET_BY_ID:
+        return doc.getElementById(idSet[idSet.getBy]);
+      case DOMWalker.GET_BY_SELECTOR:
+        return doc.querySelector(idSet[idSet.getBy]);
+      default:
+        throw new Error("Not supported getBy-attribute: " + idSet.getBy);
+    }
+  },
+
+  /**
+   * Main entry point to open new elements like windows, tabpanels, prefpanes,
+   * dialogs
+   *
+   * @param {array of objects} ids
+   *        Contains informations on the elements to open while
+   *        Object-elements:  getBy         - attribute-name of the attribute
+   *                                          containing the identification
+   *                                          information for the opener-element
+   *                          subContent    - array of ids of the opener-elements
+   *                                          in the window with the value of
+   *                                          the above getBy-attribute
+   *                          target        - information, where the new
+   *                                          elements will be opened
+   *                                          [1|2|4]
+   *                          title         - title of the opened dialog/window
+   *                          waitFunction  - The function used as an argument
+   *                                          for MozmillController.waitFor to
+   *                                          wait before starting the walk.
+   *                                          [optional - default: no waiting]
+   *                          windowHandler - Window instance
+   *                                          [only needed for some tests]
+   */
+  _prepareTargetWindows : function DOMWalker_prepareTargetWindows(ids) {
+    var doc = this._controller.window.document;
+
+    // Go through all the provided ids
+    for (var i = 0; i < ids.length; i++) {
+      var node = this._getNode(ids[i]);
+
+      // Go further only, if the needed element exists
+      if (node) {
+        var idSet = ids[i];
+
+        // Decide if what we want to open is a new normal/modal window or if it
+        // will be opened in the current window.
+        switch (idSet.target) {
+          case DOMWalker.WINDOW_CURRENT:
+            this._processNode(node, idSet);
+            break;
+          case DOMWalker.WINDOW_MODAL:
+            // Modal windows have to be able to access that informations
+            var modalInfos = {ids : idSet.subContent,
+                              callbackFilter :  this._callbackFilter,
+                              callbackNodeTest : this._callbackNodeTest,
+                              callbackResults : this._callbackResults,
+                              waitFunction : idSet.waitFunction}
+            persisted.modalInfos = modalInfos;
+
+            var md = new modalDialog.modalDialog(this._modalWindowHelper);
+            md.start(200);
+
+            this._processNode(node, idSet);
+            break;
+          case DOMWalker.WINDOW_NEW:
+            this._processNode(node, idSet);
+
+            // Get the new non-modal window controller
+            var controller = utils.handleWindow('title', idSet.title,
+                                           false, true);
+
+            // Start a new DOMWalker instance
+            let domWalker = new DOMWalker(controller, this._callbackFilter,
+                                          this._callbackNodeTest,
+                                          this._callbackResults);
+            domWalker.walk(idSet.subContent,
+                           controller.window.document.documentElement,
+                           idSet.waitFunction);
+
+            // Close the window
+            controller.window.close();
+            break;
+          default:
+            throw new Error("Node does not exist: " + ids[i][ids[i].getBy]);
+        }
+      }
+    }
+  },
+
+  /**
+   * Opens new windows/dialog and starts the DOMWalker.walk() in case of dialogs
+   * in existing windows.
+   *
+   * @param {Node} activeNode
+   *        Node that holds the information which way
+   *        to open the new window/dialog
+   * @param {object} idSet
+   *        ID set for the element to open
+   */
+  _processNode: function DOMWalker_processNode(activeNode, idSet) {
+    var doc = this._controller.window.document;
+    var nodeToProcess = this._getNode(idSet);
+
+    // Opens a new window/dialog through a menulist and runs DOMWalker.walk()
+    // for it.
+    // If the wanted window/dialog is already selected, just run this function
+    // recursively for it's descendants.
+    if (activeNode.localName == "menulist") {
+      if (nodeToProcess.label != idSet.title) {
+        var dropDown = new elementslib.Elem(nodeToProcess);
+        this._controller.waitForElement(dropDown);
+
+        this._controller.select(dropDown, null, idSet.title);
+
+        this._controller.waitFor(function() {
+          return nodeToProcess.label == idSet.title;
+        }, "The menu item did not load in time: " + idSet.title);
+
+        // If the target is a new modal/non-modal window, this.walk() has to be
+        // started by the method opening that window. If not, we do it here.
+        if (idSet.target == DOMWalker.WINDOW_CURRENT)
+          this.walk(idSet.subContent, null, idSet.waitFunction);
+      } else if (nodeToProcess.selected && idSet.subContent &&
+                 idSet.subContent.length > 0) {
+        this._prepareTargetWindows(idSet.subContent);
+      }
+    }
+
+    // Opens a new prefpane using a provided windowHandler object
+    // and runs DOMWalker.walk() for it.
+    // If the wanted prefpane is already selected, just run this function
+    // recursively for it's descendants.
+    else if (activeNode.localName == "prefpane") {
+      var windowHandler = idSet.windowHandler;
+
+      if (windowHandler.paneId != idSet.id) {
+        windowHandler.paneId = idSet.id;
+
+        // Wait for the pane's content to load and to be fully displayed
+        this._controller.waitFor(function() {
+          return (nodeToProcess.loaded &&
+                  (!mozmill.isMac ||
+                   nodeToProcess.style.opacity == 1 ||
+                   nodeToProcess.style.opacity == null));
+        }, "The pane did not load in time: " + idSet.id);
+
+        // If the target is a new modal/non-modal window, this.walk() has to be
+        // started by the method opening that window. If not, we do it here.
+        if (idSet.target == DOMWalker.WINDOW_CURRENT)
+          this.walk(idSet.subContent, null, idSet.waitFunction);
+      } else if (windowHandler.paneId == idSet.id && idSet.subContent &&
+                 idSet.subContent.length > 0) {
+        this._prepareTargetWindows(idSet.subContent);
+      }
+    }
+
+    // Switches to another tab and runs DOMWalker.walk() for it.
+    // If the wanted tabpanel is already selected, just run this function
+    // recursively for it's descendants.
+    else if (activeNode.localName == "tab") {
+      if (nodeToProcess.selected != true) {
+        this._controller.click(new elementslib.Elem(nodeToProcess));
+
+        // If the target is a new modal/non-modal window, this.walk() has to be
+        // started by the method opening that window. If not, we do it here.
+        if (idSet.target == DOMWalker.WINDOW_CURRENT)
+          this.walk(idSet.subContent, null, idSet.waitFunction);
+      } else if (nodeToProcess.selected && idSet.subContent
+                 && idSet.subContent.length > 0) {
+        this._prepareTargetWindows(idSet.subContent);
+      }
+    }
+
+    // Opens a new dialog/window by clicking on an object and runs
+    // DOMWalker.walk() for it.
+    else {
+      this._controller.click(new elementslib.Elem(nodeToProcess));
+
+      // If the target is a new modal/non-modal window, this.walk() has to be
+      // started by the method opening that window. If not, we do it here.
+      if (idSet.target == DOMWalker.WINDOW_CURRENT)
+        this.walk(idSet.subContent, null, idSet.waitFunction);
+    }
+  },
+
+  /**
+   * DOMWalker_walk goes recursively through the DOM, starting with a provided
+   * root-node.
+   *
+   * First, it filters nodes by submitting each node to the this._callbackFilter
+   * method to decide, if a node should be submitted to a provided
+   * this._callbackNodeTest method to test (that hapens in case of
+   * FILTER_ACCEPT).
+   * In case of FILTER_ACCEPT and FILTER_SKIP, the children of such a node
+   * will be filtered recursively.
+   * Nodes with the nodeStatus "FILTER_REJECT" and their descendants will be
+   * completetly ignored.
+   *
+   * @param {Node} root
+   *        Node to start testing from
+   *        [optional - default: this._controller.window.document.documentElement]
+   * @returns An array with gathered all results from testing a given element
+   * @type {array of elements}
+   */
+  _walk : function DOMWalker__walk(root) {
+    if (!root.childNodes)
+      throw new Error("root.childNodes does not exist");
+
+    var collectedResults = [];
+
+    for (var i = 0; i < root.childNodes.length; i++) {
+      var nodeStatus = this._callbackFilter(root.childNodes[i]);
+
+      var nodeTestResults = [];
+
+      switch (nodeStatus) {
+        case DOMWalker.FILTER_ACCEPT:
+          nodeTestResults = this._callbackNodeTest(root.childNodes[i]);
+          collectedResults = collectedResults.concat(nodeTestResults);
+          // no break here as we have to perform the _walk below too
+        case DOMWalker.FILTER_SKIP:
+          nodeTestResults = this._walk(root.childNodes[i]);
+          break;
+        default:
+          break;
+      }
+
+      collectedResults = collectedResults.concat(nodeTestResults);
+    }
+    return collectedResults;
+  },
+
+  /**
+   * Callback function to handle new windows
+   *
+   * @param {MozMillController} controller
+   *        MozMill controller of the new window to operate on.
+   */
+  _modalWindowHelper: function DOMWalker_modalWindowHelper(controller) {
+    let domWalker = new DOMWalker(controller,
+                                  persisted.modalInfos.callbackFilter,
+                                  persisted.modalInfos.callbackNodeTest,
+                                  persisted.modalInfos.callbackResults);
+    domWalker.walk(persisted.modalInfos.ids,
+                   controller.window.document.documentElement,
+                   persisted.modalInfos.waitFunction);
+
+    delete persisted.modalInfos;
+
+    controller.window.close();
+  }
+}
 
 /**
  * Default constructor
@@ -78,7 +488,7 @@ nodeCollector.prototype = {
 
   /**
    * Sets current nodes to entries from the node list
-   * 
+   *
    * @param {array of objects} aNodeList
    *        List of DOM nodes to set
    */
@@ -104,7 +514,7 @@ nodeCollector.prototype = {
 
   /**
    * Sets root node to the specified DOM node
-   * 
+   *
    * @param {object} aRoot
    *        DOM node to use as root for node collection
    */
@@ -220,4 +630,5 @@ nodeCollector.prototype = {
 }
 
 // Exports of classes
+exports.DOMWalker = DOMWalker;
 exports.nodeCollector = nodeCollector;
