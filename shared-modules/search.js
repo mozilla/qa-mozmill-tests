@@ -220,7 +220,7 @@ engineManager.prototype = {
     this.selectedEngine = name;
 
     // Setup the modal dialog handler
-    md = new modalDialog.modalDialog(this._controller);
+    md = new modalDialog.modalDialog(this._controller.window);
     md.start(handler);
 
     var button = this.getElement({type: "engine_button", subtype: "edit"});
@@ -247,7 +247,7 @@ engineManager.prototype = {
    *        type: General type information
    *        subtype: Specific element or property
    *        value: Value of the element or property
-   * @returns Element which has been created  
+   * @returns Element which has been created
    * @type ElemBase
    */
   getElement : function engineManager_getElement(spec) {
@@ -594,7 +594,7 @@ searchBar.prototype = {
    *        type: General type information
    *        subtype: Specific element or property
    *        value: Value of the element or property
-   * @returns Element which has been created  
+   * @returns Element which has been created
    * @type ElemBase
    */
   getElement : function searchBar_getElement(spec) {
