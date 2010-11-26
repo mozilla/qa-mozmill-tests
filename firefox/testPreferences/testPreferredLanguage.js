@@ -59,7 +59,7 @@ var testSetLanguages = function () {
   controller.open("about:blank");
 
   // Call preferences dialog and set primary language to Italian
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the Google Home page
   controller.open('http://www.google.com/');
@@ -91,11 +91,12 @@ var prefDialogCallback = function(controller) {
   prefDialog.paneId = 'paneContent';
 
   // Call language dialog and set Italian as primary language
-  var md = new modalDialog.modalDialog(langHandler);
-  md.start(200);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(langHandler);
 
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
   controller.waitThenClick(language, gTimeout);
+  md.waitForDialog();
 
   prefDialog.close(true);
 }

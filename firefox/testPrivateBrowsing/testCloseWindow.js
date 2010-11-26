@@ -110,7 +110,7 @@ var testCloseWindow = function() {
 function checkWindowOpen(controller) {
   // All tabs should be restored
   controller.assertJS("subject.tabs.length == subject.expectedCount",
-                      {tabs: controller.tabs, expectedCount: (websites.length + 1)});
+                      {tabs: controller.tabs, expectedCount: (LOCAL_TEST_PAGES.length + 1)});
 
   // Check if all local pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {

@@ -81,11 +81,12 @@ var testUninstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gTimeout);
 
   // Create a modal dialog instance to handle the software uninstallation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(addonsManager.controller);
+  md.start(handleTriggerDialog);
 
   var uninstallButton = addonsManager.getElement({type: "listbox_button", subtype: "uninstall", value: extension});
   addonsManager.controller.waitThenClick(uninstallButton, gTimeout);
+  md.waitforDialog();
  
   // Wait for the restart button
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});

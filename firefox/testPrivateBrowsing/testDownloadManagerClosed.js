@@ -86,7 +86,7 @@ var teardownModule = function(module) {
  */
 var testDownloadManagerClosed = function() {
   // Disable the opening of the Downloads Manager when starting a download
-  prefs.openPreferencesDialog(handlePrefDialog);
+  prefs.openPreferencesDialog(controller, handlePrefDialog);
 
   // Download two files of unknown type
   for (var i = 0; i < DOWNLOADS.length; i++) {

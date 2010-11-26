@@ -88,13 +88,14 @@ var testGetMoreEngines = function()
                         {installButtonClass: installButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
-  var md = new modalDialog.modalDialog(handleSearchInstall);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSearchInstall);
 
   // Install the search engine
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, TIMEOUT);
+  md.waitForDialog();
 
   controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", TIMEOUT, 100,
                          {engine: searchBar, name: searchEngine.name});

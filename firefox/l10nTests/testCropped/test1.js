@@ -240,5 +240,5 @@ function prefPanesCroppedTest(controller) {
 }
 
 function testPrefWindowCroppedElements() {
-  prefs.openPreferencesDialog(prefPanesCroppedTest);
+  prefs.openPreferencesDialog(controller, prefPanesCroppedTest);
 }

@@ -99,7 +99,7 @@ var testPermissionsDisabled = function() {
   controller.keypress(null, "VK_ESCAPE", {});
 
   // Enable the "Ask me every time" cookie behavior
-  prefs.openPreferencesDialog(prefCookieHandler);
+  prefs.openPreferencesDialog(controller, prefCookieHandler);
 
   // No cookie dialog should show up
   controller.open(LOCAL_TEST_PAGES[1]);

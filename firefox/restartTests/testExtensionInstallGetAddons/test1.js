@@ -79,18 +79,18 @@ var testInstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gSearchTimeout);
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(addonsManager.controller);
+  md.start(handleTriggerDialog);
 
   // Trigger the extension installation
   var installButton = addonsManager.getElement({type: "listbox_button", subtype: "installSearchResult", value: extension});
   addonsManager.controller.waitThenClick(installButton);
+  md.waitForDialog();
 
-  // The lazy software dialog opening makes it hard for us to work with modal dialogs here.
-  // Until bug 560821 hasn't been fixed we have to do that workaround by setting the install
-  // panel manually if it hasn't been done automatically.
   addonsManager.controller.waitForEval("subject.manager.paneId == 'installs' || " +
-                                       "subject.extension.getAttribute('action') == 'installing'", gInstallTimeout, 100,
+                                       "subject.extension.getAttribute('action') == 'installing'",
+                                       gInstallTimeout,
+                                       100,
                                        {manager: addonsManager, extension: extension.getNode()});
   addonsManager.paneId = "installs";
 

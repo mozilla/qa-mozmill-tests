@@ -49,7 +49,7 @@ var setupModule = function(module) {
  * Test that SSL and TLS are checked by default
  */
 var testDefaultSecurityPreferences = function() {
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

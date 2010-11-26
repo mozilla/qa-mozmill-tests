@@ -66,7 +66,7 @@ var teardownModule = function() {
  */
 var testSuggestHistoryAndBookmarks = function() {
   // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
-  prefs.openPreferencesDialog(prefDialogSuggestsCallback);
+  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
   // Open the test page
   locationBar.loadURL(LOCAL_TEST_PAGE.url);

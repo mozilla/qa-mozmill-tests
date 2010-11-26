@@ -83,13 +83,14 @@ var testInstallTheme = function()
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(handleTriggerDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleTriggerDialog);
 
   // Click link to install the theme which triggers a modal dialog
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
   controller.waitThenClick(triggerLink, TIMEOUT);
+  md.waitForDialog();
 
   // Wait that the Installation pane is selected after the extension has been installed
   addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", 10000, 100,

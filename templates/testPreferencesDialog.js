@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include necessary modules
-const RELATIVE_ROOT   = '../../shared-modules';
-const MODULE_REQUIRES = ['PrefsAPI', 'UtilsAPI'];
+// Include required modules
+var prefs = require("../../shared-modules/prefs");
 
 const TIMEOUT = 5000;
 
@@ -46,7 +45,7 @@ var setupModule = function() {
 }
 
 var testSampleTestcase = function() {
-  PrefsAPI.openPreferencesDialog(callbackHandler);
+  prefs.openPreferencesDialog(controller, callbackHandler);
 }
 
 var callbackHandler = function(controller) {

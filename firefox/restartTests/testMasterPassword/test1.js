@@ -44,7 +44,6 @@ var toolbars = require("../../../shared-modules/toolbars");
 var utils = require("../../../shared-modules/utils");
 
 const TIMEOUT = 5000;
-const DELAY_MODAL_DIALOG = 500;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
@@ -99,7 +98,7 @@ var testSetMasterPassword = function() {
   }, "Password notification should be closed");
  
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(prefDialogSetMasterPasswordCallback);
+  prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
 }
 
 /**
@@ -107,7 +106,7 @@ var testSetMasterPassword = function() {
  */
 var testInvokeMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(prefDialogInvokeMasterPasswordCallback);
+  prefs.openPreferencesDialog(controller, prefDialogInvokeMasterPasswordCallback);
 }
 
 /**
@@ -115,7 +114,7 @@ var testInvokeMasterPassword = function() {
  */
 var testRemoveMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(prefDialogDeleteMasterPasswordCallback);
+  prefs.openPreferencesDialog(controller, prefDialogDeleteMasterPasswordCallback);
 }
 
 /**
@@ -132,10 +131,11 @@ var prefDialogSetMasterPasswordCallback = function(controller) {
   controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and set a master password to your profile
-  var md = new modalDialog.modalDialog(masterPasswordHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(masterPasswordHandler);
 
   controller.click(masterPasswordCheck);
+  md.waitForDialog();
 
   // Close the Preferences dialog
   prefDialog.close(true);
@@ -156,12 +156,13 @@ var masterPasswordHandler = function(controller) {
   controller.type(pw2, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new modalDialog.modalDialog(confirmHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(confirmHandler);
 
   var button = new elementslib.Lookup(controller.window.document,
                            '/id("changemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitThenClick(button, TIMEOUT);
+  md.waitForDialog();
 }
 
 /**
@@ -189,10 +190,11 @@ var prefDialogInvokeMasterPasswordCallback = function(controller) {
   controller.waitForElement(showPasswordButton, TIMEOUT);
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new modalDialog.modalDialog(checkMasterHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(checkMasterHandler);
 
   controller.click(showPasswordButton);
+  md.waitForDialog();
 
   // Check if the password manager has been opened
   utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
@@ -213,10 +215,11 @@ function checkPasswordManager(controller) {
   utils.assertElementVisible(controller, passwordCol, false);
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new modalDialog.modalDialog(checkMasterHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(checkMasterHandler);
 
   controller.click(togglePasswords);
+  md.waitForDialog();
 
   utils.assertElementVisible(controller, passwordCol, true);
 
@@ -256,10 +259,11 @@ var prefDialogDeleteMasterPasswordCallback = function(controller) {
   controller.waitForElement(masterPasswordCheck, TIMEOUT);
 
   // Call setMasterPassword dialog and remove the master password to your profile
-  var md = new modalDialog.modalDialog(removeMasterHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(removeMasterHandler);
 
   controller.click(masterPasswordCheck);
+  md.waitForDialog();
 
   // Close the Preferences dialog
   prefDialog.close(true);
@@ -277,11 +281,12 @@ var removeMasterHandler = function(controller) {
   controller.type(removePwdField, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new modalDialog.modalDialog(confirmHandler);
-  md.start(DELAY_MODAL_DIALOG);
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(confirmHandler);
 
   controller.click(new elementslib.Lookup(controller.window.document,
                    '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
+  md.waitForDialog();
 }
 
 /**

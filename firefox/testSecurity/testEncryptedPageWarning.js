@@ -44,6 +44,8 @@ var utils = require("../../shared-modules/utils");
 const gDelay = 0;
 const gTimeout = 5000;
 
+const TIMEOUT_MODAL_DIALOG = 30000;
+
 var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_entering_weak",
                              "security.warn_leaving_secure",
@@ -53,15 +55,11 @@ var gPreferences = new Array("security.warn_entering_secure",
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabbedbrowser.closeAllTabs(controller);
-
-  persisted.modalWarningShown = false;
 }
 
 var teardownModule = function(module) {
   for each (p in gPreferences)
     prefs.preferences.clearUserPref(p);
-
-  persisted = {}
 }
 
 /**
@@ -73,26 +71,18 @@ var testEncryptedPageWarning = function() {
     prefs.preferences.setPref(gPreferences[i], (i == 0));
 
   // Create a listener for the warning dialog
-  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window .window);
+  md.start(handleSecurityWarningDialog);
 
-  // Load an encrypted page
+  // Load an encrypted page and wait for the security alert
   controller.open("https://mail.mozilla.org");
-
-  // Prevent the test from ending before the warning can appear
-  controller.waitForPageLoad();
-
-  // Test if the the modal dialog has been shown
-  controller.assertJS("subject.isModalWarningShown == true",
-                      {isModalWarningShown: persisted.modalWarningShown});
+  md.waitForDialog(TIMEOUT_MODAL_DIALOG);
 }
 
 /**
  * Helper function to handle interaction with the Security Warning modal dialog
  */
 var handleSecurityWarningDialog = function(controller) {
-  persisted.modalWarningShown = true;
-
   var enterSecureMessage = utils.getProperty("chrome://pipnss/locale/security.properties",
                                              "EnterSecureMessage");
 

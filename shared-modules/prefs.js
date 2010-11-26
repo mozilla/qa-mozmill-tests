@@ -331,19 +331,23 @@ var preferences = {
 /**
  * Open the preferences dialog and call the given handler
  *
+ * @param {MozMillController} controller
+ *        MozMillController which is the opener of the preferences dialog
  * @param {function} callback
  *        The callback handler to use to interact with the preference dialog
  * @param {function} launcher
  *        (Optional) A callback handler to launch the preference dialog
  */
-function openPreferencesDialog(callback, launcher) {
-  if(!callback)
+function openPreferencesDialog(controller, callback, launcher) {
+  if(!controller)
+    throw new Error("No controller given for Preferences Dialog");
+  if(typeof callback != "function")
     throw new Error("No callback given for Preferences Dialog");
 
   if (mozmill.isWindows) {
     // Preference dialog is modal on windows, set up our callback
-    var prefModal = new modalDialog.modalDialog(callback);
-    prefModal.start();
+    var prefModal = new modalDialog.modalDialog(controller.window);
+    prefModal.start(callback);
   }
 
   // Launch the preference dialog
@@ -353,18 +357,19 @@ function openPreferencesDialog(callback, launcher) {
     mozmill.getPreferencesController();
   }
 
-  // Get the window type of the preferences window depending on the application
-  var prefWindowType = null;
-  switch (mozmill.Application) {
-    case "Thunderbird":
-      prefWindowType = "Mail:Preferences";
-      break;
-    default:
-      prefWindowType = "Browser:Preferences";
-  }
+  if (mozmill.isWindows) {
+    prefModal.waitForDialog();
+  } else {
+    // Get the window type of the preferences window depending on the application
+    var prefWindowType = null;
+    switch (mozmill.Application) {
+      case "Thunderbird":
+        prefWindowType = "Mail:Preferences";
+        break;
+      default:
+        prefWindowType = "Browser:Preferences";
+    }
 
-  // If the dialog is not modal, run the callback directly
-  if (!mozmill.isWindows) {
     utils.handleWindow("type", prefWindowType, callback);
   }
 }

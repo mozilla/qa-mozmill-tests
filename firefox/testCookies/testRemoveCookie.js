@@ -71,7 +71,7 @@ var testRemoveCookie = function() {
   persisted.hostName = controller.window.content.location.hostname;
   
   // Call preferences dialog and delete the created cookie
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**

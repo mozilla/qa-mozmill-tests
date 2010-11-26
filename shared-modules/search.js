@@ -216,22 +216,16 @@ engineManager.prototype = {
    */
   editKeyword : function engineManager_editKeyword(name, handler)
   {
-    if (!handler)
-      throw new Error(arguments.callee.name + ": No callback handler specified.");
-
     // Select the search engine
     this.selectedEngine = name;
 
     // Setup the modal dialog handler
-    md = new modalDialog.modalDialog(handler);
-    md.start(200);
+    md = new modalDialog.modalDialog(this._controller);
+    md.start(handler);
 
     var button = this.getElement({type: "engine_button", subtype: "edit"});
     this._controller.click(button);
-
-    // XXX: We have to wait a bit more, so the modal dialog handler can kick in. Otherwise
-    // we continue executing remaining tests too early.
-    this._controller.sleep(400);
+    md.waitForDialog();
   },
 
   /**
@@ -725,27 +719,21 @@ searchBar.prototype = {
    */
   openEngineManager : function searchBar_openEngineManager(handler)
   {
-    if (!handler)
-      throw new Error(arguments.callee.name + ": No callback handler specified.");
-
     this.enginesDropDownOpen = true;
     var engineManager = this.getElement({type: "engine_manager"});
 
     // Setup the modal dialog handler
-    md = new modalDialog.modalDialog(handler);
-    md.start();
+    md = new modalDialog.modalDialog(this._controller.window);
+    md.start(handler);
 
     // XXX: Bug 555347 - Process any outstanding events before clicking the entry
     this._controller.sleep(0);
     this._controller.click(engineManager);
+    md.waitForDialog();
 
-    // Wait until the drop down has been closed
-    this._controller.waitForEval("subject.search.enginesDropDownOpen == false", TIMEOUT, 100,
-                                 {search: this});
-
-    // XXX: We have to wait a bit more, so the modal dialog handler can kick in. Otherwise
-    // we continue executing remaining tests too early.
-    this._controller.sleep(200);
+    this._controller.assert(function () {
+      return this.enginesDropDownOpen == false;
+    }, "The search engine drop down menu has been closed", this);
   },
 
   /**

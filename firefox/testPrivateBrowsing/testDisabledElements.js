@@ -89,7 +89,7 @@ function checkImportMenu(controller) {
 
   // Check that "Import HTML" is available
   var importHTML = new elementslib.ID(controller.window.document, "fileImport");
-  controller.assertNotJSProperty(importHTML, "disabled");
+  controller.assertJSProperty(importHTML, "disabled", false);
 
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});

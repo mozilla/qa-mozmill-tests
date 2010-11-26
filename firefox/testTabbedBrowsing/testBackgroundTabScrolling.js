@@ -70,7 +70,7 @@ var teardownModule = function()
 var testScrollBackgroundTabIntoView = function()
 {
   // Check that we open new tabs in the background
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the testcase
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");

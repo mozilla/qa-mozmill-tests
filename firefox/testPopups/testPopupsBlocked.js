@@ -71,7 +71,7 @@ var testPopUpBlocked = function()
 {
   var windowCount = mozmill.utils.getWindows().length;
 
-  prefs.openPreferencesDialog(prefDialogCallback);
+  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the Pop-up test site
   controller.open(localTestFolder + "popups/popups_2.html");

@@ -44,6 +44,8 @@ var utils = require("../../shared-modules/utils");
 const gDelay = 0;
 const gTimeout = 5000;
 
+const TIMEOUT_MODAL_DIALOG = 30000;
+
 var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_entering_weak",
                              "security.warn_leaving_secure",
@@ -53,16 +55,12 @@ var gPreferences = new Array("security.warn_entering_secure",
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabs.closeAllTabs(controller);
-
-  persisted.modalWarningShown = false;
 }
 
 var teardownModule = function(module)
 {
   for each (p in gPreferences)
     prefs.preferences.clearUserPref(p);
-
-  persisted = {}
 }
 
 /**
@@ -74,12 +72,12 @@ var testSubmitUnencryptedInfoWarning = function() {
     prefs.preferences.setPref(gPreferences[i], (i == 3));
 
   // Create a listener for the warning dialog
-  var md = new modalDialog.modalDialog(handleSecurityWarningDialog);
-  md.start();
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSecurityWarningDialog);
 
   // Load an unencrypted page
   controller.open("https://mail.mozilla.org/");
-  controller.waitForPageLoad();
+  md.waitForDialog(TIMEOUT_MODAL_DIALOG);
 
   // Get the web page's search box
   var searchbox = new elementslib.ID(controller.tabs.activeTab, "q");
@@ -109,8 +107,6 @@ var testSubmitUnencryptedInfoWarning = function() {
  *        MozMillController of the window to operate on
  */
 var handleSecurityWarningDialog = function(controller) {
-  persisted.modalWarningShown = true;
-
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
                                   "PostToInsecureFromSecureMessage");

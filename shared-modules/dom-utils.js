@@ -250,10 +250,11 @@ DOMWalker.prototype = {
                               waitFunction : idSet.waitFunction}
             persisted.modalInfos = modalInfos;
 
-            var md = new modalDialog.modalDialog(this._modalWindowHelper);
-            md.start(200);
+            var md = new modalDialog.modalDialog(this._controller.window);
+            md.start(this._modalWindowHelper);
 
             this._processNode(node, idSet);
+            md.waitForDialog();
             break;
           case DOMWalker.WINDOW_NEW:
             this._processNode(node, idSet);

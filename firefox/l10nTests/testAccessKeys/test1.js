@@ -240,5 +240,5 @@ function prefPanesAccessKeyTest(controller) {
 }
 
 function testPrefWindowAccessKeys() {
-  prefs.openPreferencesDialog(prefPanesAccessKeyTest);
+  prefs.openPreferencesDialog(controller, prefPanesAccessKeyTest);
 }

@@ -46,10 +46,14 @@ var setupModule = function() {
 }
 
 var testSampleTestcase = function() {
-  var md = new ModalDialogAPI.modalDialog(callbackHandler);
-  md.start();
+  var md = new ModalDialogAPI.modalDialog(controller);
+  md.start(callbackHandler);
 
   // Code that opens a modal dialog, e.g. click or keypress
+  // controller.click(...)
+
+  // Wait for the dialog
+  md.waitForDialog();
 }
 
 var callbackHandler = function(controller) {
