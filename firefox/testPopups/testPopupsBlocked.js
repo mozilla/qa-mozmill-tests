@@ -76,7 +76,7 @@ var testPopUpBlocked = function() {
 
   // Check for the close button in the notification bar
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
-                             '/{"value":"password-save"}');
+                             '/{"value":"popup-blocked"}');
   
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
