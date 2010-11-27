@@ -56,7 +56,7 @@ var testGoogleSuggestedTerms = function() {
   var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.type(searchField, "area");
 
-  var autoComplete = new elementslib.XPath(controller.tabs.activeTab, 
+  var autoComplete = new elementslib.XPath(controller.tabs.activeTab,
                        "/html/body/div[2]/div/table/tbody/tr[1]/td"
                      );
 
@@ -65,7 +65,7 @@ var testGoogleSuggestedTerms = function() {
   controller.waitForPageLoad();
 
   // Check if Search page has come up
-  var nextField = new elementslib.Link(controller.tabs.activeTab, "Next");
+  var nextField = new elementslib.ID(controller.tabs.activeTab, "pnnext");
   searchField = new elementslib.Name(controller.tabs.activeTab, "q");
 
   controller.waitForElement(searchField, gTimeout);
