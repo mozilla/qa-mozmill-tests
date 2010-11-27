@@ -62,7 +62,7 @@ var testGoogleSuggestedTerms = function() {
   controller.waitForPageLoad();
 
   // Check if Search page has come up
-  var nextField = new elementslib.Link(controller.tabs.activeTab, "Next");
+  var nextField = new elementslib.ID(controller.tabs.activeTab, "pnnext");
   searchField = new elementslib.Name(controller.tabs.activeTab, "q");
 
   controller.waitForElement(searchField, TIMEOUT);
