@@ -52,8 +52,7 @@ const gTimeoutUpdateDownload  = 360000;
 /**
  * Constructor for software update class
  */
-function softwareUpdate()
-{
+function softwareUpdate() {
   this._controller = null;
   this._wizard = null;
 
@@ -61,6 +60,8 @@ function softwareUpdate()
                  .getService(Ci.nsIApplicationUpdateService);
   this._ums = Cc["@mozilla.org/updates/update-manager;1"]
                  .getService(Ci.nsIUpdateManager);
+  this._vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
+             getService(Ci.nsIVersionComparator);
 
   // Get all available buttons for later clicks
   // http://mxr.mozilla.org/mozilla-central/source/toolkit/content/widgets/wizard.xml#467
@@ -111,6 +112,25 @@ softwareUpdate.prototype = {
   },
 
   /**
+   * Returns information of the current build version
+   */
+  get buildInfo() {
+    return {
+      buildid : utils.appInfo.buildID,
+      locale : utils.appInfo.locale,
+      user_agent : utils.appInfo.userAgent,
+      version : utils.appInfo.version
+    };
+  },
+
+  /**
+   * Returns the current update channel
+   */
+  get channel() {
+    return prefs.preferences.getPref('app.update.channel', '');
+  },
+
+  /**
    * Returns the current step of the software update dialog wizard
    */
   get currentStep() {
@@ -130,6 +150,24 @@ softwareUpdate.prototype = {
     } else {
       return (this.activeUpdate.getPatchAt(0).type == "complete");
     }
+  },
+
+  /**
+   * Returns information of the active update in the queue.
+   */
+  get patchInfo() {
+    this._controller.assert(function() {
+      return !!this.activeUpdate;
+    }, "An active update is in the queue.", this);
+
+    return {
+      buildid : this.activeUpdate.buildID,
+      channel : this.channel,
+      is_complete : this.isCompleteUpdate,
+      type : this.activeUpdate.type,
+      url : this.activeUpdate.selectedPatch.finalURL || "n/a",
+      version : this.activeUpdate.version
+    };
   },
 
   /**
@@ -153,6 +191,34 @@ softwareUpdate.prototype = {
   },
 
   /**
+   * Checks if an update has been applied correctly
+   *
+   * @param {object} updateData
+   *        All the data collected during the update process
+   */
+  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(updateData) {
+    // Get the information from the last update
+    var info = updateData.updates[updateData.updateIndex];
+
+    // The upgraded version should be identical with the version given by
+    // the update and we shouldn't have run a downgrade
+    var check = this._vc.compare(info.build_post.version, info.build_pre.version);
+    this._controller.assert(function() {
+      return check >= 0;
+    }, "The version number of the upgraded build is higher or equal.");
+
+    // The build id should be identical with the one from the update
+    this._controller.assert(function() {
+      return info.build_post.buildid == info.patch.buildid;
+    }, "The build id is equal to the build id of the update.");
+
+    // An upgrade should not change the builds locale
+    this._controller.assert(function() {
+      return info.build_post.locale == info.build_pre.locale;
+    }, "The locale of the updated build is identical to the original locale.");
+  },
+
+  /**
    * Close the software update dialog
    */
   closeDialog: function softwareUpdate_closeDialog() {
@@ -173,10 +239,8 @@ softwareUpdate.prototype = {
 
     if (this.currentStep == "updatesfound") {
       // Check if the correct channel has been set
-      var prefChannel = prefs.preferences.getPref('app.update.channel', '');
-
       this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
-                                {currentChannel: channel, expectedChannel: prefChannel});
+                                {currentChannel: channel, expectedChannel: this.channel});
     }
 
     // Click the next button
@@ -198,8 +262,8 @@ softwareUpdate.prototype = {
    * Update the update.status file and set the status to 'failed:6'
    */
   forceFallback : function softwareUpdate_forceFallback() {
-    var dirService = Cc["@mozilla.org/file/directory_service;1"]
-                        .getService(Ci.nsIProperties);
+    var dirService = Cc["@mozilla.org/file/directory_service;1"].
+                     getService(Ci.nsIProperties);
 
     var updateDir;
     var updateStatus;
@@ -224,15 +288,15 @@ softwareUpdate.prototype = {
       updateStatus.append("update.status");
     }
 
-    var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
-                      .createInstance(Ci.nsIFileOutputStream);
+    var foStream = Cc["@mozilla.org/network/file-output-stream;1"].
+                   createInstance(Ci.nsIFileOutputStream);
     var status = "failed: 6\n";
     foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
     foStream.write(status, status.length);
     foStream.close();
   },
 
-  
+
   /**
    * Gets all the needed external DTD urls as an array
    *

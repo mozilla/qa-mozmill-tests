@@ -38,17 +38,21 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new softwareUpdate.softwareUpdate();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new softwareUpdate.softwareUpdate();
+}
+
+function teardownModule() {
+  // Store information for fallback patch
+  persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+  persisted.updates[persisted.updateIndex].fallback = true;
 }
 
 /**
  * Test that the patch hasn't been applied and the complete patch gets downloaded
  **/
-var testFallbackUpdate_ErrorPatching = function()
-{
+var testFallbackUpdate_ErrorPatching = function() {
   // The dialog should be open in the background and shows a failure
   update.waitForDialogOpen(controller);
   update.assertUpdateStep('errorpatching');

@@ -38,35 +38,38 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new softwareUpdate.softwareUpdate();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new softwareUpdate.softwareUpdate();
 
-  // Collect some data of the current build
-  module.persisted.preBuildId = utils.appInfo.buildID;
-  module.persisted.preLocale = utils.appInfo.locale;
-  module.persisted.preUserAgent = utils.appInfo.userAgent;
-  module.persisted.preVersion = utils.appInfo.version;
+  // Initialize the array, which holds the update details
+  if ("updates" in persisted) {
+    persisted.updateIndex++;
+  }
+  else {
+    persisted.updates = [ ];
+    persisted.updateIndex = 0;
+  }
 }
 
-var teardownModule = function(module)
-{
-  // Save the update properties for later usage
-  module.persisted.type = update.updateType;
-  module.persisted.updateBuildId = update.activeUpdate.buildID;
-  module.persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
-  module.persisted.updateVersion = update.activeUpdate.version;
+var teardownModule = function(module) {
+  // Store the information of the build and the patch
+  persisted.updates[persisted.updateIndex] = {
+    build_pre : update.buildInfo,
+    patch : update.patchInfo,
+    fallback : false,
+    success : false
+  };
 }
 
 /**
  * Download an update via the given update channel
  */
-var testDirectUpdate_Download = function()
-{
+var testDirectUpdate_Download = function() {
   // Check if the user has permissions to run the update
-  controller.assertJS("subject.isUpdateAllowed == true",
-                      {isUpdateAllowed: update.allowed});
+  controller.assert(function() {
+    return update.allowed;
+  }, "User has permissions to update the build.");
 
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
@@ -81,8 +84,3 @@ var testDirectUpdate_Download = function()
   // We should be ready for restart
   update.assertUpdateStep('finished');
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testDirectUpdate_Download.meta = {litmusids : [6661]};

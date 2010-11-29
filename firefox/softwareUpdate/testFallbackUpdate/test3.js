@@ -38,24 +38,19 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module)
-{
-  module.controller = mozmill.getBrowserController();
-  module.update = new softwareUpdate.softwareUpdate();
+var setupModule = function(module) {
+  controller = mozmill.getBrowserController();
+  update = new softwareUpdate.softwareUpdate();
 
   // Collect some data of the current build
-  module.persisted.postBuildId = utils.appInfo.buildID;
-  module.persisted.postLocale = utils.appInfo.locale;
-  module.persisted.postUserAgent = utils.appInfo.userAgent;
-  module.persisted.postVersion = utils.appInfo.version;
+  persisted.updates[persisted.updateIndex].build_post = update.buildInfo;
 }
 
 /**
  * Test that the update has been correctly applied and no further updates
  * can be found.
  */
-var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
-{
+var testFallbackUpdate_AppliedAndNoUpdatesFound = function() {
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
@@ -65,35 +60,14 @@ var testFallbackUpdate_AppliedAndNoUpdatesFound = function()
     update.assertUpdateStep('noupdatesfound');
   } catch (ex) {
     // If a major update is offered we shouldn't fail
-    controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
-                        {newUpdateType: update.updateType, lastUpdateType: persisted.type});
+    controller.assert(function() {
+      return update.updateType != persisted.updates[persisted.updateIndex].type;
+    }, "No more update of the same type offered.");
   }
 
-  // The upgraded version should be identical with the version given by
-  // the update and we shouldn't have run a downgrade
-  var vc = Cc["@mozilla.org/xpcom/version-comparator;1"]
-              .getService(Ci.nsIVersionComparator);
-  var check = vc.compare(persisted.postVersion, persisted.preVersion);
-
-  controller.assertJS("subject.newVersionGreater == true",
-                      {newVersionGreater: check >= 0});
-
-  // If we have the same version number we should check the build id instead
-  if (check == 0) {
-    controller.assertJS("subject.postBuildId > subject.preBuildId",
-                        {postBuildId: persisted.postBuildId, preBuildId: persisted.preBuildId});
-  }
-
-  // An upgrade should not change the builds locale
-  controller.assertJS("subject.postLocale == subject.preLocale",
-                      {postLocale: persisted.postLocale, preLocale: persisted.preLocale});
+  // Check that updates have been applied correctly
+  update.assertUpdateApplied(persisted);
 
   // Update was successful
-  persisted.success = true;
+  persisted.updates[persisted.updateIndex].success = true;
 }
-
-
-/**
- * Map test functions to litmus tests
- */
-// testFallbackUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [6145]};
