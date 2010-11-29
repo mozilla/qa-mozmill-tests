@@ -39,6 +39,30 @@
 var modalDialog = require("modal-dialog");
 var utils = require("utils");
 
+
+/**
+ * Unwraps a node which is wrapped into a XPCNativeWrapper or XrayWrapper
+ *
+ * @param {DOMnode} Wrapped DOM node
+ * @returns {DOMNode} Unwrapped DOM node
+ */
+function unwrapNode(aNode) {
+  var node = aNode;
+
+  if (node) {
+    // unwrap is not available on older branches (3.5 and 3.6) - Bug 533596
+    if ("unwrap" in XPCNativeWrapper) {
+      node = XPCNativeWrapper.unwrap(node);
+    }
+    else if ("wrappedJSObject" in node) {
+      node = node.wrappedJSObject;
+    }
+  }
+
+  return node;
+}
+
+
 /**
  * DOMWalker Constructor
  *
@@ -629,6 +653,9 @@ nodeCollector.prototype = {
     return this;
   }
 }
+
+// Exports of functions
+exports.unwrapNode = unwrapNode;
 
 // Exports of classes
 exports.DOMWalker = DOMWalker;

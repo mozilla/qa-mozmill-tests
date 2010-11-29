@@ -35,6 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include required modules
+var domUtils = require("dom-utils");
+
 const TIMEOUT_MODAL_DIALOG = 5000;
 const DELAY_CHECK = 100;
 
@@ -61,21 +64,31 @@ function mdObserver(aOpener, aCallback) {
 mdObserver.prototype = {
 
   /**
-   * Called by the timer in the given interval to check if the modal dialog has
-   * been opened. Once it has been found the callback gets executed
+   * Check if the modal dialog has been opened
    *
-   * @param {object} aSubject Not used.
-   * @param {string} aTopic Not used.
-   * @param {string} aData Not used.
+   * @returns {object} The modal dialog window found, or null.
    */
-  observe : function mdObserver_observe(aSubject, aTopic, aData) {
-    // If we have found a window we have to make sure to QI the opener to a
-    // ChromeWindow. If dialogs are raised from content we always have to
-    // unwrap the object first.
+  findWindow : function mdObserver_findWindow() {
+    // If a window has been opened from content, it has to be unwrapped.
+    var window = domUtils.unwrapNode(mozmill.wm.getMostRecentWindow(''));
+
+    // Get the WebBrowserChrome and check if it's a modal window
+    var chrome = window.QueryInterface(Ci.nsIInterfaceRequestor).
+                 getInterface(Ci.nsIWebNavigation).
+                 QueryInterface(Ci.nsIDocShellTreeItem).
+                 treeOwner.
+                 QueryInterface(Ci.nsIInterfaceRequestor).
+                 getInterface(Ci.nsIWebBrowserChrome);
+    if (!chrome.isWindowModal()) {
+      return null;
+    }
+
+    // Opening a modal dialog from a modal dialog would fail, if we wouldn't
+    // check for the opener of the modal dialog
     var found = false;
-    var window = XPCNativeWrapper.unwrap(mozmill.wm.getMostRecentWindow(''));
     if (window.opener) {
-      var opener = XPCNativeWrapper.unwrap(window.opener);
+      // XXX Bug 614757 - an already unwrapped node returns a wrapped node
+      var opener = domUtils.unwrapNode(window.opener);
       found = (mozmill.utils.getChromeWindow(opener) == this._opener);
     }
     else {
@@ -85,8 +98,21 @@ mdObserver.prototype = {
       found = (window != this._opener);
     }
 
+    return (found ? window : null);
+  },
+
+  /**
+   * Called by the timer in the given interval to check if the modal dialog has
+   * been opened. Once it has been found the callback gets executed
+   *
+   * @param {object} aSubject Not used.
+   * @param {string} aTopic Not used.
+   * @param {string} aData Not used.
+   */
+  observe : function mdObserver_observe(aSubject, aTopic, aData) {
     // Once the window has been found and loaded we can execute the callback
-    if (found && ("documentLoaded" in window)) {
+    var window = this.findWindow();
+    if (window && ("documentLoaded" in window)) {
       try {
         this._callback(new mozmill.controller.MozMillController(window));
       }
