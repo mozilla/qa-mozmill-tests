@@ -43,7 +43,6 @@
 var prefs = require("prefs");
 var utils = require("utils");
 
-const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
 const gTimeoutUpdateDownload  = 360000;
 
@@ -99,8 +98,7 @@ if (mozmill.isMac) {
 /**
  * Constructor for software update class
  */
-function softwareUpdate()
-{
+function softwareUpdate() {
   this._controller = null;
   this._wizard = null;
 
@@ -114,6 +112,8 @@ function softwareUpdate()
   }
   this._ums = Cc["@mozilla.org/updates/update-manager;1"].
               getService(Ci.nsIUpdateManager);
+  this._vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
+             getService(Ci.nsIVersionComparator);
 }
 
 /**
@@ -138,6 +138,25 @@ softwareUpdate.prototype = {
    */
   get allowed() {
     return this._aus.canCheckForUpdates && this._aus.canApplyUpdates;
+  },
+
+  /**
+   * Returns information of the current build version
+   */
+  get buildInfo() {
+    return {
+      buildid : utils.appInfo.buildID,
+      locale : utils.appInfo.locale,
+      user_agent : utils.appInfo.userAgent,
+      version : utils.appInfo.version
+    };
+  },
+
+  /**
+   * Returns the current update channel
+   */
+  get channel() {
+    return prefs.preferences.getPref('app.update.channel', '');
   },
 
   /**
@@ -168,12 +187,9 @@ softwareUpdate.prototype = {
                       "when activeUpdate is null!");
 
     var patchCount = this.activeUpdate.patchCount;
-    // Test that the update snippet created by releng has less than 3 patches
-    this._controller.assertJS("subject.patchCount < 3",
-                              {patchCount: patchCount < 3});
-    // Test that the update snippet created by releng has more than 0 patches
-    this._controller.assertJS("subject.patchCount > 0",
-                              {patchCount: patchCount > 0});
+    if ((patchCount < 1) || (patchCount > 2)) {
+      throw new Error("An update must have one or two patches included.");
+    }
 
 // After bug 514040 is fixed remove this line and uncomment out the following
 // code
@@ -187,6 +203,24 @@ softwareUpdate.prototype = {
 //    }
 
     return (this.activeUpdate.selectedPatch.type  == "complete");
+  },
+
+   /**
+   * Returns information of the active update in the queue.
+   */
+  get patchInfo() {
+    this._controller.assert(function() {
+      return !!this.activeUpdate;
+    }, "An active update is in the queue.", this);
+
+    return {
+      buildid : this.activeUpdate.buildID,
+      channel : this.channel,
+      is_complete : this.isCompleteUpdate,
+      type : this.activeUpdate.type,
+      url : this.activeUpdate.selectedPatch.finalURL || "n/a",
+      version : this.activeUpdate.version
+    };
   },
 
   /**
@@ -212,28 +246,25 @@ softwareUpdate.prototype = {
    *        All the data collected during the update process
    */
   assertUpdateApplied : function softwareUpdate_assertUpdateApplied(updateData) {
+    // Get the information from the last update
+    var info = updateData.updates[updateData.updateIndex];
+
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
-    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
-             getService(Ci.nsIVersionComparator);
-    var check = vc.compare(updateData.postVersion, updateData.preVersion);
-  
-    this._controller.assertJS("subject.newVersionGreater == true",
-                              {newVersionGreater: check >= 0});
-  
-    // If we have the same version number we should check the build id instead
-    if (check == 0) {
-      this._controller.assertJS("subject.postBuildId == subject.updateBuildId", {
-        postBuildId: updateData.postBuildId,
-        updateBuildId: updateData.updateBuildId
-      });
-    }
-  
+    var check = this._vc.compare(info.build_post.version, info.build_pre.version);
+    this._controller.assert(function() {
+      return check >= 0;
+    }, "The version number of the upgraded build is higher or equal.");
+
+    // The build id should be identical with the one from the update
+    this._controller.assert(function() {
+      return info.build_post.buildid == info.patch.buildid;
+    }, "The build id is equal to the build id of the update.");
+
     // An upgrade should not change the builds locale
-    this._controller.assertJS("subject.postLocale == subject.preLocale", {
-      postLocale: updateData.postLocale,
-      preLocale: updateData.preLocale
-    });
+    this._controller.assert(function() {
+      return info.build_post.locale == info.build_pre.locale;
+    }, "The locale of the updated build is identical to the original locale.");
   },
 
   /**
@@ -261,9 +292,9 @@ softwareUpdate.prototype = {
     waitForFinish = waitForFinish ? waitForFinish : true;
 
     // Check that the correct channel has been set
-    var prefChannel = prefs.preferences.getPref('app.update.channel', '');
-    this._controller.assertJS("subject.currentChannel == subject.expectedChannel",
-                              {currentChannel: channel, expectedChannel: prefChannel});
+    this._controller.assert(function() {
+      return channel == this.channel;
+    }, "The current update channel is identical to the specified one.", this);
 
     // Click the next button
     var next = this.getElement({type: "button", subtype: "next"});
@@ -284,8 +315,8 @@ softwareUpdate.prototype = {
    * Update the update.status file and set the status to 'failed:6'
    */
   forceFallback : function softwareUpdate_forceFallback() {
-    var dirService = Cc["@mozilla.org/file/directory_service;1"]
-                        .getService(Ci.nsIProperties);
+    var dirService = Cc["@mozilla.org/file/directory_service;1"].
+                     getService(Ci.nsIProperties);
 
     var updateDir;
     var updateStatus;
@@ -310,8 +341,8 @@ softwareUpdate.prototype = {
       updateStatus.append("update.status");
     }
 
-    var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
-                      .createInstance(Ci.nsIFileOutputStream);
+    var foStream = Cc["@mozilla.org/network/file-output-stream;1"].
+                   createInstance(Ci.nsIFileOutputStream);
     var status = "failed: 6\n";
     foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
     foStream.write(status, status.length);
@@ -338,7 +369,7 @@ softwareUpdate.prototype = {
    *        type: General type information
    *        subtype: Specific element or property
    *        value: Value of the element or property
-   * @returns Element which has been created  
+   * @returns Element which has been created
    * @type {ElemBase}
    */
   getElement : function softwareUpdate_getElement(spec) {
@@ -382,7 +413,7 @@ softwareUpdate.prototype = {
   openDialog: function softwareUpdate_openDialog(browserController) {
     var updateMenu = this.getElement({type: "menu_update",
                                       value: browserController});
-    
+
     browserController.click(updateMenu);
 
     this.waitForDialogOpen(browserController);
@@ -395,8 +426,9 @@ softwareUpdate.prototype = {
   waitForCheckFinished : function softwareUpdate_waitForCheckFinished(timeout) {
     timeout = timeout ? timeout : gTimeoutUpdateCheck;
 
-    this._controller.waitForEval("subject.wizard.currentPage != subject.checking", timeout, 100,
-                                 {wizard: this, checking: WIZARD_PAGES.checking});
+    this._controller.waitFor(function() {
+      return this.currentPage != WIZARD_PAGES.checking;
+    }, "Check for updates has been completed.", timeout, null, this);
   },
 
   /**
@@ -410,8 +442,10 @@ softwareUpdate.prototype = {
     this._wizard = this.getElement({type: "wizard"});
 
     // Wait until the dummy wizard page isn't visible anymore
-    this._controller.waitForEval("subject.wizard.currentPage != subject.dummy", gTimeout, 100,
-                                 {wizard: this, dummy: WIZARD_PAGES.dummy});
+    this._controller.waitFor(function() {
+      return this.currentPage != WIZARD_PAGES.dummy;
+    }, "Dummy wizard page has been made invisible.", undefined, undefined, this);
+
     this._controller.window.focus();
   },
 
@@ -426,8 +460,9 @@ softwareUpdate.prototype = {
 
     // Wait until the update has been downloaded
     var progress =  this.getElement({type: "download_progress"});
-    this._controller.waitForEval("subject.progress.value == 100", timeout, 100,
-                                 {progress: progress.getNode()});
+    this._controller.waitFor(function() {
+      return progress.getNode().value == 100;
+    }, "Update has been finished downloading.", timeout);
 
     this.waitForWizardPage(WIZARD_PAGES.finished);
   },
@@ -436,8 +471,9 @@ softwareUpdate.prototype = {
    * Waits for the given page of the update dialog wizard
    */
   waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
-    this._controller.waitForEval("subject.currentPage == '" + step + "'",
-                                 gTimeout, 100, this);
+    this._controller.waitFor(function() {
+      return this.currentPage == step;
+    }, "The wizard page '" + step + "' has been selected.", undefined, undefined, this);
   }
 }
 
