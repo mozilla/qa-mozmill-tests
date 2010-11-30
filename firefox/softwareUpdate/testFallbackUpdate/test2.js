@@ -38,20 +38,26 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module) {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
+}
+
+function teardownModule() {
+  // Store information for fallback patch
+  persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+  persisted.updates[persisted.updateIndex].fallback = true;
 }
 
 /**
  * Test that the patch hasn't been applied and the complete patch gets downloaded
  **/
-var testFallbackUpdate_ErrorPatching = function() {
+function testFallbackUpdate_ErrorPatching() {
   // The dialog should be open in the background and shows a failure
   update.waitForDialogOpen(controller);
 
   // Complete updates have to be handled differently
-  if (persisted.isCompletePatch) {
+  if (persisted.updates[persisted.updateIndex].patch.is_complete) {
     // Wait for the error page and close the software update dialog
     update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
     update.closeDialog();
@@ -61,13 +67,15 @@ var testFallbackUpdate_ErrorPatching = function() {
     update.waitForCheckFinished();
 
     // Download the update
-    update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
-                                  {update: update});
+    update.controller.waitFor(function() {
+      return update.updatesFound;
+    }, "An update has been found.");
+
     update.download(persisted.channel);
   } else {
     update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
 
-    // Start downloading the fallback patch
+    // Start downloading the fallback update
     update.download(persisted.channel);
   }
 }

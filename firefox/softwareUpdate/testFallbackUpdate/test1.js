@@ -38,54 +38,47 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module) {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
+
+  // Initialize the array, which holds the update details
+  if ("updates" in persisted) {
+    persisted.updateIndex++;
+  }
+  else {
+    persisted.updates = [ ];
+    persisted.updateIndex = 0;
+  }
 }
 
-var teardownModule = function(module) {
-  // Collect some data of the current build
-  persisted.preBuildId = utils.appInfo.buildID;
-  persisted.preLocale = utils.appInfo.locale;
-  persisted.preUserAgent = utils.appInfo.userAgent;
-  persisted.preVersion = utils.appInfo.version;
-
-  // Save the update properties for later usage
-  if (update.activeUpdate) {
-    persisted.type = update.activeUpdate.type;
-    persisted.isCompletePatch = update.isCompleteUpdate;
-    persisted.updateBuildId = update.activeUpdate.buildID;
-    persisted.updateType = update.isCompleteUpdate ? "complete" : "partial";
-    persisted.updateType += "+fallback";
-    persisted.updateVersion = update.activeUpdate.version;
-  } else {
-    persisted.type = "n/a";
-    persisted.isCompletePatch = "n/a";
-    persisted.updateBuildId = "n/a";
-    persisted.updateType = "n/a";
-    persisted.updateVersion = "n/a";
-  }
+function teardownModule(module) {
+  // Store the information of the build and the patch
+  persisted.updates[persisted.updateIndex] = {
+    build_pre : update.buildInfo,
+    patch : update.patchInfo,
+    fallback : false,
+    success : false
+  };
 
   // Put the downloaded update into failed state
   update.forceFallback();
 }
 
-var testFallbackUpdate_Download = function() {
+function testFallbackUpdate_Download() {
   // Check if the user has permissions to run the update
-  controller.assertJS("subject.isUpdateAllowed == true",
-                      {isUpdateAllowed: update.allowed});
+  controller.assert(function() {
+    return update.allowed;
+  }, "User has permissions to update the build.");
 
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
 
   // Download the update
-  update.controller.waitForEval("subject.update.updatesFound == true", 5000, 100,
-                                {update: update});
+  update.controller.waitFor(function() {
+    return update.updatesFound;
+  }, "An update has been found.");
+
   update.download(persisted.channel);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testFallbackUpdate_Download.meta = {litmusids : [8696]};

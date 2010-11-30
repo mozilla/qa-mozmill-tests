@@ -38,22 +38,19 @@
 var softwareUpdate = require("../../../shared-modules/software-update");
 var utils = require("../../../shared-modules/utils");
 
-var setupModule = function(module) {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
 
   // Collect some data of the current build
-  persisted.postBuildId = utils.appInfo.buildID;
-  persisted.postLocale = utils.appInfo.locale;
-  persisted.postUserAgent = utils.appInfo.userAgent;
-  persisted.postVersion = utils.appInfo.version;
+  persisted.updates[persisted.updateIndex].build_post = update.buildInfo;
 }
 
 /**
  * Test that the update has been correctly applied and no further updates
  * can be found.
  */
-var testDirectUpdate_AppliedAndNoUpdatesFound = function() {
+function testDirectUpdate_AppliedAndNoUpdatesFound() {
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
@@ -62,18 +59,14 @@ var testDirectUpdate_AppliedAndNoUpdatesFound = function() {
   if (update.updatesFound) {
     update.download(persisted.channel, false);
 
-    controller.assertJS("subject.newUpdateType != subject.lastUpdateType",
-                        {newUpdateType: update.updateType, lastUpdateType: persisted.type});
+    controller.assert(function() {
+      return update.updateType != persisted.updates[persisted.updateIndex].type;
+    }, "No more update of the same type offered.");
   }
 
   // Check that updates have been applied correctly
   update.assertUpdateApplied(persisted);
 
   // Update was successful
-  persisted.success = true;
+  persisted.updates[persisted.updateIndex].success = true;
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testDirectUpdate_AppliedAndNoUpdatesFound.meta = {litmusids : [8187]};
