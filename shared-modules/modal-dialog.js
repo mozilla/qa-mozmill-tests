@@ -56,12 +56,18 @@ function mdObserver(aOpener, aCallback) {
   this._opener = aOpener;
   this._callback = aCallback;
   this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-
-  this.exception = null;
-  this.finished = false;
 }
 
 mdObserver.prototype = {
+
+  /**
+   * Set our default values for our internal properties
+   */
+  _opener : null,
+  _callback: null,
+  _timer: null,
+  exception: null,
+  finished: false,
 
   /**
    * Check if the modal dialog has been opened
