@@ -119,8 +119,8 @@ function checkWindowOpen(controller) {
     var tab = controller.tabs.getTab(i);
     controller.waitForPageLoad(tab);
 
-    var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].id);
-    controller.assertNode(elem);
+    var anchorElement = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].name);
+    controller.assertNode(anchorElement);
   }
 }
 
