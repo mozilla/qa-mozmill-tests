@@ -134,7 +134,7 @@ function checkSecurityTab(controller) {
   //      Replace this with 'www' as it is the current domain
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.assertValue(webIDDomainLabel, cert.commonName.replace("*", "wiki"));
+  controller.assertValue(webIDDomainLabel, cert.commonName.replace("*", "mail"));
 
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
