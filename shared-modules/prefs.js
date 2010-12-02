@@ -57,7 +57,7 @@ const PREF_DIALOG_SELECTOR = '/{"type":"prefwindow"}/anon({"orient":"vertical"})
 
 /**
  * Constructor
- * 
+ *
  * @param {MozMillController} controller
  *        MozMill controller of the browser window to operate on.
  */
@@ -156,7 +156,7 @@ preferencesDialog.prototype = {
    *        type: General type information
    *        subtype: Specific element or property
    *        value: Value of the element or property
-   * @returns Element which has been created  
+   * @returns Element which has been created
    * @type {ElemBase}
    */
   getElement : function aboutSessionRestore_getElement(spec) {
@@ -338,9 +338,9 @@ var preferences = {
  *        (Optional) A callback handler to launch the preference dialog
  */
 function openPreferencesDialog(controller, callback, launcher) {
-  if(!controller)
+  if (!controller)
     throw new Error("No controller given for Preferences Dialog");
-  if(typeof callback != "function")
+  if (typeof callback != "function")
     throw new Error("No callback given for Preferences Dialog");
 
   if (mozmill.isWindows) {

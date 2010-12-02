@@ -106,7 +106,7 @@ var testCloseWindow = function() {
                          {utils: mozmill.utils,
                           expectedCount: windowCount});
 
-  utils.handleWindow("type", "navigator:browser", checkWindowOpen, true);
+  utils.handleWindow("type", "navigator:browser", checkWindowOpen, false);
 }
 
 function checkWindowOpen(controller) {
