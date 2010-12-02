@@ -49,6 +49,8 @@ const gTimeout                = 5000;
 const gTimeoutUpdateCheck     = 10000;
 const gTimeoutUpdateDownload  = 360000;
 
+const PREF_DISABLED_ADDONS = "extensions.disabledAddons";
+
 /**
  * Constructor for software update class
  */
@@ -117,6 +119,7 @@ softwareUpdate.prototype = {
   get buildInfo() {
     return {
       buildid : utils.appInfo.buildID,
+      disabled_addons : prefs.preferences.getPref(PREF_DISABLED_ADDONS, ''),
       locale : utils.appInfo.locale,
       user_agent : utils.appInfo.userAgent,
       version : utils.appInfo.version
@@ -216,6 +219,11 @@ softwareUpdate.prototype = {
     this._controller.assert(function() {
       return info.build_post.locale == info.build_pre.locale;
     }, "The locale of the updated build is identical to the original locale.");
+
+    // Check that no application-wide add-ons have been disabled
+    this._controller.assert(function() {
+      return info.build_post.disabled_addons == info.build_pre.disabled_addons;
+    }, "No application-wide add-ons have been disabled by the update.");
   },
 
   /**
