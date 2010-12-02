@@ -57,6 +57,7 @@ const PREF_DISABLED_ADDONS = "extensions.disabledAddons";
 function softwareUpdate() {
   this._controller = null;
   this._wizard = null;
+  this._downloadDuration = -1;
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"]
                  .getService(Ci.nsIApplicationUpdateService);
@@ -169,6 +170,7 @@ softwareUpdate.prototype = {
       is_complete : this.isCompleteUpdate,
       type : this.activeUpdate.type,
       url : this.activeUpdate.selectedPatch.finalURL || "n/a",
+      download_duration : this._downloadDuration,
       version : this.activeUpdate.version
     };
   },
@@ -251,6 +253,9 @@ softwareUpdate.prototype = {
                                 {currentChannel: channel, expectedChannel: this.channel});
     }
 
+    // Retrieve the timestamp, so we can measure the duration of the download
+    var startTime = Date.now();
+
     // Click the next button
     var next = new elementslib.Lookup(this._controller.window.document,
                                       this._buttons.next);
@@ -264,6 +269,9 @@ softwareUpdate.prototype = {
     } catch (ex) {
       this.waitForWizardStep("finished");
     }
+
+    // Calculate the duration in ms
+    this._downloadDuration = Date.now() - startTime;
   },
 
   /**
