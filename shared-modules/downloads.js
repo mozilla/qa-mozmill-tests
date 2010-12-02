@@ -106,7 +106,7 @@ downloadManager.prototype = {
   cancelActiveDownloads : function downloadManager_cancelActiveDownloads() {
     // Get a list of all active downloads (nsISimpleEnumerator)
     var downloads = this._dms.activeDownloads;
-    
+
     // Iterate through each active download and cancel it
     while (downloads.hasMoreElements()) {
       var download = downloads.getNext().QueryInterface(Ci.nsIDownload);
@@ -339,7 +339,7 @@ downloadManager.prototype = {
    */
   waitForOpened : function downloadManager_waitForOpened(controller) {
     this._controller = utils.handleWindow("type", "Download:Manager",
-                                                   null, true);
+                                          undefined, false);
   }
 };
 
@@ -365,7 +365,7 @@ var downloadFileOfUnknownType = function(controller, url) {
     controller.waitThenClick(saveFile, gTimeout);
     controller.waitForEval("subject.selected == true", gTimeout, 100,
                            saveFile.getNode());
-  
+
     // Wait until the OK button has been enabled and click on it
     var button = new elementslib.Lookup(controller.window.document,
                                         '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');

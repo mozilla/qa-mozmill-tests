@@ -285,7 +285,7 @@ DOMWalker.prototype = {
 
             // Get the new non-modal window controller
             var controller = utils.handleWindow('title', idSet.title,
-                                           false, true);
+                                                undefined, false);
 
             // Start a new DOMWalker instance
             let domWalker = new DOMWalker(controller, this._callbackFilter,

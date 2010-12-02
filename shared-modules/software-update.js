@@ -476,7 +476,7 @@ softwareUpdate.prototype = {
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
     this._controller = utils.handleWindow("type", "Update:Wizard",
-                                                   null, true);
+                                          undefined, false);
     this._wizard = this.getElement({type: "wizard"});
 
     this._controller.waitFor(function() {

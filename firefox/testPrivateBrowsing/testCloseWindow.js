@@ -51,7 +51,7 @@ const LOCAL_TEST_PAGES = [
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new privateBrowsing.privateBrowsing(controller);
-  
+
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
@@ -79,7 +79,7 @@ var testCloseWindow = function() {
   LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
- 
+
     var elem = new elementslib.Name(controller.tabs.activeTab, page.name);
     controller.assertNode(elem);
 
@@ -92,7 +92,7 @@ var testCloseWindow = function() {
   // One single window will be opened in PB mode which has to be closed now
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
-  
+
   controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
                          TIMEOUT, 100,
                          {utils: mozmill.utils, expectedCount: (windowCount - 1)});
@@ -104,7 +104,7 @@ var testCloseWindow = function() {
                          TIMEOUT, 100,
                          {utils: mozmill.utils, expectedCount: windowCount});
 
-  utils.handleWindow("type", "navigator:browser", checkWindowOpen, true);
+  utils.handleWindow("type", "navigator:browser", checkWindowOpen, false);
 }
 
 function checkWindowOpen(controller) {
@@ -116,7 +116,7 @@ function checkWindowOpen(controller) {
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
     var tab = controller.tabs.getTab(i);
     controller.waitForPageLoad(tab);
-    
+
     var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].name);
     controller.assertNode(elem);
   }

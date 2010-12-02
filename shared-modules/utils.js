@@ -366,11 +366,11 @@ function getProperty(url, prefName) {
  *        The window type of title string to search for
  * @param {function} callback (optional)
  *        Callback function to call for window specific tests
- * @param {boolean} dontClose (optional)
- *        Doens't close the window after the return from the callback handler
+ * @param {boolean} close (optional - default: true)
+ *        Make sure the window is closed after the return from the callback handler
  * @returns The MozMillController of the window (if the window hasn't been closed)
  */
-function handleWindow(type, text, callback, dontClose) {
+function handleWindow(type, text, callback, close) {
   // Set the window opener function to use depending on the type
   var func_ptr = null;
   switch (type) {
@@ -404,8 +404,10 @@ function handleWindow(type, text, callback, dontClose) {
     }
 
     // Check if we have to close the window
-    dontClose = dontClose || false;
-    if (dontClose == false & window != null) {
+    if (close === undefined)
+      close = true;
+
+    if (close && window) {
       controller.window.close();
       mozmill.utils.waitFor(function () {
         return func_ptr(text) != window;

@@ -72,7 +72,7 @@ var testNewWindow = function () {
   controller.sleep(0);
 
   controller2 = utils.handleWindow("type", "navigator:browser",
-                                   checkDefaultHomepage, true);
+                                   checkDefaultHomepage, false);
 }
 
 /**
