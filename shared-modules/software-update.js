@@ -221,6 +221,7 @@ softwareUpdate.prototype = {
       buildid : this.activeUpdate.buildID,
       channel : this.channel,
       is_complete : this.isCompleteUpdate,
+      size : this.activeUpdate.selectedPatch.size,
       type : this.activeUpdate.type,
       url : this.activeUpdate.selectedPatch.finalURL || "n/a",
       download_duration : this._downloadDuration,
