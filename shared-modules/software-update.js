@@ -358,7 +358,7 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
-    this._controller = utils.handleWindow("type", "Update:Wizard", null, true);
+    this._controller = utils.handleWindow("type", "Update:Wizard", undefined, false);
     this._wizard = this._controller.window.document.getElementById('updates');
 
     // Wait until the dummy wizard page isn't visible anymore
