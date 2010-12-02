@@ -103,6 +103,7 @@ if (mozmill.isMac) {
 function softwareUpdate() {
   this._controller = null;
   this._wizard = null;
+  this._downloadDuration = -1;
 
   this._aus = Cc["@mozilla.org/updates/update-service;1"].
               getService(Ci.nsIApplicationUpdateService);
@@ -222,6 +223,7 @@ softwareUpdate.prototype = {
       is_complete : this.isCompleteUpdate,
       type : this.activeUpdate.type,
       url : this.activeUpdate.selectedPatch.finalURL || "n/a",
+      download_duration : this._downloadDuration,
       version : this.activeUpdate.version
     };
   },
@@ -304,6 +306,9 @@ softwareUpdate.prototype = {
       return channel == this.channel;
     }, "The current update channel is identical to the specified one.", this);
 
+    // Retrieve the timestamp, so we can measure the duration of the download
+    var startTime = Date.now();
+
     // Click the next button
     var next = this.getElement({type: "button", subtype: "next"});
     this._controller.click(next);
@@ -317,6 +322,9 @@ softwareUpdate.prototype = {
     } catch (ex) {
       this.waitForWizardPage(WIZARD_PAGES.finished);
     }
+
+    // Calculate the duration in ms
+    this._downloadDuration = Date.now() - startTime;
   },
 
   /**
