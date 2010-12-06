@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -107,9 +108,25 @@ var prefDialogDefHomePageCallback = function(controller) {
   controller.waitForElement(useDefault, TIMEOUT);
   controller.click(useDefault);
 
-  // Check the browserconfig file to get the get default homepage
-  var browserHomepage = new elementslib.ID(controller.window.document, "browserHomePage");
-  controller.assertValue(browserHomepage, utils.getDefaultHomepage());
+  // Check that the current homepage is set to the default homepage - about:home
+  var currentHomepage = prefs.preferences.getPref("browser.startup.homepage", "");
+  var defaultHomepage = utils.getDefaultHomepage();
+
+  controller.assert(function () {
+    return currentHomepage == defaultHomepage;
+  }, "Default homepage restored - got	" + currentHomepage + ", expected " +
+    defaultHomepage);
+
+  // Check that the homepage field has the default placeholder text
+  var dtds = ["chrome://browser/locale/aboutHome.dtd"];
+  var defaultHomepageTitle = utils.getEntity(dtds, "abouthome.pageTitle");
+  var browserHomepageField = new elementslib.ID(controller.window.document, "browserHomePage");
+  var browserHomepagePlaceholderText = browserHomepageField.getNode().placeholder;
+
+  controller.assert(function () {
+    return browserHomepagePlaceholderText == defaultHomepageTitle;
+  }, "Default homepage title - got " + browserHomepagePlaceholderText + ", expected " +
+    defaultHomepageTitle);
 
   prefDialog.close();
 }
