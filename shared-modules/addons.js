@@ -384,7 +384,7 @@ addonsManager.prototype = {
    */
   waitForOpened : function addonsManager_waitforOpened(controller) {
     this._controller = utils.handleWindow("type", "Extension:Manager",
-                                          null, true);
+                                          undefined, false);
    }
 };
 
@@ -393,7 +393,7 @@ addonsManager.prototype = {
  * @param {string} aDomain
  *        The domain to add the permission for
  */
-function addToWhiteList(aDomain) { 
+function addToWhiteList(aDomain) {
   pm.add(utils.createURI(aDomain),
          "install",
          Ci.nsIPermissionManager.ALLOW_ACTION);
@@ -404,7 +404,7 @@ function addToWhiteList(aDomain) {
  * @param {string} aHost
  *        The host whose permission will be removed
  */
-function removeFromWhiteList(aHost) { 
+function removeFromWhiteList(aHost) {
   pm.remove(aHost, "install");
 }
 
