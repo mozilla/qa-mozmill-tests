@@ -80,6 +80,15 @@ var testRestoreHomeToDefault = function() {
 
   // Open Preferences dialog and reset home page to default
   prefs.openPreferencesDialog(controller, prefDialogDefHomePageCallback);
+
+  // Check that the current homepage is set to the default homepage - about:home
+  var currentHomepage = prefs.preferences.getPref("browser.startup.homepage", "");
+  var defaultHomepage = utils.getDefaultHomepage();
+
+  controller.assert(function () {
+    return currentHomepage == defaultHomepage;
+  }, "Default homepage restored - got " + currentHomepage + ", expected " +
+    defaultHomepage);
 }
 
 /**
@@ -108,15 +117,6 @@ var prefDialogDefHomePageCallback = function(controller) {
   controller.waitForElement(useDefault, TIMEOUT);
   controller.click(useDefault);
 
-  // Check that the current homepage is set to the default homepage - about:home
-  var currentHomepage = prefs.preferences.getPref("browser.startup.homepage", "");
-  var defaultHomepage = utils.getDefaultHomepage();
-
-  controller.assert(function () {
-    return currentHomepage == defaultHomepage;
-  }, "Default homepage restored - got	" + currentHomepage + ", expected " +
-    defaultHomepage);
-
   // Check that the homepage field has the default placeholder text
   var dtds = ["chrome://browser/locale/aboutHome.dtd"];
   var defaultHomepageTitle = utils.getEntity(dtds, "abouthome.pageTitle");
@@ -128,7 +128,7 @@ var prefDialogDefHomePageCallback = function(controller) {
   }, "Default homepage title - got " + browserHomepagePlaceholderText + ", expected " +
     defaultHomepageTitle);
 
-  prefDialog.close();
+  prefDialog.close(true);
 }
 
 /**
