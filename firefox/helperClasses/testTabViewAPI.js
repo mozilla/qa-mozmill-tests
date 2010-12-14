@@ -47,12 +47,12 @@ const NODES = [
   {type: "search_button", parent: undefined},
 ];
 
-var setupModule = function() {
+function setupModule() {
   controller = mozmill.getBrowserController();
   tabView = new tabViews.tabView(controller);
 }
 
-var testtabViewClass = function() {
+function testTabViewClass() {
   // Open and close TabView
   tabView.open();
   tabView.close();
@@ -61,7 +61,7 @@ var testtabViewClass = function() {
   tabView.open();
 
   // Test all available elements
-  NODES.forEach(function(element) {
+  NODES.forEach(function (element) {
     var node = tabView.getElement({
       type: element.type,
       subtype: element.subtype,
@@ -73,7 +73,7 @@ var testtabViewClass = function() {
   });
   
 
-  controller.assert(function() {
+  controller.assert(function () {
     return tabView.getGroups().length == 1;
   }, "One tab group exists");
 
@@ -87,13 +87,13 @@ var testtabViewClass = function() {
     value: title.getNode().value
   })[0];
 
-  controller.assert(function() {
+  controller.assert(function () {
     return groups[0].getNode() == groupByTitle.getNode();
   }, "Group get from index is identical to the group get from title");
 
   // Check if the the active tab group is identical to the first one
   var groupByActive = tabView.getGroups({filter: "active"})[0];
-  controller.assert(function() {
+  controller.assert(function () {
     return groups[0].getNode() == groupByActive.getNode();
   }, "Group get from index is identical to the active group");
 
@@ -101,7 +101,7 @@ var testtabViewClass = function() {
   var name = "First Tab Group";
   controller.type(title, name);
 
-  controller.assert(function() {
+  controller.assert(function () {
     return title.getNode().value == name;
   }, "New group title has been set");
 
@@ -118,14 +118,14 @@ var testtabViewClass = function() {
   var pageTitle = controller.tabs.activeTab.title;
   tabView.open();
 
-  controller.assert(function() {
+  controller.assert(function () {
     return tabView.getTabs().length == tabCountBefore + 1;
   }, "The new tab should be visible when reopening the TabView");
 
   // Get the tabs from inside the first group
   var tabs = tabView.getTabs({filter: "group", value: groups[0]});
 
-  controller.assert(function() {
+  controller.assert(function () {
     return tabView.getTabs().length == tabs.length;
   }, "The number of tabs in the default group matches the number of all tabs");
 
@@ -134,9 +134,15 @@ var testtabViewClass = function() {
   var title = tabView.getTabTitleBox({tab: tab});
   controller.assertText(title, pageTitle);
 
+  // Reset Tab View settings
+  tabView.reset();
+
+  tabView.open();
+  groups = tabView.getGroups();
+
   // There shouldn't exist a tab not assigned to a group
   var tabsNoGroup = tabView.getTabs({filter: "group"});
-  controller.assert(function() {
+  controller.assert(function () {
     return tabsNoGroup.length == 0;
   }, "No tab without a group should exist");
 
@@ -144,6 +150,5 @@ var testtabViewClass = function() {
   tabView.closeGroup({group: groups[0]});
   tabView.undoCloseGroup({group: groups[0]});
 
-  // Close Panorama
   tabView.close();
 }

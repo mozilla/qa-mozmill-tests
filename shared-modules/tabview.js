@@ -48,6 +48,7 @@ function tabView(aController) {
   this._controller = aController;
   this._tabView = null;
   this._tabViewDoc = this._controller.window.document;
+  this._tabViewObject = this._controller.window.TabView;
 }
 
 /**
@@ -93,6 +94,27 @@ tabView.prototype = {
   },
 
   /**
+   * Reset the Tab View settings for the current window
+   */
+  reset : function tabView_reset() {
+    // Make sure to close TabView before resetting its ui
+    if (this.isOpen) {
+      this.close();
+    }
+
+    var self = this;
+    this._tabViewObject._initFrame(function () {
+      var contentWindow = self._tabViewObject._window;
+      contentWindow.UI.reset();
+    });
+
+    // Make sure all tabs will be shown
+    Array.forEach(this._controller.window.gBrowser.tabs, function (tab) {
+      this._controller.window.gBrowser.showTab(tab);
+    }, this);
+  },
+
+  /**
    * Wait until the Tab View has been opened
    */
   waitForOpened : function tabView_waitForOpened() {
@@ -102,14 +124,14 @@ tabView.prototype = {
     this._controller.window.addEventListener("tabviewshown", checkOpened, false);
 
     try {
-      mozmill.utils.waitFor(function() {
+      mozmill.utils.waitFor(function () {
         return self.opened == true;
-      }, TIMEOUT, 100, "TabView is not open.");
+      }, "TabView is not open.");
 
-      this._tabViewObject = this._controller.window.TabView;
       this._groupItemsObject = this._tabViewObject._window.GroupItems;
       this._tabItemsObject = this._tabViewObject._window.TabItems;
-    } finally {
+    }
+    finally {
       this._controller.window.removeEventListener("tabviewshown", checkOpened, false);
     }
   },
@@ -136,14 +158,13 @@ tabView.prototype = {
     this._controller.window.addEventListener("tabviewhidden", checkClosed, false);
 
     try {
-      mozmill.utils.waitFor(function() {
+      mozmill.utils.waitFor(function () {
         return self.closed == true;
-      }, TIMEOUT, 100, "TabView is still open.");
+      }, "TabView is still open.");
     } finally {
       this._controller.window.removeEventListener("tabviewhidden", checkClosed, false);
     }
 
-    this._tabViewObject = null;
     this._groupItemsObject = null;
     this._tabItemsObject = null;
   },
@@ -197,7 +218,7 @@ tabView.prototype = {
 
     return this.getElement({
       type: "group_titleBox",
-      parent: spec.group
+      parent: group
     });
   },
 
@@ -218,7 +239,7 @@ tabView.prototype = {
 
     var button = this.getElement({
       type: "group_closeButton",
-      value: group
+      parent: group
     });
     this._controller.click(button);
 
@@ -235,24 +256,34 @@ tabView.prototype = {
   waitForGroupClosed : function tabView_waitForGroupClosed(aSpec) {
     var spec = aSpec || {};
     var group = spec.group;
+    var groupObj = null;
+
+    var self = { closed: false };
+    function checkClosed() { self.closed = true; }
 
     if (!group) {
       throw new Error(arguments.callee.name + ": Group not specified.");
     }
 
-    var element = null;
-    this._groupItemsObject.groupItems.forEach(function(node) {
+    this._groupItemsObject.groupItems.forEach(function (node) {
       if (node.container == group.getNode()) {
-        element = node;
+        groupObj = node;
       }
     });
 
-    mozmill.utils.waitFor(function() {
-      return !element || element.hidden == true;
-    }, TIMEOUT, 100, "Tab Group has not been closed.");
+    if (!groupObj) {
+      throw new Error(arguments.callee.name + ": Group not found.");
+    }
 
-    // XXX: Ugly but otherwise the events on the button aren't get processed
-    this._controller.sleep(0);
+    try {
+      groupObj.addSubscriber(groupObj, "groupHidden", checkClosed);
+      mozmill.utils.waitFor(function () {
+        return self.closed;
+      }, "Tab Group has not been closed.");
+    }
+    finally {
+      groupObj.removeSubscriber(groupObj, "groupHidden");
+    }
   },
 
   /**
@@ -272,9 +303,9 @@ tabView.prototype = {
 
     var undo = this.getElement({
       type: "group_undoButton",
-      value: group
+      parent: group
     });
-    this._controller.click(undo);
+    this._controller.waitThenClick(undo);
 
     this.waitForGroupUndo({group: group});
   },
@@ -289,24 +320,35 @@ tabView.prototype = {
   waitForGroupUndo : function tabView_waitForGroupUndo(aSpec) {
     var spec = aSpec || {};
     var group = spec.group;
+    var groupObj = null;
+
+    var self = { reopened: false };
+    function checkClosed() { self.reopened = true; }
 
     if (!group) {
       throw new Error(arguments.callee.name + ": Group not specified.");
     }
 
-    var element = null;
+    var groupObj = null;
     this._groupItemsObject.groupItems.forEach(function(node) {
       if (node.container == group.getNode()) {
-        element = node;
+        groupObj = node;
       }
     });
 
-    mozmill.utils.waitFor(function() {
-      return element && element.hidden == false;
-    }, TIMEOUT, 100, "Tab Group has not been reopened.");
+    if (!groupObj) {
+      throw new Error(arguments.callee.name + ": Group not found.");
+    }
 
-    // XXX: Ugly but otherwise the events on the button aren't get processed
-    this._controller.sleep(0);
+    try {
+      groupObj.addSubscriber(groupObj, "groupShown", checkClosed);
+      mozmill.utils.waitFor(function () {
+        return self.reopened;
+      }, "Tab Group has not been reopened.");
+    }
+    finally {
+      groupObj.removeSubscriber(groupObj, "groupShown");
+    }
   },
 
 
@@ -401,7 +443,7 @@ tabView.prototype = {
 
     var button = this.getElement({
       type: "group_newTabButton",
-      value: group
+      parent: group
     });
 
     this._controller.click(button);
@@ -480,31 +522,31 @@ tabView.prototype = {
 
       // Group elements
       case "group_appTabs":
-        nodeCollector.queryNodes(".groupItem .appTabIcon");
+        nodeCollector.queryNodes(".appTabIcon");
         break;
       case "group_closeButton":
-        nodeCollector.queryNodes(".groupItem .close");
+        nodeCollector.queryNodes(".close");
         break;
       case "group_newTabButton":
-        nodeCollector.queryNodes(".groupItem .newTabButton");
+        nodeCollector.queryNodes(".newTabButton");
         break;
       case "group_resizer":
-        nodeCollector.queryNodes(".groupItem .iq-resizable-handle");
+        nodeCollector.queryNodes(".iq-resizable-handle");
         break;
       case "group_stackExpander":
-        nodeCollector.queryNodes(".groupItem .stackExpander");
+        nodeCollector.queryNodes(".stackExpander");
         break;
       case "group_titleBox":
-        nodeCollector.queryNodes(".groupItem .name");
+        nodeCollector.queryNodes(".name");
         break;
       case "group_undoButton":
         // Bug 596504 - No reference to the undo button
         nodeCollector.root = this._tabViewDoc;
-        nodeCollector.queryNodes(".undo").filter(function(node) {
+        nodeCollector.queryNodes(".undo").filter(function (node) {
           var groups = this._groupItemsObject.groupItems;
           for (var i = 0; i < groups.length; i++) {
             var group = groups[i];
-            if (group.container == aSpec.value.getNode() &&
+            if (group.container == parent.getNode() &&
                 group.$undoContainer.length == 1) {
               return true;
             }
@@ -513,7 +555,7 @@ tabView.prototype = {
         }, this);
         break;
       case "groups":
-        nodeCollector.queryNodes(".groupItem").filter(function(node) {
+        nodeCollector.queryNodes(".groupItem").filter(function (node) {
           switch(subtype) {
             case "active":
               return node.className.indexOf("activeGroup") != -1;
@@ -521,7 +563,7 @@ tabView.prototype = {
               // If no title is given the default name is used
               if (!value) {
                 value = utils.getProperty("chrome://browser/locale/tabview.properties",
-                                  "tabview.groupItem.defaultName");
+                                          "tabview.groupItem.defaultName");
               }
               var title = node.querySelector(".name");
               return (value == title.value);
@@ -550,7 +592,7 @@ tabView.prototype = {
         nodeCollector.queryNodes(".tab .tab-title");
         break;
       case "tabs":
-        nodeCollector.queryNodes(".tab").filter(function(node) {
+        nodeCollector.queryNodes(".tab").filter(function (node) {
           switch (subtype) {
             case "active":
               return (node.className.indexOf("focus") != -1);
@@ -565,7 +607,8 @@ tabView.prototype = {
                   }
                 }
                 return false;
-              } else {
+              }
+              else {
                 return (node.className.indexOf("tabInGroupItem") == -1);
               }
             default:
