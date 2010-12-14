@@ -252,23 +252,31 @@ softwareUpdate.prototype = {
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
     var check = this._vc.compare(info.build_post.version, info.build_pre.version);
-    this._controller.assert(function() {
+    this._controller.assert(function () {
       return check >= 0;
     }, "The version number of the upgraded build is higher or equal.");
 
     // The build id should be identical with the one from the update
-    this._controller.assert(function() {
-      return info.build_post.buildid == info.patch.buildid;
+    this._controller.assert(function () {
+      return info.build_post.buildid === info.patch.buildid;
     }, "The build id is equal to the build id of the update.");
 
+    // If a target build id has been given, check if it matches the updated build
+    info.target_buildid = updateData.targetBuildID;
+    if (info.target_buildid) {
+      this._controller.assert(function () {
+        return info.build_post.buildid === info.target_buildid;
+      }, "Target build id matches id of updated build.");
+    }
+
     // An upgrade should not change the builds locale
-    this._controller.assert(function() {
-      return info.build_post.locale == info.build_pre.locale;
+    this._controller.assert(function () {
+      return info.build_post.locale === info.build_pre.locale;
     }, "The locale of the updated build is identical to the original locale.");
 
     // Check that no application-wide add-ons have been disabled
-    this._controller.assert(function() {
-      return info.build_post.disabled_addons == info.build_pre.disabled_addons;
+    this._controller.assert(function () {
+      return info.build_post.disabled_addons === info.build_pre.disabled_addons;
     }, "No application-wide add-ons have been disabled by the update.");
   },
 
