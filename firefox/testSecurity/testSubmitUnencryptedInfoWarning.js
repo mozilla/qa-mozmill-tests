@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,6 +45,7 @@ const gDelay = 0;
 const gTimeout = 5000;
 
 const TIMEOUT_MODAL_DIALOG = 30000;
+const TEST_SITE = "https://mail.mozilla.org";
 
 var setupModule = function(module)
 {
@@ -74,13 +76,9 @@ var testSubmitUnencryptedInfoWarning = function()
   // Make sure the prefs are set
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 
-  // Create a listener for the warning dialog
-  var md = new modalDialog.modalDialog(controller.window);
-  md.start(handleSecurityWarningDialog);
-
   // Load an unencrypted page
-  controller.open("https://mail.mozilla.org");
-  md.waitForDialog(TIMEOUT_MODAL_DIALOG);
+  controller.open(TEST_SITE);
+  controller.waitForPageLoad();
 
   // Get the web page's search box
   var searchbox = new elementslib.ID(controller.tabs.activeTab, "q");
@@ -88,19 +86,25 @@ var testSubmitUnencryptedInfoWarning = function()
 
   // Use the web page search box to submit information
   var goButton = new elementslib.ID(controller.tabs.activeTab, "submit");
+  controller.waitForElement(goButton, gTimeout);
+
+  // Create a listener for the warning dialog
+  var md = new modalDialog.modalDialog(controller.window);
+  md.start(handleSecurityWarningDialog);
 
   controller.type(searchbox, "mozilla");
   controller.click(goButton);
 
-  // Prevent the test from ending before the warning can appear
+  // A warning dialog should appear to caution the submit
+  md.waitForDialog(TIMEOUT_MODAL_DIALOG);
+
+  // Wait for the search results page to appear
   controller.waitForPageLoad();
 
-  // Check that the search field is not shown anymore
-  controller.assertNodeNotExist(searchbox);
-
-  // Test if the modal dialog has been shown
-  controller.assertJS("subject.isModalWarningShown == true",
-                      {isModalWarningShown: modalWarningShown});
+  // Check that the search results page loaded
+  var searchResultsField = new elementslib.Name(controller.tabs.activeTab, "q");
+  controller.waitForElement(searchResultsField);
+  controller.assertValue(searchResultsField, "mozilla");
 }
 
 /**
