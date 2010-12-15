@@ -21,6 +21,7 @@
  *   Tracy Walker <twalker@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -68,11 +69,7 @@ var testNewWindow = function () {
                          gTimeout, 100,
                          {utils: mozmill.utils, expectedCount: windowCount + 1});
 
-  // Bug 555347: We have to wait no not accidentally grab the wrong browser window
-  controller.sleep(0);
-
-  controller2 = utils.handleWindow("type", "navigator:browser",
-                                   checkDefaultHomepage, false);
+  controller2 = utils.handleWindow("type", "", checkDefaultHomepage, false);
 }
 
 /**
