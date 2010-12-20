@@ -60,16 +60,16 @@ var testStopAndReload = function()
 
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
-  var elem = new elementslib.ID(controller.tabs.activeTab, "query");
-  controller.assertNodeNotExist(elem);
+  var header = new elementslib.ID(controller.tabs.activeTab, "header");
+  controller.assertNodeNotExist(header);
   controller.sleep(gDelay);
 
   // Reload, wait for it to completely loading and test again
   controller.open(url);
   controller.waitForPageLoad();
 
-  elem = new elementslib.ID(controller.tabs.activeTab, "query");
-  controller.waitForElement(elem, gTimeout);
+  header = new elementslib.ID(controller.tabs.activeTab, "header");
+  controller.waitForElement(header, gTimeout);
 }
 
 /**
