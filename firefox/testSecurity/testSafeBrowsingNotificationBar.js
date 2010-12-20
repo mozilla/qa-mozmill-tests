@@ -66,7 +66,7 @@ var testNotificationBar = function() {
     checkNoPhishingButton(badSites[i]);
 
     // Go back to the notification bar
-    controller.goBack();
+    controller.open(badSites[i]);
     controller.waitForPageLoad();
     checkIgnoreWarningButton(badSites[i]);
 
@@ -74,7 +74,7 @@ var testNotificationBar = function() {
     checkGetMeOutOfHereButton();
 
     // Go back to the notification bar
-    controller.goBack();
+    controller.open(badSites[i]);
     controller.waitForPageLoad();
     checkIgnoreWarningButton(badSites[i]);
 
