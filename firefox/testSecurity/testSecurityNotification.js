@@ -53,8 +53,8 @@ var testSecNotification = function()
   controller.open("https://addons.mozilla.org/");
   controller.waitForPageLoad();
 
-  var query = new elementslib.ID(controller.tabs.activeTab, "query");
-  controller.assertNode(query);
+  var header = new elementslib.ID(controller.tabs.activeTab, "header");
+  controller.assertNode(header);
 
   // The security button should be visible in the status bar
   var securityButton = controller.window.document.getElementById("security-button");
