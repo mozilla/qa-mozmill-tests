@@ -137,9 +137,16 @@ function prefPaneInit(controller, prefDialog) {
             { getBy : GET_BY_ID,
               id : "showCookiesButton",
               target : WINDOW_NEW,
-              title : utils.getEntity(dtds, "window.title")}
-          ]
-        }
+              title : utils.getEntity(dtds, "window.title")},
+            { getBy : GET_BY_ID,
+              id : "alwaysClear",
+              target : WINDOW_CURRENT,
+              subContent : [
+                { getBy : GET_BY_ID,
+                  id : "clearDataSettings",
+                  target : WINDOW_MODAL}
+              ]}
+          ]}
       ]},
     { getBy : GET_BY_ID,
       id : "paneSecurity",
@@ -178,7 +185,12 @@ function prefPaneInit(controller, prefDialog) {
           subContent : [
             { getBy : GET_BY_ID,
               id : "connectionSettings",
-              target : WINDOW_MODAL},
+              target : WINDOW_MODAL,
+              subContent : [
+                { getBy : GET_BY_SELECTOR,
+                  selector : "radio[value='1']",
+                  target : WINDOW_CURRENT}
+              ]},
             { getBy : GET_BY_ID,
               id : "offlineNotifyExceptions",
               target : WINDOW_NEW,
