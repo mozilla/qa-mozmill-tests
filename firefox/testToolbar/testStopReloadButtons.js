@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,11 +36,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const gDelay = 0;
-const gTimeout = 5000;
+// Include required modules
+var Toolbars = require("../../shared-modules/toolbars");
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+  locationBar =  new Toolbars.locationBar(controller);
 }
 
 /**
@@ -55,21 +57,21 @@ var testStopAndReload = function()
 
   // Go to the URL and start loading for some milliseconds
   controller.open(url);
-  controller.sleep(100);
-  controller.click(new elementslib.ID(controller.window.document, "stop-button"));
+  var stopButton = locationBar.getElement({type: "stopButton"});
+  controller.click(stopButton);
 
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
   var header = new elementslib.ID(controller.tabs.activeTab, "header");
   controller.assertNodeNotExist(header);
-  controller.sleep(gDelay);
 
   // Reload, wait for it to completely loading and test again
   controller.open(url);
   controller.waitForPageLoad();
 
   header = new elementslib.ID(controller.tabs.activeTab, "header");
-  controller.waitForElement(header, gTimeout);
+  controller.waitForElement(header);
+  controller.assertNode(header);
 }
 
 /**
