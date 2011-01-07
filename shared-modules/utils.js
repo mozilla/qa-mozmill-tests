@@ -200,8 +200,10 @@ function assertLoadedUrlEqual(controller, targetUrl) {
   controller.waitForPageLoad();
 
   // Check the same web page has been opened
-  controller.waitForEval("subject.targetURL.value == subject.currentURL", gTimeout, 100,
-                         {targetURL: locationBar.getNode(),  currentURL: currentURL});
+  controller.waitFor(function () { 
+    return locationBar.getNode().value === currentURL;
+  }, "Current URL should be identical to the target URL - got " +
+     locationBar.getNode().value + ", expected " + currentURL);
 }
 
 /**
