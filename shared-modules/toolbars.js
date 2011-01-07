@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -400,6 +401,9 @@ locationBar.prototype = {
         break;
       case "starButton":
         elem = new elementslib.ID(this._controller.window.document, "star-button");
+        break;
+      case "stopButton":
+        elem = new elementslib.ID(this._controller.window.document, "stop-button");
         break;
       case "urlbar":
         elem = new elementslib.ID(this._controller.window.document, "urlbar");
