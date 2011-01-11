@@ -42,8 +42,7 @@ var tabs = require("../../shared-modules/tabs");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT_ARROWS = 10000;
 
 var setupModule = function(module)
 {
@@ -79,51 +78,70 @@ var testScrollBackgroundTabIntoView = function()
   var link1 = new elementslib.Name(controller.tabs.activeTab, "link_1");
   var link2 = new elementslib.Name(controller.tabs.activeTab, "link_2");
 
-  // Open new background tabs until the scroll arrows appear
-  var count = 1;
-  do {
-    controller.middleClick(link1);
+  controller.waitFor(function () {
+    tabBrowser.openInNewTab({type: "middleClick", target: link1});
 
-    // Wait until the new tab has been opened
-    controller.waitForEval("subject.tabs.length == subject.count", gTimeout, 100,
-                           {tabs: tabBrowser, count: ++count});
-  } while ((scrollButtonDown.getNode().getAttribute("collapsed") == 'true') || count > 50)
+    // Wait until the pages have been loaded, so they can be loaded from the cache
+    var tab = controller.tabs.getTab(controller.tabs.length - 1);
+    controller.waitForPageLoad(tab);
 
-  controller.assertJS("subject.isLeftButtonVisible == true",
-                      {isLeftButtonVisible: !scrollButtonUp.getNode().getAttribute("collapsed")});
+    var down_visible = !scrollButtonDown.getNode().hasAttribute("collapsed");
+    var up_visible = !scrollButtonUp.getNode().hasAttribute("collapsed");
+    return down_visible && up_visible;
+  }, "Scroll arrows are visible after a couple tabs have been opened", TIMEOUT_ARROWS);
+
+  // XXX: Bug 624027
+  // Not sure for which state we have to wait here, but without the sleep
+  // call or smaller numbers the test always fails on Windows. Lets see
+  // if the fix for bug 578162 will solve it.
+  controller.sleep(100);
 
   // Open one more tab but with another link for later verification
-  controller.middleClick(link2);
+  tabBrowser.openInNewTab({type: "middleClick", target: link2});
 
   // Check that the right scroll button flashes
-  controller.waitForEval("subject.scrollButton.hasAttribute('notifybgtab') == true", gTimeout, 10,
-                         {scrollButton: scrollButtonDown.getNode()});
-  controller.waitForEval("subject.scrollButton.hasAttribute('notifybgtab') != true", gTimeout, 10,
-                         {scrollButton: scrollButtonDown.getNode()});
+  controller.waitFor(function () {
+    return scrollButtonDown.getNode().hasAttribute('notifybgtab');
+  }, "Right scroll arrow has been highlighted");
+
+  controller.waitFor(function () {
+    return !scrollButtonDown.getNode().hasAttribute('notifybgtab');
+  }, "Hightlight should be removed immediately");
 
   // Check that the correct link has been loaded in the last tab
   var lastIndex = controller.tabs.length - 1;
   var linkId = new elementslib.ID(controller.tabs.getTab(lastIndex), "id");
 
   // Need to wait for element to appear, then we check text is correct
-  controller.waitForElement(linkId, gTimeout, 100);
+  controller.waitForElement(linkId);
   controller.assertText(linkId, "2");
 
   // and is displayed inside the all tabs popup menu
   controller.click(allTabsButton);
-  controller.waitForEval("subject.state == 'open'", gTimeout, 100, allTabsPopup.getNode());
 
-  for (var ii = 0; ii <= lastIndex; ii++) {
-    if (ii < lastIndex)
-      controller.assertJS("subject.childNodes[" + ii + "].label != '2'",
-                          allTabsPopup.getNode());
-    else
-      controller.assertJS("subject.childNodes[" + ii + "].label == '2'",
-                          allTabsPopup.getNode());
+  controller.waitFor(function () {
+    return allTabsPopup.getNode().state == 'open';
+  }, "The all tabs popup should have been opened");
+
+  // Check that the correct title is shown for all tabs except the last one
+  for (var i = 1; i < lastIndex; i++) {
+    controller.waitFor(function () {
+      var node = allTabsPopup.getNode().childNodes[i];
+      return node && node.label == '1';
+    }, "Link 1 title is visible for the tab");
   }
 
+  // Also check the last title
+  controller.waitFor(function () {
+    var node = allTabsPopup.getNode().childNodes[lastIndex];
+    return node && node.label == '2';
+  }, "Link 2 title is visible for the last tab");
+
+  // Close the all tabs menu
   controller.click(allTabsButton);
-  controller.waitForEval("subject.state == 'closed'", gTimeout, 100, allTabsPopup.getNode());
+  controller.waitFor(function () {
+    return allTabsPopup.getNode().state == 'closed';
+  }, "The all tabs popup should have been closed");
 }
 
 /**
@@ -139,7 +157,7 @@ var prefDialogCallback = function(controller)
 
   // Ensure that 'Switch to tabs immediately' is unchecked:
   var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
-  controller.waitForElement(switchToTabsPref, gTimeout);
+  controller.waitForElement(switchToTabsPref);
   controller.check(switchToTabsPref, false);
 
   prefDialog.close(true);

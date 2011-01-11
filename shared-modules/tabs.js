@@ -89,7 +89,7 @@ function getTabsWithURL(aUrl) {
   // Iterate through all windows
   while (winEnum.hasMoreElements()) {
     var window = winEnum.getNext();
- 
+
     // Don't check windows which are about to close or don't have gBrowser set
     if (window.closed || !("gBrowser" in window))
       continue;
@@ -112,7 +112,7 @@ function getTabsWithURL(aUrl) {
 
 /**
  * Constructor
- * 
+ *
  * @param {MozMillController} controller
  *        MozMill controller of the window to operate on
  */
@@ -251,7 +251,7 @@ tabBrowser.prototype = {
    *        type: General type information
    *        subtype: Specific element or property
    *        value: Value of the element or property
-   * @returns Element which has been created  
+   * @returns Element which has been created
    * @type {ElemBase}
    */
   getElement : function tabBrowser_getElement(spec) {
@@ -366,12 +366,15 @@ tabBrowser.prototype = {
    *
    * @param {object} aEvent
    *        The event specifies how to open the element in a new tab
-   *        Elements: type - Type of event (contextMenu, middleClick)
-   *                         [optional - default: middleClick]
+   *        Elements: type   - Type of event (contextMenu, middleClick)
+   *                           [optional - default: middleClick]
+   *                  target - Element to click on
+   *                           [optional - default: -]
    */
   openInNewTab : function tabBrowser_openInNewTab(aEvent) {
     var event = aEvent || { };
     var type = (event.type == undefined) ? "middleClick" : event.type;
+    var target = event.target;
 
     // Disable tab closing animation for default behavior
     prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
@@ -385,12 +388,12 @@ tabBrowser.prototype = {
       case "contextMenu":
         var contextMenuItem = new elementslib.ID(this._controller.window.document,
                                                  "context-openlinkintab");
-        this._controller.rightClick(event.target);
+        this._controller.rightClick(target);
         this._controller.click(contextMenuItem);
         utils.closeContentAreaContextMenu(this._controller);
         break;
       case "middleClick":
-        this._controller.middleClick(event.target);
+        this._controller.middleClick(target);
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown event type - " + type);
@@ -440,7 +443,7 @@ tabBrowser.prototype = {
         break;
       case "tabStrip":
         var tabStrip = this.getElement({type: "tabs_strip"});
-        
+
         // RTL-locales need to be treated separately
         if (utils.getEntity(this.getDtds(), "locale.dir") == "rtl") {
           // XXX: Workaround until bug 537968 has been fixed
@@ -466,10 +469,10 @@ tabBrowser.prototype = {
       prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
-  
+
   /**
    * Waits for a particular tab panel element to display and stop animating
-   * 
+   *
    * @param {number} tabIndex
    *        Index of the tab to check
    * @param {string} elemString
@@ -478,10 +481,10 @@ tabBrowser.prototype = {
   waitForTabPanel: function tabBrowser_waitForTabPanel(tabIndex, elemString) {
     // Get the specified tab panel element
     var tabPanel = this.getTabPanelElement(tabIndex, elemString);
-    
+
     // Get the style information for the tab panel element
     var style = this._controller.window.getComputedStyle(tabPanel.getNode(), null);
-    
+
     // Wait for the top margin to be 0px - ie. has stopped animating
     // XXX: A notification bar starts at a negative pixel margin and drops down
     //      to 0px.  This creates a race condition where a test may click
