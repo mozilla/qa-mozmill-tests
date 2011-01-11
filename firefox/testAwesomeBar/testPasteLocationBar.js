@@ -54,7 +54,9 @@ var testPasteLocationBar = function() {
   var contextMenuEntry = locationBar.getElement({type: "contextMenu_entry", subtype: "paste"});
   controller.click(contextMenuEntry);
 
-  // Get contents of locationbar and compare it to expected result  
-  controller.waitForEval("subject.urlbar.value == subject.selectedText", TIMEOUT, 100,
-                         {urlbar: locationBar.urlbar.getNode(), selectedText: docSelection});
+  // Get contents of the location bar and compare it to the expected result
+  controller.waitFor(function () {
+    return locationBar.value === docSelection.selectedText;
+  }, "Location bar should contain pasted clipboard content - got " +
+    locationBar.value + ", expected " + docSelection.selectedText);
 }
