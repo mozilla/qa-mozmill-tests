@@ -56,7 +56,7 @@ var testPasteLocationBar = function() {
 
   // Get contents of the location bar and compare it to the expected result
   controller.waitFor(function () {
-    return locationBar.value === docSelection.selectedText;
+    return locationBar.value === docSelection;
   }, "Location bar should contain pasted clipboard content - got " +
-    locationBar.value + ", expected " + docSelection.selectedText);
+    locationBar.value + ", expected " + docSelection);
 }
