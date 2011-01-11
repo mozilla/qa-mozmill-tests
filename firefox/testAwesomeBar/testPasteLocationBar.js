@@ -88,8 +88,9 @@ function testPasteLocationBar() {
   contextMenu.open(input);
   contextMenu.select("#context-paste", input);
 
-  // Get contents of locationbar and compare it to expected result  
+  // Get contents of the location bar and compare it to expected result  
   controller.waitFor(function () {
-  return locationBar.urlbar.getNode().value == docSelection;
-  }, "Contents of location bar match selected text", TIMEOUT, 100);
+    return locationBar.value === docSelection;
+  }, "Location bar should contain pasted clipboard content - got " +
+    locationBar.value + ", expected " + docSelection);
 }
