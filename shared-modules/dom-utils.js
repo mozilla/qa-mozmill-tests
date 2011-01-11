@@ -324,15 +324,15 @@ DOMWalker.prototype = {
     // If the wanted window/dialog is already selected, just run this function
     // recursively for it's descendants.
     if (activeNode.localName == "menulist") {
-      if (nodeToProcess.label != idSet.title) {
+      if (nodeToProcess.value != idSet.value) {
         var dropDown = new elementslib.Elem(nodeToProcess);
         this._controller.waitForElement(dropDown);
 
-        this._controller.select(dropDown, null, idSet.title);
+        this._controller.select(dropDown, null, null, idSet.value);
 
         this._controller.waitFor(function() {
-          return nodeToProcess.label == idSet.title;
-        }, "The menu item did not load in time: " + idSet.title);
+          return nodeToProcess.value == idSet.value;
+        }, "The menu item did not load in time: " + idSet.value);
 
         // If the target is a new modal/non-modal window, this.walk() has to be
         // started by the method opening that window. If not, we do it here.
