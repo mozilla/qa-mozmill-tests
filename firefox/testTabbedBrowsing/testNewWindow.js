@@ -40,9 +40,6 @@
 // Include required modules
 var utils = require("../../shared-modules/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   controller2 = null;
@@ -57,19 +54,27 @@ var teardownModule = function(module) {
  * Test the opening of a new window
  */
 var testNewWindow = function () {
-  // Ensure current window does not have the home page loaded
+  // Ensure current tab does not have the home page loaded
   controller.open('about:blank');
   controller.waitForPageLoad();
 
   // Open a new window
-  var windowCount = mozmill.utils.getWindows().length;
-
   controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_newNavigator));
-  controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
-                         gTimeout, 100,
-                         {utils: mozmill.utils, expectedCount: windowCount + 1});
 
-  controller2 = utils.handleWindow("type", "", checkDefaultHomepage, false);
+  controller.waitFor(function () {
+    // Make sure that we work on the correct window
+    var windows = mozmill.utils.getWindows("navigator:browser");
+    for (var i = 0; i < windows.length; i++) {
+      if (windows[i] !== controller.window) {
+        controller2 = new mozmill.controller.MozMillController(windows[i]);
+        break;
+      }
+    }
+
+    return !!controller2;
+  }, "Newly opened browser window has not been found");
+
+  checkDefaultHomepage(controller2);
 }
 
 /**
