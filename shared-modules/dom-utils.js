@@ -185,6 +185,45 @@ DOMWalker.prototype = {
   },
 
   /**
+   * DOMWalker_filter filters a given node by submitting it to the
+   * this._callbackFilter method to decide, if it should be submitted to
+   * a provided this._callbackNodeTest method for testing (that hapens in case
+   * of FILTER_ACCEPT).
+   * In case of FILTER_ACCEPT and FILTER_SKIP, the children of such a node
+   * will be filtered recursively.
+   * Nodes with the nodeStatus "FILTER_REJECT" and their descendants will be
+   * completetly ignored.
+   *
+   * @param {Node} node
+   *        Node to filter
+   * @param {array of elements} collectedResults
+   *        An array with gathered all results from testing a given element
+   * @returns An array with gathered all results from testing a given element
+   * @type {array of elements}
+   */
+  _filter : function DOMWalker_filter(node, collectedResults) {
+    var nodeStatus = this._callbackFilter(node);
+
+    var nodeTestResults = [];
+
+    switch (nodeStatus) {
+      case DOMWalker.FILTER_ACCEPT:
+        nodeTestResults = this._callbackNodeTest(node);
+        collectedResults = collectedResults.concat(nodeTestResults);
+        // no break here as we have to perform the _walk below too
+      case DOMWalker.FILTER_SKIP:
+        nodeTestResults = this._walk(node);
+        break;
+      default:
+        break;
+    }
+
+    collectedResults = collectedResults.concat(nodeTestResults);
+    
+    return collectedResults;
+  },
+
+  /**
    * Retrieves and returns a wanted node based on the provided identification
    * set.
    *
@@ -403,16 +442,7 @@ DOMWalker.prototype = {
 
   /**
    * DOMWalker_walk goes recursively through the DOM, starting with a provided
-   * root-node.
-   *
-   * First, it filters nodes by submitting each node to the this._callbackFilter
-   * method to decide, if a node should be submitted to a provided
-   * this._callbackNodeTest method to test (that hapens in case of
-   * FILTER_ACCEPT).
-   * In case of FILTER_ACCEPT and FILTER_SKIP, the children of such a node
-   * will be filtered recursively.
-   * Nodes with the nodeStatus "FILTER_REJECT" and their descendants will be
-   * completetly ignored.
+   * root-node and filters the nodes using the this._filter method.
    *
    * @param {Node} root
    *        Node to start testing from
@@ -426,25 +456,18 @@ DOMWalker.prototype = {
 
     var collectedResults = [];
 
-    for (var i = 0; i < root.childNodes.length; i++) {
-      var nodeStatus = this._callbackFilter(root.childNodes[i]);
-
-      var nodeTestResults = [];
-
-      switch (nodeStatus) {
-        case DOMWalker.FILTER_ACCEPT:
-          nodeTestResults = this._callbackNodeTest(root.childNodes[i]);
-          collectedResults = collectedResults.concat(nodeTestResults);
-          // no break here as we have to perform the _walk below too
-        case DOMWalker.FILTER_SKIP:
-          nodeTestResults = this._walk(root.childNodes[i]);
-          break;
-        default:
-          break;
+    // There seems to be no other way to get to the nodes hidden in the
+    // "_buttons" object (see Bug 614949)
+    if (root._buttons) {
+      for each (button in root._buttons) {
+        collectedResults = this._filter(button, collectedResults);
       }
-
-      collectedResults = collectedResults.concat(nodeTestResults);
     }
+
+    for (var i = 0; i < root.childNodes.length; i++) {
+      collectedResults = this._filter(root.childNodes[i], collectedResults);
+    }
+
     return collectedResults;
   },
 
