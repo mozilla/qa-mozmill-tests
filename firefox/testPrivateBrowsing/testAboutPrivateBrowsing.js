@@ -38,7 +38,6 @@
 // Include the required modules
 var privateBrowsing = require("../../shared-modules/private-browsing");
 var utils = require("../../shared-modules/utils");
-var prefs = require("../../shared-modules/prefs");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -49,16 +48,6 @@ var setupModule = function(module)
 
   // Create Private Browsing instance and set handler
   pb = new privateBrowsing.privateBrowsing(controller);
-
-  // XXX: Bug 621699
-  // Temporarily disable WebGL due to triggered crash on Linux
-  if (mozmill.isLinux) {
-    prefs.preferences.setPref("webgl.enabled_for_all_sites", false);
-  }
-}
-
-var teardownModule = function(module) {
-  prefs.preferences.clearUserPref("webgl.enabled_for_all_sites");
 }
 
 var setupTest = function(module)
@@ -115,4 +104,7 @@ var testCheckPrivateBrowsingMode = function()
   utils.assertLoadedUrlEqual(controller, targetUrl);
 }
 
-testCheckAboutPrivateBrowsing.meta = {messages : ["Bug 621699: Crash with WebGL enabled [Linux]"]};
+/**
+ * Map test functions to litmus tests
+ */
+// testCheckAboutPrivateBrowsing.meta = {litmusids : [9203]};
