@@ -86,45 +86,55 @@ var testCheckItemHighlight = function() {
     controller.sleep(100);
   }
 
+  // Wait for the location bar to contain the entire test string
+  controller.waitFor(function () {
+    return locationBar.value === testString;
+  }, "Location bar contains the entered string - got " +
+    locationBar.value + ", expected " + testString);
+
+  // Check the autocomplete list is open
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.isOpened == true;
+  }, "Autocomplete popup has been opened - got " +
+    locationBar.autoCompleteResults.isOpened + ", expected " + true);
+
   // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
-  // Check the autocomplete list is open
-  controller.waitForEval('subject.isOpened == true', TIMEOUT, 100, 
-                         locationBar.autoCompleteResults);
-  
   // Get a list of any underlined autocomplete titles
   var titleEntries = locationBar.autoCompleteResults.
                      getUnderlinedText(richlistItem, "title");
-  
+
   // Check that there is only 1 entry
-  controller.assertJS("subject.underliedTextCount == 1", {
-    underliedTextCount: titleEntries.length
-  });
+  controller.assert(function () {
+    return titleEntries.length === 1;
+  }, "Only one underlined entry is visible - got " + titleEntries.length + 
+    ", expected " + 1);
 
   // Check that the underlined title matches the entered title
   for each (var entry in titleEntries) {
-    controller.assertJS("subject.enteredTitle == subject.underlinedTitle", {
-      enteredTitle: testString, 
-      underlinedTitle: entry.toLowerCase()
-    });
+    controller.assert(function () {
+      return entry.toLowerCase() === testString;
+    }, "Underlined title matches the entered title - got " + entry.toLowerCase() +
+      ", expected " + testString);
   }
 
   // Get a list of any underlined autocomplete URLs
   var URLEntries = locationBar.autoCompleteResults.
                    getUnderlinedText(richlistItem, "url");
-  
+
   // Check that there is only 1 entry
-  controller.assertJS("subject.underlinedUrlCount == 1", {
-    underlinedUrlCount: URLEntries.length
-  });
+  controller.assert(function () { 
+    return URLEntries.length === 1;
+  }, "Only one autocompleted URL is underlined - got " + URLEntries.length +
+    ", expected " + 1);
 
   // Check that the underlined URL matches the entered URL
   for each (var entry in URLEntries) {
-    controller.assertJS("subject.enteredUrl == subject.underlinedUrl", {
-      enteredUrl: testString, 
-      underlinedUrl: entry.toLowerCase()
-    });
+    controller.assert(function () { 
+      return entry.toLowerCase() === testString;
+    }, "Underlined URL matches entered URL - got " + entry.toLowerCase() + 
+    ", expected " + testString);
   }
 }
 
