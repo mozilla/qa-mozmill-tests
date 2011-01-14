@@ -60,6 +60,10 @@ var setupModule = function(module) {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check access to the location bar drop down list via autocomplete
  */

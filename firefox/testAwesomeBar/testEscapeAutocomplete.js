@@ -56,6 +56,10 @@ var setupModule = function() {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check Escape key functionality during auto-complete process
  */

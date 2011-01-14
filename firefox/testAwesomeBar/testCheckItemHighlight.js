@@ -58,6 +58,10 @@ var setupModule = function() {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check matched awesomebar items are highlighted.
  */
@@ -126,6 +130,8 @@ var testCheckItemHighlight = function() {
       underlinedUrl: entry.toLowerCase()
     });
   }
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**

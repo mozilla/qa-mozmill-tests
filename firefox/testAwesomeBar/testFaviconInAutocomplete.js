@@ -57,6 +57,10 @@ var setupModule = function() {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check Favicon in autocomplete list
  *
@@ -96,6 +100,8 @@ var testFaviconInAutoComplete = function() {
   // Check that both Favicons have the same URL
   controller.assertJS("subject.isSameFavicon == true",
                       {isSameFavicon: richlistItem.getNode().image.indexOf(locationBarFaviconUrl) != -1});
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**

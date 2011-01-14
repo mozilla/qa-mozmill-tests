@@ -63,6 +63,10 @@ var setupModule = function() {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check Six is the maximum visible items in a match list.
  */
@@ -98,6 +102,8 @@ var testVisibleItemsMax = function() {
   controller.waitFor(function() { 
     return autoCompleteResultsList.getNode().getNumberOfVisibleRows() == 6;
   }, "Number of visible rows returned should equal 6");
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**
