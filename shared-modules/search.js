@@ -44,7 +44,8 @@ var modalDialog = require("modal-dialog");
 var utils = require("utils");
 var widgets = require("widgets");
 
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+const TIMEOUT_REQUEST_SUGGESTIONS = 750;
 
 // Helper lookup constants for the engine manager elements
 const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
@@ -166,7 +167,7 @@ engineManager.prototype = {
       widgets.clickTreeCell(this._controller, tree, index, 0, {});
     }
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.newIndex", TIMEOUT, 100,
                                  {manager: this, newIndex: index});
   },
 
@@ -311,7 +312,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "down"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex + 1", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex + 1", TIMEOUT, 100,
                                  {manager: this, oldIndex: index});
   },
 
@@ -328,7 +329,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "up"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex - 1", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedIndex == subject.oldIndex - 1", TIMEOUT, 100,
                                  {manager: this, oldIndex: index});
   },
 
@@ -344,7 +345,7 @@ engineManager.prototype = {
     var button = this.getElement({type: "engine_button", subtype: "remove"});
     this._controller.click(button);
 
-    this._controller.waitForEval("subject.manager.selectedEngine != subject.removedEngine", gTimeout, 100,
+    this._controller.waitForEval("subject.manager.selectedEngine != subject.removedEngine", TIMEOUT, 100,
                                  {manager: this, removedEngine: name});
   },
 
@@ -424,7 +425,7 @@ searchBar.prototype = {
       var button = this.getElement({type: "searchBar_dropDown"});
       this._controller.click(button);
 
-      this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == subject.newState", gTimeout, 100,
+      this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == subject.newState", TIMEOUT, 100,
                                    {searchBar: this, newState: newState });
       this._controller.sleep(0);
     }
@@ -464,7 +465,7 @@ searchBar.prototype = {
     this.enginesDropDownOpen = true;
 
     var engine = this.getElement({type: "engine", subtype: "selected", value: "true"});
-    this._controller.waitForElement(engine, gTimeout);
+    this._controller.waitForElement(engine, TIMEOUT);
 
     this.enginesDropDownOpen = state;
 
@@ -482,13 +483,13 @@ searchBar.prototype = {
     this.enginesDropDownOpen = true;
 
     var engine = this.getElement({type: "engine", subtype: "id", value: name});
-    this._controller.waitThenClick(engine, gTimeout);
+    this._controller.waitThenClick(engine, TIMEOUT);
 
     // Wait until the drop down has been closed
-    this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == false", gTimeout, 100,
+    this._controller.waitForEval("subject.searchBar.enginesDropDownOpen == false", TIMEOUT, 100,
                                  {searchBar: this});
 
-    this._controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", gTimeout, 100,
+    this._controller.waitForEval("subject.searchBar.selectedEngine == subject.newEngine", TIMEOUT, 100,
                                  {searchBar: this, newEngine: name});
   },
 
@@ -672,15 +673,30 @@ searchBar.prototype = {
     var popup = this.getElement({type: "searchBar_autoCompletePopup"});
     var treeElem = this.getElement({type: "searchBar_suggestions"});
 
-    // Enter search term and wait for the popup
-    this.type(searchTerm);
-    this._controller.waitForEval("subject.popup.state == 'open'", gTimeout, 100,
-                                 {popup: popup.getNode()});
-    this._controller.waitForElement(treeElem, gTimeout);
+    // XXX Bug 542990, Bug 392633
+    // Typing too fast can cause several issue like the suggestions not to appear.
+    // Lets type the letters one by one and wait for the popup or the timeout
+    for (var i = 0; i < searchTerm.length; i++) {
+      try {
+        this.type(searchTerm[i]);
+        this._controller.waitFor(function () {
+          return popup.getNode().state === 'open';
+        }, "", TIMEOUT_REQUEST_SUGGESTIONS);
+      }
+      catch (e) {
+        // We are not interested in handling the timeout for now
+      }
+    }
+
+    // After entering the search term the suggestions have to be visible
+    this._controller.assert(function () {
+      return popup.getNode().state === 'open';
+    }, "Search suggestions are visible");
+    this._controller.waitForElement(treeElem, TIMEOUT);
 
     // Get all suggestions
     var tree = treeElem.getNode();
-    this._controller.waitForEval("subject.tree.view != null", gTimeout, 100,
+    this._controller.waitForEval("subject.tree.view != null", TIMEOUT, 100,
                                  {tree: tree});
     for (var ii = 0; ii < tree.view.rowCount; ii ++) {
       suggestions.push(tree.view.getCellText(ii, tree.columns.getColumnAt(0)));
@@ -688,7 +704,7 @@ searchBar.prototype = {
 
     // Close auto-complete popup
     this._controller.keypress(popup, "VK_ESCAPE", {});
-    this._controller.waitForEval("subject.popup.state == 'closed'", gTimeout, 100,
+    this._controller.waitForEval("subject.popup.state == 'closed'", TIMEOUT, 100,
                                  {popup: popup.getNode()});
 
     return suggestions;
