@@ -84,7 +84,7 @@ var testInstallExtension = function()
   addonsManager.controller.waitThenClick(extension, gSearchTimeout);
 
   // Create a modal dialog instance to handle the Software Installation dialog
-  var md = new modalDialog.modalDialog(addonsManager.controller);
+  var md = new modalDialog.modalDialog(addonsManager.controller.window);
   md.start(handleTriggerDialog);
 
   // Trigger the extension installation
