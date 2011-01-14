@@ -237,6 +237,25 @@ autoCompleteResults.prototype = {
    */
   getResult : function autoCompleteResults_getResult(index) {
     return this.getElement({type: "result", value: index});
+  },
+  
+  /**
+   * Close the autocomplete popup
+   * 
+   * @param {boolean} force
+   *        Force the closing of the autocomplete popup
+   */
+  close : function autoCompleteResults_close(force) {
+    if (this.isOpened) {
+      if (force) {
+        this._popup.getNode().hidePopup();
+      } else {
+        this._controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
+      }
+      this._controller.waitFor(function () {
+          return !this.isOpened;
+      }, "Autocomplete list should not be open.");
+    }
   }
 }
 
@@ -470,18 +489,6 @@ locationBar.prototype = {
     this.focus({type: "shortcut"});
     this.type(url);
     this._controller.keypress(this.urlbar, "VK_RETURN", {});
-  },
-
-  /**
-   * Toggles between the open and closed state of the auto-complete popup
-   */
-  toggleAutocompletePopup : function locationBar_toggleAutocompletePopup() {
-    var dropdown = this.getElement({type: "historyDropMarker"});
-    var stateOpen = this.autoCompleteResults.isOpened;
-
-    this._controller.click(dropdown);
-    this._controller.waitForEval("subject.isOpened == " + stateOpen,
-                                 TIMEOUT, 100, this.autoCompleteResults);
   },
 
   /**

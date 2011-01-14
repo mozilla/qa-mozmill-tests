@@ -58,6 +58,10 @@ var setupModule = function() {
   places.removeAllHistory();
 }
 
+var teardownModule = function() {
+  locationBar.autoCompleteResults.close(true);
+}
+
 /**
  * Check matched awesomebar items are highlighted.
  */
@@ -136,6 +140,8 @@ var testCheckItemHighlight = function() {
     }, "Underlined URL matches entered URL - got " + entry.toLowerCase() + 
     ", expected " + testString);
   }
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**
