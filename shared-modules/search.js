@@ -45,6 +45,7 @@ var utils = require("utils");
 var widgets = require("widgets");
 
 const TIMEOUT = 5000;
+const TIMEOUT_REQUEST_SUGGESTIONS = 750;
 
 // Helper lookup constants for the engine manager elements
 const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
@@ -676,11 +677,25 @@ searchBar.prototype = {
     var popup = this.getElement({type: "searchBar_autoCompletePopup"});
     var treeElem = this.getElement({type: "searchBar_suggestions"});
 
-    // Enter search term and wait for the popup
-    this.type(searchTerm);
+    // XXX Bug 542990, Bug 392633
+    // Typing too fast can cause several issue like the suggestions not to appear.
+    // Lets type the letters one by one and wait for the popup or the timeout
+    for (var i = 0; i < searchTerm.length; i++) {
+      try {
+        this.type(searchTerm[i]);
+        this._controller.waitFor(function () {
+          return popup.getNode().state === 'open';
+        }, "", TIMEOUT_REQUEST_SUGGESTIONS);
+      }
+      catch (e) {
+        // We are not interested in handling the timeout for now
+      }
+    }
 
-    this._controller.waitForEval("subject.popup.state == 'open'", TIMEOUT, 100,
-                                 {popup: popup.getNode()});
+    // After entering the search term the suggestions have to be visible
+    this._controller.assert(function () {
+      return popup.getNode().state === 'open';
+    }, "Search suggestions are visible");
     this._controller.waitForElement(treeElem, TIMEOUT);
 
     // Get all suggestions
