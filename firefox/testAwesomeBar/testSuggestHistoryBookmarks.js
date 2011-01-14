@@ -59,6 +59,7 @@ var setupModule = function() {
 
 var teardownModule = function() {
   places.restoreDefaultBookmarks();
+  locationBar.autoCompleteResults.close(true);
 }
 
 /**
@@ -100,6 +101,8 @@ var testSuggestHistoryAndBookmarks = function() {
                         {enteredTitle: LOCAL_TEST_PAGE.string, 
                          underlinedTitle: entry.toLowerCase()});
   }
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**
@@ -142,6 +145,8 @@ var testStarInAutocomplete = function() {
   // For icons, check that the bookmark star is present
   controller.assertJS("subject.isItemBookmarked == true",
                       {isItemBookmarked: richlistItem.getNode().getAttribute('type') == 'bookmark'});
+
+  locationBar.autoCompleteResults.close();
 }
 
 /**
