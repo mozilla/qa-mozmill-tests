@@ -89,6 +89,12 @@ function checkDefaultHomepage(controller) {
   utils.assertLoadedUrlEqual(controller, defaultHomepage);
 }
 
+
+if (!mozmill.isMac) {
+  setupModule.__force_skip__ = 'Bug 616152: Re-enable on Windows and Linux once Mozmill 1.5.2 has been released';
+  teardownModule.__force_skip__ = true;
+}
+
 /**
  * Map test functions to litmus tests
  */
