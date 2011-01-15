@@ -459,9 +459,10 @@ softwareUpdate.prototype = {
     this._wizard = this.getElement({type: "wizard"});
 
     // Wait until the dummy wizard page isn't visible anymore
-    this._controller.waitFor(function() {
-      return this.currentPage != WIZARD_PAGES.dummy;
-    }, "Dummy wizard page has been made invisible.", undefined, undefined, this);
+    this._controller.waitFor(function () {
+      return this.currentPage !== WIZARD_PAGES.dummy;
+    }, "Dummy wizard page has been made invisible - got " + this.currentPage,
+      undefined, undefined, this);
 
     this._controller.window.focus();
   },
@@ -477,8 +478,8 @@ softwareUpdate.prototype = {
 
     // Wait until the update has been downloaded
     var progress =  this.getElement({type: "download_progress"});
-    this._controller.waitFor(function() {
-      return progress.getNode().value == 100;
+    this._controller.waitFor(function () {
+      return progress.getNode().value === '100';
     }, "Update has been finished downloading.", timeout);
 
     this.waitForWizardPage(WIZARD_PAGES.finished);
@@ -488,9 +489,10 @@ softwareUpdate.prototype = {
    * Waits for the given page of the update dialog wizard
    */
   waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
-    this._controller.waitFor(function() {
-      return this.currentPage == step;
-    }, "The wizard page '" + step + "' has been selected.", undefined, undefined, this);
+    this._controller.waitFor(function () {
+      return this.currentPage === step;
+    }, "New wizard page has been selected - got " + this.currentPage +
+      ", expected " + step, undefined, undefined, this);
   }
 }
 
