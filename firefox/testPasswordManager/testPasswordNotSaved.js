@@ -88,9 +88,10 @@ var testPasswordNotificationBar = function() {
 
   // Close the notification and check its state
   controller.keypress(passwordNotification, "VK_ESCAPE", {});
-  controller.assert(function() {
-    return passwordNotification.getNode().parentNode.state == "closed";
-  }, "Password notification should be closed");
+  controller.waitFor(function () {
+    return passwordNotification.getNode().parentNode.state === "closed";
+  }, "Password notification bar closed: got '" +
+     passwordNotification.getNode().parentNode.state + "' expected 'closed'");
 }
 
 /**
