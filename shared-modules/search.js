@@ -510,18 +510,23 @@ searchBar.prototype = {
   checkSearchResultPage : function searchBar_checkSearchResultPage(searchTerm) {
     // Retrieve the URL which is used for the currently selected search engine
     var targetUrl = this._bss.currentEngine.getSubmission(searchTerm, null).uri;
-    var currentUrl = this._controller.tabs.activeTabWindow.document.location.href;
+    var currentUrl = this._controller.tabs.activeTabWindow.document.location;
 
-    // Check if pure domain names are identical
-    var domainName = targetUrl.host.replace(/.+\.(\w+)\.\w+$/gi, "$1");
-    var index = currentUrl.indexOf(domainName);
+    var domainRegex = /[^\.]+\.([^\.]+)\..+$/gi;
+    var targetDomainName = targetUrl.host.replace(domainRegex, "$1");
+    var currentDomainName = currentUrl.host.replace(domainRegex, "$1");
 
-    this._controller.assertJS("subject.URLContainsDomain == true",
-                              {URLContainsDomain: currentUrl.indexOf(domainName) != -1});
+    this._controller.assert(function () {
+      return currentDomainName === targetDomainName;
+    }, "Current domain name matches target domain name - got '" +
+      currentDomainName + "', expected '" + targetDomainName + "'");
 
     // Check if search term is listed in URL
-    this._controller.assertJS("subject.URLContainsText == true",
-                              {URLContainsText: currentUrl.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1});
+    this._controller.assert(function () {
+      return currentUrl.href.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1;
+    }, "Current URL contains the search term - got '" +
+      currentUrl.href.toLowerCase() + "', expected '" + searchTerm.toLowerCase() + "'");
+
   },
 
   /**
