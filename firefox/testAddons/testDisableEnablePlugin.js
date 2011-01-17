@@ -22,6 +22,7 @@
  *   Raymond Etornam Agbeame <retornam@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -75,10 +76,10 @@ var testDisableEnablePlugin = function()
   addonsManager.setPluginState("addonID", pluginId, false);
 
   // Check that the plugin is shown as disabled on web pages
-  var status = new elementslib.ID(controller.tabs.activeTab, "status");
-
   controller.open(localTestFolder + url);
   controller.waitForPageLoad();
+
+  var status = new elementslib.ID(controller.tabs.activeTab, "status");
   controller.assertText(status, "disabled");
 
   // Enable the default plugin
@@ -87,6 +88,8 @@ var testDisableEnablePlugin = function()
   // Check that the plugin is shown as disabled on web pages
   controller.open(localTestFolder + url);
   controller.waitForPageLoad();
+
+  status = new elementslib.ID(controller.tabs.activeTab, "status");
   controller.assertText(status, "enabled");
 }
 
