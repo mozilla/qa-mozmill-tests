@@ -41,7 +41,7 @@ var addons = require("../../../shared-modules/addons");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 
 const TIMEOUT = 5000;
-const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
 
 // Object of all add-ons we want to install

@@ -39,7 +39,7 @@
 // Include the required modules
 var search = require("../../shared-modules/search");
 
-const TIMEOUT = 5000;
+const TIMEOUT_INSTALLATION = 30000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const SEARCH_ENGINE = {
@@ -79,16 +79,16 @@ var testOpenSearchAutodiscovery = function() {
 
   // Install the new search engine which gets automatically selected
   var engine = searchBar.getElement({
-    type: "engine", 
-    subtype: "title", 
+    type: "engine",
+    subtype: "title",
     value: addEngines[0].name
   });
   controller.waitThenClick(engine);
 
-  controller.waitForEval("subject.search.selectedEngine == subject.newEngine", TIMEOUT, 100, {
-    search: searchBar, 
-    newEngine: SEARCH_ENGINE.name
-  });
+  controller.waitFor(function () {
+    return searchBar.selectedEngine === SEARCH_ENGINE.name;
+  }, "Search engine has been installed and selected - got '" + searchBar.selectedEngine +
+    "', expected '" + SEARCH_ENGINE.name + "'", TIMEOUT_INSTALLATION);
 
   // Check if a search redirects to the YouTube website
   searchBar.search({text: "Firefox", action: "goButton"});

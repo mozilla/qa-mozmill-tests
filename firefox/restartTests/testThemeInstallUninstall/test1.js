@@ -41,7 +41,7 @@ var modalDialog = require("../../../shared-modules/modal-dialog");
 var tabs = require("../../../shared-modules/tabs");
 
 const TIMEOUT = 5000;
-const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module) {
