@@ -506,7 +506,7 @@ softwareUpdate.prototype = {
 
     var progress =  this.getElement({type: "download_progress"});
     this._controller.waitFor(function () {
-      return progress.getNode().value === 100;
+      return progress.getNode().value === '100';
     }, "Update has been finished downloading.", timeout);
 
     this.waitForWizardPage(WIZARD_PAGES.finished);
