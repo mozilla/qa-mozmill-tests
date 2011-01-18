@@ -42,7 +42,7 @@ var modalDialog = require("../../../shared-modules/modal-dialog");
 const gTimeout = 5000;
 const gSearchTimeout = 30000;
 
-const TIMEOUT_INSTALL_DIALOG = 10000;
+const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function(module)

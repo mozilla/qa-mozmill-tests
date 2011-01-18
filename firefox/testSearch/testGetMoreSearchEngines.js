@@ -39,8 +39,8 @@ var modalDialog = require("../../shared-modules/modal-dialog");
 var search = require("../../shared-modules/search");
 var utils = require("../../shared-modules/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
+const TIMEOUT_INSTALL_DIALOG = 30000;
 
 const searchEngine = {name: "SearchGeek",
                       url : "https://addons.mozilla.org/en-US/firefox/addon/10772"};
@@ -72,7 +72,7 @@ var testGetMoreEngines = function()
   var tabCount = controller.tabs.length;
   searchBar.openEngineManager(enginesHandler);
 
-  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", gTimeout, 100,
+  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", TIMEOUT, 100,
                          {tabs: controller.tabs, preCount: tabCount});
   controller.waitForPageLoad();
 
@@ -85,7 +85,7 @@ var testGetMoreEngines = function()
   var installButton = new elementslib.XPath(controller.tabs.activeTab,
                                             "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", gTimeout, 100,
+  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installButtonClass: installButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the engine installation dialog
@@ -95,11 +95,12 @@ var testGetMoreEngines = function()
   // Install the search engine
   var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a/span");
-  controller.waitThenClick(triggerLink, gTimeout);
-  md.waitForDialog();
+  controller.waitThenClick(triggerLink, TIMEOUT);
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
-  controller.waitForEval("subject.engine.isEngineInstalled(subject.name) == true", gTimeout, 100,
-                         {engine: searchBar, name: searchEngine.name});
+  controller.waitFor(function () {
+    return searchBar.isEngineInstalled(searchEngine.name);
+  }, "Search engine '" + searchEngine.name + "' has been installed");
 
   searchBar.selectedEngine = searchEngine.name;
   searchBar.search({text: "Firefox", action: "returnKey"});
@@ -135,13 +136,17 @@ var handleSearchInstall = function(controller)
   else
     var title = controller.window.document.title;
 
-  controller.assertJS("subject.windowTitle == subject.addEngineTitle",
-                      {windowTitle: title, addEngineTitle: confirmTitle});
+  controller.assert(function () {
+    return title.windowTitle === confirmTitle.addEngineTitle;
+  }, "Window contains search engine title - got '" + title.windowTitle +
+    "', expected '" + confirmTitle.addEngineTitle + "'");
 
   // Check that addons.mozilla.org is shown as domain
-  var infoBody = new elementslib.ID(controller.window.document, "info.body");
-  controller.waitForEval("subject.textContent.indexOf('addons.mozilla.org') != -1",
-                         gTimeout, 100, infoBody.getNode());
+  var infoBody = controller.window.document.getElementById("info.body");
+  controller.waitFor(function () {
+    return infoBody.textContent.indexOf('addons.mozilla.org') !== -1;
+  }, "Search Engine URL contains correct domain - got '" + infoBody.textContent +
+    "', expected 'addons.mozilla.org'");
 
   var addButton = new elementslib.Lookup(controller.window.document,
                                          '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
