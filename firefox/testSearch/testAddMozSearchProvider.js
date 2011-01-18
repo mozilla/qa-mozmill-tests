@@ -42,8 +42,7 @@ var utils = require("../../shared-modules/utils");
 
 const localTestFolder = collector.addHttpResource('../test-files/');
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT_INSTALL_DIALOG = 30000;
 
 const searchEngine = {name: "MDC",
                       url : localTestFolder + "search/mozsearch.html"};
@@ -77,14 +76,16 @@ var testAddMozSearchPlugin = function()
   // Add the search engine
   var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
   controller.click(addButton);
-  md.waitForDialog();
+  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
-  controller.waitForEval("subject.searchBar.isEngineInstalled(subject.engine) == true", gTimeout, 100,
-                         {searchBar: searchBar, engine: searchEngine.name});
+  controller.waitFor(function () {
+    return searchBar.isEngineInstalled(searchEngine.name);
+  }, "Search engine '" + searchEngine.name + "' has been installed");
 
   // The engine should not be selected by default
-  controller.assertJS("subject.newEngineNotSelected == true",
-                      {newEngineNotSelected: searchBar.selectedEngine != searchEngine.name});
+  controller.assert(function () {
+    return searchBar.selectedEngine !== searchEngine.name;
+  }, "New search engine is not selected - got '" + searchBar.selectedEngine + "'");
 
   // Select search engine and start a search
   searchBar.selectedEngine = searchEngine.name;
@@ -108,13 +109,17 @@ var handleSearchInstall = function(controller)
   else
     var title = controller.window.document.title;
 
-  controller.assertJS("subject.windowTitle == subject.addEngineTitle",
-                      {windowTitle: title, addEngineTitle: confirmTitle});
+  controller.assert(function () {
+    return title.windowTitle === confirmTitle.addEngineTitle;
+  }, "Window contains search engine title - got '" + title.windowTitle +
+    "', expected '" + confirmTitle.addEngineTitle + "'");
 
   // Check that the correct domain is shown
   var infoBody = controller.window.document.getElementById("info.body");
-  controller.waitForEval("subject.textContent.indexOf('localhost') != -1",
-                         gTimeout, 100, infoBody);
+  controller.waitFor(function () {
+    return infoBody.textContent.indexOf('localhost') !== -1;
+  }, "Search Engine URL contains correct domain - got '" + infoBody.textContent +
+    "', expected 'localhost'");
 
   var addButton = new elementslib.Lookup(controller.window.document,
                                          '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
