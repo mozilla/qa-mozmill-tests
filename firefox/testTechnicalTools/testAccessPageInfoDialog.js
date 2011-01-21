@@ -47,17 +47,20 @@ var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
 
+var teardownModule = function(module) {
+  utils.closeContentAreaContextMenu(controller);
+}
+
 var testAccessPageInfo = function () {
-  // Load a web page
+  // Load web page with RSS feed
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  // Open context menu on the page and select Page Info entry
-  var contextMenu = controller.getMenu("#contentAreaContextMenu");
+  // Open context menu on the html element and select Page Info entry
   var content = new elementslib.ID(controller.tabs.activeTab, "content");
-  contextMenu.select("#context-viewinfo", content);
+  controller.rightClick(content);
+  controller.click(new elementslib.ID(controller.window.document, "context-viewinfo"));
 
-  // Test the Page Info dialog
   utils.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
 }
 

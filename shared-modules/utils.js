@@ -393,18 +393,14 @@ function handleWindow(type, text, callback, close) {
     // Wait until the window has been opened
     mozmill.utils.waitFor(function () {
       window = func_ptr(text);
-      return !!window;
+      return window != null;
     }, "Window has been found.");
 
-    // Get the controller for the window
+    // XXX: We still have to find a reliable way to wait until the new window
+    // content has been finished loading. Let's wait for now.
     controller = new mozmill.controller.MozMillController(window);
+    controller.sleep(200);
 
-    // Wait for the content of the window to load
-    mozmill.utils.waitFor(function () {
-      return window.documentLoaded;
-    }, "Window content should now be loaded.");
-
-    // Call any callback method associated with that controller
     if (callback) {
       callback(controller);
     }
@@ -416,8 +412,8 @@ function handleWindow(type, text, callback, close) {
     if (close && window) {
       controller.window.close();
       mozmill.utils.waitFor(function () {
-        return window.closed === true;
-      }, "Window should now be closed.");
+        return func_ptr(text) != window;
+      }, "Window has been closed.");
 
       window = null;
       controller = null;
