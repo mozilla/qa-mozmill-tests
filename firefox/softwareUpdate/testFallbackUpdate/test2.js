@@ -41,12 +41,13 @@ var utils = require("../../../shared-modules/utils");
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
+
+  persisted.updates[persisted.updateIndex].fallback = true;
 }
 
 function teardownModule() {
   // Store information for fallback patch
   persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
-  persisted.updates[persisted.updateIndex].fallback = true;
 }
 
 /**
