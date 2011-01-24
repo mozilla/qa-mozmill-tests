@@ -57,7 +57,7 @@ var setupModule = function(module) {
 /*
  * Tests theme installation
  */
-var testInstallTheme = function() 
+var testInstallTheme = function()
 {
   addonsManager.open(controller);
   addonsManager.paneId = "search";
@@ -73,13 +73,13 @@ var testInstallTheme = function()
   // Open the web page for the Walnut theme directly
   controller.open("https://preview.addons.mozilla.org/en-US/firefox/addon/122");
   controller.waitForPageLoad();
-  
+
   // XXX: Bug 575241
   // AMO Lazy install buttons: wait for class change
   var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a");
 
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
@@ -115,7 +115,7 @@ var testInstallTheme = function()
 /**
  * Handle the Software Installation dialog
  */
-var handleTriggerDialog = function(controller) 
+var handleTriggerDialog = function(controller)
 {
   // Get list of themes which should be installed
   var itemElem = controller.window.document.getElementById("itemList");
@@ -148,7 +148,6 @@ var handleTriggerDialog = function(controller)
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
 setupModule.__force_skip__ = "Bug 569813: New add-ons manager not supported yet";
-teardownModule.__force_skip__ = true;
 
 /**
  * Map test functions to litmus tests

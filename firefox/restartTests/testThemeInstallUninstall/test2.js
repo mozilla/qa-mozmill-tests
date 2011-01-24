@@ -65,7 +65,7 @@ var testCheckInstalledTheme = function()
 /*
  * Tests changing the theme back to default
  */
-var testThemeChange = function() 
+var testThemeChange = function()
 {
   addonsManager.open(controller);
   addonsManager.paneId = "themes";
@@ -81,7 +81,7 @@ var testThemeChange = function()
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);
 
-  // Verify useThemeButton is not visible 
+  // Verify useThemeButton is not visible
   addonsManager.controller.assertJSProperty(useThemeButton, "disabled", "true");
 
   // ... and theme description has changed
@@ -92,7 +92,6 @@ var testThemeChange = function()
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
 setupModule.__force_skip__ = "Bug 569813: New add-ons manager not supported yet";
-teardownModule.__force_skip__ = true;
 
 /**
  * Map test functions to litmus tests

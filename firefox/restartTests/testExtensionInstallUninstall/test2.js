@@ -46,7 +46,7 @@ var setupModule = function(module) {
   addonsManager = new addons.addonsManager();
 }
 
-var testCheckInstalledExtension = function() 
+var testCheckInstalledExtension = function()
 {
   // Check if Add-ons Manager is automatically opened after restart
   addonsManager.waitForOpened(controller);
@@ -87,7 +87,7 @@ var testUninstallExtension = function()
   var uninstallButton = addonsManager.getElement({type: "listbox_button", subtype: "uninstall", value: extension});
   addonsManager.controller.waitThenClick(uninstallButton, gTimeout);
   md.waitforDialog();
- 
+
   // Wait for the restart button
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
   addonsManager.controller.waitForElement(restartButton, gTimeout);
@@ -110,7 +110,6 @@ var handleTriggerDialog = function(controller)
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
 setupModule.__force_skip__ = "Bug 569813: New add-ons manager not supported yet";
-teardownModule.__force_skip__ = true;
 
 /**
  * Map test functions to litmus tests

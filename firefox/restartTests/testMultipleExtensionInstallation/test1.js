@@ -73,8 +73,8 @@ var testInstallExtensions = function() {
     // AMO Lazy install buttons: wait for class change
     var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
                                           "//div[@id='addon-summary']/div/div/div/p/a");
- 
-    controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100, 
+
+    controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
     // Create a modal dialog instance to handle the Software Installation dialog
@@ -85,7 +85,7 @@ var testInstallExtensions = function() {
     var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
                                             "//div[@id='addon-summary']/div/div/div/p/a/span");
     controller.waitForElement(triggerLink, TIMEOUT);
-    controller.click(triggerLink, 
+    controller.click(triggerLink,
                      triggerLink.getNode().width / 2, triggerLink.getNode().height / 2);
     md.waitForDialog();
 
@@ -125,7 +125,7 @@ var handleTriggerDialog = function(controller) {
 
   // Check if the extension name is shown
   controller.assertJS("subject.extensions[0].name == subject.extensionName",
-                      {extensions: itemElem.childNodes, 
+                      {extensions: itemElem.childNodes,
                        extensionName: persisted.currentAddon.name});
 
   // Will the extension be installed from https://preview.addons.mozilla.org/?
@@ -148,4 +148,3 @@ var handleTriggerDialog = function(controller) {
 
 // Bug 569813: The AddonsAPI needs an update to make sure the test will work
 setupModule.__force_skip__ = "Bug 569813: New add-ons manager not supported yet";
-teardownModule.__force_skip__ = true;
