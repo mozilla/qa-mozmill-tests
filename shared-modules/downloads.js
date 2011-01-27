@@ -363,8 +363,9 @@ var downloadFileOfUnknownType = function(controller, url) {
     // Select to save the file directly
     var saveFile = new elementslib.ID(controller.window.document, "save");
     controller.waitThenClick(saveFile, gTimeout);
-    controller.waitForEval("subject.selected == true", gTimeout, 100,
-                           saveFile.getNode());
+    controller.waitFor(function () {
+      return saveFile.getNode().selected;
+    }, "Save File radio button on the Download Unknown Type dialog has been selected");
 
     // Wait until the OK button has been enabled and click on it
     var button = new elementslib.Lookup(controller.window.document,
