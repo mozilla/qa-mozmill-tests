@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -63,7 +64,7 @@ var teardownModule = function(module) {
 /**
  * Test the password post-submit notification
  */
-var testPasswordNotificationBar = function() {
+var testPasswordNotification = function() {
   // Go to the sample login page and perform a test log-in with input fields
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -75,23 +76,21 @@ var testPasswordNotificationBar = function() {
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
-  // After logging in, close the notification bar
+  // Click the login button and wait for the form to process
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn"); 
+  controller.click(loginButton);
+  controller.waitForPageLoad();
+
+  // Get a reference to the password-save notification
   var passwordNotification = locationBar.getNotificationElement(
                                "password-save-notification"
                              );
-
-  // The notification should not be visible before submitting the credentials
-  controller.assertNodeNotExist(passwordNotification);
-
-  controller.click(new elementslib.ID(controller.tabs.activeTab, "LogIn"));
-  controller.waitForPageLoad();
 
   // Close the notification and check its state
   controller.keypress(passwordNotification, "VK_ESCAPE", {});
   controller.waitFor(function () {
     return passwordNotification.getNode().parentNode.state === "closed";
-  }, "Password notification bar closed: got '" +
-     passwordNotification.getNode().parentNode.state + "' expected 'closed'");
+  }, "Password notification has been closed");
 }
 
 /**
