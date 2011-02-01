@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Al Billings <abillings@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -85,8 +86,11 @@ function testPasteLocationBar() {
 
   // Get the urlbar input box, right click in it, and select paste from context menu
   var input = locationBar.getElement({type: "urlbar_input"});
-  contextMenu.open(input);
-  contextMenu.select("#context-paste", input);
+  controller.rightClick(input);
+  var contextMenuEntry = locationBar.getElement({
+                           type: "contextMenu_entry", 
+                           subtype: "paste"});
+  controller.click(contextMenuEntry);
 
   // Get contents of the location bar and compare it to expected result  
   controller.waitFor(function () {
