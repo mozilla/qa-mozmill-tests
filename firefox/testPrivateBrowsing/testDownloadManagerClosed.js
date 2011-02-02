@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -136,8 +137,10 @@ var testDownloadManagerClosed = function() {
   dm.controller.waitForElement(downloadView, TIMEOUT);
   
   // The Download Manager should contain the two items downloaded pre-Private Browsing
-  dm.controller.waitForEval("subject.isCorrectDownloadNumber == true", TIMEOUT, DELAY, 
-                            {isCorrectDownloadNumber: downloadView.getNode().itemCount == DOWNLOADS.length});
+  dm.controller.waitFor(function () {
+    return downloadView.getNode().itemCount === DOWNLOADS.length;
+  }, "Download Manager contains pre-Private Browsing downloaded items - got: " +
+    downloadView.getNode().itemCount + ", expected " + DOWNLOADS.length);
 
   for (i = 0; i < DOWNLOADS.length; i++) {
     var download = new elementslib.ID(dm.controller.window.document, "dl" + (i + 1));
