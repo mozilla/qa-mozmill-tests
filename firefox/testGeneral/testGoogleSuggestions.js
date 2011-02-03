@@ -40,7 +40,6 @@
 // Include required modules
 var DOMUtils = require("../../shared-modules/dom-utils");
 
-const TIMEOUT = 5000;
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -66,12 +65,13 @@ var testGoogleSuggestedTerms = function() {
   var entry = collector.elements[0];
   var content = entry.getNode().textContent;
 
-  controller.waitThenClick(entry, TIMEOUT);
+  controller.keypress(searchField, "VK_DOWN", {});
+  controller.keypress(searchField, "VK_RETURN", {});
   controller.waitForPageLoad();
 
   // Check if Search page has come up
   var nextField = new elementslib.ID(controller.tabs.activeTab, "pnnext");
-  controller.waitForElement(nextField, TIMEOUT);
+  controller.waitForElement(nextField);
 
   searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.assertValue(searchField, content);
