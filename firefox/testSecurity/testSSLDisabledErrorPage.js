@@ -81,27 +81,35 @@ var testDisableSSL = function() {
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title, gTimeout);
+
   var nssFailure2title = utils.getEntity(dtds, "nssFailure2.title")
-  controller.assertJS("subject.errorTitle == subject.nssFailure2title",
-                      {errorTitle: title.getNode().textContent,
-                       nssFailure2title: nssFailure2title});
+  controller.assert(function () {
+    return title.getNode().textContent === nssFailure2title;
+  }, "The correct SSL error title is shown - got '" + title.getNode().textContent +
+    "', expected '" + nssFailure2title + "'");
 
   // Verify "Try Again" button appears
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "errorTryAgain"));
+  var tryAgain = new elementslib.ID(controller.tabs.activeTab, "errorTryAgain");
+  controller.assertNode(tryAgain);
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text, gTimeout);
-  controller.assertJS("subject.errorMessage.indexOf('ssl_error_ssl_disabled') != -1",
-                      {errorMessage: text.getNode().textContent});
+  controller.assert(function () {
+    return text.getNode().textContent.indexOf('ssl_error_ssl_disabled') != -1;
+  }, "The SSL error message contains 'ssl_error_ssl_disabled' - got '" +
+    text.getNode().textContent + "'");
 
-  controller.assertJS("subject.errorMessage.indexOf('mail.mozilla.org') != -1",
-                      {errorMessage: text.getNode().textContent});
+  controller.assert(function () {
+    return text.getNode().textContent.indexOf('mail.mozilla.org') != -1;
+  }, "The SSL error message contains 'mail.mozilla.org' - got '" +
+    text.getNode().textContent + "'");
 
-  var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled')
-  controller.assertJS('subject.errorMessage.indexOf(subject.PSMERR_SSL_Disabled) != -1',
-                      {errorMessage: text.getNode().textContent,
-                       PSMERR_SSL_Disabled: PSMERR_SSL_Disabled});
+  var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled');
+  controller.assert(function () {
+    return text.getNode().textContent.indexOf(PSMERR_SSL_Disabled) != -1;
+  }, "The SSL error message contains '" + PSMERR_SSL_Disabled + "' - got '" +
+    text.getNode().textContent + "'");
 }
 
 /**
