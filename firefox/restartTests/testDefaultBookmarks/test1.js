@@ -40,6 +40,7 @@ var domUtils = require("../../../shared-modules/dom-utils");
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var places = require("../../../shared-modules/places");
 var toolbars = require("../../../shared-modules/toolbars");
+var utils = require("../../../shared-modules/utils");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
@@ -98,8 +99,7 @@ function testVerifyDefaultBookmarks() {
   controller.waitForPageLoad();
 
   // Check for the correct path in the URL which also includes the locale
-  controller.assertValue(locationbar.getElement({type: "urlbar"}),
-                         toolbarNodes.getChild(1).uri);
+  utils.assertLoadedUrlEqual(controller, toolbarNodes.getChild(1).uri);
 
   // Check the title of the default RSS feed toolbar button
   controller.assertJSProperty(items[2], "label", toolbarNodes.getChild(2).title);
