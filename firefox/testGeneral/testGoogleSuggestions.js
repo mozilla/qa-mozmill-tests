@@ -38,9 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var utils = require("../../shared-modules/utils");
+var DOMUtils = require("../../shared-modules/dom-utils");
 
-const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -56,20 +55,26 @@ var testGoogleSuggestedTerms = function() {
   var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.type(searchField, "area");
 
-  var autoComplete = new elementslib.XPath(controller.tabs.activeTab,
-                       "/html/body/div[2]/div/table/tbody/tr[1]/td"
-                     );
+  // Get a reference to first element of the autocomplete results
+  collector = new DOMUtils.nodeCollector(controller.tabs.activeTab);
+  controller.waitFor(function () {
+    collector.queryNodes(".gac_m .gac_c");
+    return collector.elements.length > 0;
+  }, "Auto-complete entries are visible - got ' + collector.elements.length + '");
 
-  // Click the first element in the pop-down autocomplete
-  controller.waitThenClick(autoComplete, gTimeout);
+  // Remember the value and click the element
+  var content = collector.nodes[0].textContent;
+
+  controller.keypress(searchField, "VK_DOWN", {});
+  controller.keypress(searchField, "VK_RETURN", {});
   controller.waitForPageLoad();
 
   // Check if Search page has come up
   var nextField = new elementslib.ID(controller.tabs.activeTab, "pnnext");
-  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
+  controller.waitForElement(nextField);
 
-  controller.waitForElement(searchField, gTimeout);
-  controller.waitForElement(nextField, gTimeout);
+  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
+  controller.assertValue(searchField, content);
 }
 
 /**
