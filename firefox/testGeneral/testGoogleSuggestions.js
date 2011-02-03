@@ -37,6 +37,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include required modules
+var DOMUtils = require("../../shared-modules/dom-utils");
+
 const TIMEOUT = 5000;
 
 var setupModule = function() {
@@ -52,21 +55,26 @@ var testGoogleSuggestedTerms = function() {
   var searchField = new elementslib.Name(controller.tabs.activeTab, "q");
   controller.type(searchField, "area");
 
-  // Get a reference to the autocomplete results 
-  var autoComplete = new elementslib.XPath(controller.tabs.activeTab, 
-                       "/html/body/div[2]/div/table/tbody/tr[1]/td"
-                     );
+  // Get a reference to first element of the autocomplete results
+  collector = new DOMUtils.nodeCollector(controller.tabs.activeTab);
+  controller.waitFor(function () {
+    collector.queryNodes(".gac_m .gac_c");
+    return collector.elements.length > 0;
+  }, "Auto-complete entries are visible - got ' + collector.elements.length + '");
 
-  // Click the first element in the pop-down autocomplete
-  controller.waitThenClick(autoComplete, TIMEOUT);
+  // Remember the value and click the element
+  var entry = collector.elements[0];
+  var content = entry.getNode().textContent;
+
+  controller.waitThenClick(entry, TIMEOUT);
   controller.waitForPageLoad();
 
   // Check if Search page has come up
   var nextField = new elementslib.ID(controller.tabs.activeTab, "pnnext");
-  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
-
-  controller.waitForElement(searchField, TIMEOUT);
   controller.waitForElement(nextField, TIMEOUT);
+
+  searchField = new elementslib.Name(controller.tabs.activeTab, "q");
+  controller.assertValue(searchField, content);
 }
 
 /**
