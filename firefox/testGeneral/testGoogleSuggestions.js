@@ -60,7 +60,7 @@ var testGoogleSuggestedTerms = function() {
   controller.waitFor(function () {
     collector.queryNodes(".gac_m .gac_c");
     return collector.elements.length > 0;
-  }, "Auto-complete entries are visible - got ' + collector.elements.length + '");
+  }, "Auto-complete entries are visible - got '" + collector.elements.length + "'");
 
   // Remember the value and click the element
   var content = collector.nodes[0].textContent;
