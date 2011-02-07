@@ -51,7 +51,7 @@ const AUTOCOMPLETE_POPUP = '/id("main-window")/id("mainPopupSet")/id("PopupAutoC
 const NOTIFICATION_POPUP = '/id("main-window")/id("mainPopupSet")/id("notification-popup")';
 const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
                          '/id("navigator-toolbox")/id("nav-bar")/id("urlbar-container")';
-const URLBAR_INPUTBOX = URLBAR_CONTAINER + '/id("urlbar")/anon({"anonid":"stack"})' + 
+const URLBAR_INPUTBOX = URLBAR_CONTAINER + '/id("urlbar")' +
                                            '/anon({"anonid":"textbox-container"})' + 
                                            '/anon({"anonid":"textbox-input-box"})';
 const CONTEXT_MENU = URLBAR_INPUTBOX + '/anon({"anonid":"input-box-contextmenu"})';
