@@ -38,7 +38,7 @@
 // Include necessary modules
 var utils = require("../../shared-modules/utils");
 
-var gTimeout = 5000;
+var TIMEOUT = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -75,9 +75,10 @@ var testLarryGreen = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJS("subject.faviconFromAMO == true",
-                      {faviconFromAMO: favicon.getNode().src.indexOf('addons.mozilla.org') != -1});
-
+  controller.waitFor(function () {
+    return favicon.getNode().src.indexOf('addons.mozilla') != -1
+  }, "AMO favicon is loaded.");
+  
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
@@ -163,7 +164,7 @@ function checkSecurityTab(controller) {
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
+  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", TIMEOUT, 100,
                          {domainLabel: webIDDomainLabel.getNode().value,
                           CName: cert.commonName});
 
