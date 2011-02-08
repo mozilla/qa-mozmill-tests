@@ -87,8 +87,7 @@ function prefPaneInit(controller, prefDialog) {
           target : WINDOW_NEW,
           title : utils.getProperty(properties, "popuppermissionstitle")},
         { getBy : GET_BY_SELECTOR,
-          selector : "button[accesskey="+utils.getEntity(dtds, "exceptions.accesskey")+
-                     "][label="+utils.getEntity(dtds, "exceptions.label")+"]",
+          selector : "#enableImagesRow button",
           target : WINDOW_NEW,
           title : utils.getProperty(properties, "imagepermissionstitle")},
         { getBy : GET_BY_ID,
