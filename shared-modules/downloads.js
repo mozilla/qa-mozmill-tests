@@ -360,12 +360,17 @@ var downloadFileOfUnknownType = function(controller, url) {
                          gTimeout, 100, mozmill.wm);
 
   utils.handleWindow("type", "", function (controller) {
-    // Select to save the file directly
-    var saveFile = new elementslib.ID(controller.window.document, "save");
-    controller.waitThenClick(saveFile, gTimeout);
-    controller.waitFor(function () {
-      return saveFile.getNode().selected;
-    }, "Save File radio button on the Download Unknown Type dialog has been selected");
+    var normalBox = new elementslib.ID(controller.window.document, "normalBox");
+    
+    // Check if we have a normal dialog or simplified dialog
+    if (!normalBox.getNode().collapsed) {
+      // We have a normal dialog so click the Save File radio first
+      var saveFile = new elementslib.ID(controller.window.document, "save");
+      controller.waitThenClick(saveFile, gTimeout);
+      controller.waitFor(function () {
+        return saveFile.getNode().selected;
+      }, "Save File radio button on the Download Unknown Type dialog has been selected"); 
+    }
 
     // Wait until the OK button has been enabled and click on it
     var button = new elementslib.Lookup(controller.window.document,
