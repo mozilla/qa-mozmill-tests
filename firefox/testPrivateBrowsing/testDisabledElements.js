@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -85,7 +86,9 @@ var testCheckImportDisabled = function() {
 function checkImportMenu(controller) {
   // Check File -> Import entry again
   var importItem = new elementslib.ID(controller.window.document, "menu_import");
-  controller.assertJSProperty(importItem, "disabled", true);
+  controller.waitFor(function () {
+    return importItem.getNode().disabled;
+  }, "Import menu item of the Library window is disabled");
 
   // Check that "Import HTML" is available
   var importHTML = new elementslib.ID(controller.window.document, "fileImport");
