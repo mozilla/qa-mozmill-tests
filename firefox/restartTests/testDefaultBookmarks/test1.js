@@ -64,9 +64,11 @@ function testVerifyDefaultBookmarks() {
   }, "Bookmarks Toolbar is hidden by default");
 
   // On Windows XP and 2000 the Bookmarks Toolbar button is not displayed. Use
-  // the toolbar's context menu to toggle the Bookmarks Toolbar
+  // the navbar's context menu to toggle the Bookmarks Toolbar. Because the
+  // back and forward buttons under Linux filling-up the complete height, we
+  // have to click in the center of the navbar
   var navbar = new elementslib.ID(controller.window.document, "nav-bar");
-  controller.rightClick(navbar, 1, 1);
+  controller.rightClick(navbar, navbar.getNode().boxObject.width / 2, 2);
 
   var toggle = new elementslib.ID(controller.window.document,
                                   "toggle_PersonalToolbar");
