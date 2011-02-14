@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -74,6 +75,7 @@ var testTabRestoration = function() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
+    controller.waitForElement(elem);
     controller.assertNode(elem);
     
     tabBrowser.openTab();
