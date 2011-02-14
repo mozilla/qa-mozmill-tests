@@ -75,7 +75,7 @@ var testSearchSelectionViaContextMenu = function() {
   controller.waitForPageLoad();
 
   // Get text element from web page, which will be used for the search
-  var textElem = new elementslib.ID(controller.tabs.activeTab, "mission_statement");
+  var textElem = new elementslib.ID(controller.tabs.activeTab, "goal");
 
   // Start search which opens a new tab in the background
   startSearch(textElem, engineName, true);
