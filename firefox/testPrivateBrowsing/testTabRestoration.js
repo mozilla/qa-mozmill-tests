@@ -75,7 +75,6 @@ var testTabRestoration = function() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
-    controller.waitForElement(elem);
     controller.assertNode(elem);
 
     tabBrowser.openTab();
@@ -97,7 +96,9 @@ var testTabRestoration = function() {
     var tab = controller.tabs.getTab(i);
     controller.waitForPageLoad(tab);
 
+    // waitForElement is used on exit of PB mode because pages are loaded from bfcache 
     var elem = new elementslib.ID(tab, LOCAL_TEST_PAGES[i].id);
+    controller.waitForElement(elem);
     controller.assertNode(elem);
   }
 }
