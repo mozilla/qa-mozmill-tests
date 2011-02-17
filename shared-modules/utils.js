@@ -21,7 +21,6 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   M.-A. Darche <mozdev@cynode.org>
- *   Clay Earl Uyenghua <uyclay@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -167,14 +166,9 @@ function assertElementVisible(controller, elem, expectedVisibility) {
   var element = elem.getNode();
   var visible;
 
-  switch (element.nodeName.toLowerCase()) {
+  switch (element.nodeName) {
     case 'panel':
       visible = (element.state == 'open');
-      break;
-    case 'div':
-      var style = controller.window.getComputedStyle(element, '');
-      var state = style.getPropertyValue('display');
-      visible = (state !== 'none');
       break;
     default:
       var style = controller.window.getComputedStyle(element, '');
