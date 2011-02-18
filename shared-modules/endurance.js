@@ -56,7 +56,7 @@ function EnduranceManager(controller) {
     this._iterations = persisted.endurance.iterations;
     this._results = persisted.endurance.results;
   } else {
-    //running the endurance test directly so set default values
+    // Running the endurance test directly so set default values
     this._delay = 0;
     this._iterations = 1;
     this._results = [];
@@ -85,7 +85,7 @@ EnduranceManager.prototype = {
       this._controller.sleep(this._delay);
       this._perfTracer.addCheckpoint("Start iteration");
 
-      //run the main test method
+      // Run the main test method
       callback();
 
       this._perfTracer.addCheckpoint("End iteration");
