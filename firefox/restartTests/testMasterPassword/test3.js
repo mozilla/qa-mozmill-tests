@@ -39,78 +39,36 @@
 // Include required modules
 var modalDialog = require("../../../shared-modules/modal-dialog");
 var prefs = require("../../../shared-modules/prefs");
-var tabs = require("../../../shared-modules/tabs");
-var utils = require("../../../shared-modules/utils");
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 
-var setupModule = function() {
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  tabBrowser = new tabs.tabBrowser(controller);
-
-  tabBrowser.closeAllTabs();
 }
 
 /**
- * Test saving login information and setting a master password
+ * Test removing the master password
  */
-var testSetMasterPassword = function() {
-
-  // Go to the sample login page and perform a test log-in with inputted fields
-  controller.open(LOCAL_TEST_PAGE);
-  controller.waitForPageLoad();
-
-  var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
-  var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
-
-  controller.waitForElement(userField);
-  controller.type(userField, "bar");
-  controller.type(passField, "foo");
-
-  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
-  controller.waitThenClick(loginButton);
-
-  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex,
-                             '/{"value":"password-save"}');
-
-  // Get the label of the Remember Password button
-  var label = utils.getProperty(
-                "chrome://passwordmgr/locale/passwordmgr.properties",
-                "notifyBarRememberButtonText"
-              );
-
-  // Get the Remember Password button based on the above label
-  var button = tabBrowser.getTabPanelElement(
-                 tabBrowser.selectedIndex,
-                '/{"value":"password-save"}/{"label":"' + label + '"}'
-               );
-  utils.assertElementVisible(controller, button, true);
-  controller.waitThenClick(button);
-  controller.sleep(500);
-  controller.assertNodeNotExist(button);
-
+var testRemoveMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
+  prefs.openPreferencesDialog(controller, deleteMasterPassword);
 }
 
 /**
- * Handler for preferences dialog to set the Master Password
+ * Delete the master password using the preferences window
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogSetMasterPasswordCallback = function(controller)
-{
+var deleteMasterPassword = function(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
+
   prefDialog.paneId = 'paneSecurity';
 
   var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
   controller.waitForElement(masterPasswordCheck);
 
-  // Call setMasterPassword dialog and set a master password to your profile
+  // Call setMasterPassword dialog and remove the master password to your profile
   var md = new modalDialog.modalDialog(controller.window);
-  md.start(masterPasswordHandler);
+  md.start(removeMasterHandler);
 
   controller.click(masterPasswordCheck);
   md.waitForDialog();
@@ -120,26 +78,22 @@ var prefDialogSetMasterPasswordCallback = function(controller)
 }
 
 /**
- * Set the master password via the master password dialog
+ * Remove the master password via the master password dialog
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var masterPasswordHandler = function(controller) {
-  var pw1 = new elementslib.ID(controller.window.document, "pw1");
-  var pw2 = new elementslib.ID(controller.window.document, "pw2");
+var removeMasterHandler = function(controller) {
+  var removePwdField = new elementslib.ID(controller.window.document, "password");
 
-  // Fill in the master password into both input fields and click ok
-  controller.waitForElement(pw1);
-  controller.type(pw1, "test1");
-  controller.type(pw2, "test1");
+  controller.waitForElement(removePwdField);
+  controller.type(removePwdField, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
   var md = new modalDialog.modalDialog(controller.window);
   md.start(confirmHandler);
 
-  var button = new elementslib.Lookup(controller.window.document,
-                           '/id("changemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button);
+  controller.click(new elementslib.Lookup(controller.window.document,
+                   '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
   md.waitForDialog();
 }
 
@@ -148,8 +102,7 @@ var masterPasswordHandler = function(controller) {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var confirmHandler = function(controller)
-{
+var confirmHandler = function(controller) {
   var button = new elementslib.Lookup(controller.window.document,
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitThenClick(button);
