@@ -90,8 +90,3 @@ var testDownloadStates = function()
   controller.waitThenClick(retryButton);
   dm.waitForDownloadState(download, downloads.downloadState.downloading);
 }
-
-// Bug 631246: Test randomly displays a simplified version of the Save File dialog
-//             but programmatically expects the full version of the Save File dialog
-setupModule.__force_skip__ = "Bug 631246: Unexpected SIMPLE version of Save File dialog";
-teardownModule.__force_skip__ = true;
