@@ -66,7 +66,9 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "src" ,"https://mail.mozilla.org/icons/mm-icon.png");
+  controller.assert(function () {
+    return favicon.getNode().src.indexOf("mozilla.org") !== -1;
+  }, "Favicon is loaded: got '" + favicon.getNode().src + "'");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
