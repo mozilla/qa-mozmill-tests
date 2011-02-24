@@ -21,6 +21,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -109,8 +110,8 @@ var testScrollBackgroundTabIntoView = function()
   }, "Hightlight should be removed immediately");
 
   // Check that the correct link has been loaded in the last tab
-  var lastIndex = controller.tabs.length - 1;
-  var linkId = new elementslib.ID(controller.tabs.getTab(lastIndex), "id");
+  var lastTabIndex = controller.tabs.length - 1;
+  var linkId = new elementslib.ID(controller.tabs.getTab(lastTabIndex), "id");
 
   // Need to wait for element to appear, then we check text is correct
   controller.waitForElement(linkId);
@@ -124,7 +125,10 @@ var testScrollBackgroundTabIntoView = function()
   }, "The all tabs popup should have been opened");
 
   // Check that the correct title is shown for all tabs except the last one
-  for (var i = 1; i < lastIndex; i++) {
+  // Last tab in the 'List all Tabs' menu 
+  var lastMenuItemIndex = allTabsPopup.getNode().childNodes.length - 1; 
+  
+  for (var i = 3; i < lastMenuItemIndex; i++) {
     controller.waitFor(function () {
       var node = allTabsPopup.getNode().childNodes[i];
       return node && node.label == '1';
@@ -133,7 +137,7 @@ var testScrollBackgroundTabIntoView = function()
 
   // Also check the last title
   controller.waitFor(function () {
-    var node = allTabsPopup.getNode().childNodes[lastIndex];
+    var node = allTabsPopup.getNode().childNodes[lastMenuItemIndex];
     return node && node.label == '2';
   }, "Link 2 title is visible for the last tab");
 
