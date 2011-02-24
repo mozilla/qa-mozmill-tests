@@ -45,7 +45,7 @@ const gDelay = 0;
 const gTimeout = 5000;
 
 const TIMEOUT_MODAL_DIALOG = 30000;
-const TEST_SITE = "https://mail.mozilla.org";
+const TEST_SITE = "https://www.mozilla.org/";
 
 var setupModule = function(module)
 {
@@ -85,7 +85,8 @@ var testSubmitUnencryptedInfoWarning = function()
   controller.waitForElement(searchbox, gTimeout);
 
   // Use the web page search box to submit information
-  var goButton = new elementslib.ID(controller.tabs.activeTab, "submit");
+  var goButton = new elementslib.ID(controller.tabs.activeTab,
+                                    "quick-search-btn");
   controller.waitForElement(goButton, gTimeout);
 
   // Create a listener for the warning dialog
