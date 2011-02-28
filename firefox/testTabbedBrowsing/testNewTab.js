@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -66,7 +67,12 @@ var testNewTab = function()
   // Test all different ways to open a tab
   checkOpenTab({type: "menu"});
   checkOpenTab({type: "shortcut"});
-  checkOpenTab({type: "tabStrip"});
+
+  // NOTE: This feature is disabled on Linux (Bug 635397)
+  if (!mozmill.isLinux) {
+   checkOpenTab({type: "tabStrip"});
+  }
+
   checkOpenTab({type: "newTabButton"});
 }
 
