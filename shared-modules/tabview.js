@@ -71,6 +71,19 @@ tabView.prototype = {
   },
 
   /**
+   * Returns an array of DTDs
+   *
+   * @returns {Array} An array of DTDs
+   */
+  get dtds() {
+    var dtds = [
+      "chrome://browser/locale/browser.dtd"
+    ];
+    
+    return dtds;
+  },
+
+  /**
    * Check if the Tab View is open
    *
    * @returns True if the Tab View is open
@@ -85,8 +98,9 @@ tabView.prototype = {
    * Open the Tab View
    */
   open : function tabView_open() {
-    var menuitem = new elementslib.Elem(this._controller.menus['view-menu'].menu_tabview);
-    this._controller.click(menuitem);
+    // Open via keyboard shortcut
+    var cmdKey = utils.getEntity(this.dtds, "tabView.commandKey");
+    this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
     this.waitForOpened();
 
     this._tabView = this.getElement({type: "tabView"});
@@ -140,8 +154,9 @@ tabView.prototype = {
    * Close the Tab View
    */
   close : function tabView_close() {
-    var menuitem = new elementslib.Elem(this._controller.menus['view-menu'].menu_tabview);
-    this._controller.click(menuitem);
+    // Close via keyboard shortcut
+    var cmdKey = utils.getEntity(this.dtds, "tabView.commandKey");
+    this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
     this.waitForClosed();
 
     this._tabView = null;
