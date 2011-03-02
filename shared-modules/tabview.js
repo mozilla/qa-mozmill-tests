@@ -99,7 +99,7 @@ tabView.prototype = {
    */
   open : function tabView_open() {
     // Open via keyboard shortcut
-    var cmdKey = utils.getEntity(this.dtds, "tabView.commandKey");
+    var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
     this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
     this.waitForOpened();
 
@@ -155,7 +155,7 @@ tabView.prototype = {
    */
   close : function tabView_close() {
     // Close via keyboard shortcut
-    var cmdKey = utils.getEntity(this.dtds, "tabView.commandKey");
+    var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
     this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
     this.waitForClosed();
 
