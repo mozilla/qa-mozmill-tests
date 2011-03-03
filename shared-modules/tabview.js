@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -93,7 +94,7 @@ tabView.prototype = {
     var deck = this.getElement({type: "deck"});
     return deck.getNode().getAttribute("selectedIndex") == "1";
   },
-
+  
   /**
    * Open the Tab View
    */
@@ -188,6 +189,15 @@ tabView.prototype = {
   ///////////////////////////////
   // Groups section
   ///////////////////////////////
+
+  /**
+   * Get the active group
+   *
+   * @returns {ElemBase} Active group element
+   */
+  get activeGroup() {
+    return this.getGroups({filter: "active"})[0];
+  },
 
   /**
    * Returns the tab groups which match the filter criteria
