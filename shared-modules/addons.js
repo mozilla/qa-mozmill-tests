@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+Components.utils.import("resource://gre/modules/AddonManager.jsm");
+
 // Include required modules
 var domUtils = require("dom-utils");
 var prefs = require("prefs");
@@ -1238,6 +1240,37 @@ function addToWhiteList(aDomain) {
 }
 
 /**
+ * Gets all installed add-ons
+ *
+ * @param {Function} [callbackFilter]
+ *        If not provided the unfiltered add-ons will be returned.
+ *        If provided, the callback filter takes an argument of an Addon object
+ *        as documented at https://developer.mozilla.org/en/Addons/Add-on_Manager/Addon
+ *        and returns a filtered version.
+ */
+function getInstalledAddons(callbackFilter) {
+  let addonInfo = null;
+
+  AddonManager.getAllAddons(function (aAddons) {
+    if (callbackFilter == undefined) {
+      addonInfo = aAddons;
+    } else {
+      addons = [];
+      aAddons.forEach(function (addon) {
+        addons.push(callbackFilter(addon));
+      });
+      addonInfo = addons;
+    }
+  });
+
+ mozmill.utils.waitFor(function () {
+   return !!addonInfo;
+ });
+ 
+ return addonInfo;
+}
+
+/**
  * Remove whitelist permission for the specified host
  * @param {string} aHost
  *        The host whose permission will be removed
@@ -1276,6 +1309,7 @@ exports.AMO_PREVIEW_SITE = AMO_PREVIEW_SITE;
 
 // Export of functions
 exports.addToWhiteList = addToWhiteList;
+exports.getInstalledAddons = getInstalledAddons;
 exports.removeFromWhiteList = removeFromWhiteList;
 exports.resetAmoPreviewUrls = resetAmoPreviewUrls;
 exports.useAmoPreviewUrls = useAmoPreviewUrls;

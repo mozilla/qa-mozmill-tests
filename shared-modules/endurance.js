@@ -35,7 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var Performance = require("performance");
+var addons = require("addons");
+var performance = require("performance");
 
 var frame = {};
 Components.utils.import('resource://mozmill/modules/frame.js', frame);
@@ -50,8 +51,8 @@ Components.utils.import('resource://mozmill/modules/frame.js', frame);
  */
 function EnduranceManager(controller) {
   this._controller = controller;
-  this._perfTracer = new Performance.PerfTracer("Endurance");
-  if (persisted.endurance) {
+  this._perfTracer = new performance.PerfTracer("Endurance");
+  if ("endurance" in persisted) {
     this._delay = persisted.endurance.delay;
     this._iterations = persisted.endurance.iterations;
     this._results = persisted.endurance.results;
@@ -61,6 +62,17 @@ function EnduranceManager(controller) {
     this._iterations = 1;
     this._results = [];
   }
+
+  persisted.addons = addons.getInstalledAddons(function (addon) {
+    return {
+      id : addon.id,
+      type : addon.type,
+      name : addon.name,
+      version : addon.version,
+      isActive : addon.isActive,
+      isCompatible : addon.isCompatible
+    }
+  });
 }
 
 /**
