@@ -38,14 +38,29 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var DOMUtils = require("../../shared-modules/dom-utils");
+var dom_utils = require("../../shared-modules/dom-utils");
+var prefs = require("../../shared-modules/prefs");
 
 
-var setupModule = function() {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
+
+  // Google doesn't display instant search results for some locales. Default
+  // to 'en-us' for the time being and clear all cookies.
+  prefs.preferences.setPref("intl.accept_languages", "en-us");
+
+  module.cm = Cc["@mozilla.org/cookiemanager;1"].
+              getService(Ci.nsICookieManager2);
+  cm.removeAll();
 }
 
-var testGoogleSuggestedTerms = function() {
+
+function teardownModule(module) {
+  prefs.preferences.clearUserPref("intl.accept_languages");
+}
+
+
+function testGoogleSuggestedTerms() {
   // Switch to Google SSL Beta for lack of Google Instant search
   controller.open("https://encrypted.google.com/");
   controller.waitForPageLoad();
@@ -55,7 +70,7 @@ var testGoogleSuggestedTerms = function() {
   controller.type(searchField, "area");
 
   // Get a reference to first element of the autocomplete results
-  collector = new DOMUtils.nodeCollector(controller.tabs.activeTab);
+  collector = new dom_utils.nodeCollector(controller.tabs.activeTab);
   controller.waitFor(function () {
     collector.queryNodes(".gac_m .gac_c");
     return collector.elements.length > 0;
