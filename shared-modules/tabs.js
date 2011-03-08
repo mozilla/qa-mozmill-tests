@@ -50,7 +50,7 @@ const TIMEOUT = 5000;
 
 const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
-const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}';
+const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + '/id("browser")/id("appcontent")/id("content")';
 const TABS_TOOLBAR = TABS_VIEW + '/id("navigator-toolbox")/id("TabsToolbar")';
 const TABS_TABS = TABS_TOOLBAR + '/id("tabbrowser-tabs")';
