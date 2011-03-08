@@ -49,7 +49,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  containerString = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+  containerString = '/id("main-window")/id("tab-view-deck")/[0]' +
                     '/id("browser-bottombox")/id("FindToolbar")' +
                     '/anon({"anonid":"findbar-container"})';
   findBar = new elementslib.Lookup(controller.window.document, containerString);
