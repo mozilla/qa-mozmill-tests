@@ -49,7 +49,7 @@ const TIMEOUT = 5000;
 
 const AUTOCOMPLETE_POPUP = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
 const NOTIFICATION_POPUP = '/id("main-window")/id("mainPopupSet")/id("notification-popup")';
-const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/{"flex":"1"}' +
+const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/[0]' +
                          '/id("navigator-toolbox")/id("nav-bar")/id("urlbar-container")';
 const URLBAR_INPUTBOX = URLBAR_CONTAINER + '/id("urlbar")' +
                                            '/anon({"anonid":"textbox-container"})' + 
