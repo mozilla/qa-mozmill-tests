@@ -51,7 +51,7 @@ const TIMEOUT_REQUEST_SUGGESTIONS = 750;
 const MANAGER_BUTTONS   = '/id("engineManager")/anon({"anonid":"buttons"})';
 
 // Helper lookup constants for the search bar elements
-const NAV_BAR             = '/id("main-window")/id("tab-view-deck")/[0] +
+const NAV_BAR             = '/id("main-window")/id("tab-view-deck")/[0]' +
                             '/id("navigator-toolbox")/id("nav-bar")';
 const SEARCH_BAR          = NAV_BAR + '/id("search-container")/id("searchbar")';
 const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
