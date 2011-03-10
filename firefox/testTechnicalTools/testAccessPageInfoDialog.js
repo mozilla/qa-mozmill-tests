@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var utils = require("../../shared-modules/utils");
+var utils = require("../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';

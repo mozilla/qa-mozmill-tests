@@ -55,7 +55,7 @@ Components.utils.import('resource://mozmill/modules/jum.js', jumlib);
  */
 
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
+const RELATIVE_ROOT = '../../lib';
 const MODULE_REQUIRES = ['SearchBoxAPI', 'SearchVerifyUtilsAPI', 'BrowserUtilsAPI',
                          'GtbUtilsAPI'];
 

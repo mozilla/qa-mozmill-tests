@@ -37,8 +37,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var toolbars = require("../../shared-modules/toolbars");
-var utils = require("../../shared-modules/utils");
+var toolbars = require("../../lib/toolbars");
+var utils = require("../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [

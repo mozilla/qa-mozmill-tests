@@ -35,11 +35,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var domUtils = require("../../../shared-modules/dom-utils");
-var modalDialog = require("../../../shared-modules/modal-dialog");
-var places = require("../../../shared-modules/places");
-var toolbars = require("../../../shared-modules/toolbars");
-var utils = require("../../../shared-modules/utils");
+var domUtils = require("../../../lib/dom-utils");
+var modalDialog = require("../../../lib/modal-dialog");
+var places = require("../../../lib/places");
+var toolbars = require("../../../lib/toolbars");
+var utils = require("../../../lib/utils");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();

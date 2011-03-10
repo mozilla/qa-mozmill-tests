@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var addons = require("../../shared-modules/addons");
+var addons = require("../../lib/addons");
 
 const gDelay = 0;
 const gTimeout = 5000;

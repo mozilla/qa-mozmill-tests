@@ -37,9 +37,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var places = require("../../shared-modules/places");
-var toolbars = require("../../shared-modules/toolbars");
-var utils = require("../../shared-modules/utils");
+var places = require("../../lib/places");
+var toolbars = require("../../lib/toolbars");
+var utils = require("../../lib/utils");
 
 const TIMEOUT = 5000;
 

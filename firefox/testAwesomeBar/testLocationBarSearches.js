@@ -37,8 +37,8 @@
  * **** END LICENSE BLOCK *****/
 
 // Include required modules
-var prefs = require("../../shared-modules/prefs");
-var toolbars = require("../../shared-modules/toolbars");
+var prefs = require("../../lib/prefs");
+var toolbars = require("../../lib/toolbars");
 
 const gTimeout = 5000;
 

@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var downloads = require("../../shared-modules/downloads");
-var utils = require("../../shared-modules/utils");
+var downloads = require("../../lib/downloads");
+var utils = require("../../lib/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;

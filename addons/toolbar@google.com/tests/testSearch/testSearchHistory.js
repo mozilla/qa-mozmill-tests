@@ -47,7 +47,7 @@ var jumlib = {};
 Components.utils.import('resource://mozmill/modules/jum.js', jumlib);
 
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
+const RELATIVE_ROOT = '../../lib';
 const MODULE_REQUIRES = ['SearchBoxAPI', 'ArrayUtilsAPI', 'GtbUtilsAPI'];
 
 const QUERY_LIST = ['hello', 'world'];

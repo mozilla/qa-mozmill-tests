@@ -38,7 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var tabs = require("../../shared-modules/tabs");
+var tabs = require("../../lib/tabs");
 
 const gDelay = 0;
 const gTimeout = 5000;
