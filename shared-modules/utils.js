@@ -147,6 +147,26 @@ var appInfo = {
     if (window)
       return window.navigator.userAgent;
     return "";
+  },
+
+  get XPCOMABI() {
+    let abi = null;
+    try {
+      abi = this.appInfo.XPCOMABI;
+    }
+    catch (ex) {
+      // throw?
+    }
+  
+    if (mozmill.isMac) {
+      let macutils = Cc["@mozilla.org/xpcom/mac-utils;1"].
+                     getService(Ci.nsIMacUtils);
+  
+      if (macutils.isUniversalBinary)
+        abi += "-u-" + macutils.architecturesInBinary;
+    }
+  
+    return abi;
   }
 };
 
@@ -275,10 +295,23 @@ function emptyClipboard() {
 /**
  * Format a URL by replacing all placeholders
  *
- * @param {string} prefName
- *        The preference name which contains the URL
- * @return The formatted URL
- * @type string
+ * @param {String} aURL The URL which contains placeholders to replace
+ *
+ * @returns {String} The formatted URL
+ */
+function formatUrl(aURL) {
+  var formatter = Cc["@mozilla.org/toolkit/URLFormatterService;1"].
+                  getService(Ci.nsIURLFormatter);
+
+  return formatter.formatURL(aURL);
+}
+
+/**
+ * Format a URL given by a preference and replace all placeholders
+ *
+ * @param {String} aPrefName The preference name which contains the URL
+ *
+ * @returns {String} The formatted URL
  */
 function formatUrlPref(prefName) {
   var formatter = Cc["@mozilla.org/toolkit/URLFormatterService;1"]
@@ -445,6 +478,7 @@ exports.assertLoadedUrlEqual = assertLoadedUrlEqual;
 exports.closeContentAreaContextMenu = closeContentAreaContextMenu;
 exports.checkSearchField = checkSearchField;
 exports.createURI = createURI;
+exports.formatUrl = formatUrl;
 exports.formatUrlPref = formatUrlPref;
 exports.emptyClipboard = emptyClipboard;
 exports.getDefaultHomepage = getDefaultHomepage;

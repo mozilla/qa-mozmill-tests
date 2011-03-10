@@ -46,6 +46,8 @@ var utils = require("utils");
 const gTimeoutUpdateCheck     = 10000;
 const gTimeoutUpdateDownload  = 360000;
 
+const PREF_APP_UPDATE_URL = "app.update.url";
+
 const PREF_DISABLED_ADDONS = "extensions.disabledAddons";
 
 // Helper lookup constants for elements of the software update dialog
@@ -145,6 +147,7 @@ softwareUpdate.prototype = {
       buildid : utils.appInfo.buildID,
       disabled_addons : prefs.preferences.getPref(PREF_DISABLED_ADDONS, ''),
       locale : utils.appInfo.locale,
+      url_aus : this.updateURL,
       user_agent : utils.appInfo.userAgent,
       version : utils.appInfo.version
     };
@@ -217,7 +220,7 @@ softwareUpdate.prototype = {
       is_complete : this.isCompleteUpdate,
       size : this.activeUpdate.selectedPatch.size,
       type : this.activeUpdate.type,
-      url : this.activeUpdate.selectedPatch.finalURL || "n/a",
+      url_mirror : this.activeUpdate.selectedPatch.finalURL || "n/a",
       download_duration : this._downloadDuration,
       version : this.activeUpdate.version
     };
@@ -230,6 +233,29 @@ softwareUpdate.prototype = {
    */
   get updateType() {
     return this.activeUpdate.type;
+  },
+
+  /**
+   * Retrieve the AUS update URL the update snippet is retrieved from
+   *
+   * @returns {String} The URL of the update snippet
+   */
+  get updateURL() {
+    var url = prefs.preferences.getPref(PREF_APP_UPDATE_URL, "");
+
+    if (!url || url == "") {
+      return null;
+    }
+
+    // Not all placeholders are getting replaced correctly by formatURL
+    url = url.replace(/%PRODUCT%/g, utils.appInfo.name);
+    url = url.replace(/%BUILD_ID%/g, utils.appInfo.buildID);
+    url = url.replace(/%BUILD_TARGET%/g,
+                      utils.appInfo.os + "_" + utils.appInfo.XPCOMABI);
+
+    url = utils.formatUrl(url);
+
+    return url;
   },
 
   /**
