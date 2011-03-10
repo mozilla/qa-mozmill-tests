@@ -43,9 +43,9 @@
  */
 
 // Include required modules
-var DOMUtils = require("../../../lib/dom-utils");
-var Utils = require("../../../lib/utils");
-var Widgets = require("../../../lib/widgets");
+var DOMUtils = require("../../../../lib/dom-utils");
+var Utils = require("../../../../lib/utils");
+var Widgets = require("../../../../lib/widgets");
 
 /**
  * @constructor
