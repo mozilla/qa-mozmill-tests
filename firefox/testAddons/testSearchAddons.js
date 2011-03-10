@@ -36,8 +36,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var addons = require("../../shared-modules/addons");
-var prefs = require("../../shared-modules/prefs");
+var addons = require("../../lib/addons");
+var prefs = require("../../lib/prefs");
 
 const gDelay = 0;
 const gTimeout = 5000;

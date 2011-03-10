@@ -37,10 +37,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var downloads = require("../../shared-modules/downloads");
-var prefs = require("../../shared-modules/prefs");
-var privateBrowsing = require("../../shared-modules/private-browsing");
-var utils = require("../../shared-modules/utils");
+var downloads = require("../../lib/downloads");
+var prefs = require("../../lib/prefs");
+var privateBrowsing = require("../../lib/private-browsing");
+var utils = require("../../lib/utils");
 
 const DELAY = 100;
 const TIMEOUT = 5000;

@@ -37,10 +37,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../../shared-modules/modal-dialog");
-var prefs = require("../../../shared-modules/prefs");
-var tabs = require("../../../shared-modules/tabs");
-var utils = require("../../../shared-modules/utils");
+var modalDialog = require("../../../lib/modal-dialog");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
+var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';

@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../../shared-modules/prefs");
-var softwareUpdate = require("../../../shared-modules/software-update");
+var prefs = require("../../../lib/prefs");
+var softwareUpdate = require("../../../lib/software-update");
 
 const TIMEOUT = 5000;
 

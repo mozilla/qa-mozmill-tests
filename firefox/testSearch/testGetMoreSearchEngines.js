@@ -36,9 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var modalDialog = require("../../shared-modules/modal-dialog");
-var search = require("../../shared-modules/search");
-var utils = require("../../shared-modules/utils");
+var modalDialog = require("../../lib/modal-dialog");
+var search = require("../../lib/search");
+var utils = require("../../lib/utils");
 
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;

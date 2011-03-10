@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../shared-modules/modal-dialog");
+var modalDialog = require("../../lib/modal-dialog");
 
 const TIMEOUT = 5000;
 

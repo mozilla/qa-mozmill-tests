@@ -36,9 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var addons = require("../../../shared-modules/addons");
-var modalDialog = require("../../../shared-modules/modal-dialog");
-var tabs = require("../../../shared-modules/tabs");
+var addons = require("../../../lib/addons");
+var modalDialog = require("../../../lib/modal-dialog");
+var tabs = require("../../../lib/tabs");
 
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;

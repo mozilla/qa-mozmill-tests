@@ -37,7 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var search = require("../../shared-modules/search");
+var search = require("../../lib/search");
 
 const TIMEOUT_INSTALLATION = 30000;
 

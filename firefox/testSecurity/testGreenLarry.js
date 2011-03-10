@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var utils = require("../../shared-modules/utils");
+var utils = require("../../lib/utils");
 
 var TIMEOUT = 5000;
 

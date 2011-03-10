@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../shared-modules/prefs");
+var prefs = require("../../lib/prefs");
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

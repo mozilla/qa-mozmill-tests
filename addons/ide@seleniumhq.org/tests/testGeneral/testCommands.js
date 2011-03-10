@@ -43,7 +43,7 @@
  */
 
 // Include required modules
-var Selenium = require("../../shared-modules/selenium");
+var Selenium = require("../../lib/selenium");
 
 /**
  * Sets up the test module by acquiring a browser controller.

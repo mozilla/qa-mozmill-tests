@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-const RELATIVE_ROOT = '../../shared-modules';
+const RELATIVE_ROOT = '../../lib';
 const MODULE_REQUIRES = ['ModalDialogAPI'];
 
 const TIMEOUT = 5000;
