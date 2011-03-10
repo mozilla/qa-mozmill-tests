@@ -37,11 +37,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../../shared-modules/modal-dialog");
-var prefs = require("../../../shared-modules/prefs");
-var tabs = require("../../../shared-modules/tabs");
-var toolbars = require("../../../shared-modules/toolbars");
-var utils = require("../../../shared-modules/utils");
+var modalDialog = require("../../../lib/modal-dialog");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
+var toolbars = require("../../../lib/toolbars");
+var utils = require("../../../lib/utils");
 
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');

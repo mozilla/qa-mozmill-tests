@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var endurance = require("../../../shared-modules/endurance");
-var tabs = require("../../../shared-modules/tabs");
+var endurance = require("../../../lib/endurance");
+var tabs = require("../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';

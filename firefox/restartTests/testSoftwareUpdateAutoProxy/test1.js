@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../../shared-modules/prefs");
+var prefs = require("../../../lib/prefs");
 
 const BROWSER_HOME_PAGE = 'browser.startup.homepage';
 const BROWSER_STARTUP_PAGE = 'browser.startup.page';

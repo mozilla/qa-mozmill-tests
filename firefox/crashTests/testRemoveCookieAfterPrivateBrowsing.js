@@ -35,8 +35,8 @@
  * **** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../shared-modules/modal-dialog");
-var privateBrowsing = require("../../shared-modules/private-browsing");
+var modalDialog = require("../../lib/modal-dialog");
+var privateBrowsing = require("../../lib/private-browsing");
 
 const gTimeout = 5000;
 

@@ -35,9 +35,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var Addons = require("../../../shared-modules/addons");
-var Endurance = require("../../../shared-modules/endurance");
-var Tabs = require("../../../shared-modules/tabs");
+var Addons = require("../../../lib/addons");
+var Endurance = require("../../../lib/endurance");
+var Tabs = require("../../../lib/tabs");
 
 function setupModule() {
   controller = mozmill.getBrowserController();

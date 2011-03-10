@@ -37,9 +37,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var modalDialog = require("../../../shared-modules/modal-dialog");
-var prefs = require("../../../shared-modules/prefs");
-var utils = require("../../../shared-modules/utils");
+var modalDialog = require("../../../lib/modal-dialog");
+var prefs = require("../../../lib/prefs");
+var utils = require("../../../lib/utils");
 
 
 var setupModule = function(module) {

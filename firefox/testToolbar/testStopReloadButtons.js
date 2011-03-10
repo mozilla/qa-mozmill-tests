@@ -37,7 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var Toolbars = require("../../shared-modules/toolbars");
+var Toolbars = require("../../lib/toolbars");
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();

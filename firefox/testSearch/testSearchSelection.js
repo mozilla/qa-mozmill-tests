@@ -37,10 +37,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var prefs = require("../../shared-modules/prefs");
-var search = require("../../shared-modules/search");
-var tabs = require("../../shared-modules/tabs");
-var utils = require("../../shared-modules/utils");
+var prefs = require("../../lib/prefs");
+var search = require("../../lib/search");
+var tabs = require("../../lib/tabs");
+var utils = require("../../lib/utils");
 
 
 const TIMEOUT = 5000;
