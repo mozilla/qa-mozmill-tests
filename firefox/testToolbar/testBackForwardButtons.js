@@ -38,7 +38,7 @@
 
 const TIMEOUT = 5000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'community'},
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', id: 'mission_statement'},

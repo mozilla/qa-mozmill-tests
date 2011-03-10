@@ -40,7 +40,7 @@ var modalDialog = require("../../lib/modal-dialog");
 var search = require("../../lib/search");
 var utils = require("../../lib/utils");
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 const TIMEOUT_INSTALL_DIALOG = 30000;
 

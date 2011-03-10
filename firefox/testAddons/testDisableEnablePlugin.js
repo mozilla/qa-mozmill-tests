@@ -44,7 +44,7 @@ var addons = require("../../lib/addons");
 const gDelay = 0;
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 var plugins = {"darwin": {node: "name", value: "Default Plugin"},
                "winnt":  {node: "description", value: "Default Plug-in"},

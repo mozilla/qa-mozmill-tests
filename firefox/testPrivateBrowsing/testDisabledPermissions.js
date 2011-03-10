@@ -42,7 +42,7 @@ var privateBrowsing = require("../../lib/private-browsing");
 var tabs = require("../../lib/tabs");
 var utils = require("../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + "popups/popups_2.html",
   LOCAL_TEST_FOLDER + "layout/mozilla_mission.html",

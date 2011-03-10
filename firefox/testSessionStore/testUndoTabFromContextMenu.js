@@ -41,7 +41,7 @@ var sessionStore = require("../../lib/sessionstore");
 var tabs = require("../../lib/tabs");
 var utils = require("../../lib/utils");
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();

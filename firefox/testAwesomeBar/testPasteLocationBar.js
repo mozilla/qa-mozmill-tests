@@ -43,7 +43,7 @@ var utils = require("../../lib/utils");
 
 const TIMEOUT = 5000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 
 function setupModule() {
   controller = mozmill.getBrowserController();
