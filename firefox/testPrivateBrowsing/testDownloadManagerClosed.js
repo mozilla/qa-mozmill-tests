@@ -45,7 +45,7 @@ var utils = require("../../lib/utils");
 const DELAY = 100;
 const TIMEOUT = 5000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 
 const DOWNLOADS = [
                    LOCAL_TEST_FOLDER + "downloading/unknown_type.mtdl",

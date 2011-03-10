@@ -46,7 +46,7 @@ const gTimeout = 7000;
 
 const PREF_GEO_TOKEN = "geo.wifi.access_token";
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 var setupModule = function(module)
 {

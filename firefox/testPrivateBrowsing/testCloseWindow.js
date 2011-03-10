@@ -42,7 +42,7 @@ var utils = require("../../lib/utils");
 
 const TIMEOUT = 5000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', name: 'community'},
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', name: 'mission'}
