@@ -42,7 +42,7 @@
 var tabs = require("../../lib/tabs");
 var utils = require("../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 var setupModule = function(module)

@@ -38,7 +38,7 @@
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 function setupModule() {

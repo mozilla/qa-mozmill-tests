@@ -39,7 +39,7 @@ var Endurance = require("../../../lib/endurance");
 var PrivateBrowsing = require("../../../lib/private-browsing");
 var Tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [LOCAL_TEST_FOLDER + 'layout/mozilla.html',
                           LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
                           LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html',

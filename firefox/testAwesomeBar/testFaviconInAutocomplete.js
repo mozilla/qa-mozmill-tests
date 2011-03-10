@@ -42,7 +42,7 @@ var places = require("../../lib/places");
 var prefs = require("../../lib/prefs");
 var toolbars = require("../../lib/toolbars");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGE = { 
   url: LOCAL_TEST_FOLDER + 'layout/mozilla.html',
   string: "mozilla" 

@@ -40,7 +40,7 @@ var prefs = require("../../lib/prefs");
 var tabs = require("../../lib/tabs");
 var utils = require("../../lib/utils");
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 const gDelay = 0;
 const gTimeout = 5000;

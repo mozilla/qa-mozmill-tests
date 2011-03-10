@@ -41,7 +41,7 @@
 var prefs = require("../../lib/prefs");
 var tabs = require("../../lib/tabs");
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 
 const TIMEOUT_ARROWS = 10000;
 

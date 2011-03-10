@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
 var setupModule = function() {
