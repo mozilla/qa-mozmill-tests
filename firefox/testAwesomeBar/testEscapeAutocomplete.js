@@ -37,8 +37,8 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include required modules
-var places = require("../../shared-modules/places");
-var toolbars = require("../../shared-modules/toolbars");
+var places = require("../../lib/places");
+var toolbars = require("../../lib/toolbars");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
 const LOCAL_TEST_PAGES = [

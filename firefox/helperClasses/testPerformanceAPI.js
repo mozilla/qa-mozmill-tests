@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var performance = require("../../shared-modules/performance");
+var performance = require("../../lib/performance");
 
 function testPerfTracer() {
   var perfTracer = new performance.PerfTracer("testPerfTracer");

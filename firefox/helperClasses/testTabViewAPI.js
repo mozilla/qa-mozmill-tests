@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var tabViews = require("../../shared-modules/tabview");
+var tabViews = require("../../lib/tabview");
 
 const TIMEOUT = 5000;
 

@@ -38,8 +38,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var dom_utils = require("../../shared-modules/dom-utils");
-var prefs = require("../../shared-modules/prefs");
+var dom_utils = require("../../lib/dom-utils");
+var prefs = require("../../lib/prefs");
 
 
 function setupModule(module) {

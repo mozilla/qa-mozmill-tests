@@ -40,10 +40,10 @@
  */
 
 // Include the required modules
-var domUtils = require("../../../shared-modules/dom-utils");
-var localization = require("../../../shared-modules/localization");
-var prefs = require("../../../shared-modules/prefs");
-var utils = require("../../../shared-modules/utils");
+var domUtils = require("../../../lib/dom-utils");
+var localization = require("../../../lib/localization");
+var prefs = require("../../../lib/prefs");
+var utils = require("../../../lib/utils");
 
 const GET_BY_ID = domUtils.DOMWalker.GET_BY_ID;
 const GET_BY_SELECTOR = domUtils.DOMWalker.GET_BY_SELECTOR;

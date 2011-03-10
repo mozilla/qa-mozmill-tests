@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var softwareUpdate = require("../../../shared-modules/software-update");
-var utils = require("../../../shared-modules/utils");
+var softwareUpdate = require("../../../lib/software-update");
+var utils = require("../../../lib/utils");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();

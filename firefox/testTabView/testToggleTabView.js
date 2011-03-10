@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var tabView = require("../../shared-modules/tabview");
+var tabView = require("../../lib/tabview");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();

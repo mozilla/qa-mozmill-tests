@@ -36,10 +36,10 @@
  * **** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var modalDialog = require("../../shared-modules/modal-dialog");                       
-var prefs = require("../../shared-modules/prefs");
-var tabbedbrowser = require("../../shared-modules/tabs");
-var utils = require("../../shared-modules/utils");
+var modalDialog = require("../../lib/modal-dialog");                       
+var prefs = require("../../lib/prefs");
+var tabbedbrowser = require("../../lib/tabs");
+var utils = require("../../lib/utils");
 
 const gDelay = 0;
 const gTimeout = 5000;
