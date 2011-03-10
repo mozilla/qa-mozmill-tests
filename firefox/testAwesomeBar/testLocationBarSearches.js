@@ -42,7 +42,7 @@ var toolbars = require("../../lib/toolbars");
 
 const gTimeout = 5000;
 
-const localTestFolder = collector.addHttpResource('../test-files/');
+const localTestFolder = collector.addHttpResource('../../data/');
 const prefName = "keyword.URL";
 
 var setupModule = function(module) {

@@ -44,7 +44,7 @@ var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function(module) {

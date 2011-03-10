@@ -41,7 +41,7 @@ var search = require("../../lib/search");
 
 const TIMEOUT_INSTALLATION = 30000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 
 const SEARCH_ENGINE = {
   name: "OpenSearch Test",

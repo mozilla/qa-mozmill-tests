@@ -43,7 +43,7 @@ var toolbars = require("../../lib/toolbars");
 
 const TIMEOUT = 5000;
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../test-files/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../data/');
 const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
   LOCAL_TEST_FOLDER + 'layout/mozilla.html',
