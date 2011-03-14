@@ -52,6 +52,7 @@ function setupModule() {
 }
 
 function teardownModule() {
+  activeTabView.reset();
   tabBrowser.closeAllTabs();
 }
 
