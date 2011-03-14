@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,7 +40,11 @@ var tabView = require("../../../lib/tabview");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
-  tabView = new tabView.tabView(controller);
+  activeTabView = new tabView.tabView(controller);
+}
+
+function teardownModule(module) {
+  activeTabView.reset();
 }
 
 /**
@@ -47,18 +52,18 @@ function setupModule(module) {
  */
 function testToggleTabView() {
   // Open Tab View (default via keyboard shortcut)
-  tabView.open();
+  activeTabView.open();
 
   // Check that Tab View has opened 
   controller.assert(function () {
-    return tabView.isOpen;
+    return activeTabView.isOpen;
   }, "Tab View has opened");
 
   // Close Tab View (default via keyboard shortcut)
-  tabView.close();
+  activeTabView.close();
 
   // Check that Tab View has closed
   controller.assert(function () {
-    return !tabView.isOpen;
+    return !activeTabView.isOpen;
   }, "Tab View has closed");
 }
