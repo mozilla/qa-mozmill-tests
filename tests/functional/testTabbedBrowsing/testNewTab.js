@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Aaron Train <atrain@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,8 +42,6 @@
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
@@ -61,7 +60,7 @@ var testNewTab = function()
 
   // Ensure current tab does not have blank page loaded
   var section = new elementslib.ID(controller.tabs.activeTab, "organization");
-  controller.waitForElement(section, TIMEOUT);
+  controller.waitForElement(section);
 
   // Test all different ways to open a tab
   checkOpenTab({type: "menu"});
@@ -80,19 +79,33 @@ var checkOpenTab = function(event)
 {
   // Open a new tab and check that 'about:blank' has been opened
   tabBrowser.openTab(event);
-  controller.waitForEval("subject.length == 2", TIMEOUT, 100, controller.tabs);
-  controller.assertJS("subject.activeTab.location == 'about:blank'",
-                      controller.tabs);
+  controller.waitFor(function () { 
+    return controller.tabs.length === 2;
+  }, "A new tab has opened via " + event.type + " - got " + 
+    "'" + controller.tabs.length + "'" + ", expected " + "'" + 2 + "'");
 
+  controller.assert(function () {
+    return controller.tabs.activeTab.location == "about:blank";
+  }, "The new tab opened via " + event.type + " - got " +
+    controller.tabs.activeTab.location + ", expected " + "'about:blank'");
+  
   // The tabs title should be 'Untitled'
   var title = utils.getProperty("chrome://browser/locale/tabbrowser.properties",
                                 "tabs.untitled");
   var tab = tabBrowser.getTab();
-  controller.assertJS("subject.label == '" + title + "'", tab.getNode());
+
+  controller.assert(function () {
+    return tab.getNode().label === title;
+  }, "The new tab opened via " + event.type + " - got " + 
+    "'" + tab.getNode().label + "'" + ", expected " + "'" + title + "'");
 
   // Close the tab again
   tabBrowser.closeTab({type: "shortcut"});
-  controller.waitForEval("subject.length == 1", TIMEOUT, 100, controller.tabs);
+
+  controller.waitFor(function () {
+    return controller.tabs.length === 1;
+  }, "The new tab closed via shortcut - got " + "'" + controller.tabs.length +
+    "'" + ", expected " + "'" + 1 + "'");
 }
 
 /**
