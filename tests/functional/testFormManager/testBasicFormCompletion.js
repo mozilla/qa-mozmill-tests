@@ -91,7 +91,10 @@ var testFormCompletion = function() {
   controller.click(popDownAutoCompList);
 
   // Verify the field element and the text in it
-  controller.assertValue(inputField, inputText);
+  controller.assert(function () {
+    return inputField.getNode().value === inputText;
+  }, "Input field contains the text - got " + inputField.getNode().value +
+    ", expected: " + inputText);
 }
 
 /**
