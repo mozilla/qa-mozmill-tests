@@ -126,6 +126,9 @@ var handleSearchInstall = function(controller)
   controller.click(addButton);
 }
 
+setupModule.__force_skip__ = "Bug 576999 - [mozmill] AssertJS failure in testAddMozSearchProvider.js";
+teardownModule.__force_skip__ = true;
+
 /**
  * Map test functions to litmus tests
  */
