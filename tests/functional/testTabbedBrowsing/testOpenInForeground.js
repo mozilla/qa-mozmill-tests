@@ -87,7 +87,7 @@ var testOpenInForegroundTab = function()
 
     if(i == 2) {
       // Open another tab by middle-clicking on the link
-      controller.middleClick(currentLink);
+      tabBrowser.openInNewTab(currentLink);
     } else {
       // Open the context menu and open a new tab
       controller.rightClick(currentLink);
@@ -109,7 +109,7 @@ var testOpenInForegroundTab = function()
 
   // Click the close button of the second tab
   tabBrowser.selectedIndex = 1;
-  tabBrowser.closeTab({type: "closeButton"});
+  tabBrowser.closeTab("closeButton");
   
   // Verify that we have 3 tabs now and the first tab is selected:
   controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
