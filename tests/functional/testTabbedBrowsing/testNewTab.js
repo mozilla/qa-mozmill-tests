@@ -63,30 +63,31 @@ var testNewTab = function()
   controller.waitForElement(section);
 
   // Test all different ways to open a tab
-  checkOpenTab({type: "menu"});
-  checkOpenTab({type: "shortcut"});
-  checkOpenTab({type: "tabStrip"});
-  checkOpenTab({type: "newTabButton"});
+  checkOpenTab("menu");
+  checkOpenTab("shortcut");
+  checkOpenTab("tabStrip");
+  checkOpenTab("newTabButton");
 }
 
 /**
  * Check if a new tab has been opened, has a title and can be closed
  *
- * @param {object} event
- *        Object which specifies how to open the new tab
+ * @param {String} aEventType
+ *        Type of event which triggers the action
  */
-var checkOpenTab = function(event)
+var checkOpenTab = function(aEventType)
 {
   // Open a new tab and check that 'about:blank' has been opened
-  tabBrowser.openTab(event);
+  tabBrowser.openTab(aEventType);
+
   controller.waitFor(function () { 
     return controller.tabs.length === 2;
-  }, "A new tab has opened via " + event.type + " - got " + 
+  }, "A new tab has opened via " + aEventType + " - got " + 
     "'" + controller.tabs.length + "'" + ", expected " + "'" + 2 + "'");
 
   controller.assert(function () {
     return controller.tabs.activeTab.location == "about:blank";
-  }, "The new tab opened via " + event.type + " - got " +
+  }, "The new tab opened via " + aEventType + " - got " +
     controller.tabs.activeTab.location + ", expected " + "'about:blank'");
   
   // The tabs title should be 'Untitled'
@@ -96,11 +97,11 @@ var checkOpenTab = function(event)
 
   controller.assert(function () {
     return tab.getNode().label === title;
-  }, "The new tab opened via " + event.type + " - got " + 
+  }, "The new tab opened via " + aEventType + " - got " + 
     "'" + tab.getNode().label + "'" + ", expected " + "'" + title + "'");
 
   // Close the tab again
-  tabBrowser.closeTab({type: "shortcut"});
+  tabBrowser.closeTab("shortcut");
 
   controller.waitFor(function () {
     return controller.tabs.length === 1;

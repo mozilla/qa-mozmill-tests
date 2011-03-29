@@ -76,12 +76,12 @@ var testUndoTabFromContextMenu = function() {
    controller.open(localTestFolder + 
                    'tabbedbrowsing/openinnewtab_target.html?id=' + i);
    controller.waitForPageLoad();
-   tabBrowser.openTab({type: 'menu'});
+   tabBrowser.openTab();
   }
 
   // Close 2nd tab via File > Close tab:
   tabBrowser.selectedIndex = 1;
-  tabBrowser.closeTab({type: 'menu'});
+  tabBrowser.closeTab();
 
   // Check for correct linkId on 2nd tab, should be 2
   var linkId = new elementslib.ID(controller.tabs.activeTab, "id");

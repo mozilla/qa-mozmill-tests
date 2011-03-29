@@ -55,26 +55,26 @@ var testCloseTab = function()
 {
   // Let's have 5 tabs open
   for(var i = 0; i < 4; i++) {
-    tabBrowser.openTab({type: "menu"});
+    tabBrowser.openTab();
   }
 
   controller.waitForEval("subject.length == 5",  gTimeout,   100, tabBrowser);
 
   // Close a tab by pressing the keyboard shortcut:
-  tabBrowser.closeTab({type: "shortcut"});
+  tabBrowser.closeTab("shortcut");
   controller.waitForEval("subject.length == 4", gTimeout, 100, tabBrowser);
 
   // Close a tab via File > Close tab
-  tabBrowser.closeTab({type: "menu"});
+  tabBrowser.closeTab("menu");
   controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
 
   // Close an inactive tab via middle click
   // XXX: Can be changed to middleClick once bug 535018 is fixed
-  tabBrowser.closeTab({type: "middleClick", index: 0});
+  tabBrowser.closeTab("middleClick", 0);
   controller.waitForEval("subject.length == 2", gTimeout, 100, tabBrowser);
 
   // Close a tab via the close button on the tab itself:
-  tabBrowser.closeTab({type: "closeButton"});
+  tabBrowser.closeTab("closeButton");
   controller.waitForEval("subject.length == 1", gTimeout, 100, tabBrowser);
 }
 
