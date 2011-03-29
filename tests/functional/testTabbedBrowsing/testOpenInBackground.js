@@ -80,10 +80,10 @@ var testOpenInBackgroundTab = function() {
     
     if (i == 2) {
       // Open another tab by middle-clicking on the link
-      tabBrowser.openInNewTab({type: "middleClick", target: currentLink});
+      tabBrowser.openInNewTab(currentLink);
     } else {
       // Open the first link via context menu in a new tab:
-      tabBrowser.openInNewTab({type: "contextMenu", target: currentLink});
+      tabBrowser.openInNewTab(currentLink, "contextMenu");
     }
 
     // Check that i+1 tabs are open and the first tab is selected
@@ -106,7 +106,7 @@ var testOpenInBackgroundTab = function() {
 
   // Click the close button of the last tab
   tabBrowser.selectedIndex = 3;
-  tabBrowser.closeTab({type: "closeButton"});
+  tabBrowser.closeTab("closeButton");
 
   // Verify that the last tab is selected:
   controller.waitForEval("subject.length == 3", TIMEOUT, 100, tabBrowser);

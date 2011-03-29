@@ -142,6 +142,6 @@ var startSearch = function(element, engineName, loadInBackground) {
   // Check the loaded page
   searchBar.checkSearchResultPage(selection);
 
-  tabs.closeTab({type: "shortcut"});
+  tabs.closeTab("shortcut");
   tabs.selectedIndex = tabIndex;
 }

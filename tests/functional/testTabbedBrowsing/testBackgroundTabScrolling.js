@@ -80,7 +80,7 @@ var testScrollBackgroundTabIntoView = function()
   var link2 = new elementslib.Name(controller.tabs.activeTab, "link_2");
 
   controller.waitFor(function () {
-    tabBrowser.openInNewTab({type: "middleClick", target: link1});
+    tabBrowser.openInNewTab(link1);
 
     // Wait until the pages have been loaded, so they can be loaded from the cache
     var tab = controller.tabs.getTab(controller.tabs.length - 1);
@@ -98,7 +98,7 @@ var testScrollBackgroundTabIntoView = function()
   controller.sleep(100);
 
   // Open one more tab but with another link for later verification
-  tabBrowser.openInNewTab({type: "middleClick", target: link2});
+  tabBrowser.openInNewTab(link2);
 
   // Check that the right scroll button flashes
   controller.waitFor(function () {
