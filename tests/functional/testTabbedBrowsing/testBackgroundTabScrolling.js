@@ -82,7 +82,7 @@ var testScrollBackgroundTabIntoView = function()
   // Open new background tabs until the scroll arrows appear
   var count = 1;
   do {
-    controller.middleClick(link1);
+    tabBrowser.openInNewTab(link1);
 
     // Wait until the new tab has been opened
     controller.waitForEval("subject.length == " + (++count), gTimeout, 100, tabBrowser);
@@ -93,7 +93,7 @@ var testScrollBackgroundTabIntoView = function()
                       container.getNode())
 
   // Open one more tab but with another link for later verification
-  controller.middleClick(link2);
+  tabBrowser.openInNewTab(link2);
 
   // Check that the List all Tabs button flashes
   controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity != 0",
