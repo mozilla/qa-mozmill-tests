@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is the Mozilla Foundation.
  *
- * Portions created by the Initial Developer are Copyright (C) 2010
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -35,52 +35,35 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * @fileoverview Test that the Selenium IDE commands function correctly
- * @supported Firefox 3.5 and above, Selenium IDE 1.0.10 and above
- *
- * @author dhunt@mozilla.com (Dave Hunt)
- */
-
 // Include required modules
-var Selenium = require("../../lib/selenium");
+var selenium = require("../../../lib/selenium");
+var checks = require("../../../lib/checks");
 
-/**
- * Sets up the test module by acquiring a browser controller.
- * @param {module} module object for the test used by Mozmill.
- */
 function setupModule(module) {
   controller = mozmill.getBrowserController();
-  sm = new Selenium.SeleniumManager();
+  sm = new selenium.SeleniumManager();
+  sm.open(controller);
 }
 
-/**
- * This test verifies the verifyText command is not returning an error.
- */
-function testVerifyTextCommand() {
-  sm.open(controller);
+function teardownModule(module) {
+  sm.close();
+}
+
+function testAssertTextCommandPasses() {
   sm.baseURL = "chrome://selenium-ide/";
   sm.addCommand({action: "open",
                 target: "/content/tests/functional/aut/search.html"});
-  sm.addCommand({action: "verifyText",
+  sm.addCommand({action: "assertText",
                 target: "link=link with onclick attribute",
                 value: "link with onclick attribute"});
+  sm.addCommand({action: "echo",
+                target: "final command"});
   sm.playTest();
 
-  // XXX: Bug 621214 - Find a way to check properties of treeView rows
-
-  //check suite progress indicator
+  checks.commandPassed(sm);
+  
+  //check final command is executed
   sm.controller.assert(function () {
-    return sm.isSuiteProgressIndicatorGreen;
-  }, "Suite progress indicator is green");
-
-  //check suite counts
-  sm.controller.assertValue(sm.runCount, "1");
-  sm.controller.assertValue(sm.failureCount, "0");
-
-  //check no errors in log
-  sm.controller.assert(function () {
-    return sm.logConsole.getNode().innerHTML.indexOf('[error]') == -1;
-  }, "Log console contains no errors");
-
+    return sm.finalLogInfoMessage === "echo: final command";
+  }, "Final command was executed, got '" + sm.finalLogInfoMessage +"' expected 'echo: final command'");
 }
