@@ -38,8 +38,6 @@
 /**
  * @fileoverview Shared module for Selenium IDE
  * @supported Firefox 3.5 and above, Selenium IDE 1.0.10 and above
- *
- * @author dhunt@mozilla.com (Dave Hunt)
  */
 
 // Include required modules
@@ -62,8 +60,7 @@ SeleniumManager.prototype = {
   /**
    * Get the controller of the Selenium IDE window
    *
-   * @returns Mozmill Controller
-   * @type {MozMillController}
+   * @returns {MozMillController} Mozmill Controller
    */
   get controller() {
     return this._controller;
@@ -72,8 +69,7 @@ SeleniumManager.prototype = {
   /**
    * Open Selenium IDE
    *
-   * @param {MozMillController} browserController
-   *        Mozmill controller of the browser window
+   * @param {MozMillController} browserController Mozmill controller of the browser window
    */
   open : function SeleniumManager_open(browserController) {
     browserController.mainMenu.click("#menu_ToolsPopupItem");
@@ -81,12 +77,40 @@ SeleniumManager.prototype = {
   },
 
   /**
+   * Close Selenium IDE
+   */
+  close : function SeleniumManager_close() {
+    this._controller.window.close();
+    this.waitForClosed();
+  },
+
+  /**
+   * Wait for the Selenium IDE window to be closed
+   */
+  waitForClosed : function SeleniumManager_waitForClosed() {
+    mozmill.utils.waitFor(function () {
+      return !mozmill.utils.getWindowByType("global:selenium-ide");
+    }, "Selenium IDE has been closed.");
+    this._controller = null;
+  },
+
+  /**
+   * Clear the base URL field
+   */
+  clearBaseURLField : function addonsManager_clearBaseURLField() {
+    var baseURL = this.getElement({type: "baseURL"});
+    var cmdKey = Utils.getEntity(this.getDtds(), "selectAllCmd.key");
+    this._controller.keypress(baseURL, cmdKey, {accelKey: true});
+    this._controller.keypress(baseURL, 'VK_DELETE', {});
+  },
+
+  /**
    * Set the value of the base URL
    *
-   * @param {String} url
-   *        New base URL value
+   * @param {String} url New base URL value
    */
   set baseURL(url) {
+    this.clearBaseURLField();
     var baseURL = this.getElement({type: "baseURL"});
     this._controller.type(baseURL, url);
   },
@@ -94,11 +118,10 @@ SeleniumManager.prototype = {
   /**
    * Add a test command
    *
-   * @param {object} spec
-   *        Information of the test command to be added
-   *        action: Command name
-   *        target: Element locator
-   *        value: Value
+   * @param {Object} spec Information of the test command to be added
+   * @param {String} spec.action Command name
+   * @param {String} spec.target Element locator
+   * @param {String} spec.value Value
    */
   addCommand : function SeleniumManager_addCommand(spec) {
     var commands = this.getElement({type: "commands"});
@@ -136,9 +159,8 @@ SeleniumManager.prototype = {
   /**
    * Check that the suite has passed according to the progress indicator
    *
-   * @returns Returns true if the progress indicator has the necessary style
+   * @returns {Boolean} Returns true if the progress indicator has the necessary style
    * to make it appear green
-   * @type {boolean}
    */
   get isSuiteProgressIndicatorGreen() {
     var suiteProgressIndicator = this.getElement({type: "suiteProgress_indicator"});
@@ -146,10 +168,20 @@ SeleniumManager.prototype = {
   },
 
   /**
+   * Check that the suite has failed according to the progress indicator
+   *
+   * @returns {Boolean} Returns true if the progress indicator has the necessary style
+   * to make it appear red
+   */
+  get isSuiteProgressIndicatorRed() {
+    var suiteProgressIndicator = this.getElement({type: "suiteProgress_indicator"});
+    return (suiteProgressIndicator.getNode().className === "failure");
+  },
+
+  /**
    * Retrieve the test run count
    *
-   * @returns Element which represents the test run count
-   * @type {ElemBase}
+   * @returns {ElemBase} Element which represents the test run count
    */
   get runCount() {
     return this.getElement({type: "suiteProgress_runCount"});
@@ -158,23 +190,51 @@ SeleniumManager.prototype = {
   /**
    * Retrieve the test failure count
    *
-   * @returns Element which represents the test failure count
-   * @type {ElemBase}
+   * @returns {ElemBase} Element which represents the test failure count
    */
   get failureCount() {
     return this.getElement({type: "suiteProgress_failureCount"});
   },
 
   /**
-   * Retrieve the log content
+   * Retrieve the info from the log
    *
-   * @returns Log content
-   * @type [string]
+   * @returns {ElemBase[]} Log info
    */
-  get logConsole() {
-    return this.getElement({type: "logConsole"});
+  get logInfo() {
+    return this.getElements({type: "log_info"});
   },
 
+  /**
+   * Retrieve the final info message from the log
+   *
+   * @returns {String} Log info message
+   */
+  get finalLogInfoMessage() {
+    var logInfo = this.logInfo;
+    var finalLogInfoMessage = logInfo[logInfo.length-1].getNode().textContent;
+    var re = new RegExp("^\\[info] (.*)");
+    return re.exec(finalLogInfoMessage)[1];
+  },
+
+  /**
+   * Retrieve the errors from the log
+   *
+   * @returns {ElemBase[]} Log errors
+   */
+  get logErrors() {
+    return this.getElements({type: "log_errors"});
+  },
+
+  /**
+   * Gets all the needed external DTD urls as an array
+   *
+   * @returns {String[]} Array of external DTD urls
+   */
+  getDtds : function searchBar_getDtds() {
+    var dtds = ["chrome://browser/locale/browser.dtd"];
+    return dtds;
+  },
 
   ///////////////////////////////
   // UI Elements section
@@ -183,18 +243,13 @@ SeleniumManager.prototype = {
   /**
    * Retrieve a UI element based on the given specification
    *
-   * @param {object} aSpec
-   *        Information of the UI elements which should be retrieved
-   *        Elements: type     - Identifier of the element
-   *                  subtype  - Attribute of the element to filter
-   *                             [optional - default: ""]
-   *                  value    - Value of the attribute to filter
-   *                             [optional - default: ""]
-   *                  parent   - Parent of the to find element
-   *                             [optional - default: document]
+   * @param {Object} aSpec Information of the UI elements which should be retrieved
+   * @param {String} aSpec.type Identifier of the element
+   * @param {String} aSpec.subtype Attribute of the element to filter [optional - default: ""]
+   * @param {String} aSpec.value Value of the attribute to filter [optional - default: ""]
+   * @param {Object} aSpec.parent Parent of the to find element [optional - default: document]
    *
-   * @returns Element which has been found
-   * @type {ElemBase}
+   * @returns {ElemBase} Element which has been found
    */
   getElement : function SeleniumManager_getElement(aSpec) {
     var elements = this.getElements(aSpec);
@@ -205,18 +260,13 @@ SeleniumManager.prototype = {
   /**
    * Retrieve list of UI elements based on the given specification
    *
-   * @param {object} aSpec
-   *        Information of the UI elements which should be retrieved
-   *        Elements: type     - Identifier of the element
-   *                  subtype  - Attribute of the element to filter
-   *                             [optional - default: ""]
-   *                  value    - Value of the attribute to filter
-   *                             [optional - default: ""]
-   *                  parent   - Parent of the to find element
-   *                             [optional - default: document]
+   * @param {Object} aSpec Information of the UI elements which should be retrieved
+   * @param {String} aSpec.type Identifier of the element
+   * @param {String} aSpec.subtype Attribute of the element to filter [optional - default: ""]
+   * @param {String} aSpec.value Value of the attribute to filter [optional - default: ""]
+   * @param {Object} aSpec.parent Parent of the to find element [optional - default: document]
    *
-   * @returns Elements which have been found
-   * @type {array of ElemBase}
+   * @returns {ElemBase[]} Elements which have been found
    */
   getElements : function SeleniumManager_getElements(aSpec) {
     var spec = aSpec || { };
@@ -260,10 +310,15 @@ SeleniumManager.prototype = {
       case "suiteProgress_failureCount":
         nodeCollector.queryNodes("#suiteProgressFailures");
         break;
-      case "logConsole":
+      case "log_info":
         nodeCollector.queryNodes("#logView");
         nodeCollector.root = nodeCollector.nodes[0].contentDocument;
-        nodeCollector.queryNodes("#logging-console");
+        nodeCollector.queryNodes(".info");
+        break;
+      case "log_errors":
+        nodeCollector.queryNodes("#logView");
+        nodeCollector.root = nodeCollector.nodes[0].contentDocument;
+        nodeCollector.queryNodes(".error");
         break;
       default:
         throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
