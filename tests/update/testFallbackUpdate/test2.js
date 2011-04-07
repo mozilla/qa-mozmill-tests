@@ -41,42 +41,35 @@ var utils = require("../../../lib/utils");
 function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
-
-  persisted.updates[persisted.updateIndex].fallback = true;
 }
 
-function teardownModule() {
-  // Store information for fallback patch
-  persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+function teardownModule(module) {
+  // Store the information of the build and the patch
+  persisted.updates[persisted.updateIndex] = {
+    build_pre : update.buildInfo,
+    patch : update.patchInfo,
+    fallback : false,
+    success : false
+  };
+
+  // Put the downloaded update into failed state
+  update.forceFallback();
 }
 
-/**
- * Test that the patch hasn't been applied and the complete patch gets downloaded
- **/
-function testFallbackUpdate_ErrorPatching() {
-  // The dialog should be open in the background and shows a failure
-  update.waitForDialogOpen(controller);
+function testFallbackUpdate_Download() {
+  // Check if the user has permissions to run the update
+  controller.assert(function() {
+    return update.allowed;
+  }, "User has permissions to update the build.");
 
-  // Complete updates have to be handled differently
-  if (persisted.updates[persisted.updateIndex].patch.is_complete) {
-    // Wait for the error page and close the software update dialog
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
-    update.closeDialog();
+  // Open the software update dialog and wait until the check has been finished
+  update.openDialog(controller);
+  update.waitForCheckFinished();
 
-    // Open the software update dialog again and wait until the check has been finished
-    update.openDialog(controller);
-    update.waitForCheckFinished();
+  // Download the update
+  update.controller.waitFor(function() {
+    return update.updatesFound;
+  }, "An update has been found.");
 
-    // Download the update
-    update.controller.waitFor(function() {
-      return update.updatesFound;
-    }, "An update has been found.");
-
-    update.download(persisted.channel);
-  } else {
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
-
-    // Start downloading the fallback update
-    update.download(persisted.channel);
-  }
+  update.download(persisted.channel);
 }
