@@ -41,32 +41,35 @@ var utils = require("../../../lib/utils");
 function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
+}
 
-  // Collect some data of the current build
-  persisted.updates[persisted.updateIndex].build_post = update.buildInfo;
+function teardownModule(module) {
+  // Store the information of the build and the patch
+  persisted.updates[persisted.updateIndex] = {
+    build_pre : update.buildInfo,
+    patch : update.patchInfo,
+    fallback : false,
+    success : false
+  };
 }
 
 /**
- * Test that the update has been correctly applied and no further updates
- * can be found.
+ * Download an update via the given update channel
  */
-function testDirectUpdate_AppliedAndNoUpdatesFound() {
+var testDirectUpdate_Download = function() {
+  // Check if the user has permissions to run the update
+  controller.assert(function() {
+    return update.allowed;
+  }, "User has permissions to update the build.");
+
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // No updates should be offered now - filter out major updates
-  if (update.updatesFound) {
-    update.download(persisted.channel, false);
+  // Download the update
+  update.controller.waitFor(function() {
+    return update.updatesFound;
+  }, "An update has been found.");
 
-    controller.assert(function() {
-      return update.updateType != persisted.updates[persisted.updateIndex].type;
-    }, "No more update of the same type offered.");
-  }
-
-  // Check that updates have been applied correctly
-  update.assertUpdateApplied(persisted);
-
-  // Update was successful
-  persisted.updates[persisted.updateIndex].success = true;
+  update.download(persisted.channel);
 }
