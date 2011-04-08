@@ -14,11 +14,11 @@
  * The Original Code is MozMill Test code.
  *
  * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@mozilla.com>
+ *   Henrik Skupin <mail@hskupin.info>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,51 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 // Include required modules
-var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../lib/utils");
+var prefs = require("../../../lib/prefs");
+
+
+const PREF_UPDATE_LOG = "app.update.log";
+
 
 function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
-
-  // Initialize the array, which holds the update details
-  if ("updates" in persisted) {
-    persisted.updateIndex++;
-  }
-  else {
-    persisted.updates = [ ];
-    persisted.updateIndex = 0;
-  }
-}
-
-function teardownModule(module) {
-  // Store the information of the build and the patch
-  persisted.updates[persisted.updateIndex] = {
-    build_pre : update.buildInfo,
-    patch : update.patchInfo,
-    fallback : false,
-    success : false
-  };
-}
-
-/**
- * Download an update via the given update channel
- */
-var testDirectUpdate_Download = function() {
-  // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
-
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
-
-  // Download the update
-  update.controller.waitFor(function() {
-    return update.updatesFound;
-  }, "An update has been found.");
-
-  update.download(persisted.channel);
+  // Prepare persisted object for update results
+  persisted.updates = [ ];
+  persisted.updateIndex = 0;
+  
+  // Turn on software update logging
+  prefs.preferences.setPref(PREF_UPDATE_LOG, true);
 }

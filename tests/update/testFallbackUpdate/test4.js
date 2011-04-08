@@ -42,41 +42,36 @@ function setupModule(module) {
   controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
 
-  persisted.updates[persisted.updateIndex].fallback = true;
+  // Collect some data of the current build
+  persisted.updates[persisted.updateIndex].build_post = update.buildInfo;
 }
 
-function teardownModule() {
-  // Store information for fallback patch
-  persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+function teardownModule(module) {
+  // Prepare persisted object for the next update
+  persisted.updateIndex++;
 }
 
 /**
- * Test that the patch hasn't been applied and the complete patch gets downloaded
- **/
-function testFallbackUpdate_ErrorPatching() {
-  // The dialog should be open in the background and shows a failure
-  update.waitForDialogOpen(controller);
+ * Test that the update has been correctly applied and no further updates
+ * can be found.
+ */
+function testFallbackUpdate_AppliedAndNoUpdatesFound() {
+  // Open the software update dialog and wait until the check has been finished
+  update.openDialog(controller);
+  update.waitForCheckFinished();
 
-  // Complete updates have to be handled differently
-  if (persisted.updates[persisted.updateIndex].patch.is_complete) {
-    // Wait for the error page and close the software update dialog
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
-    update.closeDialog();
+  // No updates should be offered now - filter out major updates
+  if (update.updatesFound) {
+    update.download(persisted.channel, false);
 
-    // Open the software update dialog again and wait until the check has been finished
-    update.openDialog(controller);
-    update.waitForCheckFinished();
-
-    // Download the update
-    update.controller.waitFor(function() {
-      return update.updatesFound;
-    }, "An update has been found.");
-
-    update.download(persisted.channel);
-  } else {
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
-
-    // Start downloading the fallback update
-    update.download(persisted.channel);
+    controller.assert(function() {
+      return update.updateType != persisted.updates[persisted.updateIndex].type;
+    }, "No more update of the same type offered.");
   }
+
+  // Check that updates have been applied correctly
+  update.assertUpdateApplied(persisted);
+
+  // Update was successful
+  persisted.updates[persisted.updateIndex].success = true;
 }
