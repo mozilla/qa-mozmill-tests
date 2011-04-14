@@ -74,3 +74,9 @@ var testMultipleEngines = function()
   controller.assertJS("subject.suggestionsDifferent == true",
                       {suggestionsDifferent: different});
 }
+
+
+// Bug 609077: Search suggestions are not always displayed
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 609077: Search suggestions are not always displayed";
+}
