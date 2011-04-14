@@ -101,7 +101,7 @@ var testFormCompletion = function() {
     ", expected: " + inputText);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testFormCompletion.meta = {litmusids : [5922]};
+
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 644260: Focus issue on Linux by entering text in text boxes";
+}
