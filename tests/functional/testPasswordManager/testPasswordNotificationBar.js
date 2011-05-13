@@ -40,6 +40,7 @@
 
 // Include the required modules
 var prefs = require("../../../lib/prefs");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const TIMEOUT = 5000;
@@ -49,6 +50,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
+  locationBar =  new toolbars.locationBar(controller);
 
   pm = Cc["@mozilla.org/login-manager;1"].
        getService(Ci.nsILoginManager);
@@ -61,10 +63,10 @@ var teardownModule = function(module) {
 }
 
 /**
- * Verify passwords are not saved when we select not to save them
+ * Test the password post-submit notification
  */
-var testPasswordNotSaved = function() {
-  // Go back verify the login information has not been saved
+var testPasswordNotification = function() {
+  // Go to the sample login page and perform a test log-in with input fields
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
@@ -72,47 +74,24 @@ var testPasswordNotSaved = function() {
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
   controller.waitForElement(userField, TIMEOUT);
-  controller.assertValue(userField, "");
-  controller.assertValue(passField, "");
+  controller.type(userField, "bar");
+  controller.type(passField, "foo");
 
-  // Call preferences dialog and check that no password has been saved
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
-}
+  // Click the login button and wait for the form to process
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn"); 
+  controller.click(loginButton);
+  controller.waitForPageLoad();
 
-/**
- * Open the password manager from the security pane
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneSecurity';
+  // Get a reference to the password-save notification
+  var passwordNotification = locationBar.getNotificationElement(
+                               "password-save-notification"
+                             );
 
-  var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, TIMEOUT);
-
-  utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
-
-  prefDialog.close(true);
-}
-
-/**
- * Check that passwords haven't been saved
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-function checkPasswordsNotSaved(controller) {
-  var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, TIMEOUT);
-
-  var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
-  controller.assertJSProperty(removeLogin, 'disabled', 'true');
-
-  // Close the password manager
-  var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
-  var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  // Close the notification and check its state
+  controller.keypress(passwordNotification, "VK_ESCAPE", {});
+  controller.waitFor(function () {
+    return passwordNotification.getNode().parentNode.state === "closed";
+  }, "Password notification has been closed");
 }
 
 
