@@ -38,8 +38,6 @@
 var prefs = require("../../../../lib/prefs");
 var softwareUpdate = require("../../../../lib/software-update");
 
-const TIMEOUT = 5000;
-
 var setupModule = function() {
  controller = mozmill.getBrowserController();
  
@@ -52,8 +50,9 @@ var setupModule = function() {
 var testSoftwareUpdateAutoProxy = function() {
 
  // Check if the user has permissions to run the update
- controller.assertJS("subject.isUpdateAllowed == true",
-                     {isUpdateAllowed: update.allowed});
+ controller.assert(function() {
+   return update.allowed;
+ }, "Update permissions - got '" + update.allowed + "' expected 'true'");
  
  // Open the software update dialog and wait until the check has been finished
  update.openDialog(controller);
@@ -61,13 +60,16 @@ var testSoftwareUpdateAutoProxy = function() {
  
  // Check to see if there are browser updates
  try {
-   update.controller.waitForEval("subject.update.updatesFound == true", TIMEOUT, 100,
-                                 {update: update});
+   controller.waitFor(function () {
+     return update.updatesFound;
+   }, "Updates found - got '" + update.updatesFound + "' expected 'true'");
+
  } catch(ex) {
-   controller.assertJS("subject.currentPage == subject.noUpdatesFoundPage",
-                      {currentPage: update.currentPage, noUpdatesFoundPage: 
-                       softwareUpdate.WIZARD_PAGES.noUpdatesFound});
+   controller.assert(function () {
+     return update.currentPage === softwareUpdate.WIZARD_PAGES.noUpdatesFound;
+   }, "Update dialog wizard page - got '" + update.currentPage +  "' expected '" 
+      + softwareUpdate.WIZARD_PAGES.noUpdatesFound + "'");
  }
- 
+
  update.closeDialog();
 }
