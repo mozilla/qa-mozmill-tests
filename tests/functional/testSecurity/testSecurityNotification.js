@@ -49,11 +49,8 @@ var setupModule = function(module) {
  */
 var testSecNotification = function() {
   // Go to a secure HTTPS site
-  controller.open("https://addons.mozilla.org/");
+  controller.open("https://addons.mozilla.org/licenses/5.txt");
   controller.waitForPageLoad();
-
-  var header = new elementslib.ID(controller.tabs.activeTab, "header");
-  controller.assertNode(header);
 
   // Identity box should have a green background
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
@@ -62,9 +59,6 @@ var testSecNotification = function() {
   // Go to an unsecure (HTTP) site
   controller.open("http://www.mozilla.org/");
   controller.waitForPageLoad();
-
-  var projects = new elementslib.Link(controller.tabs.activeTab, "Our Projects");
-  controller.assertNode(projects);
 
   // Identity box should have a gray background
   controller.assertJSProperty(identityBox, "className", "unknownIdentity");
