@@ -54,7 +54,7 @@ var setupModule = function(module) {
  */
 var testLarryGreen = function() {
   // Go to a "green" website
-  controller.open("https://addons.mozilla.org/");
+  controller.open("https://addons.mozilla.org/licenses/5.txt");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
