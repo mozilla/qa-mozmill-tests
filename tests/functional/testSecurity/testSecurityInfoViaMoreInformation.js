@@ -51,7 +51,7 @@ var setupModule = function() {
  */
 var testSecurityInfoViaMoreInformation = function() {
   // Go to a secure website
-  controller.open("https://addons.mozilla.org/pages/appversions/");
+  controller.open("https://addons.mozilla.org/licenses/5.txt");
   controller.waitForPageLoad();
   
   // Get the information from the certificate for comparison
