@@ -35,18 +35,28 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
-var Addons = require("../../../lib/addons");
-var Endurance = require("../../../lib/endurance");
-var Tabs = require("../../../lib/tabs");
+var addons = require("../../../lib/addons");
+var endurance = require("../../../lib/endurance");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
+
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 function setupModule() {
   controller = mozmill.getBrowserController();
 
-  enduranceManager = new Endurance.EnduranceManager(controller);
-  addonsManager = new Addons.addonsManager(controller);
-  tabBrowser = new Tabs.tabBrowser(controller);
+  enduranceManager = new endurance.EnduranceManager(controller);
+  addonsManager = new addons.addonsManager(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
 
   tabBrowser.closeAllTabs();
+
+  prefs.preferences.setPref(addons.AMO_DISCOVER_URL, LOCAL_TEST_PAGE);
+}
+
+function teardownModule() {
+  prefs.preferences.clearUserPref(addons.AMO_DISCOVER_URL);
 }
 
 function testOpenAndCloseAddonManager() {
