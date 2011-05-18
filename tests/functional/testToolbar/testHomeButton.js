@@ -14,7 +14,7 @@
  * The Original Code is Mozmill Test Code.
  *
  * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -50,6 +50,8 @@ const BROWSER_HOMEPAGE = "browser.startup.homepage";
 function setupModule() {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
+  
+  prefs.preferences.setPref(BROWSER_HOMEPAGE, LOCAL_TEST_PAGE);  
 
   tabs.closeAllTabs(controller);
 }
@@ -59,21 +61,9 @@ function teardownModule(module) {
 }
 
 /**
- * Set homepage to current page
+ * Test the home button
  */
-function testSetHomePage() {
-  // Go to the local page and verify the correct page has loaded
-  controller.open(LOCAL_TEST_PAGE);
-  controller.waitForPageLoad();
-
-  var link = new elementslib.Link(controller.tabs.activeTab, "Community");
-  controller.assertNode(link);
-
-  // Call Prefs Dialog and set Home Page
-  prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
-
-  tabs.closeAllTabs(controller);
-
+function testHomeButton() {
   // Go to the saved home page and verify it's the correct page
   var homeButton = new elementslib.ID(controller.window.document, "home-button");
   controller.click(homeButton);
@@ -81,22 +71,5 @@ function testSetHomePage() {
 
   // Verify location bar with the saved home page
   controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGE);
-}
-
-/**
- * Set the current page as home page
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-function prefDialogHomePageCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneMain';
-
-  // Set Home Page to the current page
-  var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
-  controller.click(useCurrent);
-
-  prefDialog.close(true);
 }
 
