@@ -21,7 +21,6 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
- *   Alex Lakatos <alex.lakatos@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,27 +42,28 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const LOCAL_TEST_PAGES = [
+  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
+  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html'
+];
 
-const BROWSER_HOMEPAGE = "browser.startup.homepage";
-
-function setupModule() {
+var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
   tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module) {
-  prefs.preferences.clearUserPref(BROWSER_HOMEPAGE);
+var teardownModule = function(module) {
+  prefs.preferences.clearUserPref("browser.startup.homepage");
 }
 
 /**
  * Set homepage to current page
  */
-function testSetHomePage() {
-  // Go to the local page and verify the correct page has loaded
-  controller.open(LOCAL_TEST_PAGE);
+var testSetHomePage = function() {
+  // Go to the first local page and verify the correct page has loaded
+  controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
 
   var link = new elementslib.Link(controller.tabs.activeTab, "Community");
@@ -71,16 +71,23 @@ function testSetHomePage() {
 
   // Call Prefs Dialog and set Home Page
   prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
+}
 
-  tabs.closeAllTabs(controller);
+/**
+ * Test the home button
+ */
+var testHomeButton = function()
+{
+  // Open another local page before going to the home page
+  controller.open(LOCAL_TEST_PAGES[1]);
+  controller.waitForPageLoad();
 
   // Go to the saved home page and verify it's the correct page
-  var homeButton = new elementslib.ID(controller.window.document, "home-button");
-  controller.click(homeButton);
+  controller.click(new elementslib.ID(controller.window.document, "home-button"));
   controller.waitForPageLoad();
 
   // Verify location bar with the saved home page
-  controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGE);
+  controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGES[0]);
 }
 
 /**
@@ -89,7 +96,7 @@ function testSetHomePage() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-function prefDialogHomePageCallback(controller) {
+var prefDialogHomePageCallback = function(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneMain';
 
@@ -100,3 +107,8 @@ function prefDialogHomePageCallback(controller) {
   prefDialog.close(true);
 }
 
+/**
+ * Map test functions to litmus tests
+ */
+// testSetHomePage.meta = {litmusids : [7964]};
+// testHomeButton.meta = {litmusids : [8031]};
