@@ -14,7 +14,7 @@
  * The Original Code is Mozmill Test Code.
  *
  * The Initial Developer of the Original Code is Mozilla Corporation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -60,9 +60,9 @@ function setupModule() {
 }
 
 /**
- * Verify clearing form and search history
+ * Verify saving and filling in form information
  */
-function testClearFormHistory() {
+function testSaveFormInformation() {
   // Go to the sample page and submit form data
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -77,47 +77,30 @@ function testClearFormHistory() {
   controller.click(submitButton);
   controller.waitForPageLoad();
 
-  // Call clear recent history dialog and clear all form history
-  var md = new modalDialog.modalDialog(controller.window);
-  md.start(clearHistoryHandler);
-
-  controller.click(new elementslib.Elem(controller.menus["tools-menu"].sanitizeItem));
-  md.waitForDialog();
-
-  // Verify forms are cleared
-  var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
-
-  controller.open(LOCAL_TEST_PAGE);
-  controller.waitForPageLoad();
-
-  // Begin typing into the name fields and verify no popup
+  firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
   controller.waitForElement(firstName, TIMEOUT);
   controller.type(firstName, FNAME.substring(0,2));
-  controller.sleep(500);
-  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
 
+  // Verify form completion in each inputted field
+  var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
+
+  controller.waitFor(function() {
+    return popDownAutoCompList.getNode().popupOpen;
+  }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
+
+  controller.keypress(firstName, "VK_DOWN", {});
+  controller.click(popDownAutoCompList);
+  controller.assertValue(firstName, FNAME);
+
+  lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
-  controller.sleep(500);
-  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
-}
+  
+  controller.waitFor(function() {
+  return popDownAutoCompList.getNode().popupOpen;
+  }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
 
-/**
- * Accesses the clear recent history dialog and accepts the default options to clear
- */
-function clearHistoryHandler(controller) {
-  // Verify the checkbox to clear form data is checked
-  var checkBox = new elementslib.XPath(controller.window.document, 
-                                       "/*[name()='prefwindow']" +
-                                       "/*[name()='prefpane'][1]" +
-                                       "/*[name()='listbox'][1]" +
-                                       "/*[name()='listitem'][2]");
-  controller.waitForElement(checkBox, TIMEOUT);
-  controller.assertChecked(checkBox);
-
-  var clearButton = new elementslib.Lookup(controller.window.document,
-                                           '/id("SanitizeDialog")' +
-                                           '/anon({"anonid":"dlg-buttons"})' +
-                                           '/{"dlgtype":"accept"}');
-  controller.waitThenClick(clearButton);
+  controller.keypress(lastName, "VK_DOWN", {});
+  controller.click(popDownAutoCompList);
+  controller.assertValue(lastName, LNAME);
 }
 
