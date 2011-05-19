@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Alex Lakatos <alex.lakatos@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,27 +40,18 @@
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+function setupModule(module) {
+  controller = mozmill.getBrowserController();
 }
 
-/**
- * Open and dismiss the preferences dialog
- */
-var testOpenCloseOptionsDialog = function()
-{
-  // Reset pane to the main pane before starting the test
+function teardownModule(module) {
   prefs.openPreferencesDialog(controller, prefPaneResetCallback);
 }
 
 /**
- * Panes of preferences dialog should retain state when opened next time
+ * Test the Preferences dialog retains state
  */
-var testOptionsDialogRetention = function()
-{
+function testPreferencesDialogRetention() {
   // Choose the Privacy pane
   prefs.openPreferencesDialog(controller, prefPaneSetCallback);
 
@@ -68,28 +60,13 @@ var testOptionsDialogRetention = function()
 }
 
 /**
- * Reset the current pane to the main options
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefPaneResetCallback = function(controller)
-{
-  let prefDialog = new prefs.preferencesDialog(controller);
-
-  prefDialog.paneId = 'paneMain';
-  prefDialog.close();
-}
-
-/**
  * Select the Advanced and the Privacy pane
  *
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefPaneSetCallback = function(controller)
-{
-  let prefDialog = new prefs.preferencesDialog(controller);
+function prefPaneSetCallback(controller) {
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   prefDialog.paneId = 'paneAdvanced';
   prefDialog.paneId = 'panePrivacy';
@@ -102,9 +79,8 @@ var prefPaneSetCallback = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefPaneCheckCallback = function(controller)
-{
-  let prefDialog = new prefs.preferencesDialog(controller);
+function prefPaneCheckCallback(controller) {
+  var prefDialog = new prefs.preferencesDialog(controller);
 
   controller.assertJS("subject.paneId == 'panePrivacy'",
                       {paneId: prefDialog.paneId});
@@ -112,7 +88,15 @@ var prefPaneCheckCallback = function(controller)
 }
 
 /**
- * Map test functions to litmus tests
+ * Reset the current pane to the main options
+ *
+ * @param {MozMillController} controller
+ *        MozMillController of the window to operate on
  */
-// testOptionsDialogRetention.meta = {litmusids : [8014]};
-// testOpenCloseOptionsDialog.meta = {litmusids : [8015]};
+function prefPaneResetCallback(controller) {
+  var prefDialog = new prefs.preferencesDialog(controller);
+
+  prefDialog.paneId = 'paneMain';
+  prefDialog.close();
+}
+
