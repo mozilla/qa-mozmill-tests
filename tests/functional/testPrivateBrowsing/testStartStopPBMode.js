@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Alex Lakatos <alex.lakatos@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -49,7 +50,7 @@ const LOCAL_TEST_PAGES = [
   {url: 'about:', id: 'aboutPageList'}
 ];
 
-var setupModule = function() {
+function setupModule() {
   controller = mozmill.getBrowserController();
   modifier = controller.window.document.documentElement.
              getAttribute("titlemodifier_privatebrowsing");
@@ -62,14 +63,14 @@ var setupModule = function() {
   tabBrowser.closeAllTabs();
 }
 
-var teardownModule = function() {
+function teardownModule() {
   pb.reset();
 }
 
 /**
- * Enable Private Browsing Mode
+ * Start and Stop Private Browsing Mode
  */
-var testEnablePrivateBrowsingMode = function() {
+function testStartStopPrivateBrowsingMode() {
   // Make sure we are not in PB mode and show a prompt
   pb.enabled = false;
   pb.showPrompt = true;
@@ -105,14 +106,6 @@ var testEnablePrivateBrowsingMode = function() {
   controller.waitForElement(longDescElem, TIMEOUT);  
   controller.assertText(longDescElem, description);
   controller.assertText(moreInfoElem, learnMore);
-}
-
-/**
- * Stop the Private Browsing mode
- */
-var testStopPrivateBrowsingMode = function() {
-  // Force enable Private Browsing mode
-  pb.enabled = true;
 
   // Stop Private Browsing mode
   pb.stop();
@@ -137,27 +130,12 @@ var testStopPrivateBrowsingMode = function() {
 }
 
 /**
- * Verify Ctrl/Cmd+Shift+P keyboard shortcut for Private Browsing mode
- */
-var testKeyboardShortcut = function() {
-  // Make sure we are not in PB mode and show a prompt
-  pb.enabled = false;
-  pb.showPrompt = true;
-
-  // Start the Private Browsing mode via the keyboard shortcut
-  pb.start(true);
-
-  // Stop the Private Browsing mode via the keyboard shortcut
-  pb.stop(true);
-}
-
-/**
  * Handle the modal dialog to enter the Private Browsing mode
  *
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var pbStartHandler = function(controller) {
+function pbStartHandler(controller) {
   // Check to not ask anymore for entering Private Browsing mode
   var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
   controller.waitThenClick(checkbox, TIMEOUT);
@@ -169,9 +147,3 @@ var pbStartHandler = function(controller) {
   controller.click(okButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testEnablePrivateBrowsingMode.meta = {litmusids : [9154]};
-// testStopPrivateBrowsingMode.meta = {litmusids : [9155]};
-// testKeyboardShortcut.meta = {litmusids : [9186]};
