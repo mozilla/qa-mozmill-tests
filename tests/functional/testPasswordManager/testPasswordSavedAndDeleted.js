@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Vlad Maniac <vlad.maniac@softvisioninc.eu>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,7 +48,7 @@ const TIMEOUT = 5000;
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
-var setupModule = function() {
+function setupModule() {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
@@ -56,15 +57,13 @@ var setupModule = function() {
   pm.removeAllLogins();
 }
 
-var teardownModule = function() {
+function teardownModule() {
   // Just in case the test fails remove all cookies
   pm.removeAllLogins();
 }
 
-/**
- * Test saving a password using the notification
- */
-var testSavePassword = function() {
+/* Test if Password is saved and deleted */
+function testSaveAndDeletePassword() {
   // Go to the sample login page and log-in with inputted fields
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -78,7 +77,7 @@ var testSavePassword = function() {
 
   var logInButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.click(logInButton);
-  controller.sleep(500);
+  controller.waitForPageLoad();
 
   // After logging in, remember the login information
   var button = locationBar.getNotificationElement(
@@ -105,12 +104,7 @@ var testSavePassword = function() {
   controller.waitForElement(userField, TIMEOUT);
   controller.assertValue(userField, "bar");
   controller.assertValue(passField, "foo");
-}
 
-/**
- * Test the deletion of a password from the password manager dialog
- */
-var testDeletePassword = function() {
   // Call preferences dialog and delete the saved password
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
@@ -120,7 +114,7 @@ var testDeletePassword = function() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller) {
+function prefDialogCallback(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneSecurity';
 
@@ -166,7 +160,7 @@ function deleteAllPasswords(controller) {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var confirmHandler = function(controller) {
+function confirmHandler(controller) {
   var dialogButton = new elementslib.Lookup(controller.window.document,
                                             '/id("commonDialog")' +
                                             '/anon({"anonid":"buttons"})' +
@@ -175,8 +169,4 @@ var confirmHandler = function(controller) {
   controller.waitThenClick(dialogButton, TIMEOUT);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testSavePassword.meta = {litmusids : [8172]};
-// testDeletePassword.meta = {litmusids : [8173]};
+
