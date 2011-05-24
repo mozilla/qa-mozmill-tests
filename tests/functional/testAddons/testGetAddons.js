@@ -48,7 +48,7 @@ const gSearchTimeout = 30000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 
   tabs.closeAllTabs(controller);
 }

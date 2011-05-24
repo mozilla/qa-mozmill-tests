@@ -43,7 +43,7 @@ const TIMEOUT = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 
   persisted.url = "https://preview.addons.mozilla.org/de/firefox/addon/6543/";
   persisted.extensionName = "Nightly Tester Tools";
