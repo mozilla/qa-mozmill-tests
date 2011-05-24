@@ -47,7 +47,7 @@ function setupModule() {
   controller = mozmill.getBrowserController();
 
   enduranceManager = new endurance.EnduranceManager(controller);
-  addonsManager = new addons.addonsManager(controller);
+  addonsManager = new addons.AddonsManager(controller);
   tabBrowser = new tabs.tabBrowser(controller);
 
   tabBrowser.closeAllTabs();
