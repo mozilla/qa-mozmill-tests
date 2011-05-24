@@ -45,7 +45,7 @@ const gDownloadTimeout = 60000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 
   persisted.themeName = "Walnut for Firefox";
   persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";

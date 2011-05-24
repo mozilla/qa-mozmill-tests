@@ -55,7 +55,7 @@ const gAddons = [
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = gAddons;

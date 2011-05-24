@@ -40,7 +40,7 @@ var addons = require("../../../../lib/addons");
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 }
 
 var testCheckInstalledExtensions = function() {

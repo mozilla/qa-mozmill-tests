@@ -43,7 +43,7 @@ const gTimeout = 5000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  module.addonsManager = new addons.addonsManager();
+  module.addonsManager = new addons.AddonsManager();
 }
 
 var testCheckUninstalledExtension = function()

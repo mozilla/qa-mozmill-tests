@@ -46,7 +46,7 @@ const gInstallTimeout = 30000;
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.addonsManager();
+  addonsManager = new addons.AddonsManager();
 
   persisted.extensionName = "Nightly Tester Tools";
   persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
