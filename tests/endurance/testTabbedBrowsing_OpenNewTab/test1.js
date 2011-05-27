@@ -56,7 +56,7 @@ function teardownModule() {
 /**
  * Test opening new tabs from the main window
  **/
-function testOpenNewTabs() {  
+function testOpenNewTab() {  
   enduranceManager.run(function () {
     // Load a web page
     enduranceManager.addCheckpoint("Loading a web page");
@@ -68,5 +68,8 @@ function testOpenNewTabs() {
     enduranceManager.addCheckpoint("Open a new tab");
     tabBrowser.openTab();
     enduranceManager.addCheckpoint("New tab has been opened");
+
+    // Close all tabs
+    tabBrowser.closeAllTabs();
   });
 }

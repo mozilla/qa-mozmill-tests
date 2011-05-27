@@ -59,7 +59,7 @@ function teardownModule() {
 /**
  * Test opening new tabs from the Panorama view
  **/
-function testOpenNewTabs() {
+function testOpenNewTab() {
   enduranceManager.run(function () {
     // Load a web page
     enduranceManager.addCheckpoint("Load a web page");
@@ -81,5 +81,8 @@ function testOpenNewTabs() {
     // Wait for Panorama to close
     activeTabView.waitForClosed();
     enduranceManager.addCheckpoint("New tab has been opened");
+    
+    // Close all tabs
+    tabBrowser.closeAllTabs();
   });
 }
