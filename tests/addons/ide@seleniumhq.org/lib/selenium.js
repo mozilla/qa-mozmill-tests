@@ -72,7 +72,7 @@ SeleniumManager.prototype = {
    * @param {MozMillController} browserController Mozmill controller of the browser window
    */
   open : function SeleniumManager_open(browserController) {
-    browserController.mainMenu.click("#menu_ToolsPopupItem");
+    browserController.mainMenu.click("#menuToolsSeleniumIDE");
     this._controller = Utils.handleWindow("type", "global:selenium-ide", undefined, false);
   },
 
