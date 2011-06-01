@@ -67,7 +67,7 @@ function testSwitchTabs() {
   controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
 
-  tabBrowser.openTab({type: "newTabButton"});
+  tabBrowser.openTab();
   
   controller.open(LOCAL_TEST_PAGES[1]);
   controller.waitForPageLoad();
