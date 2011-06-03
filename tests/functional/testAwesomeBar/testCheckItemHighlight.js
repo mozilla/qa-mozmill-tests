@@ -43,11 +43,12 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
 const TIMEOUT = 5000;
+const PLACES_DB_TIMEOUT = 4000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
-  'about:blank'
+  {URL: LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
+   name: "community" }
 ];
 
 var setupModule = function() {
@@ -71,75 +72,37 @@ var testCheckItemHighlight = function() {
   prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
   // Open the test page then about:blank to set up the test test environment
-  for each (var page in LOCAL_TEST_PAGES) {
-    locationBar.loadURL(page);
-    controller.waitForPageLoad();
-  }
+  controller.open(LOCAL_TEST_PAGES[0].URL);
+  controller.waitForPageLoad();
+  controller.open("about:blank");
+  controller.waitForPageLoad();
 
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
+  controller.sleep(PLACES_DB_TIMEOUT);
 
   // Focus the locationbar, delete any contents there, then type in a match string
   locationBar.clear();
 
-  // Use type and sleep on each letter to allow the autocomplete to populate with results.
-  var testString = "community";
-  
-  for each (var letter in testString) {
-    locationBar.type(letter);
-    controller.sleep(100);
-  }
+  // Type the page name into the location bar
+  locationBar.type(LOCAL_TEST_PAGES[0].name);
 
   // Wait for the location bar to contain the entire test string
   controller.waitFor(function () {
-    return locationBar.value === testString;
-  }, "Location bar contains the entered string - got " +
-    locationBar.value + ", expected " + testString);
+    return locationBar.value === LOCAL_TEST_PAGES[0].name;
+  }, "Location bar contains the entered string - got '" +
+    locationBar.value + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
 
   // Check the autocomplete list is open
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened == true;
-  }, "Autocomplete popup has been opened - got " +
-    locationBar.autoCompleteResults.isOpened + ", expected " + true);
+  }, "Autocomplete popup has been opened - got '" +
+    locationBar.autoCompleteResults.isOpened + "', expected 'true'");
 
   // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
-  // Get a list of any underlined autocomplete titles
-  var titleEntries = locationBar.autoCompleteResults.
-                     getUnderlinedText(richlistItem, "title");
-
-  // Check that there is only 1 entry
-  controller.assert(function () {
-    return titleEntries.length === 1;
-  }, "Only one underlined entry is visible - got " + titleEntries.length + 
-    ", expected " + 1);
-
-  // Check that the underlined title matches the entered title
-  for each (var entry in titleEntries) {
-    controller.assert(function () {
-      return entry.toLowerCase() === testString;
-    }, "Underlined title matches the entered title - got " + entry.toLowerCase() +
-      ", expected " + testString);
-  }
-
-  // Get a list of any underlined autocomplete URLs
-  var URLEntries = locationBar.autoCompleteResults.
-                   getUnderlinedText(richlistItem, "url");
-
-  // Check that there is only 1 entry
-  controller.assert(function () { 
-    return URLEntries.length === 1;
-  }, "Only one autocompleted URL is underlined - got " + URLEntries.length +
-    ", expected " + 1);
-
-  // Check that the underlined URL matches the entered URL
-  for each (var entry in URLEntries) {
-    controller.assert(function () { 
-      return entry.toLowerCase() === testString;
-    }, "Underlined URL matches entered URL - got " + entry.toLowerCase() + 
-    ", expected " + testString);
-  }
+  checkAwesomebarResults(richlistItem, "title");
+  checkAwesomebarResults(richlistItem, "url");
 
   locationBar.autoCompleteResults.close();
 }
@@ -163,6 +126,29 @@ var prefDialogSuggestsCallback = function(controller) {
 }
 
 /**
- * Map test functions to litmus tests
+ * Check the awesomebar results against what was typed
+ *
+ * @param {object} aResult
+ *        A matching entry from the awesomebar
+ * @param {string} aType
+ *        The type of result
  */
-// testCheckItemHighlight.meta = {litmusids : [8774]};
+function checkAwesomebarResults(aResult, aType) {
+  // Get a list of any underlined autocomplete results
+  var underlined = locationBar.autoCompleteResults.
+                   getUnderlinedText(aResult, aType);
+
+  // Check that there is only 1 entry
+  controller.assert(function () { 
+    return underlined.length === 1;
+  }, "Only one autocompleted result is underlined - got '" + 
+     underlined.length + "', expected '1'");
+
+  // Check that the underlined URL matches the entered URL
+  underlined.forEach(function (element) {
+    controller.assert(function() {
+      return element.toLowerCase() === LOCAL_TEST_PAGES[0].name;
+    }, "Underlined " + aType + " matches entered " + aType + " - got '" +
+       element.toLowerCase() + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
+  });
+}
