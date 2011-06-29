@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Maniac <vlad.maniac@softvisioninc.eu>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -86,8 +87,12 @@ var testLarryBlue = function() {
 
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
-  var cssInfoLockImage = controller.window.getComputedStyle(lockIcon.getNode(), "");
-  controller.assertJS("subject.getPropertyValue('list-style-image') != 'none'", cssInfoLockImage);
+  var cssInfoLockImage = utils.getElementStyle(lockIcon, 'list-style-image');
+  var lockImageVisible = (cssInfoLockImage !== 'none');
+
+  controller.assert(function () {
+    return lockImageVisible;
+  }, "There is a lock icon - got '" + lockImageVisible + "', expected 'true'.");
 
   // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService
