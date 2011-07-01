@@ -38,6 +38,7 @@
 
 
 // Include necessary modules
+var {assert, expect} = require("../../../lib/assertions");
 var sessionStore = require("../../../lib/sessionstore");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -71,8 +72,8 @@ var testUndoTabFromContextMenu = function() {
   utils.closeContentAreaContextMenu(controller);
 
   // Check 'Recently Closed Tabs' count, should be 0
-  controller.assertJS("subject.closedTabCount == 0", 
-                     {closedTabCount: sessionStore.getClosedTabCount(controller)});
+  var tabCount = sessionStore.getClosedTabCount(controller);
+  assert.equal(tabCount, 0, "'Recently Closed Tabs' sub menu has to be empty");
 
   // Open 3 tabs with pages in the local test folder
   for (var i = 0; i < 3; i++) {
@@ -87,11 +88,11 @@ var testUndoTabFromContextMenu = function() {
 
   // Check for correct id on 2nd tab, should be 2
   var linkId = new elementslib.ID(controller.tabs.activeTab, "id");
-  controller.assertText(linkId, "2")
+  controller.assertText(linkId, "2");
 
   // Check 'Recently Closed Tabs' count, should be 1
-  controller.assertJS("subject.closedTabCount == 1", 
-                      {closedTabCount: sessionStore.getClosedTabCount(controller)});
+  tabCount = sessionStore.getClosedTabCount(controller);
+  assert.equal(tabCount, 1, "'Recently Closed Tabs' sub menu has one entry");
 
   // Check if 'Undo Close Tab' is enabled
   controller.rightClick(currentTab);
@@ -107,8 +108,8 @@ var testUndoTabFromContextMenu = function() {
   controller.assertText(linkId, "1");
 
   // Check 'Recently Closed Tabs' count, should be 0
-  controller.assertJS("subject.closedTabCount == 0", 
-                      {closedTabCount: sessionStore.getClosedTabCount(controller)});
+  tabCount = sessionStore.getClosedTabCount(controller);
+  assert.equal(tabCount, 0, "'Recently Closed Tabs' sub menu has one entry");
 
   // Check if 'Undo Close Tab' is disabled
   controller.rightClick(currentTab);
