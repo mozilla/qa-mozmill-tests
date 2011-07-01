@@ -147,9 +147,7 @@ var checkIgnoreWarningButton = function(url) {
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-
-  controller.assertValue(locationBar, url);
+  utils.assertLoadedUrlEqual(controller, url);
   controller.assertNodeNotExist(ignoreWarningButton);
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 
