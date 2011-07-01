@@ -40,24 +40,23 @@
 // Include the required modules
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
+var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
-const BROWSER_HOMEPAGE = "browser.startup.homepage";
+const PREF_BROWSER_HOMEPAGE = "browser.startup.homepage";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  locationBar = new toolbars.locationBar(controller);
-  
-  prefs.preferences.setPref(BROWSER_HOMEPAGE, LOCAL_TEST_PAGE);  
+
+  prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, LOCAL_TEST_PAGE);
 
   tabs.closeAllTabs(controller);
 }
 
 function teardownModule(module) {
-  prefs.preferences.clearUserPref(BROWSER_HOMEPAGE);
+  prefs.preferences.clearUserPref(PREF_BROWSER_HOMEPAGE);
 }
 
 /**
@@ -70,6 +69,6 @@ function testHomeButton() {
   controller.waitForPageLoad();
 
   // Verify location bar with the saved home page
-  controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGE);
+  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGE);
 }
 
