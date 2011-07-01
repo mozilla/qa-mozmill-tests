@@ -99,7 +99,7 @@ var testClickLocationBarAndGo = function()
   utils.assertElementVisible(controller, goButton, false);
 
   // Check if the URL bar matches the expected domain name
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
+  controller.assertValue(locationBar.urlbar, LOCAL_TEST_PAGES[1]);
 }
 
 /**

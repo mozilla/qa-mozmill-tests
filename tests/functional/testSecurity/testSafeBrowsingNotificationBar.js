@@ -102,7 +102,7 @@ var checkIgnoreWarningButton = function(badUrl) {
   // Verify the warning button is not visible and the location bar displays the correct url
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
-  utils.assertLoadedUrlEqual(controller, badUrl);
+  controller.assertValue(locationBar, badUrl);
   controller.assertNodeNotExist(ignoreWarningButton);
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 
@@ -145,11 +145,8 @@ var checkNoPhishingButton = function(badUrl) {
 
     // Verify the not-an-attack-site report page is loaded
     var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-    var currentURL = locationBar.getNode().value;
-    controller.assert(function () {
-      return currentURL.indexOf('www.stopbadware.org/') != -1;
-    }, "Loaded URL is the report page - got " + currentURL + ", expected " +
-       "'www.stopbadware.org/'");
+	controller.assertJS("subject.urlbar.indexOf('http://www.stopbadware.org/') != -1",
+	                    {urlbar: locationBar.getNode().value});
   }
 
   tabs.closeAllTabs(controller);

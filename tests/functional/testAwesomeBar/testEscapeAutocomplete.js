@@ -39,7 +39,6 @@
 // Include required modules
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
@@ -94,7 +93,7 @@ var testEscape = function() {
   
   // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
+  controller.assertJS("subject.contains('" + LOCAL_TEST_PAGES[1] + "') == true", locationBar);
 }
 
 /**
