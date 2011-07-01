@@ -65,34 +65,25 @@ var testCheckAboutPrivateBrowsing = function() {
 
   pb.start();
 
-  // File -> Import should be disabled
-  var importItem = new elementslib.ID(controller.window.document, "menu_import");
-  controller.assertJSProperty(importItem, "disabled", true);
-
-  // On Mac we also have to check the menu item when the Library is open
-  if (mozmill.isMac) {
-    var libraryItem = new elementslib.ID(controller.window.document, "bookmarksShowAll");
-    controller.click(libraryItem);
-
-    utils.handleWindow("type", "Places:Organizer", checkImportMenu);
-  }
+  // Check the disabled "Import" menu entry in the Library
+  var libraryItem = new elementslib.ID(controller.window.document, "bookmarksShowAll");
+  controller.click(libraryItem);
+  utils.handleWindow("type", "Places:Organizer", checkImportMenu);
 }
 
 /**
- * Check that the import menuitem is disabled
+ * Check that "Import from Another Browser" is disabled
+ *
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
 function checkImportMenu(controller) {
-  // Check File -> Import entry again
-  var importItem = new elementslib.ID(controller.window.document, "menu_import");
-  controller.waitFor(function () {
-    return importItem.getNode().disabled;
-  }, "Import menu item of the Library window is disabled");
+  var maintenanceButton = new elementslib.ID(controller.window.document,
+                                             "maintenanceButton");
+  controller.click(maintenanceButton);
 
-  // Check that "Import HTML" is available
-  var importHTML = new elementslib.ID(controller.window.document, "fileImport");
-  controller.assertJSProperty(importHTML, "disabled", false);
+  var importEntry = new elementslib.ID(controller.window.document, "browserImport");
+  controller.assertJSProperty(importEntry, "disabled", true);
 
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
