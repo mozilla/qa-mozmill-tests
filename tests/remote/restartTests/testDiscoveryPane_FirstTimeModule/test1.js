@@ -97,7 +97,7 @@ function testInstallFirstTimeAddon() {
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
-  am.setCategory({category: am.getCategoryById({id: "extensions"})});
+  am.setCategory({category: am.getCategoryById({id: "extension"})});
   var addon = am.getAddons({attribute: "value", value: addonId})[0];
   var addonIsInstalled = am.isAddonInstalled({addon: addon});
 

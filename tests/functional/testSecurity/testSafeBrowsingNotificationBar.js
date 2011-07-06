@@ -52,6 +52,11 @@ var setupModule = function(module)
   tabBrowser.closeAllTabs();
 }
 
+function teardownModule(module) {
+  // Clear the Safe Browsing permission
+  utils.removePermission("www.mozilla.com", "safe-browsing");
+}
+
 var testNotificationBar = function() {
   var badSites = ['http://www.mozilla.com/firefox/its-a-trap.html',
                   'http://www.mozilla.com/firefox/its-an-attack.html'];
@@ -100,6 +105,9 @@ var checkIgnoreWarningButton = function(badUrl) {
   controller.assertValue(locationBar, badUrl);
   controller.assertNodeNotExist(ignoreWarningButton);
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
+
+  // Clear the Safe Browsing permission
+  utils.removePermission("www.mozilla.com", "safe-browsing");
 }
 
 /**
