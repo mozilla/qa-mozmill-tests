@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
  
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 const TIMEOUT = 5000;
@@ -65,7 +66,9 @@ var testSecurityInfoViaMoreInformation = function() {
   
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitForEval("subject.state == 'open'", TIMEOUT, 100, doorhanger.getNode());
+  controller.waitFor(function () {
+    return doorhanger.getNode().state === 'open';
+  }, "Identity doorhanger is open: got '" + doorhanger.getNode().state + "', expected 'open'");
   
   // Click the 'More Information' button in the Larry popup notification
   var moreInfoButton = new elementslib.ID(controller.window.document,
@@ -83,25 +86,25 @@ var testSecurityInfoViaMoreInformation = function() {
 function checkSecurityTab(controller) {
   // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertJSProperty(securityTab, "selected", true);
+  expect.ok(securityTab.getNode().selected, "Security tab is selected");
 
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.waitForEval("subject.domainLabel.value.indexOf(subject.CName) != -1", TIMEOUT, 100, {
-               domainLabel: webIDDomainLabel.getNode(),
-               CName: cert.commonName
-             });
+  expect.equal(webIDDomainLabel.getNode().value, cert.commonName,
+               "Domain found in Cerificate Common Name");
 
   // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  controller.assertValue(webIDOwnerLabel, cert.organization);
+  expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
+               "Certificate Owner matches Website Owner");
 
   // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization, 
+               "Certificate Verifier matches Website Verifier");
 
   // Close the Page Info window by pressing Escape
   controller.keypress(null, 'VK_ESCAPE', {});
