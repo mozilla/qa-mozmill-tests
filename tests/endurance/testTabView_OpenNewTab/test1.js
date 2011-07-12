@@ -61,27 +61,28 @@ function teardownModule() {
  **/
 function testOpenNewTab() {
   enduranceManager.run(function () {
-    // Load a web page
-    enduranceManager.addCheckpoint("Load a web page");
-    controller.open(LOCAL_TEST_PAGE);
-    controller.waitForPageLoad();
-    enduranceManager.addCheckpoint("Web page has been loaded");
-    
-    // Open a new tab via Panorama
-    enduranceManager.addCheckpoint("Open a new tab from within the Tab Groups view");
-    activeTabView.open();
-    
-    // Click the new tab button for the active group
-    var newTabButton = activeTabView.getElement({
-      type: "group_newTabButton",
-      parent: activeTabView.activeGroup
-    });
-    activeTabView.controller.click(newTabButton);
-    
-    // Wait for Panorama to close
-    activeTabView.waitForClosed();
-    enduranceManager.addCheckpoint("New tab has been opened");
-    
+    for (var i = 0; i < enduranceManager.microIterations; i++) {
+      // Load a web page
+      enduranceManager.addCheckpoint("Load a web page");
+      controller.open(LOCAL_TEST_PAGE);
+      controller.waitForPageLoad();
+      enduranceManager.addCheckpoint("Web page has been loaded");
+      
+      // Open a new tab via Panorama
+      enduranceManager.addCheckpoint("Open a new tab from within the Tab Groups view");
+      activeTabView.open();
+      
+      // Click the new tab button for the active group
+      var newTabButton = activeTabView.getElement({
+        type: "group_newTabButton",
+        parent: activeTabView.activeGroup
+      });
+      activeTabView.controller.click(newTabButton);
+      
+      // Wait for Panorama to close
+      activeTabView.waitForClosed();
+      enduranceManager.addCheckpoint("New tab has been opened");
+    }
     // Close all tabs
     tabBrowser.closeAllTabs();
   });
