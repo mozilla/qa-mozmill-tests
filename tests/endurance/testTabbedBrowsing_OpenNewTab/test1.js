@@ -58,17 +58,18 @@ function teardownModule() {
  **/
 function testOpenNewTab() {  
   enduranceManager.run(function () {
-    // Load a web page
-    enduranceManager.addCheckpoint("Loading a web page");
-    controller.open(LOCAL_TEST_PAGE);
-    controller.waitForPageLoad();
-    enduranceManager.addCheckpoint("Web page has been loaded");
-    
-    // Open a new tab
-    enduranceManager.addCheckpoint("Open a new tab");
-    tabBrowser.openTab();
-    enduranceManager.addCheckpoint("New tab has been opened");
-
+    for (var i = 0; i < enduranceManager.microIterations; i++) {
+      // Load a web page
+      enduranceManager.addCheckpoint("Loading a web page");
+      controller.open(LOCAL_TEST_PAGE);
+      controller.waitForPageLoad();
+      enduranceManager.addCheckpoint("Web page has been loaded");
+      
+      // Open a new tab
+      enduranceManager.addCheckpoint("Open a new tab");
+      tabBrowser.openTab();
+      enduranceManager.addCheckpoint("New tab has been opened");
+    }
     // Close all tabs
     tabBrowser.closeAllTabs();
   });
