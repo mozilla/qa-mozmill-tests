@@ -39,28 +39,22 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var {expect} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
-function setupModule(module) {
+var setupModule = function(module)
+{
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
-
-  // Save old state
-  oldTabsOnTop = tabBrowser.hasTabsOnTop;
 }
 
-function teardownModule(module) {
-  tabBrowser.hasTabsOnTop = oldTabsOnTop;
-}
-
-function testNewTab() {
+var testNewTab = function()
+{
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
@@ -68,50 +62,56 @@ function testNewTab() {
   var section = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.waitForElement(section);
 
-  // First, perform all tests with tabs on bottom
-  tabBrowser.hasTabsOnTop = false;
+  // Test all different ways to open a tab
   checkOpenTab("menu");
   checkOpenTab("shortcut");
-  checkOpenTab("newTabButton");
-  checkOpenTab("tabStrip");
 
-  // Second, perform all tests with tabs on top
-  tabBrowser.hasTabsOnTop = true;
-  checkOpenTab("menu");
-  checkOpenTab("shortcut");
-  checkOpenTab("newTabButton");
-
-  // NOTE: On Linux and beginning with Windows Vista a double click onto the
-  //       tabstrip maximizes the window instead. So don't execute this test
-  //       on those os versions.
-  var sysInfo = Cc["@mozilla.org/system-info;1"].
-                   getService(Ci.nsIPropertyBag2);
-  var version = sysInfo.getProperty("version");
-
-  if (mozmill.isMac || (mozmill.isWindows && (version < "6.0"))) {
+  // NOTE: This feature is disabled on Linux (Bug 635397)
+  if (!mozmill.isLinux) {
    checkOpenTab("tabStrip");
   }
+
+  checkOpenTab("newTabButton");
 }
 
 /**
  * Check if a new tab has been opened, has a title and can be closed
  *
- * @param {String} aEventType Type of event which triggers the action
+ * @param {String} aEventType
+ *        Type of event which triggers the action
  */
-function checkOpenTab(aEventType) {
+var checkOpenTab = function(aEventType)
+{
   // Open a new tab and check that 'about:blank' has been opened
   tabBrowser.openTab(aEventType);
 
-  expect.equal(tabBrowser.length, 2, "Two tabs visible - opened via " + aEventType);
-  expect.equal(controller.tabs.activeTab.location.href, "about:blank", "Opened blank tab");
-
+  controller.waitFor(function () { 
+    return controller.tabs.length === 2;
+  }, "A new tab has opened via " + aEventType + " - got " + 
+    "'" + controller.tabs.length + "'" + ", expected " + "'" + 2 + "'");
+  
+  controller.assert(function () {
+    return controller.tabs.activeTab.location == "about:blank";
+  }, "The new tab opened via " + aEventType + " - got " +
+    controller.tabs.activeTab.location + ", expected " + "'about:blank'");
+  
   // The tabs title should be 'New Tab'
   var title = utils.getProperty(["chrome://browser/locale/tabbrowser.properties"],
-                                 "tabs.emptyTabTitle");
-  expect.equal(tabBrowser.getTab().getNode().label, title, "Correct tab title");
+                                    "tabs.emptyTabTitle");
+  var tab = tabBrowser.getTab();
+  
+  controller.assert(function () {
+    return tab.getNode().label === title;
+  }, "The new tab opened via " + aEventType + " - got " + 
+    "'" + tab.getNode().label + "'" + ", expected " + "'" + title + "'");
 
   // Close the tab again
-  tabBrowser.closeTab();
+  tabBrowser.closeTab("shortcut");
+
+  controller.waitFor(function () {
+    return controller.tabs.length === 1;
+  }, "The new tab closed via shortcut - got " + "'" + controller.tabs.length +
+    "'" + ", expected " + "'" + 1 + "'");
 }
 
 /**
