@@ -58,7 +58,7 @@ function teardownModule() {
  **/
 function testOpenNewTab() {  
   enduranceManager.run(function () {
-    for (var i = 0; i < enduranceManager.microIterations; i++) {
+    enduranceManager.loop(function () {
       // Load a web page
       enduranceManager.addCheckpoint("Loading a web page");
       controller.open(LOCAL_TEST_PAGE);
@@ -69,7 +69,7 @@ function testOpenNewTab() {
       enduranceManager.addCheckpoint("Open a new tab");
       tabBrowser.openTab();
       enduranceManager.addCheckpoint("New tab has been opened");
-    }
+    });
     // Close all tabs
     tabBrowser.closeAllTabs();
   });

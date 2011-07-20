@@ -61,7 +61,7 @@ function teardownModule() {
  **/
 function testOpenNewTab() {
   enduranceManager.run(function () {
-    for (var i = 0; i < enduranceManager.microIterations; i++) {
+    enduranceManager.loop(function () {
       // Load a web page
       enduranceManager.addCheckpoint("Load a web page");
       controller.open(LOCAL_TEST_PAGE);
@@ -82,7 +82,7 @@ function testOpenNewTab() {
       // Wait for Panorama to close
       activeTabView.waitForClosed();
       enduranceManager.addCheckpoint("New tab has been opened");
-    }
+    });
     // Close all tabs
     tabBrowser.closeAllTabs();
   });
