@@ -38,7 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var {expect} = require("../../../lib/assertions");
+var dom_utils = require("../../../lib/dom-utils");
 var prefs = require("../../../lib/prefs");
 
 
@@ -70,12 +70,15 @@ function testGoogleSuggestedTerms() {
   controller.type(searchField, "area");
 
   // Get a reference to first element of the autocomplete results
-  var suggestion = new elementslib.Selector(controller.tabs.activeTab,
-                                            ".gac_m .gac_c");
-  controller.waitForElement(suggestion);
+  collector = new dom_utils.nodeCollector(controller.tabs.activeTab);
+  controller.waitFor(function () {
+    collector.queryNodes(".gac_m .gac_c");
+    return collector.elements.length > 0;
+  }, "Auto-complete entries are visible - got '" + collector.elements.length + "'");
 
   // Remember the value and click the element
-  var content = suggestion.getNode().textContent;
+  var entry = collector.elements[0];
+  var content = entry.getNode().textContent;
 
   controller.keypress(searchField, "VK_DOWN", {});
   controller.keypress(searchField, "VK_RETURN", {});
@@ -86,7 +89,7 @@ function testGoogleSuggestedTerms() {
   controller.waitForElement(nextField);
 
   searchField = new elementslib.Name(controller.tabs.activeTab, "q");
-  expect.equal(searchField.getNode().value, content, "Search term has been used");
+  controller.assertValue(searchField, content);
 }
 
 /**
