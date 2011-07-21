@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
+ *   Henrik Skupin <mail@hskupin.info>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,41 +36,27 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../../../lib/prefs");
+var {expect} = require("../../../../lib/assertions");
 var softwareUpdate = require("../../../../lib/software-update");
 
-var setupModule = function() {
- controller = mozmill.getBrowserController();
- 
- update = new softwareUpdate.softwareUpdate();
+function setupModule() {
+  controller = mozmill.getBrowserController();
+  update = new softwareUpdate.softwareUpdate();
+
+  if (!update.allowed)
+    testSoftwareUpdateAutoProxy.__force_skip__ = "No permission to update Firefox.";
 }
 
 /**
  * Performs a check for a software update failure: 'Update XML file malformed (200)'
  */
-var testSoftwareUpdateAutoProxy = function() {
+function testSoftwareUpdateAutoProxy() {
+  // Open the software update dialog and wait until the check has been finished
+  update.openDialog(controller);
+  update.waitForCheckFinished();
 
- // Check if the user has permissions to run the update
- controller.assert(function() {
-   return update.allowed;
- }, "Update permissions - got '" + update.allowed + "' expected 'true'");
- 
- // Open the software update dialog and wait until the check has been finished
- update.openDialog(controller);
- update.waitForCheckFinished();
- 
- // Check to see if there are browser updates
- try {
-   controller.waitFor(function () {
-     return update.updatesFound;
-   }, "Updates found - got '" + update.updatesFound + "' expected 'true'");
+  expect.notEqual(update.currentPage, softwareUpdate.WIZARD_PAGES.errors,
+                  "Update dialog wizard doesn't show 'Update XML file malformed (200)' error.");
 
- } catch(ex) {
-   controller.assert(function () {
-     return update.currentPage === softwareUpdate.WIZARD_PAGES.noUpdatesFound;
-   }, "Update dialog wizard page - got '" + update.currentPage +  "' expected '" 
-      + softwareUpdate.WIZARD_PAGES.noUpdatesFound + "'");
- }
-
- update.closeDialog();
+  update.closeDialog();
 }
