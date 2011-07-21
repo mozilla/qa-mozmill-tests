@@ -35,31 +35,25 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-const gDelay   = 200;
-const gTimeout = 5000;
-
 // Global variable to share engine names
-var gSharedData = {preEngines: [ ]};
+var gSharedData = { preEngines: [ ] };
 
-var setupModule = function(module)
-{
+function setupModule(module) {
   controller = mozmill.getBrowserController();
-
   searchBar = new search.searchBar(controller);
 }
 
-var teardownModule = function(module)
-{
+function teardownModule(module) {
   searchBar.restoreDefaultEngines();
 }
 
 /**
  * Manage search engine (Restoring Defaults)
  */
-var testRestoreDefaultEngines = function()
-{
+function testRestoreDefaultEngines() {
   // Remove some default search engines
   searchBar.openEngineManager(removeEngines);
 
@@ -71,9 +65,9 @@ var testRestoreDefaultEngines = function()
 
   // Check the ordering in the drop down menu
   var engines = searchBar.visibleEngines;
-  for (var ii = 0; ii < engines.length; ii++) {
-    controller.assertJS("subject.visibleEngine.name == subject.expectedEngine.name",
-                        {visibleEngine: engines[ii], expectedEngine: gSharedData.preEngines[ii]});
+  for (var i = 0; i < engines.length; i++) {
+    expect.equal(engines[i].name, gSharedData.preEngines[i].name,
+                 "Engine has been restored at the correct position.")
   }
 }
 
@@ -83,19 +77,20 @@ var testRestoreDefaultEngines = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var removeEngines = function(controller)
-{
+function removeEngines(controller) {
   var manager = new search.engineManager(controller);
 
   // Save initial state
   gSharedData.preEngines = manager.engines;
 
-  // Remove engines until only 3 are left
-  for (var ii = manager.engines.length; ii > 3; ii--) {
-    var index = Math.floor(Math.random() * ii);
+  // Remove all engines until only 1 is left
+  for (var i = manager.engines.length; i > 1; i--) {
+    var name = manager.engines[i - 1].name;
 
-    manager.removeEngine(manager.engines[index].name);
-    manager.controller.sleep(gDelay);
+    manager.removeEngine(name);
+    controller.waitFor(function () {
+      return manager.engines.length === i - 1;
+    }, "Engine '" + name + "' has been removed.");
   }
 
   manager.close(true);
@@ -107,14 +102,9 @@ var removeEngines = function(controller)
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var restoreEngines = function(controller)
-{
+function restoreEngines(controller) {
   var manager = new search.engineManager(controller);
 
-  manager.controller.assertJS("subject.numberOfEngines == 3",
-                              {numberOfEngines: manager.engines.length});
-
   manager.restoreDefaults();
-
   manager.close(true);
 }
