@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Maniac <vlad.maniac@softvisioninc.eu>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -44,7 +45,6 @@ var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
 const gDelay = 100;
-const gTimeout = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -69,14 +69,14 @@ var prefDialogCallback = function(controller) {
   // List of all available panes inside the Preferences window
   var panes = [
                "paneMain", "paneTabs", "paneContent", "paneApplications",
-               "panePrivacy", "paneSecurity", "paneAdvanced"
+               "panePrivacy", "paneSecurity", "paneSync", "paneAdvanced"
               ];
 
   // Step through each of the panes
-  for each (pane in panes) {
+  panes.forEach(function (pane) {
     prefDialog.paneId = pane;
     controller.sleep(gDelay);
-  }
+  });
 
   // Close the Preferences window
   prefDialog.close();
