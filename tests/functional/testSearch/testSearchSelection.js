@@ -58,6 +58,7 @@ var setupModule = function() {
 
 var teardownModule = function() {
   searchBar.clear();
+  searchBar.restoreDefaultEngines();
 
   prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
 }
