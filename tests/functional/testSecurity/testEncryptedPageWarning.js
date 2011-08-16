@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Maniac <vlad.mozbugs@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -105,7 +106,7 @@ var handleSecurityWarningDialog = function(controller) {
   controller.waitThenClick(okButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testEncryptedPageWarning.meta = {litmusids : [9292]};
+// XXX: Bug 675914 
+//      Skip because we have a disconnect error in testEncryptedPageWarning.js
+setupModule.__force_skip__ = "Bug 675914 - Disconnect Error in testEncryptedPageWarning.js";
+teardownModule.__force_skip__ = "Bug 675914 - Disconnect Error in testEncryptedPageWarning.js";
