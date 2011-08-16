@@ -69,7 +69,7 @@ function testInstallCollectionAddon() {
   var section = discovery.getSection("main-feature");
   var nextLink = discovery.getElement({type: "mainFeature_nextLink", parent: section});
   
-  controller.click(nextLink); 
+  controller.click(nextLink);
   discovery.waitForPageLoad();
  
   // Click on a random addon  
@@ -100,7 +100,7 @@ function testInstallCollectionAddon() {
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
-  am.setCategory({category: am.getCategoryById({id: "extensions"})});
+  am.setCategory({category: am.getCategoryById({id: "extension"})});
  
   var addon = am.getAddons({attribute: "value", value: addonId})[0];
 
