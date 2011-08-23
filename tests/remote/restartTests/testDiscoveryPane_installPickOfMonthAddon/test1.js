@@ -113,6 +113,6 @@ function testInstallPickOfTheMonthAddon() {
 //      Skip because the Mozilla's pick of the month add-on is not compatible with 
 //      Aurora builds 
 setupModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " + 
-                             "are not compatible with Firefox Aurora";
+                             "are only compatible with Release and Beta builds";
 teardownModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " + 
-                                "are not compatible with Firefox Aurora";
+                                "are only compatible with Release and Beta builds";
