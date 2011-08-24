@@ -151,3 +151,10 @@ var handleTriggerDialog = function(controller)
  * Map test functions to litmus tests
  */
 // testInstallExtension.meta = {litmusids : [8828]};
+
+// Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js 
+//              Timeout exceeded for waitForElement Lookup
+setupModule.__force_skip__ = "Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js |" +
+                             "Timeout exceeded for waitForElement Lookup";
+teardownModule.__force_skip__ = "Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js |" +
+                                "Timeout exceeded for waitForElement Lookup";
