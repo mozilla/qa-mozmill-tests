@@ -21,6 +21,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,6 +38,7 @@
  * **** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
@@ -54,12 +56,12 @@ var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_submit_insecure",
                              "security.warn_viewing_mixed");
 
-var setupModule = function(module) {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
   tabs.closeAllTabs(controller);
 }
 
-var teardownModule = function(module)
+function teardownModule(module)
 {
   for each (p in gPreferences)
     prefs.preferences.clearUserPref(p);
@@ -68,7 +70,7 @@ var teardownModule = function(module)
 /**
  * Test warning about submitting unencrypted information
  */
-var testSubmitUnencryptedInfoWarning = function() {
+function testSubmitUnencryptedInfoWarning() {
   // Enable the 'warn_submit_insecure' pref only
   for (var i = 0; i < gPreferences.length; i++)
     prefs.preferences.setPref(gPreferences[i], (i == 3));
@@ -100,8 +102,10 @@ var testSubmitUnencryptedInfoWarning = function() {
   controller.waitForPageLoad();
 
   // Check that the search results page loaded
-  var searchResultsField = new elementslib.Name(controller.tabs.activeTab, "q");
-  controller.assertValue(searchResultsField, "mozilla");
+  var searchResultsField = new elementslib.Selector(controller.tabs.activeTab,
+                                                    'input.gsc-input');
+  expect.equal(searchResultsField.getNode().value, "mozilla",
+               "The value in the search field is the expected search term");
 }
 
 /**
@@ -110,7 +114,7 @@ var testSubmitUnencryptedInfoWarning = function() {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var handleSecurityWarningDialog = function(controller) {
+function handleSecurityWarningDialog(controller) {
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
                                   "PostToInsecureFromSecureMessage");
