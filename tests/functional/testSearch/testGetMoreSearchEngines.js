@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Alex Lakatos <alex.lakatos@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,8 +44,8 @@ var utils = require("../../../lib/utils");
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
 
-const searchEngine = {name: "SearchGeek",
-                      url : "https://addons.mozilla.org/en-US/firefox/addon/10772"};
+const searchEngine = {name: "IMDB",
+                      url : "https://addons.mozilla.org/en-US/firefox/addon/imdb/"};
 
 var setupModule = function(module)
 {
@@ -82,8 +83,8 @@ var testGetMoreEngines = function()
 
   // XXX: Bug 575241
   // AMO Lazy install buttons: wait for class change
-  var installButton = new elementslib.XPath(controller.tabs.activeTab,
-                                            "//div[@id='addon-summary']/div/div/div/p/a");
+  var installButton = new elementslib.Selector(controller.tabs.activeTab,
+                                               ".installer");
 
   controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                         {installButtonClass: installButton.getNode().getAttribute('class')});
@@ -93,8 +94,8 @@ var testGetMoreEngines = function()
   md.start(handleSearchInstall);
 
   // Install the search engine
-  var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
-                                          "//div[@id='addon-summary']/div/div/div/p/a/span");
+  var triggerLink = new elementslib.Selector(controller.tabs.activeTab,
+                                             ".installer");
   controller.waitThenClick(triggerLink, TIMEOUT);
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
