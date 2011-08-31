@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -103,7 +104,8 @@ var testSubmitUnencryptedInfoWarning = function()
   controller.waitForPageLoad();
 
   // Check that the search results page loaded
-  var searchResultsField = new elementslib.Name(controller.tabs.activeTab, "q");
+  var searchResultsField = new elementslib.Selector(controller.tabs.activeTab,
+                                                    'input.gsc-input');
   controller.waitForElement(searchResultsField);
   controller.assertValue(searchResultsField, "mozilla");
 }
