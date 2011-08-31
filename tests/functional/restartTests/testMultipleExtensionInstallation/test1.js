@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
+ *   Alex Lakatos <alex.lakatos@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -78,8 +79,8 @@ var testInstallExtensions = function() {
 
     // XXX: Bug 575241
     // AMO Lazy install buttons: wait for class change
-    var installAddonButton = new elementslib.XPath(controller.tabs.activeTab,
-                                          "//div[@id='addon-summary']/div/div/div/p/a");
+    var installAddonButton = new elementslib.Selector(controller.tabs.activeTab,
+                                                      ".installer");
 
     controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
                            {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
@@ -89,8 +90,8 @@ var testInstallExtensions = function() {
     md.start(handleTriggerDialog);
 
     // Click the link to install the extension
-    var triggerLink = new elementslib.XPath(controller.tabs.activeTab,
-                                            "//div[@id='addon-summary']/div/div/div/p/a/span");
+    var triggerLink = new elementslib.Selector(controller.tabs.activeTab,
+                                               ".installer");
     controller.waitThenClick(triggerLink, TIMEOUT);
     md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
