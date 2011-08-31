@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -51,7 +52,7 @@ const LOCAL_TEST_PAGES = [
   'about:blank'
 ];
                           
-var setupModule = function(module) {
+function setupModule(module) {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
@@ -60,15 +61,14 @@ var setupModule = function(module) {
   places.removeAllHistory();
 }
 
-var teardownModule = function() {
+function teardownModule() {
   locationBar.autoCompleteResults.close(true);
 }
 
 /**
  * Check access to the location bar drop down list via autocomplete
  */
-var testAccessLocationBarHistory = function()
-{
+function testAccessLocationBarHistory() {
   // Open a few different sites to create a small history 
   // NOTE: about:blank doesn't appear in history and clears the page 
   //       for clean test arena
@@ -87,13 +87,18 @@ var testAccessLocationBarHistory = function()
   // the most recent visit first, then arrow down again to the first entry, 
   // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.sleep(100);
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete results should be visible");
+
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.sleep(100);
 
   // Check that the first item in the drop down list is selected
-  controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100,
-                         locationBar.autoCompleteResults);
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.selectedIndex === 0;
+  }, "The first item should be selected - expected 0 - got " + 
+  locationBar.autoCompleteResults.selectedIndex);
+
   locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
@@ -106,8 +111,3 @@ var testAccessLocationBarHistory = function()
   // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
   locationBar.contains(LOCAL_TEST_PAGES[2]);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testAccessLocationBarHistory.meta = {litmusids : [5981]};
