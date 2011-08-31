@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -51,7 +52,7 @@ var testSecNotification = function() {
   controller.open("https://addons.mozilla.org/");
   controller.waitForPageLoad();
 
-  var header = new elementslib.ID(controller.tabs.activeTab, "header");
+  var header = new elementslib.Selector(controller.tabs.activeTab, ".amo-header");
   controller.assertNode(header);
 
   // The security button should be visible in the status bar
