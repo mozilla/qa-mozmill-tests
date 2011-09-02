@@ -105,8 +105,3 @@ var handleSecurityWarningDialog = function(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.waitThenClick(okButton);
 }
-
-// XXX: Bug 675914 
-//      Skip because we have a disconnect error in testEncryptedPageWarning.js
-setupModule.__force_skip__ = "Bug 675914 - Disconnect Error in testEncryptedPageWarning.js";
-teardownModule.__force_skip__ = "Bug 675914 - Disconnect Error in testEncryptedPageWarning.js";
