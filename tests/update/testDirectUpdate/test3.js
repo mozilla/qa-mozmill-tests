@@ -72,6 +72,9 @@ function testDirectUpdate_AppliedAndNoUpdatesFound() {
   // Check that updates have been applied correctly
   update.assertUpdateApplied(persisted);
 
+  // Check the about dialog
+  update.checkAboutDialog(controller);
+
   // Update was successful
   persisted.updates[persisted.updateIndex].success = true;
 }
