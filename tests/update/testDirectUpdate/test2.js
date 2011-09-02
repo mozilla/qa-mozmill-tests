@@ -62,6 +62,9 @@ var testDirectUpdate_Download = function() {
     return update.allowed;
   }, "User has permissions to update the build.");
 
+  // Check the about dialog
+  update.checkAboutDialog(controller);
+
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);
   update.waitForCheckFinished();
