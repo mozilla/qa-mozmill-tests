@@ -137,13 +137,3 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testSubmitUnencryptedInfoWarning.meta = {litmusids : [9295]};
-
-// XXX: Bug 681461
-//      Skip due to Disconnect error on Nightly and Aurora 
-setupModule.__force_skip__ = "Bug 681461 - Disconnect failure during testrun";
-teardownModule.__force_skip__ = "Bug 681461 - Disconnect failure during testrun";
