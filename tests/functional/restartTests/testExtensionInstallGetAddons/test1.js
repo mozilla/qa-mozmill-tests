@@ -50,8 +50,8 @@ var setupModule = function(module)
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  persisted.extensionName = "Add-on Compatibility Reporter";
-  persisted.extensionId = "compatibility@addons.mozilla.org";
+  persisted.extensionName = "Nightly Tester Tools";
+  persisted.extensionId = "{8620c15f-30dc-4dba-a131-7c5d20cf4a29}";
 
   // Store the AMO preview site
   persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
@@ -147,14 +147,3 @@ var handleTriggerDialog = function(controller)
   controller.click(installButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testInstallExtension.meta = {litmusids : [8828]};
-
-// Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js 
-//              Timeout exceeded for waitForElement Lookup
-setupModule.__force_skip__ = "Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js |" +
-                             "Timeout exceeded for waitForElement Lookup";
-teardownModule.__force_skip__ = "Bug 681639 - Failure in /testExtensionInstallGetAddons/test1.js |" +
-                                "Timeout exceeded for waitForElement Lookup";

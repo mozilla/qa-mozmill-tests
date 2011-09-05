@@ -66,12 +66,3 @@ var testCheckExtensionInstalled = function()
                                     {isExtensionInstalled: extension.getNode().getAttribute('newAddon') == 'true'});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testCheckExtensionInstalled.meta = {litmusids : [8828]};
-
-// Bug 681639 - Failure in /testExtensionInstallGetAddons/test2.js 
-//              Window has been found.
-setupModule.__force_skip__ = "Bug 681639 - Failure in /testExtensionInstallGetAddons/test2.js |" +
-                             "Window has been found.";
