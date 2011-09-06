@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,42 +36,66 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var {assert} = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-const gDelay = 0;
 
-var setupModule = function(module)
-{
+function setupModule() {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
+  searchEngines = searchBar.visibleEngines;
+
+  // Get search engines that support suggestions
+  enginesWithSuggestions = [ ];
+  for (var i = 0; i < searchEngines.length; i++) {
+    if(searchBar.hasSuggestions(searchEngines[i].name))
+      enginesWithSuggestions.push(searchEngines[i]);
+  }
+
+  // Skip test if we have less than 2 search engines with suggestions
+  if (enginesWithSuggestions.length < 2)
+    testMultipleEngines.__force_skip__ = "At least two search engines with " +
+                                         "suggestions are necessary for " +
+                                         "comparison";
 }
 
 /**
- * Check suggestins for multiple search providers
+ * Check suggestions for multiple search providers
  */
-var testMultipleEngines = function()
-{
-  var engines = searchBar.visibleEngines;
-  var suggestions = [ ];
+function testMultipleEngines() {
+  var allSuggestions = [ ];
+  var suggestionsForEngine;
 
   // Get suggested auto-complete results for two engines
-  for (var i = 0; i < 2; i++) {
-    searchBar.selectedEngine = engines[i].name;
-    suggestions[i] = searchBar.getSuggestions("Moz");
+  for (var i = 0; i < enginesWithSuggestions.length; i++) {
     searchBar.clear();
+
+    // Select search engine
+    searchBar.selectedEngine = enginesWithSuggestions[i].name;
+
+    // Get suggestions
+    suggestionsForEngine = searchBar.getSuggestions("Moz");
+    if (suggestionsForEngine.length !== 0)
+      allSuggestions.push(suggestionsForEngine);
+
+    // Exit the for loop in case we have suggestions for 2 engines
+    if (allSuggestions.length === 2)
+      break;
   }
+
+  assert.equal(allSuggestions.length, 2,
+               "Suggestions from two search engines are available");
 
   // Check that at least one suggestion is different
   var different = false;
-  var maxIndex = Math.max(suggestions[0].length, suggestions[1].length);
+  var maxIndex = Math.max(allSuggestions[0].length, allSuggestions[1].length);
   for (i = 0; i < maxIndex; i++) {
-    if (suggestions[0][i] != suggestions[1][i]) {
+    if (allSuggestions[0][i] !== allSuggestions[1][i]) {
       different = true;
       break;
     }
   }
 
-  controller.assertJS("subject.suggestionsDifferent == true",
-                      {suggestionsDifferent: different});
+  assert.ok(different, "Suggestions are different");
 }
