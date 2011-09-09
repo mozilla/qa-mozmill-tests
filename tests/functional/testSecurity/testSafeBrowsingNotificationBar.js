@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Vertributed under the License is distributed on an "AS IS" basis,
@@ -41,7 +42,6 @@
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
 const gTimeout = 5000;
 
 var setupModule = function(module)
@@ -95,9 +95,11 @@ var checkIgnoreWarningButton = function(badUrl) {
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
-  controller.assertValue(locationBar, badUrl);
+  // Since we permanently redirect all .com addresses to .org we have to directly check
+  // for the .org URL. Otherwise we are stuck on the fraudulent page. This is only necessary
+  // for Firefox 5.x and lower because those builds don't set the permissions for the page.
+  utils.assertLoadedUrlEqual(controller, badUrl.replace(/\.com/, ".org"));
   controller.assertNodeNotExist(ignoreWarningButton);
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 }
