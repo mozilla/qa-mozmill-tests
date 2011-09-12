@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,6 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var {assert, expect} = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 const TIMEOUT_INSTALLATION = 30000;
@@ -70,8 +72,7 @@ var testOpenSearchAutodiscovery = function() {
   // Open search engine drop down and check for installable engines
   searchBar.enginesDropDownOpen = true;
   var addEngines = searchBar.installableEngines;
-  controller.assertJS("subject.installableEngines.length == 1",
-                      {installableEngines: addEngines});
+  assert.equal(addEngines.length, 1, "Autodiscovered OpenSearch Engines");
 
   // Install the new search engine which gets automatically selected
   var engine = searchBar.getElement({
@@ -92,10 +93,7 @@ var testOpenSearchAutodiscovery = function() {
   // Clear search term and check the placeholder text
   var inputField = searchBar.getElement({type: "searchBar_input"});
   searchBar.clear();
-  controller.assertJS("subject.placeholder == subject.engineName", {
-    placeholder: inputField.getNode().placeholder,
-    engineName: SEARCH_ENGINE.name
-  });
+  expect.equal(inputField.getNode().placeholder, SEARCH_ENGINE.name, "New engine is selected");
 }
 
 /**
