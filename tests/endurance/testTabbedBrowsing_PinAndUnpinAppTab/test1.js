@@ -49,7 +49,6 @@ function setupModule(module) {
   tabBrowser.closeAllTabs();
   
   scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
-  scrollButtonUp = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "up"});
 }
 
 function teardownModule(module) {
