@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
+ *   Anthony Hughes <ahughes@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,7 +44,7 @@ const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
-  url: LOCAL_TEST_FOLDER + "addons/icons.xpi", 
+  url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi", 
   id: "test-icons@quality.mozilla.org"
 };
 
