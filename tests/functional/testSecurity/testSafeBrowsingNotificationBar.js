@@ -191,7 +191,7 @@ var checkXButton = function() {
   controller.assertNodeNotExist(button);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testNotificationBar.meta = {litmusids : [9370]};
+// Bug 681920 - Failure in /testSecurity/testSafeBrowsingNotificationBar.js
+// Expression "{"value":"blocked-badware-page"}" returned null. Anonymous == false
+setupModule.__force_skip__ = "Bug 681920 - Failure in /testSecurity/testSafeBrowsingNotificationBar.js | " +
+                             "Expression '{'value':'blocked-badware-page'}' returned null. Anonymous == false";
