@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Test page for installing an addon/theme</title>
+    <script type="text/javascript">
+      function generateLink() {
+        var addonLink = /\?addon=(.+)$/.exec(window.document.location)[1];
+        var path = /(.*)\/.*\?.*/.exec(window.location.toString())[1];
+        var installLink = path + '/' + addonLink;
+
+        var installElement = document.getElementById("addon");
+        installElement.href = installLink;
+        installElement.text = installLink;
+      }
+
+      function install(aEvent) {
+        var params = {
+          "Foo": { URL: aEvent.target.href,
+                   toString: function () { return this.URL; }
+          }
+        };
+
+        InstallTrigger.install(params);
+        return false;
+      }
+    </script>
+  </head>
+  <body onLoad="generateLink();">
+    <div>
+      <p>Install the add-on: <a href="#" id="addon" onClick="return install(event);"></a></p>
+    </div>
+  </body>
+</html>
