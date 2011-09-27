@@ -109,10 +109,10 @@ function testInstallPickOfTheMonthAddon() {
      am.isAddonInstalled({addon: addon}) + "', expected 'true'"); 
 }
 
-// XXX: Bug 657492
-//      Skip because the Mozilla's pick of the month add-on is not compatible with 
-//      Aurora builds 
-setupModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " + 
-                             "are only compatible with Release and Beta builds";
-teardownModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " + 
-                                "are only compatible with Release and Beta builds";
+// XXX: Bug 688146
+//      Pick of the Month add-ons are not compatible with this version of Firefox
+setupModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+                             "are not compatible with this version of Firefox";
+teardownModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+                                "are not compatible with this version of Firefox";
+
