@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Maniac <vlad.mozbugs@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -104,8 +105,3 @@ var handleSecurityWarningDialog = function(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.waitThenClick(okButton);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testEncryptedPageWarning.meta = {litmusids : [9292]};

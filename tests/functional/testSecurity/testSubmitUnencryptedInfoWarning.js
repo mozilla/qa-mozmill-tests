@@ -137,8 +137,3 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testSubmitUnencryptedInfoWarning.meta = {litmusids : [9295]};
