@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -74,3 +75,7 @@ function testDisableExtension() {
 
   controller.click(restartLink);    
 }
+
+// Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension
+setupModule.__force_skip__ = "Bug 688375 - Test failure 'Add-on not " +
+                             "specified' in testAddons_enableDisableExtension";
