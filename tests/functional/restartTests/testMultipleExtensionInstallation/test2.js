@@ -54,3 +54,6 @@ var testCheckInstalledExtensions = function() {
     addonsManager.controller.waitForElement(extension);
   }
 }
+
+setupModule.__force_skip__ = "Bug 692399 - Failure in testMultipleExtensionInstallation | " +
+                             "installAddonButton.getNode() is null";

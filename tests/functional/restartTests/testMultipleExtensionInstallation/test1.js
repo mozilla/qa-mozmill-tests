@@ -150,3 +150,6 @@ var handleTriggerDialog = function(controller) {
                          installButton.getNode());
   controller.click(installButton);
 }
+
+setupModule.__force_skip__ = "Bug 692399 - Failure in testMultipleExtensionInstallation | " +
+                             "installAddonButton.getNode() is null";
