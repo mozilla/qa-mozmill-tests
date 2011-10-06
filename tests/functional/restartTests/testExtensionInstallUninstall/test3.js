@@ -57,7 +57,5 @@ var testCheckUninstalledExtension = function()
   addonsManager.controller.assertNodeNotExist(extension);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testUninstallExtension.meta = {litmusids : [8164]};
+setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
+                             "installAddonButton.getNode() is null";

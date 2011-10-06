@@ -146,7 +146,5 @@ var handleTriggerDialog = function(controller) {
   controller.click(installButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testInstallExtension.meta = {litmusids : [7972]};
+setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
+                             "installAddonButton.getNode() is null";

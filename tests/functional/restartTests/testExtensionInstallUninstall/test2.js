@@ -108,8 +108,5 @@ var handleTriggerDialog = function(controller)
   controller.waitThenClick(uninstallButton, gTimeout);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testCheckInstalledExtension.meta = {litmusids : [7972]};
-// testUninstallExtension.meta = {litmusids : [8164]};
+setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
+                             "installAddonButton.getNode() is null";
