@@ -90,8 +90,5 @@ var testThemeChange = function()
                                     {hasDescriptionChanged: description.indexOf('Restart') != -1});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testCheckInstalledTheme.meta = {litmusids : [7973]};
-// testThemeChange.meta = {litmusids : [8168]};
+setupModule.__force_skip__ = "Bug 692384 - Timeout in testThemeInstallUninstall | " +
+                             "Timeout exceeded for waitForElement"

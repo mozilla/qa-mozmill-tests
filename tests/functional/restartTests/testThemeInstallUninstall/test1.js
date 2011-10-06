@@ -155,7 +155,5 @@ var handleTriggerDialog = function(controller)
   controller.click(installButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testInstallTheme.meta = {litmusids : [7973]};
+setupModule.__force_skip__ = "Bug 692384 - Timeout in testThemeInstallUninstall | " +
+                             "Timeout exceeded for waitForElement"

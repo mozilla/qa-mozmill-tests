@@ -61,7 +61,5 @@ var testCheckThemeChange = function()
                                     {isCurrentTheme: theme.getNode().getAttribute('current') == 'true'});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testCheckThemeChanged.meta = {litmusids : [8168]};
+setupModule.__force_skip__ = "Bug 692384 - Timeout in testThemeInstallUninstall | " +
+                             "Timeout exceeded for waitForElement"
