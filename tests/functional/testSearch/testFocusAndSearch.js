@@ -69,8 +69,7 @@ var testShortcutAndSearch = function()
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testClickAndSearch.meta = {litmusids : [8241]};
-// testShortcutAndSearch.meta = {litmusids : [8242]};
+setupModule.__force_skip__ = "Bug 686639 - Failure in /testSearch/testFocusAndSearch.js | " +
+                             "test gets wrong URL";
+teardownTest.__force_skip__ = "Bug 686639 - Failure in /testSearch/testFocusAndSearch.js | " +
+                                "test gets wrong URL";
