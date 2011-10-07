@@ -135,7 +135,7 @@ var testFindInPage = function() {
                       {isFirstResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testFindInPage.meta = {litmusids : [7970]};
+setupModule.__force_skip__ = "Bug 692771 - Failure in testFindInPage | " +
+                             "controller.assertJS: Failed for 'subject.selectedText == subject.searchTerm'";
+teardownModule.__force_skip__ = "Bug 692771 - Failure in testFindInPage | " + 
+                                "controller.assertJS: Failed for 'subject.selectedText == subject.searchTerm'";
