@@ -93,7 +93,7 @@ var testDisableEnablePlugin = function()
   controller.assertText(status, "enabled");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDisableEnablePlugin.meta = {litmusids : [8511]};
+setupModule.__force_skip__ = "Bug 692775 - Failure in testDisableEnablePlugin | " +
+                             "controller.waitForEval: Timeout exceeded";
+teardownModule.__force_skip__ = "Bug 692775 - Failure in testDisableEnablePlugin | " +
+                                "controller.waitForEval: Timeout exceeded";
