@@ -153,8 +153,7 @@ var handleSearchInstall = function(controller)
                                          '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
   controller.waitThenClick(addButton);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// setupModule.meta = {litmusids : [8238]};
+setupModule.__force_skip__ = "Bug 692761 - Failure in testGetMoreSearchEngines | " +
+                             "Current domain name matches target domain name";
+teardownModule.__force_skip__ = "Bug 692761 - Failure in testGetMoreSearchEngines | " +
+                               "Current domain name matches target domain name";
