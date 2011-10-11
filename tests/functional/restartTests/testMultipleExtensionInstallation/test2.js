@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -54,6 +55,3 @@ var testCheckInstalledExtensions = function() {
     addonsManager.controller.waitForElement(extension);
   }
 }
-
-setupModule.__force_skip__ = "Bug 692399 - Failure in testMultipleExtensionInstallation | " +
-                             "installAddonButton.getNode() is null";

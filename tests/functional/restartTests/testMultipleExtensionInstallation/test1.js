@@ -22,6 +22,7 @@
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
  *   Alex Lakatos <alex.lakatos@softvision.ro>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,29 +42,28 @@
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
+
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
 
 // Object of all add-ons we want to install
 const gAddons = [
-  {name: "Add-on Compatibility Reporter",
-   id: "compatibility@addons.mozilla.org",
-   url: addons.AMO_PREVIEW_SITE + "/firefox/addon/15003/"},
-  {name: "Mozilla QA Companion",
-   id: "{667e9f3d-0096-4d2b-b171-9a96afbabe20}",
-   url: addons.AMO_PREVIEW_SITE + "/firefox/addon/5428/"}
+  {name: "Test Extension (icons)",
+   id: "test-icons@quality.mozilla.org",
+   url: LOCAL_TEST_FOLDER + "/addons/install.html?addon=/extensions/icons.xpi"},
+  {name: "Test Extension (empty)",
+   id: "test-empty@quality.mozilla.org",
+   url: LOCAL_TEST_FOLDER + "/addons/install.html?addon=/extensions/empty.xpi"}
 ];
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  // Store the AMO preview site
-  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-
-  // Whitelist add the AMO preview site
-  addons.addToWhiteList(persisted.amoPreviewSite);
+  // Whitelist add the localhost
+  addons.addToWhiteList(LOCAL_TEST_FOLDER);
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = gAddons;
@@ -71,28 +71,16 @@ var setupModule = function() {
 
 var testInstallExtensions = function() {
   for each(addon in persisted.addons) {
-    // Store a reference to the current add-on in 'persisted.currentAddon'
-    persisted.currentAddon = addon;
-
     controller.open(addon.url);
     controller.waitForPageLoad();
-
-    // XXX: Bug 575241
-    // AMO Lazy install buttons: wait for class change
-    var installAddonButton = new elementslib.Selector(controller.tabs.activeTab,
-                                                      ".installer");
-
-    controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
-                           {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
     // Create a modal dialog instance to handle the Software Installation dialog
     var md = new modalDialog.modalDialog(controller.window);
     md.start(handleTriggerDialog);
 
     // Click the link to install the extension
-    var triggerLink = new elementslib.Selector(controller.tabs.activeTab,
-                                               ".installer");
-    controller.waitThenClick(triggerLink, TIMEOUT);
+    var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
+    controller.click(installLink);
     md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
     // Wait that the Installation pane is selected after the extension has been installed
@@ -129,14 +117,10 @@ var handleTriggerDialog = function(controller) {
                       {extensions: list.getNode().childNodes});
 
   // Check if the extension name is shown
+  // XXX: Foo must be used here because it is given by the install.html
   controller.assertJS("subject.extensions[0].name == subject.extensionName",
                       {extensions: list.getNode().childNodes,
-                       extensionName: persisted.currentAddon.name});
-
-  // Will the extension be installed from the original domain
-  var isAMOUrl = list.getNode().childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1;
-  controller.assertJS("subject.isExtensionFromAMO == true",
-                      {isExtensionFromAMO: isAMOUrl});
+                       extensionName: "Foo"});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document,
@@ -150,6 +134,3 @@ var handleTriggerDialog = function(controller) {
                          installButton.getNode());
   controller.click(installButton);
 }
-
-setupModule.__force_skip__ = "Bug 692399 - Failure in testMultipleExtensionInstallation | " +
-                             "installAddonButton.getNode() is null";
