@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Alex Lakatos <alex.lakatos@softvision.ro>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,6 +42,7 @@ var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
@@ -49,15 +51,12 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  persisted.url = addons.AMO_PREVIEW_SITE + "/firefox/addon/15003/";
-  persisted.extensionName = "Add-on Compatibility Reporter";
-  persisted.extensionId = "compatibility@addons.mozilla.org";
+  persisted.url = LOCAL_TEST_FOLDER + "/addons/install.html?addon=/extensions/icons.xpi";
+  persisted.extensionName = "Test Extension (icons)";
+  persisted.extensionId = "test-icons@quality.mozilla.org";
 
-  // Store the AMO preview site
-  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-
-  // Whitelist add the AMO preview site
-  addons.addToWhiteList(persisted.amoPreviewSite);
+  // Whitelist add the localhost
+  addons.addToWhiteList(LOCAL_TEST_FOLDER);
 
   tabs.closeAllTabs(controller);
 }
@@ -74,26 +73,16 @@ var testInstallExtension = function() {
   controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
   controller.waitForPageLoad();
 
-  // To avoid a broken test lets install Add-On Compatibility Reporter directly
   controller.open(persisted.url);
   controller.waitForPageLoad();
-
-  // XXX: Bug 575241
-  // AMO Lazy install buttons: wait for class change
-  var installAddonButton = new elementslib.Selector(controller.tabs.activeTab,
-                                                    ".installer");
-
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
-                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
   var md = new modalDialog.modalDialog(controller.window);
   md.start(handleTriggerDialog);
 
   // Click the link to install the extension
-  var triggerLink = new elementslib.Selector(controller.tabs.activeTab,
-                                             ".installer");
-  controller.waitThenClick(triggerLink);
+  var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
+  controller.waitThenClick(installLink);
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
@@ -127,12 +116,9 @@ var handleTriggerDialog = function(controller) {
                       {extensions: itemElem.childNodes});
 
   // Check if the extension name is shown
+  // XXX: Foo must be used here because it is given by the install.html
   controller.assertJS("subject.extensions[0].name == subject.extensionName",
-                      {extensions: itemElem.childNodes, extensionName: persisted.extensionName});
-
-  // Will the extension be installed from the original domain
-  controller.assertJS("subject.isExtensionFromAMO == true",
-                      {isExtensionFromAMO: itemElem.childNodes[0].url.indexOf(persisted.amoPreviewSite) != -1});
+                      {extensions: itemElem.childNodes, extensionName: "Foo"});
 
   // Check if the Cancel button is present
   var cancelButton = new elementslib.Lookup(controller.window.document,
@@ -145,6 +131,3 @@ var handleTriggerDialog = function(controller) {
   controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
   controller.click(installButton);
 }
-
-setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
-                             "installAddonButton.getNode() is null";

@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -56,6 +57,3 @@ var testCheckUninstalledExtension = function()
   addonsManager.controller.sleep(100);
   addonsManager.controller.assertNodeNotExist(extension);
 }
-
-setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
-                             "installAddonButton.getNode() is null";

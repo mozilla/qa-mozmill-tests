@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aakash Desai <adesai@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -107,6 +108,3 @@ var handleTriggerDialog = function(controller)
   controller.waitForEval("subject.disabled != true", 7000, 100, uninstallButton.getNode());
   controller.waitThenClick(uninstallButton, gTimeout);
 }
-
-setupModule.__force_skip__ = "Bug 692417 - Failure in testExtensionInstallUninstall | " +
-                             "installAddonButton.getNode() is null";
