@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aakash Desai <adesai@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -89,6 +90,3 @@ var testThemeChange = function()
   addonsManager.controller.assertJS("subject.hasDescriptionChanged == true",
                                     {hasDescriptionChanged: description.indexOf('Restart') != -1});
 }
-
-setupModule.__force_skip__ = "Bug 692384 - Timeout in testThemeInstallUninstall | " +
-                             "Timeout exceeded for waitForElement"

@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Alex Lakatos <alex.lakatos@softvision.ro>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,6 +42,8 @@ var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
+
 const TIMEOUT = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
 const TIMEOUT_INSTALLATION = 30000;
@@ -49,16 +52,13 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.addonsManager();
 
-  persisted.themeName = "Walnut for Firefox";
-  persisted.themeId = "{5A170DD3-63CA-4c58-93B7-DE9FF536C2FF}";
+  persisted.themeName = "Theme (Plain)";
+  persisted.themeId = "plain.theme@quality.mozilla.org";
   persisted.defaultThemeId = "{972ce4c6-7e08-4474-a285-3208198ce6fd}";
-  persisted.themeURL = addons.AMO_PREVIEW_SITE + "/firefox/addon/122/";
+  persisted.themeURL = LOCAL_TEST_FOLDER + "/addons/install.html?addon=/themes/plain.jar";
 
-  // Store the AMO preview site
-  persisted.amoPreviewSite = addons.AMO_PREVIEW_SITE;
-
-  // Whitelist add the AMO preview site
-  addons.addToWhiteList(persisted.amoPreviewSite);
+  // Whitelist add the localhost
+  addons.addToWhiteList(LOCAL_TEST_FOLDER);
 
   tabs.closeAllTabs(controller);
 }
@@ -71,34 +71,17 @@ var testInstallTheme = function()
   addonsManager.open(controller);
   addonsManager.paneId = "search";
 
-  // Wait for the Browse All Add-ons link and click on it
-  var browseAllAddons = addonsManager.getElement({type: "link_browseAddons"});
-  addonsManager.controller.waitThenClick(browseAllAddons, TIMEOUT);
-
-  // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
-  controller.waitForPageLoad();
-
-  // Open the web page for the Walnut theme directly
+  // Open the web page for the Theme (Plain)
   controller.open(persisted.themeURL);
   controller.waitForPageLoad();
-
-  // XXX: Bug 575241
-  // AMO Lazy install buttons: wait for class change
-  var installAddonButton = new elementslib.Selector(controller.tabs.activeTab,
-                                                    ".installer");
-
-  controller.waitForEval("subject.installAddonButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
-                        {installAddonButtonClass: installAddonButton.getNode().getAttribute('class')});
 
   // Create a modal dialog instance to handle the Software Installation dialog
   var md = new modalDialog.modalDialog(controller.window);
   md.start(handleTriggerDialog);
 
   // Click link to install the theme which triggers a modal dialog
-  var triggerLink = new elementslib.Selector(controller.tabs.activeTab,
-                                             ".installer");
-  controller.waitThenClick(triggerLink, TIMEOUT);
+  var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
+  controller.waitThenClick(installLink, TIMEOUT);
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
@@ -135,12 +118,13 @@ var handleTriggerDialog = function(controller)
   controller.assertJS("subject.themes.length == 1",
                       {themes: itemElem.childNodes});
 
-  // Check if the correct theme name is shown
-  controller.assertJS("subject.name == '" + persisted.themeName + "'",
+  // Will the theme be installed from the original domain
+  controller.assertJS("subject.url.indexOf('" + LOCAL_TEST_FOLDER + "') != -1",
                       itemElem.childNodes[0]);
 
-  // Will the theme be installed from the original domain
-  controller.assertJS("subject.url.indexOf('" + persisted.amoPreviewSite + "') != -1",
+  // Check if the correct theme name is shown
+  // XXX: Foo must be used here because it is given by the install.html
+  controller.assertJS("subject.name == '" + "Foo" + "'",
                       itemElem.childNodes[0]);
 
   // Check if the Cancel button is present
@@ -154,6 +138,3 @@ var handleTriggerDialog = function(controller)
   controller.waitForEval("subject.disabled != true", undefined, 100, installButton.getNode());
   controller.click(installButton);
 }
-
-setupModule.__force_skip__ = "Bug 692384 - Timeout in testThemeInstallUninstall | " +
-                             "Timeout exceeded for waitForElement"
