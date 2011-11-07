@@ -39,6 +39,8 @@ var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
+const TIMEOUT_DOWNLOAD = 25000;
+
 const LOCAL_INSTALL_FILE = "install.html?addon="
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/addons/");
 
@@ -78,7 +80,7 @@ function testInstallMultipleExtensions() {
     // Install the addon
     md.start(addons.handleInstallAddonDialog);
     controller.click(installLink);
-    md.waitForDialog();
+    md.waitForDialog(TIMEOUT_DOWNLOAD);
     controller.keypress(null , 'VK_ESCAPE', {});
   });
 }
