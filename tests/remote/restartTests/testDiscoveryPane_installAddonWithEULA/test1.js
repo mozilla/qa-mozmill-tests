@@ -100,5 +100,5 @@ function testInstallAddonWithEULA() {
   var addon = addonsManager.getAddons({attribute: "name", value: ADDON.name})[0];
 
   assert.ok(addonsManager.isAddonInstalled({addon: addon}), 
-            "The add-on has been correctly installed");heheh
+            "The add-on has been correctly installed");
 }

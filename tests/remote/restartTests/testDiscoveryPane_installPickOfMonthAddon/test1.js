@@ -45,7 +45,6 @@ const TIMEOUT_SWITCH = 100;
 const CLICK_COUNT = 3; 
 const INSTALL_SOURCE = "discovery-promo";
 
-
 function setupModule() {
   controller = mozmill.getBrowserController();
   am = new addons.AddonsManager(controller);
@@ -94,13 +93,13 @@ function testInstallPickOfTheMonthAddon() {
      "', expected '" + INSTALL_SOURCE + "'");
 
   var md = new modalDialog.modalDialog(am.controller.window);
-  md.start(handleInstallAddonDialog);  
+  md.start(addons.handleInstallAddonDialog);  
   controller.click(addToFirefox);
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
-  am.setCategory({category: am.getCategoryById({id: "extensions"})});
+  am.setCategory({category: am.getCategoryById({id: "extension"})});
   
   var addon = am.getAddons({attribute: "name", value: persisted.currentAddon})[0];
 
@@ -110,29 +109,10 @@ function testInstallPickOfTheMonthAddon() {
      am.isAddonInstalled({addon: addon}) + "', expected 'true'"); 
 }
 
-/**
- * Handle the modal dialog to install an addon
- */
-function handleInstallAddonDialog(controller) {
-  // Get the addon's name
-  // XXX: Bug 668767
-  //      Discovery pane should list the add-on id in the ".install featureaddon" 
-  //      div element - we have to use the persisted object because of this limitation
-  var itemList = controller.window.document.getElementById("itemList");
-  addonName = itemList.childNodes[0].name;
+// XXX: Bug 688146
+//      Pick of the Month add-ons are not compatible with this version of Firefox
+setupModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+                             "are not compatible with this version of Firefox";
+teardownModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+                                "are not compatible with this version of Firefox";
 
-  // Store addonName in persisted.currentAddon
-  persisted.currentAddon = addonName; 
-
-  // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, 
-                                             '/id("xpinstallConfirm")'+
-                                             '/anon({"anonid":"buttons"})'+
-                                             '/{"dlgtype":"accept"}');
-  controller.waitFor(function (){
-    return !installButton.getNode().disabled; 
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled + 
-     "', expected 'true'");
-
-  controller.click(installButton); 
-}
