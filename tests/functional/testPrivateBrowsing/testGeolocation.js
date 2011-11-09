@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -91,18 +92,22 @@ var testTabRestoration = function()
     available = true;
   } catch (ex) {}
 
+  /* XXX: Bug 685805 - skip checking for geolocation tokens
   // If a position has been returned check for geo access tokens
   if (available) {
     prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
     controller.assertJS("subject.hasGeoTokens == true",
                         {hasGeoTokens: tokens.value > 0});
   }
+  */
 
   // Stop Private Browsing
   pb.stop();
 
+  /* XXX: Bug 685805 - skip checking for geolocation tokens
   // No geo access tokens should be present
   prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
   controller.assertJS("subject.hasNoGeoTokens == true",
                       {hasNoGeoTokens: tokens.value == 0});
+  */
 }
