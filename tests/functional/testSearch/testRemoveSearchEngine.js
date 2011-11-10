@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -62,8 +63,9 @@ var testRemoveEngine = function()
   // Remove the first engine in the list
   searchBar.openEngineManager(handleEngines);
 
-  controller.waitForEval("subject.oldEngine != subject.searchBar.visibleEngines[1].name", gTimeout, 100,
-                         {oldEngine: engine.name, searchBar: searchBar});
+  controller.waitFor(function () {
+    return engine.name !== searchBar.visibleEngines[1].name;
+  }, "Search engine " + engine.name + " has been removed");
 }
 
 /**
