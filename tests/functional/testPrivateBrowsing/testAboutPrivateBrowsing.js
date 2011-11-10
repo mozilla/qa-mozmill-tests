@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -80,8 +81,9 @@ var testCheckRegularMode = function()
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);
 
-  controller.waitForEval("subject.privateBrowsing.enabled == true", gTimeout, 100,
-                         {privateBrowsing: pb});
+  controller.waitFor(function () {
+    return pb.enabled;
+  }, "Private Browsing mode has been enabled");
 }
 
 /**
@@ -99,7 +101,9 @@ var testCheckPrivateBrowsingMode = function()
   // Clicking on the more info link opens a new tab with a page on SUMO
   var targetUrl = utils.formatUrlPref("app.support.baseURL") + "private-browsing";
 
-  controller.waitForEval("subject.length == 2", gTimeout, 100, controller.tabs);
+  controller.waitFor(function () {
+    return controller.tabs.length === 2;
+  }, "A new tab has been opened");
   controller.waitForPageLoad();
   utils.assertLoadedUrlEqual(controller, targetUrl);
 }
