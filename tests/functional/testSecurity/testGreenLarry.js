@@ -21,6 +21,7 @@
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -89,7 +90,9 @@ var testLarryGreen = function() {
 
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitForEval("subject.state == 'open'", 2000, 100, doorhanger.getNode());
+  controller.waitFor(function () {
+    return doorhanger.getNode().state === 'open';
+  }, "Identity popup has been opened");
 
   // Check that the Larry UI is verified (aka Green)
   controller.assertJSProperty(doorhanger, "className", "verifiedIdentity");
@@ -169,9 +172,9 @@ function checkSecurityTab(controller) {
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", TIMEOUT, 100,
-                         {domainLabel: webIDDomainLabel.getNode().value,
-                          CName: cert.commonName});
+  controller.waitFor(function () {
+    return webIDDomainLabel.getNode().value.indexOf(cert.commonName) !== -1;
+  }, "Found certificate common name '" + cert.commonName + "'");
 
   // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
