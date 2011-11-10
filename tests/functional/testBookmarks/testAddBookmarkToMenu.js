@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,8 +40,6 @@
 // Include required modules
 var places = require("../../../lib/places");
 var utils = require("../../../lib/utils");
-
-const TIMEOUT = 5000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
@@ -71,8 +70,9 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.click(bookmarkMenuItem);
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
-  controller.waitForEval("subject._overlayLoaded == true", TIMEOUT, 100, 
-                         controller.window.top.StarUI);
+  controller.waitFor(function () {
+    return controller.window.top.StarUI._overlayLoaded;
+  }, "Edit This Bookmark doorhanger has been loaded");
 
   // Bookmark should automatically be stored under the Bookmark Menu
   var nameField = new elementslib.ID(controller.window.document, 
