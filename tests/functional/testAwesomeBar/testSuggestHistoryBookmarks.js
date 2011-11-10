@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -89,7 +90,9 @@ var testSuggestHistoryAndBookmarks = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Get the visible results from the autocomplete list. Verify it is 1
-  controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete list has been opened");
 
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
   controller.assertJS("subject.getNumberOfVisibleRows() == 1", autoCompleteResultsList.getNode());
@@ -113,7 +116,9 @@ var testStarInAutocomplete = function() {
   controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded, then close the dialog
-  controller.waitForEval("subject._overlayLoaded == true", TIMEOUT, 200, controller.window.top.StarUI);
+  controller.waitFor(function () {
+    return controller.window.top.StarUI._overlayLoaded;
+  }, "Edit This Bookmark doorhanger has been loaded");
   var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
   controller.click(doneButton);
 
@@ -133,7 +138,9 @@ var testStarInAutocomplete = function() {
   }
 
   // For the page title check matched text is underlined
-  controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete list has been opened");
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
   for each (var entry in entries) {

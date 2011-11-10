@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -120,22 +121,19 @@ var startSearch = function(element, engineName, loadInBackground) {
   utils.closeContentAreaContextMenu(controller);
 
   // A new tab will be opened in the background
-  controller.waitForEval("subject.tabCount == subject.expectedCount", TIMEOUT, 100, {
-    tabCount: tabs.length,
-    expectedCount: tabCount + 1
-  });
+  controller.waitFor(function () {
+    return tabs.length === (tabCount + 1);
+  }, "A new tab has been opened");
 
   if (loadInBackground) {
-    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
-      selectedTabIndex: tabs.selectedIndex,
-      expectedIndex: tabIndex
-    });
+    controller.waitFor(function () {
+      return tabs.selectedIndex === tabIndex;
+    }, "A new tab has been opened in the background");
     tabs.selectedIndex = tabs.selectedIndex + 1;
   } else {
-    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
-      selectedTabIndex: tabs.selectedIndex,
-      expectedIndex: tabIndex + 1
-    });
+    controller.waitFor(function () {
+      return tabs.selectedIndex === tabIndex + 1;
+    }, "A new tab has been opened in the foreground");
   }
 
   controller.waitForPageLoad();
