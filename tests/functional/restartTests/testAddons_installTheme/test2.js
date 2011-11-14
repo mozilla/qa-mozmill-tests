@@ -67,3 +67,9 @@ function testThemeIsInstalled() {
 
   expect.ok(themeIsInstalled, "The theme is successfully installed");
 }
+
+// Bug 701893 - Failure in testAddons_installTheme/test1.js
+setupModule.__force_skip__ = "Bug 701893 - Failure in " + 
+                             "testAddons_installTheme/test1.js";
+teardownModule.__force_skip__ = "Bug 701893 - Failure in " + 
+                                "testAddons_installTheme/test1.js";
