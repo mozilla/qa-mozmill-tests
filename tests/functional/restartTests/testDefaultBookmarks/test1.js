@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -87,10 +88,10 @@ function testVerifyDefaultBookmarks() {
   nodeCollector.root = controller.window.document.getElementById("PlacesToolbarItems");
   var items = nodeCollector.queryNodes("toolbarbutton").elements;
 
-  // For a default profile there should be exactly 3 items
+  // For a default profile there should be exactly 2 items
   controller.assert(function() {
-    return items.length == 3;
-  }, "Bookmarks Toolbar contains 3 items");
+    return items.length == 2;
+  }, "Bookmarks Toolbar contains 2 items");
 
   // Check if the Most Visited folder is visible and has the correct title
   controller.assertJSProperty(items[0], "label", toolbarNodes.getChild(0).title);
@@ -103,55 +104,8 @@ function testVerifyDefaultBookmarks() {
   // Check for the correct path in the URL which also includes the locale
   utils.assertLoadedUrlEqual(controller, toolbarNodes.getChild(1).uri);
 
-  // Check the title of the default RSS feed toolbar button
-  controller.assertJSProperty(items[2], "label", toolbarNodes.getChild(2).title);
-
   // Close the container
   toolbarNodes.containerOpen = false;
-
-  // Create modal dialog observer
-  var md = new modalDialog.modalDialog(controller.window);
-  md.start(feedHandler);
-
-  // XXX: We can't use the new Menu API because of an invalid menu id (bug 612143)
-  // Open the properties dialog of the feed
-  var properties = new elementslib.ID(controller.window.document,
-                                      "placesContext_show:info");
-  controller.rightClick(items[2]);
-  controller.click(properties);
-  md.waitForDialog();
-}
-
-/**
- * Callback handler for modal bookmark properties dialog
- *
- * @param controller {MozMillController} Controller of the modal dialog
- */
-function feedHandler(controller) {
-  try {
-    // Get list of items on the bookmarks toolbar and open container
-    persisted.toolbarNodes.containerOpen = true;
-    var child = persisted.toolbarNodes.getChild(2);
-
-    // Check if the child is a Livemark
-    controller.assert(function() {
-      return ls.isLivemark(child.itemId);
-    }, "Feed item is a live mark");
-
-    // Compare the site and feed URI's
-    var siteLocation = new elementslib.ID(controller.window.document,
-                                          "editBMPanel_siteLocationField");
-    controller.assertValue(siteLocation, ls.getSiteURI(child.itemId).spec);
-
-    var feedLocation = new elementslib.ID(controller.window.document,
-                                          "editBMPanel_feedLocationField");
-    controller.assertValue(feedLocation, ls.getFeedURI(child.itemId).spec);
-
-  } finally {
-    // Close container and properties dialog
-    persisted.toolbarNodes.containerOpen = false;
-    controller.keypress(null, "VK_ESCAPE", {});
-  }
 }
 
 /**
