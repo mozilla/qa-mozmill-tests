@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,7 +38,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
-var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -59,8 +59,6 @@ var setupModule = function() {
 var teardownModule = function() {
   searchBar.clear();
   searchBar.restoreDefaultEngines();
-
-  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
 }
 
 /**
@@ -79,11 +77,8 @@ var testSearchSelectionViaContextMenu = function() {
   // Get text element from web page, which will be used for the search
   var textElem = new elementslib.ID(controller.tabs.activeTab, "goal");
 
-  // Start search which opens a new tab in the background
-  startSearch(textElem, engineName, true);
-
   // Start search which opens a new tab in the foreground
-  startSearch(textElem, engineName, false);
+  startSearch(textElem, engineName);
 }
 
 /**
@@ -96,11 +91,9 @@ var testSearchSelectionViaContextMenu = function() {
  * @param {boolean} loadInBackground
  *        Whether the search results should open in a forground or background tab
  */
-var startSearch = function(element, engineName, loadInBackground) {
+var startSearch = function(element, engineName) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
-
-  prefs.preferences.setPref("browser.tabs.loadInBackground", loadInBackground);
 
   // Select a word and remember the selection
   controller.doubleClick(element, 5, 5);
@@ -119,24 +112,11 @@ var startSearch = function(element, engineName, loadInBackground) {
   controller.click(contextEntry);
   utils.closeContentAreaContextMenu(controller);
 
-  // A new tab will be opened in the background
-  controller.waitForEval("subject.tabCount == subject.expectedCount", TIMEOUT, 100, {
-    tabCount: tabs.length,
-    expectedCount: tabCount + 1
-  });
-
-  if (loadInBackground) {
-    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
-      selectedTabIndex: tabs.selectedIndex,
-      expectedIndex: tabIndex
-    });
-    tabs.selectedIndex = tabs.selectedIndex + 1;
-  } else {
-    controller.waitForEval("subject.selectedTabIndex == subject.expectedIndex", TIMEOUT, 100, {
-      selectedTabIndex: tabs.selectedIndex,
-      expectedIndex: tabIndex + 1
-    });
-  }
+  // A new tab is opened in the foreground
+  controller.waitFor(function () {
+      return (tabs.selectedIndex === (tabIndex + 1));
+    }, "Selected tab: '" + tabs.selectedIndex + "' " + 
+       "- expected '" + (tabIndex + 1) + "'");
 
   controller.waitForPageLoad();
 
