@@ -37,16 +37,26 @@
 
 // Include required modules
 var prefs = require("../../../lib/prefs");
+var softwareUpdate = require("../../../lib/software-update");
 
 
 const PREF_UPDATE_LOG = "app.update.log";
 
 
 function setupModule(module) {
+  update = new softwareUpdate.softwareUpdate();
+
   // Prepare persisted object for update results
-  persisted.updates = [ ];
+  // If an update fails the post build has to be the same as the pre build.
   persisted.updateIndex = 0;
-  
+  persisted.updates = [{
+    build_pre : update.buildInfo,
+    build_post : update.buildInfo,
+    patch : { },
+    fallback : false,
+    success : false
+  }];
+
   // Turn on software update logging
   prefs.preferences.setPref(PREF_UPDATE_LOG, true);
 }

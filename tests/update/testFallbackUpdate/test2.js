@@ -44,13 +44,8 @@ function setupModule(module) {
 }
 
 function teardownModule(module) {
-  // Store the information of the build and the patch
-  persisted.updates[persisted.updateIndex] = {
-    build_pre : update.buildInfo,
-    patch : update.patchInfo,
-    fallback : false,
-    success : false
-  };
+  // Store the patch info from a possibly found update
+  persisted.updates[persisted.updateIndex].patch = update.patchInfo;
 
   // Put the downloaded update into failed state
   update.forceFallback();
