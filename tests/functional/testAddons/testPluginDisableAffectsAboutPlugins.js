@@ -47,7 +47,7 @@ function setupModule() {
 
   // Skip test if we don't have enabled plugins
   if (controller.window.navigator.plugins.length < 1) {
-    testEnableDisablePlugin.__force_skip__ = "No enabled plugins detected";
+    testDisableEnablePlugin.__force_skip__ = "No enabled plugins detected";
     teardownModule.__force_skip__ = "No enabled plugins detected";
   } else {
     persisted.plugin = controller.window.navigator.plugins[0];
@@ -76,30 +76,36 @@ function testDisableEnablePlugin() {
     category: addonsManager.getCategoryById({id: "plugin"})
   });
 
-  persisted.plugin = addonsManager.getAddons({attribute: "name", value: persisted.plugin.name})[0];
+  persisted.plugin = addonsManager.getAddons({attribute: "name",
+                                             value: persisted.plugin.name})[0];
 
   // Check that the plugin is listed on the about:plugins page
-  assert.ok(pluginExistsInAboutPlugins(), persisted.plugin.name + " is listed on the about:plugins page");
+  assert.ok(pluginExistsInAboutPlugins(),
+            persisted.plugin.name + " is listed on the about:plugins page");
 
   // Disable the plugin
   tabBrowser.selectedIndex = 1;
   addonsManager.disableAddon({addon: persisted.plugin});
 
   // Check that the plugin is disabled
-  assert.equal(persisted.plugin.getNode().getAttribute("active"), "false", persisted.plugin.name + " has been disabled");
+  assert.equal(persisted.plugin.getNode().getAttribute("active"),
+               "false", persisted.plugin.name + " has been disabled");
 
   // Check that the plugin disappeared from about:plugins
-  expect.ok(!pluginExistsInAboutPlugins(), persisted.plugin.name + " does not appear in about:plugins");
+  expect.ok(!pluginExistsInAboutPlugins(),
+            persisted.plugin.name + " does not appear in about:plugins");
 
   //Enable the plugin
   tabBrowser.selectedIndex = 1;
   addonsManager.enableAddon({addon: persisted.plugin});
 
   // Check that the plugin is enabled
-  assert.ok(persisted.plugin.getNode().getAttribute("active"), persisted.plugin.name + " has been enabled");
+  assert.ok(persisted.plugin.getNode().getAttribute("active"),
+            persisted.plugin.name + " has been enabled");
 
   // Check that the plugin appears in about:plugins
-  expect.ok(pluginExistsInAboutPlugins(), persisted.plugin.name + " appears in about:plugins");
+  expect.ok(pluginExistsInAboutPlugins(),
+            persisted.plugin.name + " appears in about:plugins");
 }
 
 /**

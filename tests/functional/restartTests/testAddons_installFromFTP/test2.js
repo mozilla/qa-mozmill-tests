@@ -13,12 +13,12 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Florin Maniac <vmaniac@mozilla.com> (original author)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,36 +35,35 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../lib/utils");
+var addons = require("../../../../lib/addons");
+var {assert} = require("../../../../lib/assertions");
+var tabs = require("../../../../lib/tabs");
 
-function setupModule(module) {
+function setupModule() {
   controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+  addonsManager = new addons.AddonsManager(controller);
+
+  tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module) {
-  // Store the patch info from a possibly found update
-  persisted.updates[persisted.updateIndex].patch = update.patchInfo;
-
-  // Put the downloaded update into failed state
-  update.forceFallback();
+function teardownModule() {
+  addonsManager.close();
 }
 
-function testFallbackUpdate_Download() {
-  // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
+/*
+ * Verifies the extension is installed
+ */
+function testAddonInstalled() {
+  // Verify the extension is installed
+  addonsManager.open();
+  addonsManager.setCategory({
+    category: addonsManager.getCategoryById({id: "extension"})
+  });
 
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
+  var addon = addonsManager.getAddons({attribute: "value", 
+                                       value: persisted.addon.id})[0];
 
-  // Download the update
-  update.controller.waitFor(function() {
-    return update.updatesFound;
-  }, "An update has been found.");
-
-  update.download(persisted.channel);
+  assert.ok(addonsManager.isAddonInstalled({addon: addon}), 
+            "Extension '" + persisted.addon.id + 
+            "' has been correctly installed");
 }

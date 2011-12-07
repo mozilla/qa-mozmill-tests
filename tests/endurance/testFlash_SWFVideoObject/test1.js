@@ -13,12 +13,12 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@mozilla.com>
+ *   Alex Lakatos <alex.lakatos@softvision.ro> (original author)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,36 +35,41 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../lib/utils");
+var endurance = require("../../../lib/endurance");
+var tabs = require("../../../lib/tabs");
 
-function setupModule(module) {
+const TEST_DOMAIN = "http://www.mozqa.com/";
+const TEST_PAGE = TEST_DOMAIN + "data/firefox/plugins/flash/test_swf_object.html";
+
+const TIMEOUT_PAGE = 50000;
+
+function setupModule() {
   controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+
+  enduranceManager = new endurance.EnduranceManager(controller);
+  tabBrowser = new tabs.tabBrowser(controller);
+
+  tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module) {
-  // Store the patch info from a possibly found update
-  persisted.updates[persisted.updateIndex].patch = update.patchInfo;
+/*
+ * Test opening flash content loaded via object
+ */
+function testFlashObject() {
+  enduranceManager.run(function () {
+    enduranceManager.loop(function () {
+      // If entity > 1 then open a new tab 
+      if (enduranceManager.currentEntity > 1) {
+        tabBrowser.openTab();
+      } 
 
-  // Put the downloaded update into failed state
-  update.forceFallback();
-}
-
-function testFallbackUpdate_Download() {
-  // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
-
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
-
-  // Download the update
-  update.controller.waitFor(function() {
-    return update.updatesFound;
-  }, "An update has been found.");
-
-  update.download(persisted.channel);
+      // Load the test page in the currently opened tab
+      enduranceManager.addCheckpoint("Load a web page with flash content loaded via object");
+      controller.open(TEST_PAGE);
+      controller.waitForPageLoad(TIMEOUT_PAGE);
+      enduranceManager.addCheckpoint("Web page has been loaded"); 
+    });
+    // Close all tabs
+    tabBrowser.closeAllTabs();
+  });
 }
