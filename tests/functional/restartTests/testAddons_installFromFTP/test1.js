@@ -13,12 +13,12 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Florin Maniac <vmaniac@mozilla.com> (original author)
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,36 +35,35 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../lib/utils");
+var addons = require("../../../../lib/addons");
+var modalDialog = require("../../../../lib/modal-dialog");
+var tabs = require("../../../../lib/tabs");
 
-function setupModule(module) {
+const ADDON = [
+  {id: "test-empty@quality.mozilla.org",
+   url: "ftp://ftp.mozqa.com/data/firefox/addons/extensions/empty.xpi"}
+];
+
+const TIMEOUT_DOWNLOAD = 25000;
+
+function setupModule() {
   controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+  addonsManager = new addons.AddonsManager(controller);
+
+  // Store the extension data in the persisted object
+  persisted.addon = ADDON[0]; 
+
+  tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module) {
-  // Store the patch info from a possibly found update
-  persisted.updates[persisted.updateIndex].patch = update.patchInfo;
-
-  // Put the downloaded update into failed state
-  update.forceFallback();
-}
-
-function testFallbackUpdate_Download() {
-  // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
-
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
-
-  // Download the update
-  update.controller.waitFor(function() {
-    return update.updatesFound;
-  }, "An update has been found.");
-
-  update.download(persisted.channel);
+/*
+ * Installs an extension from FTP server
+ */
+function testInstallAddonFromFTP() {
+  var md = new modalDialog.modalDialog(addonsManager.controller.window);
+                                        
+  // Install the extension 
+  md.start(addons.handleInstallAddonDialog);
+  controller.open(persisted.addon.url);
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 }

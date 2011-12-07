@@ -13,12 +13,13 @@
  *
  * The Original Code is MozMill Test code.
  *
- * The Initial Developer of the Original Code is Mozilla Foundation.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Henrik Skupin <hskupin@mozilla.com>
+ *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,36 +36,44 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../lib/utils");
+var addons = require("../../../../lib/addons");
+var modalDialog = require("../../../../lib/modal-dialog");
+var tabs = require("../../../../lib/tabs");
 
-function setupModule(module) {
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
+const TIMEOUT_DOWNLOAD = 25000;
+
+const THEME = {
+  name: "Theme (Plain)",
+  id: "plain.theme@quality.mozilla.org",
+  url: LOCAL_TEST_FOLDER + "addons/install.html?addon=/themes/plain.jar"
+};
+
+function setupModule() {
   controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+  addonsManager = new addons.AddonsManager(controller);
+
+  // Whitelist add the AMO preview site
+  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+
+  // Store the theme in the persisted object
+  persisted.theme = THEME; 
+
+  tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module) {
-  // Store the patch info from a possibly found update
-  persisted.updates[persisted.updateIndex].patch = update.patchInfo;
-
-  // Put the downloaded update into failed state
-  update.forceFallback();
-}
-
-function testFallbackUpdate_Download() {
-  // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
-
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
-
-  // Download the update
-  update.controller.waitFor(function() {
-    return update.updatesFound;
-  }, "An update has been found.");
-
-  update.download(persisted.channel);
+/**
+ * Test installing a theme
+ */
+function testInstallTheme() {
+  // Go to theme url and perform install
+  controller.open(persisted.theme.url);
+  controller.waitForPageLoad();
+    
+  var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
+  var md = new modalDialog.modalDialog(addonsManager.controller.window);
+  
+  md.start(addons.handleInstallAddonDialog);
+  controller.click(installLink);
+  md.waitForDialog(TIMEOUT_DOWNLOAD); 
 }
