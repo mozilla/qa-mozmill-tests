@@ -22,6 +22,7 @@
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -84,7 +85,7 @@ var testSecNotification = function() {
   controller.assertJS("subject.textContent.indexOf('ssl_error_bad_cert_domain') != -1", text.getNode());
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testSecNotification.meta = {litmusids : [7963]};
+// XXX: Bug 708491 - testSecurityNotification.js fails due to timeout
+//      on cert_domain_link
+setupModule.__force_skip__ = "Bug 708491 - testSecurityNotification.js fails"+
+                             "due to timeout on cert_domain_link";
