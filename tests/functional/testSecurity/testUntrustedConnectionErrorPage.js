@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -67,7 +68,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
   
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testUntrustedPageGetMeOutOfHereButton.meta = {litmusids : [8581]};
+// XXX: Bug 708494 - testUntrustedConnectionErrorPage.js fails to find element
+//      getMeOutOfHereButton
+setupModule.__force_skip__ = "Bug 708494 - testUntrustedConnectionErrorPage.js" +
+                             "fails to find element getMeOutOfHereButton";
