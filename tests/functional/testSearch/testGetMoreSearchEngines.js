@@ -154,7 +154,9 @@ var handleSearchInstall = function(controller)
   controller.waitThenClick(addButton);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// setupModule.meta = {litmusids : [8238]};
+// XXX: "Bug 701901 - Failure in testGetMoreSearchEngines.js: Modal dialog has been found and processed"
+setupModule.__force_skip__ = "Bug 701901 - Failure in testGetMoreSearchEngines.js: " + 
+                             "Modal dialog has been found and processed";
+teardownModule.__force_skip__ = "Bug 701901 - Failure in testGetMoreSearchEngines.js: " + 
+                                "Modal dialog has been found and processed";
+
