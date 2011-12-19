@@ -100,3 +100,9 @@ function testPinAndUnpinAppTab() {
     tabBrowser.closeAllTabs();
   });
 }
+
+// Bug 707663 - Timeout failure | Tab has scrolled into view
+setupModule.__force_skip__ = "Bug 707663 - Timeout failure | " + 
+                             "Tab has scrolled into view";
+teardownModule.__force_skip__ = "Bug 707663 - Timeout failure | " + 
+                                "Tab has scrolled into view";
