@@ -45,7 +45,7 @@ var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'popups/popups_2.html',
+  LOCAL_TEST_FOLDER + 'popups/popup_trigger.html?count=2',
   LOCAL_TEST_FOLDER + 'cookies/cookie_single.html'
 ];
 
