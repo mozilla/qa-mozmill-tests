@@ -67,3 +67,9 @@ function testAddonInstalled() {
             "Extension '" + persisted.addon.id + 
             "' has been correctly installed");
 }
+
+// Bug 709932 - Failure in Restart Tests :: testAddons_installFromFTP
+setupModule.__force_skip__ = "Bug 709932 - Failure in Restart Tests :: " + 
+                             "testAddons_installFromFTP";
+teardownModule.__force_skip__ = "Bug 709932 - Failure in Restart Tests :: " + 
+                                "testAddons_installFromFTP";

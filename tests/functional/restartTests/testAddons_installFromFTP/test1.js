@@ -67,3 +67,7 @@ function testInstallAddonFromFTP() {
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
+
+// Bug 709932 - Failure in Restart Tests :: testAddons_installFromFTP
+setupModule.__force_skip__ = "Bug 709932 - Failure in Restart Tests :: " + 
+                             "testAddons_installFromFTP";

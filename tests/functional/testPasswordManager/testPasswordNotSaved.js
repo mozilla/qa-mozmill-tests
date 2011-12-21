@@ -115,4 +115,7 @@ function checkPasswordsNotSaved(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
+// XXX: Bug 710347 - Failure in testPasswordManager :: testPasswordNotSaved
+setupModule.__force_skip__ = "Bug 710347 - Failure in testPasswordManager :: testPasswordNotSaved";
+teardownModule.__force_skip__ = "Bug 710347 - Failure in testPasswordManager :: testPasswordNotSaved";
 

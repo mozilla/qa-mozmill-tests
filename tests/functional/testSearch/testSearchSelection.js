@@ -146,3 +146,12 @@ var startSearch = function(element, engineName, loadInBackground) {
   tabs.closeTab("shortcut");
   tabs.selectedIndex = tabIndex;
 }
+
+/**
+ * Bug 701903 - Failure in testSearchSelection.js: Timeout exceed for 
+ *             'subject.selectedTabIndex == subject.expectedIndex'
+ */
+setupModule.__force_skip__ = "Bug 701903 - Failure in testSearchSelection.js: " +
+                             "Timeout exceed for subject.selectedTabIndex == subject.expectedIndex";
+teardownModule.__force_skip__ = "Bug 701903 - Failure in testSearchSelection.js: " +
+                                "Timeout exceed for subject.selectedTabIndex == subject.expectedIndex";
