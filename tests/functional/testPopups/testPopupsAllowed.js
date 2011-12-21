@@ -74,7 +74,7 @@ var testPopUpAllowed = function()
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the Pop-up test site
-  controller.open(localTestFolder + "popups/popups_2.html");
+  controller.open(localTestFolder + "popups/popup_trigger.html?count=2");
   controller.waitForPageLoad();
 
   // A notification bar always exists in the DOM so check the visibility of the X button

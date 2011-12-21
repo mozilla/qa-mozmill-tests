@@ -74,7 +74,7 @@ var testPopUpBlocked = function()
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   // Open the Pop-up test site
-  controller.open(localTestFolder + "popups/popups_2.html");
+  controller.open(localTestFolder + "popups/popup_trigger.html?count=2");
   controller.waitForPageLoad();
 
   // Check for the close button in the notification bar
