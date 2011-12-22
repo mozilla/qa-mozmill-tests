@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Vertributed under the License is distributed on an "AS IS" basis,
@@ -54,12 +55,12 @@ var setupModule = function(module)
 
 function teardownModule(module) {
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.com", "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 var testNotificationBar = function() {
-  var badSites = ['http://www.mozilla.com/firefox/its-a-trap.html',
-                  'http://www.mozilla.com/firefox/its-an-attack.html'];
+  var badSites = ['http://www.mozilla.org/firefox/its-a-trap.html',
+                  'http://www.mozilla.org/firefox/its-an-attack.html'];
 
   for (var i = 0; i < badSites.length; i++ ) {
     // Go to one of mozilla's phishing protection test pages
@@ -107,7 +108,7 @@ var checkIgnoreWarningButton = function(badUrl) {
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.com", "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 /**
@@ -116,7 +117,7 @@ var checkIgnoreWarningButton = function(badUrl) {
  * @param badUrl {string} URL of testing page
  */
 var checkNoPhishingButton = function(badUrl) {
-  if (badUrl == 'http://www.mozilla.com/firefox/its-a-trap.html' ) {
+  if (badUrl == 'http://www.mozilla.org/firefox/its-a-trap.html' ) {
     // Click on the web forgery report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAForgeryButton.label");
@@ -130,9 +131,9 @@ var checkNoPhishingButton = function(badUrl) {
     // Verify the not-a-web-forgery report page is loaded
     var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
     controller.waitForElement(urlField, gTimeout);
-    controller.assertValue(urlField, 'http://www.mozilla.com/firefox/its-a-trap.html');
+    controller.assertValue(urlField, 'http://www.mozilla.org/firefox/its-a-trap.html');
 
-  } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
+  } else if (badUrl == 'http://www.mozilla.org/firefox/its-an-attack.html' ) {
     // Click on the attack site report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAnAttackButton.label");
@@ -190,10 +191,3 @@ var checkXButton = function() {
   controller.sleep(1000);
   controller.assertNodeNotExist(button);
 }
-
-// Bug 681920 - Failure in /testSecurity/testSafeBrowsingNotificationBar.js
-// Expression "{"value":"blocked-badware-page"}" returned null. Anonymous == false
-setupModule.__force_skip__ = "Bug 681920 - Failure in /testSecurity/testSafeBrowsingNotificationBar.js | " +
-                             "Expression '{'value':'blocked-badware-page'}' returned null. Anonymous == false";
-teardownModule.__force_skip__ = "Bug 681920 - Failure in /testSecurity/testSafeBrowsingNotificationBar.js | " +
-                                "Expression '{'value':'blocked-badware-page'}' returned null. Anonymous == false";
