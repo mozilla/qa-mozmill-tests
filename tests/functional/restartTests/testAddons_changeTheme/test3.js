@@ -37,10 +37,13 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
+var tabs = require("../../../../lib/tabs");
 
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+
+  tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {  
