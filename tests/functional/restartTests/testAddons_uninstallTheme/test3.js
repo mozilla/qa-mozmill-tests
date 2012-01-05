@@ -42,6 +42,8 @@ var tabs = require("../../../../lib/tabs");
 function setupModule(module) {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+
+  tabs.closeAllTabs(controller)
 }
 
 function teardownModule() {  
