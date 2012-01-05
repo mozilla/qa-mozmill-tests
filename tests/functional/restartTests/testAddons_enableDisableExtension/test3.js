@@ -75,7 +75,3 @@ function testEnableExtension() {
 
   controller.click(restartLink); 
 }
-
-// Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension
-setupModule.__force_skip__ = "Bug 688375 - Test failure 'Add-on not " +
-                             "specified' in testAddons_enableDisableExtension";
