@@ -68,9 +68,3 @@ function testEnabledAddon() {
   // Check if the addon is enabled
   assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");   
 }
-
-// Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension
-setupModule.__force_skip__ = "Bug 688375 - Test failure 'Add-on not " +
-                             "specified' in testAddons_enableDisableExtension";
-teardownModule.__force_skip__ = "Bug 688375 - Test failure 'Add-on not " +
-                                "specified' in testAddons_enableDisableExtension";
