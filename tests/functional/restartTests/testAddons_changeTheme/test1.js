@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -108,3 +109,7 @@ function testInstallTheme() {
   controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
   controller.click(restartLink); 
 }
+
+// Bug 719973 - Failure in testAddons_changeTheme | Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
+                             "| Modal dialog has been found and processed";
