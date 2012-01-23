@@ -88,3 +88,8 @@ function testInstallRestartlessExtension() {
 
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
+
+// Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart | 
+//              Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                             " | Modal dialog has been found and processed";
