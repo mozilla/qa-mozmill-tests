@@ -53,8 +53,9 @@ var testCheckInstalledExtension = function()
   addonsManager.waitForOpened(controller);
 
   // Extensions pane should be selected
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 10000, 100,
-                                       {manager: addonsManager});
+  addonsManager.controller.waitFor(function () {
+    return addonsManager.paneId === 'extensions';
+  }, "Extensions pane has been selected", 10000, 100);
 
   // Notification bar should show one new installed extension
   var notificationBar = addonsManager.getElement({type: "notificationBar"});
@@ -105,6 +106,8 @@ var handleTriggerDialog = function(controller)
 
   var uninstallButton = new elementslib.Lookup(controller.window.document,
                                                '/id("addonList")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", 7000, 100, uninstallButton.getNode());
+  controller.waitFor(function () {
+    return !uninstallButton.getNode().disabled;
+  },"Uninstall button has been enabled", 7000, 100);
   controller.waitThenClick(uninstallButton, gTimeout);
 }

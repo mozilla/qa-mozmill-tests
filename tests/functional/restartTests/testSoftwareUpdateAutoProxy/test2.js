@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -61,8 +62,9 @@ var testSoftwareUpdateAutoProxy = function() {
  
  // Check to see if there are browser updates
  try {
-   update.controller.waitForEval("subject.update.updatesFound == true", TIMEOUT, 100,
-                                 {update: update});
+   update.controller.waitFor(function () {
+     return update.updatesFound;
+   }, "An update has been found");
  } catch(ex) {
    controller.assertJS("subject.currentPage == subject.noUpdatesFoundPage",
                       {currentPage: update.currentPage, noUpdatesFoundPage: 

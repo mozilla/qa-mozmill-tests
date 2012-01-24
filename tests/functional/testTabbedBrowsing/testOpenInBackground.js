@@ -23,6 +23,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -87,8 +88,12 @@ var testOpenInBackgroundTab = function() {
     }
 
     // Check that i+1 tabs are open and the first tab is selected
-    controller.waitForEval("subject.length == " + (i + 2), TIMEOUT, 100, tabBrowser);
-    controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100, tabBrowser);
+    controller.waitFor(function () {
+      return tabBrowser.length === (i + 2);
+    }, (i + 2) + " tabs have been opened");
+    controller.waitFor(function () {
+      return tabBrowser.selectedIndex === 0;
+    }, "First tab has been selected");
 
     if (i == 0) {
       // Switch to the newly opened tab and back to the first tab
@@ -109,8 +114,12 @@ var testOpenInBackgroundTab = function() {
   tabBrowser.closeTab("closeButton");
 
   // Verify that the last tab is selected:
-  controller.waitForEval("subject.length == 3", TIMEOUT, 100, tabBrowser);
-  controller.waitForEval("subject.selectedIndex == 2", TIMEOUT, 100, tabBrowser);
+  controller.waitFor(function () {
+    return tabBrowser.length === 3;
+  }, "A tab has been closed via the close button");
+  controller.waitFor(function () {
+    return tabBrowser.selectedIndex === 2;
+  }, "The last tab has been selected");
 }
 
 var prefDialogCallback = function(controller) {

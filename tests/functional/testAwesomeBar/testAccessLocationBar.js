@@ -22,6 +22,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -92,8 +93,9 @@ var testAccessLocationBarHistory = function()
   controller.sleep(100);
 
   // Check that the first item in the drop down list is selected
-  controller.waitForEval("subject.selectedIndex == 0", TIMEOUT, 100,
-                         locationBar.autoCompleteResults);
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.selectedIndex === 0;
+  }, "The first item in the autocomplete drop down list has been selected");
   locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();

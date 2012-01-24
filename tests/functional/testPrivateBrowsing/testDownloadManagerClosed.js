@@ -21,6 +21,7 @@
  *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -98,7 +99,9 @@ var testDownloadManagerClosed = function() {
   downloadedFiles = dm.getAllDownloads();
 
   // Wait until all downloads have been finished
-  controller.waitForEval("subject.activeDownloadCount == 0", TIMEOUT, DELAY, dm);
+  controller.waitFor(function () {
+    return dm.activeDownloadCount === 0;
+  }, "All downloads have been finished");
 
   // Enable Private Browsing mode
   pb.start();
@@ -111,8 +114,9 @@ var testDownloadManagerClosed = function() {
   dm.controller.waitForElement(downloadView, TIMEOUT);
   
   // Check that no items are listed in the Download Manager
-  dm.controller.waitForEval("subject.itemCount == 0",
-                            TIMEOUT, DELAY, downloadView.getNode());
+  dm.controller.waitFor(function () {
+    return downloadView.getNode().itemCount === 0;
+  }, "The Download Manager has been cleared");
 
   // Close the Download Manager
   dm.close();
@@ -124,7 +128,9 @@ var testDownloadManagerClosed = function() {
   downloadedFiles = downloadedFiles.concat(dm.getAllDownloads());
 
   // Wait until all downloads have been finished
-  controller.waitForEval("subject.activeDownloadCount == 0", TIMEOUT, DELAY, dm);
+  controller.waitFor(function () {
+    return dm.activeDownloadCount === 0;
+  }, "All downloads have been finished");
 
   // Exit Private Browsing mode
   pb.stop();

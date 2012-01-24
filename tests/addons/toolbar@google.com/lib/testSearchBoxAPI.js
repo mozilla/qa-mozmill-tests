@@ -200,7 +200,7 @@ SearchBoxAPI.prototype.clickClearSearchHistory = function() {
     var clearHistoryButtonStyle = this.controller_.window.getComputedStyle(
         clearHistoryButton.getNode(), '');
 
-    // Wsit till the clearHistoryButton is visible. The wait is achieved by
+    // Wait till the clearHistoryButton is visible. The wait is achieved by
     // polling its 'visibility' property.
     this.controller_.waitForEval(
         'subject.getPropertyValue("visibility") == "visible"',

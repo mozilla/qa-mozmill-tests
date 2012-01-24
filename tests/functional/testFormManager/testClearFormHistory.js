@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -82,13 +83,10 @@ var testSaveFormInformation = function() {
   // Verify form completion in each inputted field
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  // TODO: Restore after 1.5.1 lands
-  // controller.waitFor(function() {
-  //   return popDownAutoCompList.getNode().popupOpen == true;
-  // }, TIMEOUT, 100, "Autocomplete popup is open");
-  
-  controller.waitForEval("subject.popupOpen", TIMEOUT, 100,
-                         popDownAutoCompList.getNode());
+
+  controller.waitFor(function() {
+    return popDownAutoCompList.getNode().popupOpen;
+  }, "Autocomplete popup is open");
 
   controller.keypress(firstName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
@@ -97,14 +95,10 @@ var testSaveFormInformation = function() {
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
 
-  // TODO: Restore after 1.5.1 lands
-  // controller.waitFor(function() {
-  //   return popDownAutoCompList.getNode().popupOpen == true;
-  // }, TIMEOUT, 100, "Autocomplete popup is open");
+  controller.waitFor(function() {
+    return popDownAutoCompList.getNode().popupOpen;
+  }, "Autocomplete popup is open");
   
-  controller.waitForEval("subject.popupOpen", TIMEOUT, 100,
-                         popDownAutoCompList.getNode());
-
   controller.keypress(lastName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
   controller.assertValue(lastName, LNAME);

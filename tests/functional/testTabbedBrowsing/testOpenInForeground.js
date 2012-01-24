@@ -23,6 +23,7 @@
  *  Anthony Hughes <ahughes@mozilla.com>
  *  Henrik Skupin <hskupin@mozilla.com>
  *  Geo Mealer <gmealer@mozilla.com>
+ *  Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -96,8 +97,12 @@ var testOpenInForegroundTab = function()
     }
 
     // Let's see if we have the right number of tabs open and that the first opened tab is selected
-    controller.waitForEval("subject.length == " + (i + 2), gTimeout, 100, tabBrowser);
-    controller.waitForEval("subject.selectedIndex == 1", gTimeout, 100, tabBrowser);
+    controller.waitFor(function () {
+      return tabBrowser.length === (i + 2);
+    }, (i + 2) + " tabs have been opened");
+    controller.waitFor(function () {
+      return tabBrowser.selectedIndex === 1;
+    }, "The first opened tab has been selected");
   }
 
   // Verify that the order of tabs is correct
@@ -112,8 +117,12 @@ var testOpenInForegroundTab = function()
   tabBrowser.closeTab("closeButton");
   
   // Verify that we have 3 tabs now and the first tab is selected:
-  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
-  controller.waitForEval("subject.selectedIndex == 0", gTimeout, 100, tabBrowser);
+  controller.waitFor(function () {
+    return tabBrowser.length === 3;
+  }, "3 tabs have been opened");
+  controller.waitFor(function () {
+    return tabBrowser.selectedIndex === 0;
+  }, "The first tab has been selected");
 }
 
 var prefDialogCallback = function(controller) {

@@ -46,8 +46,9 @@ var setupModule = function() {
 
 var testCheckInstalledExtensions = function() {
   addonsManager.waitForOpened(controller);
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 1000, 100,
-                                       {manager: addonsManager});
+  addonsManager.controller.waitFor(function () {
+    return addonsManager.paneId === 'extensions';
+  }, "Extensions pane has been selected", 1000, 100);
 
   for each(addon in persisted.addons) {
     // Confirm the installed extensions are shown in the extensions box

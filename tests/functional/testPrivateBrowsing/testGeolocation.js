@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -86,8 +87,9 @@ var testTabRestoration = function()
 
   try {
     var result = new elementslib.ID(controller.tabs.activeTab, "result");
-    controller.waitForEval("subject.innerHTML != 'undefined'", gTimeout, 100,
-                           result.getNode());
+    controller.waitFor(function () {
+      return result.getNode().innerHTML !== 'undefined';
+    }, "Geolocation position has been found");
     available = true;
   } catch (ex) {}
 

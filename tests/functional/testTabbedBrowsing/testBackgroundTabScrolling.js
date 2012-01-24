@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -85,7 +86,9 @@ var testScrollBackgroundTabIntoView = function()
     tabBrowser.openInNewTab(link1);
 
     // Wait until the new tab has been opened
-    controller.waitForEval("subject.length == " + (++count), gTimeout, 100, tabBrowser);
+    controller.waitFor(function () {
+      return tabBrowser.length === ++count;
+    }, "A new tab has been opened");
   } while ((container.getNode().getAttribute("overflow") != 'true') || count > 50)
 
   // Scroll arrows will be shown when the overflow attribute has been added
@@ -96,10 +99,14 @@ var testScrollBackgroundTabIntoView = function()
   tabBrowser.openInNewTab(link2);
 
   // Check that the List all Tabs button flashes
-  controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity != 0",
-                         gTimeout, 10, {window : controller.window, animateBox: animateBox.getNode()});
-  controller.waitForEval("subject.window.getComputedStyle(subject.animateBox, null).opacity == 0",
-                         gTimeout, 100, {window : controller.window, animateBox: animateBox.getNode()});
+  controller.waitFor(function () {
+    btnStyle = controller.window.getComputedStyle(animateBox.getNode(), null);
+    return btnStyle.opacity !== "0";
+  }, "The 'List all tabs' button has been lit up", undefined, 10);
+  controller.waitFor(function () {
+    btnStyle = controller.window.getComputedStyle(animateBox.getNode(), null);
+    return btnStyle.opacity === "0";
+  }, "The 'List all tabs' button has faded");
 
   // Check that the correct link has been loaded in the last tab
   var lastIndex = controller.tabs.length - 1;
@@ -111,7 +118,9 @@ var testScrollBackgroundTabIntoView = function()
 
   // and is displayed inside the all tabs popup menu
   controller.click(allTabsButton);
-  controller.waitForEval("subject.state == 'open'", gTimeout, 100, allTabsPopup.getNode());
+  controller.waitFor(function () {
+    return allTabsPopup.getNode().state === 'open';
+  }, "The all tabs popup has been opened");
 
   for (var ii = 0; ii <= lastIndex; ii++) {
     if (ii < lastIndex)
@@ -123,7 +132,9 @@ var testScrollBackgroundTabIntoView = function()
   }
 
   controller.click(allTabsButton);
-  controller.waitForEval("subject.state == 'closed'", gTimeout, 100, allTabsPopup.getNode());
+  controller.waitFor(function () {
+    return allTabsPopup.getNode().state === 'closed';
+  }, "The 'List all tabs' popup has been closed");
 }
 
 /**

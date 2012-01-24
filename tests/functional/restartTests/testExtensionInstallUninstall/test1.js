@@ -70,7 +70,9 @@ var testInstallExtension = function() {
   addonsManager.controller.waitThenClick(browseAllAddons, TIMEOUT);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", TIMEOUT, 100, controller);
+  controller.waitFor(function () {
+    return controller.tabs.length === 2;
+  }, "A new tab has been created");
   controller.waitForPageLoad();
 
   controller.open(persisted.url);
@@ -86,8 +88,9 @@ var testInstallExtension = function() {
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
-                                       {manager: addonsManager});
+  addonsManager.controller.waitFor(function () {
+    return addonsManager.paneId === 'installs';
+  }, "Installation pane has been selected");
 
   // Check if the installed extension is visible in the Add-ons Manager
   var extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
@@ -128,6 +131,8 @@ var handleTriggerDialog = function(controller) {
   // Wait for the install button is enabled before clicking on it
   var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
+  controller.waitFor(function () {
+    return !installButton.getNode().disabled;
+  }, "Install button has been enabled", 7000, 100);
   controller.click(installButton);
 }

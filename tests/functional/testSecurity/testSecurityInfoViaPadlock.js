@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -79,9 +80,9 @@ function checkSecurityTab(controller) {
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.waitForEval("subject.domainLabel.indexOf(subject.CName) != -1", gTimeout, 100,
-                         {domainLabel: webIDDomainLabel.getNode().value,
-                          CName: cert.commonName});
+  controller.waitFor(function () {
+    return webIDDomainLabel.getNode().value.indexOf(cert.commonName) !== -1;
+  }, "Found certificate common name '" + cert.commonName + "'");
 
   // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,

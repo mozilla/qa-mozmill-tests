@@ -126,7 +126,9 @@ var testGetAddonsTab = function()
   addonsManager.controller.waitThenClick(browseAllAddons, gTimeout);
 
   // The target web page is loaded lazily so wait for the newly created tab first
-  controller.waitForEval("subject.tabs.length == 2", gTimeout, 100, controller);
+  controller.waitFor(function () {
+    return controller.tabs.length === 2;
+  }, "AMO has been opened in a new tab");
   controller.waitForPageLoad();
   utils.assertLoadedUrlEqual(controller, browseAddonUrl);
 }

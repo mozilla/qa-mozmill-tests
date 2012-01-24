@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Alex Lakatos <alex.lakatos@softvision.ro>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -73,8 +74,9 @@ var testGetMoreEngines = function()
   var tabCount = controller.tabs.length;
   searchBar.openEngineManager(enginesHandler);
 
-  controller.waitForEval("subject.tabs.length == (subject.preCount + 1)", TIMEOUT, 100,
-                         {tabs: controller.tabs, preCount: tabCount});
+  controller.waitFor(function () {
+    return controller.tabs.length === (tabCount + 1);
+  }, "The 'Get More Engines' link has been opened in a new tab");
   controller.waitForPageLoad();
 
   // Install the engine from the Open the search provider page before installing the engine
@@ -86,8 +88,10 @@ var testGetMoreEngines = function()
   var installButton = new elementslib.Selector(controller.tabs.activeTab,
                                                ".installer");
 
-  controller.waitForEval("subject.installButtonClass.indexOf('installer') != -1", TIMEOUT, 100,
-                        {installButtonClass: installButton.getNode().getAttribute('class')});
+  controller.waitFor(function () {
+    buttonClass = installButton.getNode().getAttribute('class');
+    return buttonClass.indexOf('installer') !== -1;
+  }, "The button class has been changed");
 
   // Create a modal dialog instance to handle the engine installation dialog
   var md = new modalDialog.modalDialog(controller.window);

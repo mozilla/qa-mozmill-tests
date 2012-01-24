@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -94,19 +95,18 @@ var testInstallExtension = function()
   addonsManager.controller.waitThenClick(installButton);
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs' || " +
-                                       "subject.extension.getAttribute('action') == 'installing'",
-                                       gTimeout,
-                                       100,
-                                       {manager: addonsManager, extension: extension.getNode()});
+  addonsManager.controller.waitFor(function () {
+    action = extension.getNode().getAttribute('action');
+    return addonsManager.paneId === 'installs' || action === 'installing';
+  }, "Installation pane has been selected or the extension is installing");
   addonsManager.paneId = "installs";
 
   // ... and that the installation has been finished
   extension = addonsManager.getListboxItem("addonID", persisted.extensionId);
   addonsManager.controller.waitForElement(extension, TIMEOUT_INSTALLATION);
-  addonsManager.controller.waitForEval("subject.extension.getAttribute('state') == 'success'",
-                                       gTimeout, 100,
-                                       {extension: extension.getNode()});
+  addonsManager.controller.waitFor(function () {
+    return extension.getNode().getAttribute('state') === 'success';
+  }, "The extension has been installed");
 
   // Check if restart button is present
   var restartButton = addonsManager.getElement({type: "notificationBar_buttonRestart"});
@@ -143,7 +143,8 @@ var handleTriggerDialog = function(controller)
   // Wait for the install button is enabled before clicking on it
   var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", 7000, 100, installButton.getNode());
+  controller.waitFor(function () {
+    return !installButton.getNode().disabled;
+  }, "The Install button has been enabled", 7000, 100);
   controller.click(installButton);
 }
-

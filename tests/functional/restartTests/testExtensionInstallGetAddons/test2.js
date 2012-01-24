@@ -20,6 +20,7 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -51,8 +52,9 @@ var testCheckExtensionInstalled = function()
   addonsManager.waitForOpened(controller);
 
   // Extensions pane should be selected
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'extensions'", 10000, 100,
-                                       {manager: addonsManager});
+  addonsManager.controller.waitFor(function () {
+    return addonsManager.paneId === 'extensions';
+  }, "Extensions pane has been selected", 10000, 100);
 
   // Notification bar should show one new installed extension
   var notificationBar = addonsManager.getElement({type: "notificationBar"});
@@ -65,4 +67,3 @@ var testCheckExtensionInstalled = function()
   addonsManager.controller.assertJS("subject.isExtensionInstalled == true",
                                     {isExtensionInstalled: extension.getNode().getAttribute('newAddon') == 'true'});
 }
-

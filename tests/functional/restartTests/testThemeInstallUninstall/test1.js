@@ -85,8 +85,9 @@ var testInstallTheme = function()
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   // Wait that the Installation pane is selected after the extension has been installed
-  addonsManager.controller.waitForEval("subject.manager.paneId == 'installs'", TIMEOUT, 100,
-                                       {manager: addonsManager});
+  addonsManager.controller.waitFor(function () {
+    return addonsManager.paneId === 'installs';
+  }, "Installation pane has been selected");
 
   // Wait until the Theme has been installed.
   var theme = addonsManager.getListboxItem("addonID", persisted.themeId);
@@ -135,6 +136,8 @@ var handleTriggerDialog = function(controller)
   // Wait for the install button is enabled before clicking on it
   var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitForEval("subject.disabled != true", undefined, 100, installButton.getNode());
+  controller.waitFor(function () {
+    return !installButton.getNode().disabled;
+  }, "Install button has been enabled", undefined, 100);
   controller.click(installButton);
 }
