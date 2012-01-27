@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -68,8 +69,3 @@ var testShortcutAndSearch = function()
   searchBar.focus({type: "shortcut"});
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
-
-setupModule.__force_skip__ = "Bug 686639 - Failure in /testSearch/testFocusAndSearch.js | " +
-                             "test gets wrong URL";
-teardownTest.__force_skip__ = "Bug 686639 - Failure in /testSearch/testFocusAndSearch.js | " +
-                                "test gets wrong URL";
