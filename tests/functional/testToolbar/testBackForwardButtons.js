@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -82,7 +83,8 @@ var testBackAndForward = function() {
   }
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testBackAndForward.meta = {litmusids : [8032]};
+// Bug 704140 - Failure in /testToolbar/testBackForwardButtons.js | 
+//              Timeout waiting for element with id mission_statement
+setupModule.__force_skip__ = "Bug 704140 - Failure in /testToolbar/" +
+                             "testBackForwardButtons.js | " +
+                             "Timeout waiting for element with id mission_statement";
