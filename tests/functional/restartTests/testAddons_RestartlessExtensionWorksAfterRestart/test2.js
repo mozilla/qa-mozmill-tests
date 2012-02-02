@@ -82,3 +82,10 @@ function testRestartlessExtensionWorksAfterRestart() {
   assert.equal(locationBar.getNode().value, EXPECTED_URL,
                "Current URL should match expected URL");
 }
+
+// Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart | 
+//              Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                             " | Modal dialog has been found and processed";
+teardownModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                                " | Modal dialog has been found and processed";

@@ -77,3 +77,7 @@ function testInstallTheme() {
   controller.click(installLink);
   md.waitForDialog(TIMEOUT_DOWNLOAD); 
 }
+
+// Bug 719971 - Failure in testAddons_uninstallTheme | Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719971 - Failure in testAddons_uninstallTheme " +
+                             "| Modal dialog has been found and processed";

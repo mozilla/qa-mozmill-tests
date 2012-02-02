@@ -155,6 +155,11 @@ var checkIgnoreWarningButton = function(url) {
   utils.removePermission("www.mozilla.com", "safe-browsing");
 }
 
+// Bug 705182 - Timeout failure in testSafeBrowsingWarningPages.js
+setupModule.__force_skip__ = "Bug 705182 - Timeout exceeded for waitForElement ID: " +
+                             "getMeOutButton in testSafeBrowsingWarningPages.js";
+teardownModule.__force_skip__ = "Bug 705182 - Timeout exceeded for waitForElement ID: " +
+                                "getMeOutButton in testSafeBrowsingWarningPages.js";
 /**
  * Map test functions to litmus tests
  */

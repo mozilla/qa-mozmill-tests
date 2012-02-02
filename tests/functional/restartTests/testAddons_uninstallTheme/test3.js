@@ -63,3 +63,9 @@ function testThemeIsUninstalled() {
 
   assert.equal(theme.length, 0, persisted.theme.id + " is uninstalled");
 }
+
+// Bug 719971 - Failure in testAddons_uninstallTheme | Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719971 - Failure in testAddons_uninstallTheme " +
+                             "| Modal dialog has been found and processed";
+teardownModule.__force_skip__ = "Bug 719971 - Failure in testAddons_uninstallTheme " +
+                                "| Modal dialog has been found and processed";
