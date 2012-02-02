@@ -70,7 +70,3 @@ function testInstallAddon() {
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
-
-// Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension
-setupModule.__force_skip__ = "Bug 688375 - Test failure 'Add-on not " +
-                             "specified' in testAddons_enableDisableExtension";

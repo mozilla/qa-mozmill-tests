@@ -21,6 +21,7 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -38,6 +39,7 @@
 
 // Include required modules
 var places = require("../../../lib/places");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const TIMEOUT = 5000;
@@ -47,6 +49,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
+  locationBar =  new toolbars.locationBar(controller);
 }
 
 var teardownModule = function() {
@@ -71,14 +74,11 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.click(bookmarkMenuItem);
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
-  controller.waitForEval("subject._overlayLoaded == true", TIMEOUT, 100, 
-                         controller.window.top.StarUI);
+  locationBar.editBookmarksPanel.waitForPanel();
 
   // Bookmark should automatically be stored under the Bookmark Menu
-  var nameField = new elementslib.ID(controller.window.document, 
-                                     "editBMPanel_namePicker");
-  var doneButton = new elementslib.ID(controller.window.document, 
-                                      "editBookmarkPanelDoneButton");
+  var nameField = locationBar.editBookmarksPanel.getElement({type: "nameField"});
+  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
 
   controller.type(nameField, "Mozilla");
   controller.click(doneButton);

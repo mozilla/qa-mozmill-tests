@@ -11,15 +11,14 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is MozMill Test code.
+ * The Original Code is Mozmill Test code.
  *
- * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * The Initial Developer of the Original Code is Mozilla Foundation.
  * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
- *   Remus Pop <remus.pop@softvision.ro>
+ *   Vlad Florin Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,43 +34,40 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include required modules
-var addons = require("../../../../lib/addons");
-var tabs = require("../../../../lib/tabs");
+// Include the required modules
+var addons = require("../../../lib/addons");
+var endurance = require("../../../lib/endurance");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
 
-const TIMEOUT_USERSHUTDOWN = 2000;
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
+const PREF_VALUE = "addons://list/extension";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
 
-  tabs.closeAllTabs(controller);
+  enduranceManager = new endurance.EnduranceManager(controller);
+  addonsManager = new addons.AddonsManager(controller);
+  tabBrowser = new tabs.tabBrowser(controller);  
+
+  tabBrowser.closeAllTabs();
+
+  prefs.preferences.setPref(PREF_LAST_CATEGORY, PREF_VALUE);
 }
 
-/**
-* Test disable an extension
-*/
-function testDisableExtension() {
-  addonsManager.open();
+function teardownModule() {
+  // Make Add-ons Manager forget last visited category
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+}
 
-  // Get the extensions pane
-  addonsManager.setCategory({
-    category: addonsManager.getCategoryById({id: "extension"})
+function testOpenAndCloseExtensionList() {
+  enduranceManager.run(function () {
+    // Open Add-ons Manager
+    addonsManager.open();
+    enduranceManager.addCheckpoint("Extensions list opened");
+
+    // Close Add-ons Manager
+    addonsManager.close();
+    enduranceManager.addCheckpoint("Extensions list closed");
   });
-
-  // Get the addon by name 
-  var addon = addonsManager.getAddons({attribute: "value", 
-                                       value: persisted.addon.id})[0];
-
-  // Disable the addon
-  addonsManager.disableAddon({addon: addon});
-
-  // Click on the list view restart link 
-  var restartLink = addonsManager.getElement({type: "listView_restartLink", 
-                                              parent: addon});
-  
-  // User initiated restart
-  controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
-
-  controller.click(restartLink);    
 }
