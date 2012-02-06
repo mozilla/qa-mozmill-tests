@@ -23,6 +23,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -40,11 +41,14 @@
 
 // Include required modules
 var {expect} = require("../../../lib/assertions");
+var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
+const PREF_NEWTAB_URL = "browser.newtab.url";
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
@@ -99,11 +103,17 @@ function testNewTab() {
  * @param {String} aEventType Type of event which triggers the action
  */
 function checkOpenTab(aEventType) {
-  // Open a new tab and check that 'about:blank' has been opened
+  // Open a new tab and check that 'about:newtab' has been opened
   tabBrowser.openTab(aEventType);
 
+  // XXX: Remove this line when Bug 716108 lands
+  controller.waitForPageLoad();
+
+  var newTabURL = prefs.preferences.getPref(PREF_NEWTAB_URL, '');
+
   expect.equal(tabBrowser.length, 2, "Two tabs visible - opened via " + aEventType);
-  expect.equal(controller.tabs.activeTab.location.href, "about:blank", "Opened blank tab");
+  expect.equal(controller.tabs.activeTab.location.href, newTabURL, 
+               "Opened new tab");
 
   // The tabs title should be 'New Tab'
   var title = utils.getProperty(["chrome://browser/locale/tabbrowser.properties"],
