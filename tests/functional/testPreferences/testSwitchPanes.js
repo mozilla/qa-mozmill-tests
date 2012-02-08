@@ -44,6 +44,8 @@
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
+const gDelay = 100;
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
@@ -73,11 +75,7 @@ var prefDialogCallback = function(controller) {
   // Step through each of the panes
   panes.forEach(function (pane) {
     prefDialog.paneId = pane;
-    var lastSelected = controller.window.document.documentElement.getAttribute("lastSelected");
-
-    controller.waitFor(function () {
-      return (lastSelected === pane); 
-    }, "'" + lastSelected + "' pane has been selected");
+    controller.sleep(gDelay);
   });
 
   // Close the Preferences window
