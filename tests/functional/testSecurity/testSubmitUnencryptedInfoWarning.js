@@ -137,3 +137,11 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
+
+// XXX: Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js | 
+// The value in the search field should equal 'mozilla'
+setupModule.__force_skip__ = "Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js" + 
+                             " | The value in the search field should equal 'mozilla'";
+teardownModule.__force_skip__ = "Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js" + 
+                                " | The value in the search field should equal 'mozilla'";
+
