@@ -70,9 +70,28 @@ SeleniumManager.prototype = {
    * Open Selenium IDE
    *
    * @param {MozMillController} browserController Mozmill controller of the browser window
+   * @param {String} [aEventType="menu"] Type of event which triggers the action
+   *   <dl>
+   *     <dt>menu</dt>
+   *     <dd>The main menu is used</dd>
+   *     <dt>shortcut</dt>
+   *     <dd>The keyboard shortcut is used</dd>
+   *   </dl>
    */
-  open : function SeleniumManager_open(browserController) {
-    browserController.mainMenu.click("#menuToolsSeleniumIDE");
+  open : function SeleniumManager_open(browserController, aEventType) {
+    var type = aEventType || "menu";
+
+    switch (type) {
+      case "menu":
+        browserController.mainMenu.click("#menuToolsSeleniumIDE");
+        break;
+      case "shortcut":
+        browserController.keypress(null, "S", {ctrlKey: true, altKey: true});
+        break;
+      default:
+        throw new Error(arguments.callee.name + ": Unknown event type - " + event.type);
+    }
+
     this._controller = Utils.handleWindow("type", "global:selenium-ide", undefined, false);
   },
 
