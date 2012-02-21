@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -75,6 +76,10 @@ var testMultipleEngines = function()
                       {suggestionsDifferent: different});
 }
 
+// Bug 727474 - Failure in testSearchSuggestions | Auto-complete popup has been
+// closed
+setupModule.__force_skip__ = "Bug 727474 - Failure in testSearchSuggestions |"+
+                             "Auto-complete popup has been closed"
 
 // Bug 609077: Search suggestions are not always displayed
 if (mozmill.isLinux) {
