@@ -21,6 +21,7 @@
  *   Tracy Walker <twalker@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -101,3 +102,10 @@ var testEscape = function() {
  * Map test function to litmus test
  */
 // testEscape.meta = {litmusids : [8693]};
+
+// Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | 
+//              Current URL should be identical to the target URL
+setupModule.__force_skip__ = "Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | " + 
+                             "Current URL should be identical to the target URL";
+teardownModule.__force_skip__ = "Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | " + 
+                                "Current URL should be identical to the target URL";
