@@ -20,7 +20,6 @@
  * Contributor(s):
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -94,16 +93,16 @@ var testCloseWindow = function() {
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 
-  controller.waitFor(function () {
-    return mozmill.utils.getWindows().length === (windowCount - 1);
-  }, "The window has been closed");
+  controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
+                         TIMEOUT, 100,
+                         {utils: mozmill.utils, expectedCount: (windowCount - 1)});
 
   // Without a window any keypress and menu click will fail.
   // Flipping the pref directly will also do it.
   pb.enabled = false;
-  controller.waitFor(function () {
-    return mozmill.utils.getWindows().length === windowCount;
-  }, "A window has been opened");
+  controller.waitForEval("subject.utils.getWindows().length == subject.expectedCount",
+                         TIMEOUT, 100,
+                         {utils: mozmill.utils, expectedCount: windowCount});
 
   utils.handleWindow("type", "navigator:browser", checkWindowOpen, false);
 }

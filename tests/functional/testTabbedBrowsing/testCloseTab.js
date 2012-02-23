@@ -22,7 +22,6 @@
  * Contributor(s):
  *  Henrik Skupin <hskupin@mozilla.com>
  *  Geo Mealer <gmealer@mozilla.com>
- *  Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -59,33 +58,23 @@ var testCloseTab = function()
     tabBrowser.openTab();
   }
 
-  controller.waitFor(function () {
-    return tabBrowser.length === 5;
-  }, "5 tabs have been opened");
+  controller.waitForEval("subject.length == 5",  gTimeout,   100, tabBrowser);
 
   // Close a tab by pressing the keyboard shortcut:
   tabBrowser.closeTab("shortcut");
-  controller.waitFor(function () {
-    return tabBrowser.length === 4;
-  }, "One tab has been closed via keyboard shortcut");
+  controller.waitForEval("subject.length == 4", gTimeout, 100, tabBrowser);
 
   // Close a tab via File > Close tab:
   tabBrowser.closeTab("menu");
-  controller.waitFor(function () {
-    return tabBrowser.length === 3;
-  }, "One tab has been closed via File menu");
+  controller.waitForEval("subject.length == 3", gTimeout, 100, tabBrowser);
 
   // Close an inactive tab via middle click
   tabBrowser.closeTab("middleClick", 0);
-  controller.waitFor(function () {
-    return tabBrowser.length === 2;
-  }, "One tab has been closed via middle click");
+  controller.waitForEval("subject.length == 2", gTimeout, 100, tabBrowser);
 
   // Close a tab via the close button on the tab itself:
   tabBrowser.closeTab("closeButton");
-  controller.waitFor(function () {
-    return tabBrowser.length === 1;
-  }, "One tab has been closed using the close button");
+  controller.waitForEval("subject.length == 1", gTimeout, 100, tabBrowser);
 }
 
 /**

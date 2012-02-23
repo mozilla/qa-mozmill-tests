@@ -20,7 +20,6 @@
  * Contributor(s):
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -70,10 +69,7 @@ var testIdentityPopupOpenClose = function() {
 
   // Check the popup state
   var popup = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
-    return popup.getNode().state === 'open';
-  }, "Identity popup has been opened");
-
+  controller.waitForEval("subject.state == 'open'", gTimeout, 100, popup.getNode());
   controller.sleep(gDelay);
 
   // Check the visibility of the more info button
@@ -85,9 +81,7 @@ var testIdentityPopupOpenClose = function() {
   controller.click(contentArea);
 
   // Check the popup state again
-  controller.waitFor(function () {
-    return popup.getNode().state === 'closed';
-  }, "Identity popup has been closed");
+  controller.waitForEval("subject.state == 'closed'", gTimeout, 100, popup.getNode());
 }
 
 /**

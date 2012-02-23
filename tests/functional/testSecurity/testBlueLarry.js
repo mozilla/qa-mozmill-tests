@@ -21,7 +21,6 @@
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -81,9 +80,7 @@ var testLarryBlue = function() {
 
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
-    return doorhanger.getNode().state === 'open';
-  }, "Identity popup has been opened");
+  controller.waitForEval("subject.state == 'open'", 2000, 100, doorhanger.getNode());
 
   // Check that the Larry UI is domain verified (aka Blue)
   controller.assertJSProperty(doorhanger, "className", "verifiedDomain");

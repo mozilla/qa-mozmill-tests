@@ -20,7 +20,6 @@
  * Contributor(s):
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -129,9 +128,7 @@ var langHandler = function(controller) {
   
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(controller.window.document, "addButton");
-  controller.waitFor(function () {
-    return !addButton.getNode().disabled;
-  }, "The 'Add' button has been enabled");
+  controller.waitForEval("subject.disabled == false", gTimeout, 100, addButton.getNode());
   controller.click(addButton);
 
   // Move the Language to the Top of the List and Accept the new settings

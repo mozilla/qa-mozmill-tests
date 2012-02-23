@@ -20,7 +20,6 @@
  * Contributor(s):
  *   Anthony Hughes <anthony.s.hughes@gmail.com>
  *   Henrik Skupin <hskupin@mozilla.com>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -69,9 +68,8 @@ var testCloseDownloadManager = function()
   // Test ESC
   dm.open(controller, false);
   dm._controller.keypress(null, "VK_ESCAPE", {});
-  controller.waitFor(function () {
-    return mozmill.utils.getWindows().length === windowCount;
-  }, "The Download Manager has been closed");
+  controller.waitForEval("subject.getWindows().length == " + windowCount,
+                         gTimeout, 100, mozmill.utils);
 
   // Test ACCEL+W
   // This is tested by dm.close()
@@ -84,9 +82,8 @@ var testCloseDownloadManager = function()
     var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2Unix.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {shiftKey:true, accelKey:true});
-    controller.waitFor(function () {
-      return mozmill.utils.getWindows().length === windowCount;
-    }, "The Download Manager has been closed"); 
+    controller.waitForEval("subject.getWindows().length == " + windowCount,
+                           gTimeout, 100, mozmill.utils); 
   }
 
   // Test ACCEL+J
@@ -95,9 +92,8 @@ var testCloseDownloadManager = function()
     var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {accelKey:true});
-    controller.waitFor(function () {
-      return mozmill.utils.getWindows().length === windowCount;
-    }, "The Download Manager has been closed"); 
+    controller.waitForEval("subject.getWindows().length == " + windowCount,
+                           gTimeout, 100, mozmill.utils); 
   }
 }
 

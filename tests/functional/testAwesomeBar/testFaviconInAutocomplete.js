@@ -22,7 +22,6 @@
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Geo Mealer <gmealer@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
- *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -92,9 +91,7 @@ var testFaviconInAutoComplete = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Ensure the autocomplete list is open
-  controller.waitFor(function () {
-    return locationBar.autoCompleteResults.isOpened;
-  }, "Autocomplete list has been opened");
+  controller.waitForEval('subject.isOpened == true', 3000, 100, locationBar.autoCompleteResults);
 
   // Get the URL for the autocomplete Favicon for the matched entry
   var listFaviconUrl = richlistItem.getNode().boxObject.firstChild.childNodes[0].getAttribute('src');

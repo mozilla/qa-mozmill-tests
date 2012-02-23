@@ -87,9 +87,8 @@ var testTabRestoration = function()
 
   try {
     var result = new elementslib.ID(controller.tabs.activeTab, "result");
-    controller.waitFor(function () {
-      return results.getNode().innerHTML !== 'undefined';
-    }, "Geolocation position has been found");
+    controller.waitForEval("subject.innerHTML != 'undefined'", gTimeout, 100,
+                           result.getNode());
     available = true;
   } catch (ex) {}
 
