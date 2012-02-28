@@ -21,6 +21,7 @@
  *   Aakash Desai <adesai@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Remus Pop <remus.pop@softvision.ro>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -150,3 +151,10 @@ var langHandler = function(controller) {
  * Map test functions to litmus tests
  */
 // testSetLanguages.meta = {litmusids : [8322]};
+
+// Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | 
+//              could not find element Link: Gruppi
+setupModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
+                             "could not find element Link: Gruppi";
+teardownModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
+                                "could not find element Link: Gruppi";
