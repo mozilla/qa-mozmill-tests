@@ -102,10 +102,3 @@ var testEscape = function() {
  * Map test function to litmus test
  */
 // testEscape.meta = {litmusids : [8693]};
-
-// Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | 
-//              Current URL should be identical to the target URL
-setupModule.__force_skip__ = "Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | " + 
-                             "Current URL should be identical to the target URL";
-teardownModule.__force_skip__ = "Bug 729037 - Mozmill test failure /testAwesomeBar/testEscapeAutocomplete.js | " + 
-                                "Current URL should be identical to the target URL";
