@@ -21,6 +21,7 @@
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Henrik Skupin <hskupin@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -90,7 +91,7 @@ var testPermissionsDisabled = function() {
   var allow = new elementslib.XPath(controller.window.document, 
                                     '/*[name()="window"]' +
                                     '/*[name()="popupset"][1]' +
-                                    '/*[name()="menupopup"][4]' +
+                                    '/*[name()="menupopup"][5]' +
                                     '/*[name()="menuitem"][1]');
 
   controller.waitForElement(allow);
