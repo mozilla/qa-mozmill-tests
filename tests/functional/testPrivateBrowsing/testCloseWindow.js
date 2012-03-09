@@ -114,7 +114,9 @@ function checkWindowOpen(controller) {
                       {tabs: controller.tabs, expectedCount: (LOCAL_TEST_PAGES.length + 1)});
 
   // Check if all local pages were re-loaded and show their content
+  tabBrowser = new tabs.tabBrowser(controller);
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    tabBrowser.selectedIndex = i;
     var tab = controller.tabs.getTab(i);
     controller.waitForPageLoad(tab);
 
