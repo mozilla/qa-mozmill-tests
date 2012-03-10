@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *   Vlad Maniac <vlad.maniac@softvisioninc.eu> (original author)
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -64,3 +65,9 @@ function testChangedThemeToDefault() {
 
   assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
 }
+
+// Bug 719973 - Failure in testAddons_changeTheme | Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
+                             "| Modal dialog has been found and processed";
+teardownModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
+                                "| Modal dialog has been found and processed";
