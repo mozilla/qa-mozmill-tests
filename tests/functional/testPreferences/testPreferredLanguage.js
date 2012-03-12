@@ -72,12 +72,12 @@ var testSetLanguages = function () {
   if (browserLocale == "it") {
     // Verify the site is Polish oriented
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Zaloguj"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Grupy"));
+    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Dokumenty"));
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Szukanie zaawansowane"));
   } else {
     // Verify the site is Italian oriented
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Gruppi"));
+    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Documenti"));
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
   }
 }
@@ -151,10 +151,3 @@ var langHandler = function(controller) {
  * Map test functions to litmus tests
  */
 // testSetLanguages.meta = {litmusids : [8322]};
-
-// Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | 
-//              could not find element Link: Gruppi
-setupModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
-                             "could not find element Link: Gruppi";
-teardownModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
-                                "could not find element Link: Gruppi";
