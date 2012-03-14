@@ -22,6 +22,7 @@
  *   Anthony Hughes <ashughes@mozilla.com>
  *   Aaron Train <atrain@mozilla.com>
  *   Remus Pop <remus.pop@softvision.ro>
+ *   Vlad Maniac <vmaniac@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -101,7 +102,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
-  prefs.preferences.setPref("browser.tabs.loadInBackground", loadInBackground);
+  prefs.preferences.setPref("browser.search.context.loadInBackground", loadInBackground);
 
   // Select a word and remember the selection
   controller.doubleClick(element, 5, 5);
@@ -144,12 +145,3 @@ var startSearch = function(element, engineName, loadInBackground) {
   tabs.closeTab("shortcut");
   tabs.selectedIndex = tabIndex;
 }
-
-/**
- * Bug 701903 - Failure in testSearchSelection.js: Timeout exceed for 
- *             'subject.selectedTabIndex == subject.expectedIndex'
- */
-setupModule.__force_skip__ = "Bug 701903 - Failure in testSearchSelection.js: " +
-                             "Timeout exceed for subject.selectedTabIndex == subject.expectedIndex";
-teardownModule.__force_skip__ = "Bug 701903 - Failure in testSearchSelection.js: " +
-                                "Timeout exceed for subject.selectedTabIndex == subject.expectedIndex";
