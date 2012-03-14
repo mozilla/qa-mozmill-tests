@@ -22,6 +22,7 @@
  *   Aaron Train <atrain@mozilla.com>
  *   Anthony Hughes <ahughes@mozilla.com>
  *   Alex Lakatos <alex.lakatos@softvision.ro>
+ *   Remus Pop <remus.pop@softvision.ro>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -115,6 +116,7 @@ function testStartStopPrivateBrowsingMode() {
                       {allTabsRestored: controller.tabs.length == LOCAL_TEST_PAGES.length + 1});
 
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    tabBrowser.selectedIndex = i;
     controller.waitForPageLoad(controller.tabs.getTab(i));
 
     // waitForElement is used on exit of PB mode because pages are loaded from bfcache 

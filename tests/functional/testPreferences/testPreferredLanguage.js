@@ -72,12 +72,12 @@ var testSetLanguages = function () {
   if (browserLocale == "it") {
     // Verify the site is Polish oriented
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Zaloguj"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Grupy"));
+    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Dokumenty"));
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Szukanie zaawansowane"));
   } else {
     // Verify the site is Italian oriented
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Gruppi"));
+    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Documenti"));
     controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
   }
 }
