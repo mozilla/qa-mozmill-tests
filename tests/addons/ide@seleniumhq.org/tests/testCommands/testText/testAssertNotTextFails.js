@@ -35,14 +35,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include required modules
-var selenium = require("../../../lib/selenium");
+var {assert} = require("../../../../../../lib/assertions");
 var checks = require("../../../lib/checks");
+var selenium = require("../../../lib/selenium");
+var tabs = require("../../../../../../lib/tabs");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
+
   sm = new selenium.SeleniumManager();
   sm.open(controller);
+
+  tabs.closeAllTabs(controller);
+  controller.open("chrome://selenium-ide/content/tests/functional/aut/search.html");
+  controller.waitForPageLoad();
 }
 
 function teardownModule(module) {
@@ -50,9 +56,6 @@ function teardownModule(module) {
 }
 
 function testAssertNotTextCommandFails() {
-  sm.baseURL = "chrome://selenium-ide/";
-  sm.addCommand({action: "open",
-                target: "/content/tests/functional/aut/search.html"});
   sm.addCommand({action: "assertNotText",
                 target: "link=link with onclick attribute",
                 value: "link with onclick attribute"});
@@ -63,7 +66,5 @@ function testAssertNotTextCommandFails() {
   checks.commandFailed(sm, "Actual value 'link with onclick attribute' did match 'link with onclick attribute'");
   
   //check final command is not executed
-  sm.controller.assert(function () {
-    return sm.finalLogInfoMessage !== "echo: final command";
-  }, "Final command was not executed, got '" + sm.finalLogInfoMessage +"'");
+  assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
 }
