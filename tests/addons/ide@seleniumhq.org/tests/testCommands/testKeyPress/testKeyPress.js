@@ -35,20 +35,18 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include required modules
-var selenium = require("../../../lib/selenium");
-var checks = require("../../../lib/checks");
 var {assert} = require("../../../../../../lib/assertions");
+var checks = require("../../../lib/checks");
+var selenium = require("../../../lib/selenium");
 var tabs = require("../../../../../../lib/tabs");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
+
   sm = new selenium.SeleniumManager();
   sm.open(controller);
 
-  tabBrowser = new tabs.tabBrowser(controller);  
-  tabBrowser.closeAllTabs();
-
+  tabs.closeAllTabs(controller);
   controller.open("chrome://selenium-ide/content/tests/functional/aut/search.html");
   controller.waitForPageLoad();
 }
