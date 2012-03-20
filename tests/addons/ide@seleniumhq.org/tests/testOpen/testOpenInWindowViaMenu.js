@@ -35,9 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Include required modules
-var selenium = require("../../lib/selenium");
 var {assert} = require("../../../../../lib/assertions");
+var selenium = require("../../lib/selenium");
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
