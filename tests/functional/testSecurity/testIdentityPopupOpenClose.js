@@ -80,9 +80,8 @@ var testIdentityPopupOpenClose = function() {
   var button = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
   utils.assertElementVisible(controller, button, true);
 
-  // Click inside the content area to close the popup
-  var contentArea = new elementslib.ID(controller.tabs.activeTab, "organization");
-  controller.click(contentArea);
+  // Press Escape to close the popup
+  controller.keypress(popup, 'VK_ESCAPE', {});
 
   // Check the popup state again
   controller.waitFor(function () {
