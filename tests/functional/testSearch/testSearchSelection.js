@@ -44,6 +44,7 @@ var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
+const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
 const TIMEOUT = 5000;
 
@@ -62,7 +63,7 @@ var teardownModule = function() {
   searchBar.clear();
   searchBar.restoreDefaultEngines();
 
-  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
+  prefs.preferences.clearUserPref(PREF_LOAD_IN_BACKGROUND);
 }
 
 /**
@@ -102,7 +103,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
-  prefs.preferences.setPref("browser.search.context.loadInBackground", loadInBackground);
+  prefs.preferences.setPref(PREF_LOAD_IN_BACKGROUND, loadInBackground);
 
   // Select a word and remember the selection
   controller.doubleClick(element, 5, 5);
