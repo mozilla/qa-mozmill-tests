@@ -40,7 +40,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -63,14 +62,11 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function() {
-  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
   utils.closeContentAreaContextMenu(controller);
   tabBrowser.closeAllTabs();
 }
 
 var testOpenInBackgroundTab = function() {
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
-
   // Open the HTML testcase:
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -122,18 +118,6 @@ var testOpenInBackgroundTab = function() {
   controller.waitFor(function () {
     return tabBrowser.selectedIndex === 2;
   }, "The last tab has been selected");
-}
-
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneTabs';
-
-  //Ensure that 'Switch to tabs immediately' is unchecked:
-  var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
-  controller.waitForElement(switchToTabsPref, TIMEOUT);
-  controller.check(switchToTabsPref, false);
-
-  prefDialog.close(true);
 }
 
 /**

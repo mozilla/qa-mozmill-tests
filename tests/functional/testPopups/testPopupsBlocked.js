@@ -43,6 +43,8 @@ var utils = require("../../../lib/utils");
 
 const localTestFolder = collector.addHttpResource('../../../data/');
 
+const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -50,12 +52,14 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
   tabBrowser = new tabs.tabBrowser(controller);
+
+  prefs.preferences.setPref(PREF_POPUP_BLOCK, true);
 }
 
 var teardownModule = function(module)
 {
   // Reset the pop-up blocking pref and close all open tabs
-  prefs.preferences.clearUserPref("dom.disable_open_during_load");
+  prefs.preferences.clearUserPref(PREF_POPUP_BLOCK);
   tabBrowser.closeAllTabs();
 
   for each (window in mozmill.utils.getWindows("navigator:browser")) {
@@ -72,8 +76,6 @@ var testPopUpBlocked = function()
 {
   var windowCount = mozmill.utils.getWindows().length;
 
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
-
   // Open the Pop-up test site
   controller.open(localTestFolder + "popups/popup_trigger.html?count=2");
   controller.waitForPageLoad();
@@ -89,26 +91,3 @@ var testPopUpBlocked = function()
   expect.equal(windowCount, mozmill.utils.getWindows().length,
                "The window count has not changed");
 }
-
-/**
- * Call-back handler for preferences dialog
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneContent';
-
-  // Make sure the pref is checked
-  var pref = new elementslib.ID(controller.window.document, "popupPolicy");
-  controller.waitForElement(pref, gTimeout);
-  controller.check(pref, true);
-
-  prefDialog.close(true);
-}
-
-/**
- * Map test functions to litmus tests
- */
-// testPopUpBlocked.meta = {litmusids : [7961]};

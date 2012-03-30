@@ -39,6 +39,10 @@
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
+const PREF_KEEP_ALIVE = "network.http.keep-alive";
+const PREF_SSL_3 = "security.enable_ssl3";
+const PREF_TLS = "security.enable_tls";
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -51,17 +55,21 @@ var setupModule = function(module) {
   
   // XXX: Bug 513129
   //      Disable Keep-alive connections
-  prefs.preferences.setPref("network.http.keep-alive", false);
+  prefs.preferences.setPref(PREF_KEEP_ALIVE, false);
+  
+  // Disable SSL 3.0 and TLS for secure connections
+  prefs.preferences.setPref(PREF_SSL_3, false);
+  prefs.preferences.setPref(PREF_TLS, false);
 }
 
 var teardownModule = function(module) {
   // Reset the SSL and TLS pref
-  prefs.preferences.clearUserPref("security.enable_ssl3");
-  prefs.preferences.clearUserPref("security.enable_tls");
+  prefs.preferences.clearUserPref(PREF_SSL_3);
+  prefs.preferences.clearUserPref(PREF_TLS);
   
   // XXX: Bug 513129
   //      Re-enable Keep-alive connections
-  prefs.preferences.clearUserPref("network.http.keep-alive");
+  prefs.preferences.clearUserPref(PREF_KEEP_ALIVE);
 }
 
 /**
@@ -72,8 +80,6 @@ var testDisableSSL = function() {
   // Open a blank page so we don't have any error page shown
   controller.open("about:blank");
   controller.waitForPageLoad();
-
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
 
   controller.open("https://mail.mozilla.org");
   controller.waitForPageLoad();
@@ -111,34 +117,6 @@ var testDisableSSL = function() {
     return text.getNode().textContent.indexOf(PSMERR_SSL_Disabled) != -1;
   }, "The SSL error message contains '" + PSMERR_SSL_Disabled + "' - got '" +
     text.getNode().textContent + "'");
-}
-
-/**
- * Disable SSL 3.0 and TLS for secure connections
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneAdvanced';
-
-  // Get the Encryption tab
-  var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
-  controller.waitThenClick(encryption, gTimeout);
-  controller.sleep(gDelay);
-
-  // Make sure the Use SSL pref is not checked
-  var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
-  controller.waitForElement(sslPref, gTimeout);
-  controller.check(sslPref, false);
-
-  // Make sure the Use TLS pref is not checked
-  var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
-  controller.waitForElement(tlsPref, gTimeout);
-  controller.check(tlsPref, false);
-
-  prefDialog.close(true);
 }
 
 /**

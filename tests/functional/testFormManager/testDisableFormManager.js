@@ -40,6 +40,8 @@
 // Include required modules
 var prefs = require("../../../lib/prefs");
 
+const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
+
 const TIMEOUT = 5000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -55,16 +57,16 @@ var setupModule = function() {
   var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
                     getService(Ci.nsIFormHistory2);
   formHistory.removeAllEntries();
+  
+  // Do not save form and search history
+  prefs.preferences.setPref(PREF_SAVE_FORM_SEARCH_HISTORY, false);
 }
 
 var teardownModule = function() {
-  prefs.preferences.clearUserPref("browser.formfill.enable");
+  prefs.preferences.clearUserPref(PREF_SAVE_FORM_SEARCH_HISTORY);
 }
 
 var testToggleFormManager = function() {
-  // Open Preferences dialog and uncheck save form and search history in the privacy pane
-  prefs.openPreferencesDialog(controller, prefDialogFormCallback);
-
   // Go to the sample form page and submit form data
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -102,27 +104,6 @@ var testToggleFormManager = function() {
   controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);
   controller.assertValue(lastName, LNAME.substring(0,2));
-}
-
-/**
- * Use preferences dialog to disable the form manager
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogFormCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'panePrivacy';
-
-  // Select custom settings for history and uncheck remember search and form history
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
-
-  var rememberForms = new elementslib.ID(controller.window.document, "rememberForms");
-  controller.waitThenClick(rememberForms);
-
-  prefDialog.close(true);
 }
 
 /**

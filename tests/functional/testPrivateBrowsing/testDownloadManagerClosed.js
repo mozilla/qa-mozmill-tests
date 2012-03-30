@@ -56,6 +56,8 @@ const DOWNLOADS = [
                    
 const DOWNLOAD_PB = LOCAL_TEST_FOLDER + "downloading/unknown_type_pb.stbf";
 
+const PREF_DOWNLOAD_SHOW_STARTING = "browser.download.manager.showWhenStarting";
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
@@ -63,6 +65,9 @@ var setupModule = function(module) {
   // or data in the Download Manager database before beginning
   dm = new downloads.downloadManager();
   dm.cleanAll();
+  
+  // Disable the opening of the Downloads Manager when starting a download
+  prefs.preferences.setPref(PREF_DOWNLOAD_SHOW_STARTING, false);
 
   // Array for downloaded files
   downloadedFiles = [];
@@ -88,9 +93,6 @@ var teardownModule = function(module) {
  * Test that no downloads are shown when switching in/out of PB mode
  */
 var testDownloadManagerClosed = function() {
-  // Disable the opening of the Downloads Manager when starting a download
-  prefs.openPreferencesDialog(controller, handlePrefDialog);
-
   // Download two files of unknown type
   for (var i = 0; i < DOWNLOADS.length; i++) {
     downloads.downloadFileOfUnknownType(controller, DOWNLOADS[i]);
@@ -159,28 +161,3 @@ var testDownloadManagerClosed = function() {
   dm.close();
 }
 
-/**
- * Deactivate the auto-open feature of the downloads manager
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var handlePrefDialog = function(controller)
-{
-  // Set the Preferences dialog to the Main pane
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneMain';
-
-  // Don't show the download manager when a download starts
-  var show = new elementslib.ID(controller.window.document, "showWhenDownloading");
-  controller.waitForElement(show, TIMEOUT);
-  controller.check(show, false);
-
-  // Close the Preferences dialog
-  prefDialog.close(true);
-}
-
-/**
- * Map test functions to litmus tests
- */
-// testDownloadManagerClosed.meta = {litmusids : [9178]};

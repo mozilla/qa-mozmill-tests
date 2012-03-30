@@ -46,6 +46,8 @@ var utils = require("../../../lib/utils");
 
 const localTestFolder = collector.addHttpResource('../../../data/');
 
+const PREF_TAB_LOAD_IN_BACKGROUND = "browser.tabs.loadInBackground";
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -61,19 +63,19 @@ var setupModule = function(module)
 
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
+
+  prefs.preferences.setPref(PREF_TAB_LOAD_IN_BACKGROUND, false);
 }
 
 var teardownModule = function()
 {
-  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
+  prefs.preferences.clearUserPref(PREF_TAB_LOAD_IN_BACKGROUND);
   utils.closeContentAreaContextMenu(controller);
   tabBrowser.closeAllTabs();
 }
 
 var testOpenInForegroundTab = function()
 {
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
-
   // Open the HTML testcase:
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();
@@ -125,18 +127,6 @@ var testOpenInForegroundTab = function()
   controller.waitFor(function () {
     return tabBrowser.selectedIndex === 0;
   }, "The first tab has been selected");
-}
-
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneTabs';
-
-  // Ensure that 'Switch to tabs immediately' is checked:
-  var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
-  controller.waitForElement(switchToTabsPref, gTimeout);
-  controller.check(switchToTabsPref, true);
-
-  prefDialog.close(true);
 }
 
 /**
