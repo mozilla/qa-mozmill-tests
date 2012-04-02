@@ -236,3 +236,7 @@ function prefPanesCroppedTest(controller) {
 function testPrefWindowCroppedElements() {
   prefs.openPreferencesDialog(controller, prefPanesCroppedTest);
 }
+
+
+// Bug 614579 - Crop test sometimes shows single line for cropped elements
+setupModule.__force_skip__ = "Bug 614579 - Crop test sometimes shows single line for cropped elements";
