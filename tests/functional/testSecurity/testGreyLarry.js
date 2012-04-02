@@ -57,7 +57,7 @@ var testLarryGrey = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/org/favicon.ico");
+  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/media/img/favicon.png");
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,
