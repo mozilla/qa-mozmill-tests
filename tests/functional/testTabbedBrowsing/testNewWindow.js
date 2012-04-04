@@ -24,7 +24,7 @@ var testNewWindow = function () {
   controller.waitForPageLoad();
 
   // Open a new window
-  controller.click(new elementslib.Elem(controller.menus['file-menu'].menu_newNavigator));
+  controller.mainMenu.click("#menu_newNavigator");
 
   controller.waitFor(function () {
     // Make sure that we work on the correct window

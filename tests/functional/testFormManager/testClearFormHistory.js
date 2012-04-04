@@ -46,7 +46,7 @@ function testClearFormHistory() {
   var md = new modalDialog.modalDialog(controller.window);
   md.start(clearHistoryHandler);
 
-  controller.click(new elementslib.Elem(controller.menus["tools-menu"].sanitizeItem));
+  controller.mainMenu.click("#sanitizeItem");
   md.waitForDialog();
 
   // Verify forms are cleared
