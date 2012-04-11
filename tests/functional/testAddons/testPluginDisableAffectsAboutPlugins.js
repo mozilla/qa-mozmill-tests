@@ -28,7 +28,7 @@ function setupModule() {
 
 function teardownModule() {
   // Enable the plugin that was disabled
-  addons.enableAddon(persisted.plugin.node.mAddon.id);
+  addons.enableAddon(persisted.plugin.getNode().mAddon.id);
 
   delete persisted.plugin;
 }
@@ -57,11 +57,11 @@ function testDisableEnablePlugin() {
 
   // Check that the plugin is disabled
   assert.equal(persisted.plugin.getNode().getAttribute("active"),
-               "false", persisted.plugin.name + " has been disabled");
+               "false", persisted.plugin.getNode().mAddon.name + " has been disabled");
 
   // Check that the plugin disappeared from about:plugins
   expect.ok(!pluginExistsInAboutPlugins(),
-            persisted.plugin.name + " does not appear in about:plugins");
+            persisted.plugin.getNode().mAddon.name + " does not appear in about:plugins");
 
   //Enable the plugin
   tabBrowser.selectedIndex = 1;
@@ -69,11 +69,11 @@ function testDisableEnablePlugin() {
 
   // Check that the plugin is enabled
   assert.ok(persisted.plugin.getNode().getAttribute("active"),
-            persisted.plugin.name + " has been enabled");
+            persisted.plugin.getNode().mAddon.name + " has been enabled");
 
   // Check that the plugin appears in about:plugins
   expect.ok(pluginExistsInAboutPlugins(),
-            persisted.plugin.name + " appears in about:plugins");
+            persisted.plugin.getNode().mAddon.name + " appears in about:plugins");
 }
 
 /**
@@ -88,10 +88,10 @@ function pluginExistsInAboutPlugins() {
 
   var exists = false;
   var nodeCollector = new domUtils.nodeCollector(controller.tabs.activeTab);
-  pluginNames = nodeCollector.queryNodes(".plugname").elements;
+  pluginNames = nodeCollector.queryNodes(".plugname").nodes;
 
   for (var i = 0; i < pluginNames.length; i++) {
-    if (pluginNames[i].getNode().textContent === persisted.plugin.node.mAddon.name) {
+    if (pluginNames[i].textContent === persisted.plugin.getNode().mAddon.name) {
       exists = true;
       break;
     }
