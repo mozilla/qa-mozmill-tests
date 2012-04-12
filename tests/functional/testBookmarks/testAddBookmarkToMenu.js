@@ -65,9 +65,7 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.waitForPageLoad();
 
   // Open the bookmark panel via bookmarks menu
-  var bookmarkMenuItem = new elementslib.Elem(controller.menus.bookmarksMenu.
-                                              menu_bookmarkThisPage);
-  controller.click(bookmarkMenuItem);
+  controller.mainMenu.click("#menu_bookmarkThisPage");
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
   controller.waitFor(function () {

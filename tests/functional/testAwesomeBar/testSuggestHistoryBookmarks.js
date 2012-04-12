@@ -113,7 +113,7 @@ var testSuggestHistoryAndBookmarks = function() {
  */
 var testStarInAutocomplete = function() {
   // Bookmark the test page via bookmarks menu
-  controller.click(new elementslib.Elem(controller.menus.bookmarksMenu.menu_bookmarkThisPage));
+  controller.mainMenu.click("#menu_bookmarkThisPage");
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded, then close the dialog
   controller.waitFor(function () {
