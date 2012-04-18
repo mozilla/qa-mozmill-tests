@@ -148,3 +148,6 @@ var handlePrefDialog = function(controller)
  * Map test functions to litmus tests
  */
 // testDownloadManagerClosed.meta = {litmusids : [9178]};
+
+setupModule.__force_skip__ = "Bug 746766 - Landing of Downloads Panel broke Download Manager tests";
+teardownModule.__force_skip__ = "Bug 746766 - Landing of Downloads Panel broke Download Manager tests";
