@@ -18,5 +18,9 @@ function testRestarted64bit() {
 }
 
 
-if (persisted.skipTests)
-  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+//if (persisted.skipTests) {
+//  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.5 and higher";
+//}
+
+setupModule.__force_skip__ = "Bug 747299 - startUserShutdown() broken by jsbridge port selection";
+

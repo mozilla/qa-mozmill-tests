@@ -19,6 +19,7 @@ else {
   persisted.skipTests = true;
 }
 
+
 function setupModule(module) {
   controller = mozmill.getBrowserController();
 }
@@ -35,13 +36,17 @@ function testArchitecture64bit() {
 /**
  * Restart normally
  */
-function teardownTest() {
+function teardownModule() {
   controller.startUserShutdown(4000, true);
   var appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].
                    getService(Ci.nsIAppStartup);
   appStartup.quit(Ci.nsIAppStartup.eAttemptQuit |  Ci.nsIAppStartup.eRestart);
 }
 
+//if (persisted.skipTests) {
+//  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.5 and higher";
+//  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.5 and higher";
+//}
 
-if (persisted.skipTests)
-  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+setupModule.__force_skip__ = "Bug 747299 - startUserShutdown() broken by jsbridge port selection";
+teardownModule.__force_skip__ = "Bug 747299 - startUserShutdown() broken by jsbridge port selection";
