@@ -69,11 +69,11 @@ function testDisableExtension() {
   // Click on the list view restart link 
   var restartLink = addonsManager.getElement({type: "listView_restartLink", 
                                               parent: addon});
-  
-  // User initiated restart
-  controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
 
-  controller.click(restartLink);    
+  // XXX Bug 747418
+  // startUserShutdown is broken. Needs to wait for Mozmill 2.0
+  //controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
+  //controller.click(restartLink);    
 }
 
 // Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension
