@@ -7,7 +7,7 @@ var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
 const TEST_DOMAIN = "http://www.mozqa.com/";
-const TEST_PAGE = TEST_DOMAIN + "data/firefox/plugins/flash/test_swf_object.html";
+const TEST_PAGE = TEST_DOMAIN + "data/firefox/plugins/flash/test_swf_object_nosound.html";
 
 const TIMEOUT_PAGE = 50000;
 
