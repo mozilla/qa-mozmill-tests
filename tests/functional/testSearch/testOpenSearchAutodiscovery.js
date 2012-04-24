@@ -60,10 +60,3 @@ var testOpenSearchAutodiscovery = function() {
   searchBar.clear();
   expect.equal(inputField.getNode().placeholder, SEARCH_ENGINE.name, "New engine is selected");
 }
-
-// XXX: Bug 685854 - Failure in /testSearch/testOpenSearchAutodiscovery.js |
-// controller.assertJS: Failed for 'subject.installableEngines.length == 1'
-setupModule.__force_skip__ = "Bug 685854 - Failure in /testSearch/testOpenSearchAutodiscovery.js " +
-                             "| controller.assertJS: Failed for 'subject.installableEngines.length == 1'";
-teardownModule.__force_skip__ = "Bug 685854 - Failure in /testSearch/testOpenSearchAutodiscovery.js " +
-                                "| controller.assertJS: Failed for 'subject.installableEngines.length == 1'";

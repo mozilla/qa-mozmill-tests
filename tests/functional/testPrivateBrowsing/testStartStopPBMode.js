@@ -80,6 +80,7 @@ function testStartStopPrivateBrowsingMode() {
                       {allTabsRestored: controller.tabs.length == LOCAL_TEST_PAGES.length + 1});
 
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    tabBrowser.selectedIndex = i;
     controller.waitForPageLoad(controller.tabs.getTab(i));
 
     // waitForElement is used on exit of PB mode because pages are loaded from bfcache 

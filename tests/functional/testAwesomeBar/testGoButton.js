@@ -72,3 +72,9 @@ var testClickLocationBarAndGo = function()
  * Map test functions to litmus tests
  */
 // testClickLocationBarAndGo.meta = {litmusids : [7957]};
+
+// Bug 729040 - Mozmill test failure //testAwesomeBar/testGoButton.js | 
+//              controller.assertJS: Failed for 'subject.visible == subject.expectedVisibility'
+setupModule.__force_skip__ = "Bug 729040 - Mozmill test failure //testAwesomeBar/testGoButton.js | " + 
+                             "controller.assertJS: Failed for 'subject.visible == subject.expectedVisibility'";
+

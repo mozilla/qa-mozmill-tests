@@ -56,7 +56,7 @@ var testPermissionsDisabled = function() {
   var allow = new elementslib.XPath(controller.window.document, 
                                     '/*[name()="window"]' +
                                     '/*[name()="popupset"][1]' +
-                                    '/*[name()="menupopup"][4]' +
+                                    '/*[name()="menupopup"][5]' +
                                     '/*[name()="menuitem"][1]');
 
   controller.waitForElement(allow);
