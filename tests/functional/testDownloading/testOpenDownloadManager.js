@@ -4,21 +4,25 @@
 
 // Include required modules
 var downloads = require("../../../lib/downloads");
+var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
 
-var setupModule = function(module)
-{
+
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
   // Get an instance of the Download Manager class
   module.dm = new downloads.downloadManager();
+
+  // Enable the old tookit UI to test the download manager
+  prefs.preferences.setPref(PREF_DOWNLOAD_USE_TOOLKIT, true);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
+  prefs.preferences.clearUserPref(PREF_DOWNLOAD_USE_TOOLKIT);
+
   // If we failed in closing the Download Manager window force it now
   dm.close(true);
 }
@@ -26,8 +30,7 @@ var teardownModule = function(module)
 /**
  * Test opening the Download Manager
  */
-var testOpenDownloadManager = function()
-{
+var testOpenDownloadManager = function() {
   // Use the main menu
   dm.open(controller, false);
   dm.close();
@@ -41,6 +44,3 @@ var testOpenDownloadManager = function()
  * Map test functions to litmus tests
  */
 // testOpenDownloadManager.meta = {litmusids : [7979]};
-
-setupModule.__force_skip__ = "Bug 746766 - Landing of Downloads Panel broke Download Manager tests";
-teardownModule.__force_skip__ = "Bug 746766 - Landing of Downloads Panel broke Download Manager tests";
