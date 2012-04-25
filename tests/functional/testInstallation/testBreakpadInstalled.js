@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Include required modules
+var { expect } = require("../../../lib/assertions");
+
 // File names for crash reporter application on all platforms
 const fileNames = {
                    "darwin" : "crashreporter.app",
@@ -40,16 +43,13 @@ var testBreakpadInstalled = function()
   execFile.initWithPath(appDir.path);
   execFile.append(fileNames[mozmill.platform]);
 
-  controller.assertJS("subject.exists() == true", execFile);
+  expect.ok(execFile.exists(), "The crash reporter executable is present");
 
-  // Is the crash reporter enabled?
-  controller.assertJS("subject.reporter.enabled == subject.stateEnabled",
-                      {reporter: crashReporter, stateEnabled: states['Enabled']});
+  expect.equal(crashReporter.enabled, states["Enabled"], 
+               "The crash reporter is enabled");
 
-  // Do we have the correct server URL?
-  var pos = crashReporter.serverURL.spec.search(states['ServerURLPattern']);
-  controller.assertJS("subject.expectedCrashReportURL == true",
-                      {expectedCrashReportURL: pos != -1});
+  expect.match(crashReporter.serverURL.spec, states["ServerURLPattern"],
+               "The Breakpad server URL is correct");
 }
 
 /**

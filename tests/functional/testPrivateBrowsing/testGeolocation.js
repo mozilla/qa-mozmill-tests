@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
@@ -63,8 +64,7 @@ var testTabRestoration = function()
   // If a position has been returned check for geo access tokens
   if (available) {
     prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
-    controller.assertJS("subject.hasGeoTokens == true",
-                        {hasGeoTokens: tokens.value > 0});
+    expect.ok(tokens.value > 0, "Geo access tokens present");
   }
   */
 
@@ -74,7 +74,6 @@ var testTabRestoration = function()
   /* XXX: Bug 685805 - skip checking for geolocation tokens
   // No geo access tokens should be present
   prefs.preferences.prefBranch.getChildList(PREF_GEO_TOKEN, tokens);
-  controller.assertJS("subject.hasNoGeoTokens == true",
-                      {hasNoGeoTokens: tokens.value == 0});
+  expect.equal(tokens.value, 0, "No geo access token present");
   */
 }
