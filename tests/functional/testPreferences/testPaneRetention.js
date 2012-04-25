@@ -37,6 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -82,8 +83,8 @@ function prefPaneSetCallback(controller) {
 function prefPaneCheckCallback(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
 
-  controller.assertJS("subject.paneId == 'panePrivacy'",
-                      {paneId: prefDialog.paneId});
+  expect.equal(prefDialog.paneId, "panePrivacy",
+               "The privacy pane has been selected");
   prefDialog.close();
 }
 

@@ -39,6 +39,7 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include required modules
+var { expect } = require ("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -94,15 +95,14 @@ var testSuggestHistoryAndBookmarks = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
-  controller.assertJS("subject.getNumberOfVisibleRows() == 1", autoCompleteResultsList.getNode());
+  expect.equal(locationBar.autoCompleteResults.visibleResults.length, 1,
+               "There is one visible result in the autocomplete list");
 
   // For the page title check matched text is underlined
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
   for each (var entry in entries) {
-    controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: LOCAL_TEST_PAGE.string, 
-                         underlinedTitle: entry.toLowerCase()});
+    expect.equal(LOCAL_TEST_PAGE.string, entry.toLowerCase(),
+                 "The page title matches the underlined text");
   }
 
   locationBar.autoCompleteResults.close();
@@ -144,14 +144,12 @@ var testStarInAutocomplete = function() {
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
   for each (var entry in entries) {
-    controller.assertJS("subject.enteredTitle == subject.underlinedTitle",
-                        {enteredTitle: LOCAL_TEST_PAGE.string, 
-                         underlinedTitle: entry.toLowerCase()});
+    expect.equal(LOCAL_TEST_PAGE.string, entry.toLowerCase(),
+                 "The page title matches the underlined text");
   }
 
-  // For icons, check that the bookmark star is present
-  controller.assertJS("subject.isItemBookmarked == true",
-                      {isItemBookmarked: richlistItem.getNode().getAttribute('type').indexOf('bookmark') != -1});
+  expect.contain(richlistItem.getNode().getAttribute("type"), "bookmark",
+                 "The auto-complete result is a bookmark");
 
   locationBar.autoCompleteResults.close();
 }

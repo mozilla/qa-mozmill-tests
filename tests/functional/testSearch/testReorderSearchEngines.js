@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var { expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 const gDelay   = 0;
@@ -67,15 +68,16 @@ var testReorderEngines = function()
   searchBar.openEngineManager(retrieveEngines);
 
   // Check the if the engines were sorted correctly in the manager
-  controller.assertJS("subject.preEngines[0].name == subject.postEngines[2].name",
-                      {preEngines: gSharedData.preEngines, postEngines: gSharedData.postEngines});
-  controller.assertJS("subject.preEngines[1].name == subject.postEngines[1].name",
-                      {preEngines: gSharedData.preEngines, postEngines: gSharedData.postEngines});
-  controller.assertJS("subject.preEngines[2].name == subject.postEngines[0].name",
-                      {preEngines: gSharedData.preEngines, postEngines: gSharedData.postEngines});
-  controller.assertJS("subject.preEngines[subject.length - 1].name == subject.postEngines[subject.length - 2].name",
-                      {preEngines: gSharedData.preEngines, postEngines: gSharedData.postEngines,
-                       length: gSharedData.preEngines.length});
+  var length = gSharedData.preEngines.length;
+  expect.equal(gSharedData.preEngines[0].name, gSharedData.postEngines[2].name,
+               "The previous first search engine is now the third one");
+  expect.equal(gSharedData.preEngines[1].name, gSharedData.postEngines[1].name,
+               "The previous second search engine is still the second one");
+  expect.equal(gSharedData.preEngines[2].name, gSharedData.postEngines[0].name,
+               "The previous third search engine is now the first one");
+  expect.equal(gSharedData.preEngines[length - 1].name,
+               gSharedData.postEngines[length - 2].name,
+               "The previous last search engine is now second last");
 
   // XXX: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
@@ -83,8 +85,8 @@ var testReorderEngines = function()
   // Check the ordering in the drop down menu
   var engines = searchBar.visibleEngines;
   for (var ii = 0; ii < engines.length; ii++) {
-    controller.assertJS("subject.visibleEngine.name == subject.expectedEngine.name",
-                        {visibleEngine: engines[ii], expectedEngine: gSharedData.postEngines[ii]});
+    expect.equal(engines[ii].name, gSharedData.postEngines[ii].name,
+                 "The order in the drop down menu is consistent");
   }
 }
 

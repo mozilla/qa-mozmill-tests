@@ -39,6 +39,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 const TIMEOUT = 5000;
@@ -107,8 +108,8 @@ var testFindInPage = function() {
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
   var selectedText = tabContent.getSelection();
-  controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+  expect.equal(selectedText.toString().toLowerCase(), searchTerm,
+               "The text on the page has been highlighted");
 
   // Remember DOM range of first search result
   var range = selectedText.getRangeAt(0);
@@ -117,23 +118,22 @@ var testFindInPage = function() {
   controller.click(findBarNextButton);
 
   selectedText = tabContent.getSelection();
-  controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+  expect.equal(selectedText.toString().toLowerCase(), searchTerm,
+               "The next search term has been highlighted");
 
-  // Check that the next result has been selected
-  controller.assertJS("subject.isNextResult == true",
-                      {isNextResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) != 0});
+  // Find the relative position of the next result
+  var resultPosition = selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range);
+  expect.notEqual(resultPosition, 0, "The next result has been selected");
 
   // Click the prev button and check the strings again
   controller.click(findBarPrevButton);
 
   selectedText = tabContent.getSelection();
-  controller.assertJS("subject.selectedText == subject.searchTerm",
-                      {selectedText: selectedText.toString().toLowerCase(), searchTerm: searchTerm});
+  expect.equal(selectedText.toString().toLowerCase(), searchTerm,
+               "The previous search term has been highlighted");
 
-  // Check that the first result has been selected again
-  controller.assertJS("subject.isFirstResult == true",
-                      {isFirstResult: selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range) == 0});
+  resultPosition = selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range);
+  expect.equal(resultPosition, 0, "The first result has been selected again");
 }
 
 /**

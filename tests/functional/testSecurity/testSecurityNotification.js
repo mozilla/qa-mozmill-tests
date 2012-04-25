@@ -38,6 +38,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Include necessary modules
+var { expect } = require("../../../lib/assertions");
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -82,7 +85,8 @@ var testSecNotification = function() {
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
   controller.waitForElement(text, gTimeout);
-  controller.assertJS("subject.textContent.indexOf('ssl_error_bad_cert_domain') != -1", text.getNode());
+  expect.contain(text.getNode().textContent, "ssl_error_bad_cert_domain",
+                 "The error code is a SSL Bad Cert Error");
 }
 
 // XXX: Bug 708491 - testSecurityNotification.js fails due to timeout

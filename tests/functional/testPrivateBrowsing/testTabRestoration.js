@@ -37,6 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -86,10 +87,8 @@ var testTabRestoration = function() {
   // Stop Private Browsing
   pb.stop();
 
-  // All tabs should be restored
-  controller.assertJS("subject.tabCountActual == subject.tabCountExpected",
-                      {tabCountActual: controller.tabs.length,
-                       tabCountExpected: LOCAL_TEST_PAGES.length + 1});
+  expect.equal(controller.tabs.length, (LOCAL_TEST_PAGES.length + 1),
+               "All tabs have been restored");
 
   // Check if all pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {

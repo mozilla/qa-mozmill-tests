@@ -39,6 +39,7 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -97,11 +98,10 @@ var testFaviconInAutoComplete = function() {
   }, "Autocomplete list has been opened");
 
   // Get the URL for the autocomplete Favicon for the matched entry
-  var listFaviconUrl = richlistItem.getNode().boxObject.firstChild.childNodes[0].getAttribute('src');
+  var listFaviconUrl = richlistItem.getNode().boxObject.firstChild.childNodes[0].getAttribute("src");
 
-  // Check that both Favicons have the same URL
-  controller.assertJS("subject.isSameFavicon == true",
-                      {isSameFavicon: richlistItem.getNode().image.indexOf(locationBarFaviconUrl) != -1});
+  expect.contain(richlistItem.getNode().image, locationBarFaviconUrl,
+                 "Favicons in auto-complete list and location bar are identical");
 
   locationBar.autoCompleteResults.close();
 }

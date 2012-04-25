@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -83,9 +84,8 @@ var testPopUpAllowed = function()
                                              '/{"class":"messageCloseButton tabbable"}');
   controller.assertNodeNotExist(button);
 
-  // Check that the window count has changed
-  controller.assertJS("subject.preWindowCount != subject.postWindowCount",
-                      {preWindowCount: windowCount, postWindowCount: mozmill.utils.getWindows().length});
+  expect.notEqual(windowCount, mozmill.utils.getWindows().length,
+                  "The window count has changed");
 }
 
 /**

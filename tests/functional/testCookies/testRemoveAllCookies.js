@@ -37,6 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -100,14 +101,12 @@ var prefDialogCallback = function(controller) {
 function deleteAllCookies(controller) {
   // Get the amount of current cookies
   var cookiesList = controller.window.document.getElementById("cookiesList");
-  controller.assertJS("subject.cookieCount > 0",
-                      {cookieCount: cookiesList.view.rowCount});
+  assert.ok(cookiesList.view.rowCount > 0, "There are cookies in the list.");
 
   // Verify all cookies have been removed
   var removeAll = new elementslib.ID(controller.window.document, "removeAllCookies");
   controller.waitThenClick(removeAll, gTimeout);
-  controller.assertJS("subject.cookieCount == 0",
-                      {cookieCount: cookiesList.view.rowCount});
+  expect.equal(cookiesList.view.rowCount, 0, "There are no cookies left on the list");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");

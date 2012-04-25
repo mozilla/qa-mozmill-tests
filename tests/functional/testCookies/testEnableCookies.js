@@ -38,6 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -137,13 +138,10 @@ function checkSavedCookies(controller) {
   controller.waitForElement(removeCookieButton, TIMEOUT);
   controller.assertJSProperty(removeCookieButton, "disabled", false);
 
-  controller.assertJS("subject.cookieExists == true", {
-    cookieExists: cm.cookieExists({
-      host: persisted.hostName,
-      name: "litmus_1", 
-      path: "/cookies/"
-    })
-  });
+  var cookieExists = cm.cookieExists({host: persisted.hostName,
+                                      name: "litmus_1", 
+                                      path: "/cookies/" });
+  expect.ok(cookieExists, "The single cookie is saved.");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");

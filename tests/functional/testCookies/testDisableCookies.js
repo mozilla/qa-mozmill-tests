@@ -38,6 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -134,9 +135,8 @@ function checkCookieNotSaved(controller) {
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   //controller.assertJSProperty(removeCookieButton, "disabled", true);
 
-  // Verify that the cookie is not saved
-  controller.assertJS("subject.cookieCount == 0",
-                      {cookieCount : cm.countCookiesFromHost(persisted.hostName)});
+  expect.equal(cm.countCookiesFromHost(persisted.hostName), 0,
+               "Cookie is not saved");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");

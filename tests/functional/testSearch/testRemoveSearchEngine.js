@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var { expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 const gDelay = 0;
@@ -80,8 +81,7 @@ var handleEngines = function(controller)
 
   // Remove the second search engine
   var engines = manager.engines;
-  controller.assertJS("subject.enginesCount > 1",
-                      {enginesCount: engines.length});
+  expect.ok(engines.length > 1, "There is more than one search engine");
   manager.removeEngine(engines[1].name);
 
   manager.close(true);
