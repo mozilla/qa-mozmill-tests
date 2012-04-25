@@ -3,11 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
-
-const DISPLAY_SSL_DOMAIN = "browser.identity.ssl_domain_display";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -16,13 +12,6 @@ var setupModule = function(module) {
   gETLDService = Cc["@mozilla.org/network/effective-tld-service;1"].
                  getService(Ci.nsIEffectiveTLDService);
   cert = null;
-
-  // Display SSL domain
-  prefs.preferences.setPref(DISPLAY_SSL_DOMAIN, 1);
-}
-
-var teardownModule = function(module) {
-  prefs.preferences.clearUserPref(DISPLAY_SSL_DOMAIN);
 }
 
 /**
@@ -35,7 +24,7 @@ var testLarryBlue = function() {
 
   // Get the information from the certificate for comparison
   var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;  
+  cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
   // Check the label displays
   // Format: Organization
@@ -44,8 +33,10 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  expect.equal(favicon.getNode().hidden, false, "Favicon is loaded");
-  
+  controller.assert(function () {
+    return favicon.getNode().src.indexOf("mozilla.org") !== -1;
+  }, "Favicon is loaded: got '" + favicon.getNode().src + "'");
+
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertJSProperty(identityBox, "className", "verifiedDomain");
