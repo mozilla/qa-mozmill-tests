@@ -7,6 +7,7 @@
  */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var setupModule = function(module) {
@@ -23,7 +24,9 @@ var testLarryGrey = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/media/img/favicon.png");
+  var validState = favicon.getNode().getAttribute("pageproxystate");
+
+  expect.equal(validState, "valid", "Favicon is visible");
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,

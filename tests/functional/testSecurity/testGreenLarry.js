@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
@@ -42,9 +43,7 @@ var testLarryGreen = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.waitFor(function () {
-    return favicon.getNode().src.indexOf('addons.mozilla') != -1
-  }, "AMO favicon is loaded.");
+  expect.equal(favicon.getNode().hidden, false, "Favicon is loaded");
   
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
