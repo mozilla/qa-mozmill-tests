@@ -8,9 +8,6 @@ var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var utils = require("../../../lib/utils");
 
-const DELAY = 100;
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 
 const DOWNLOADS = [
@@ -20,6 +17,9 @@ const DOWNLOADS = [
                    
 const DOWNLOAD_PB = LOCAL_TEST_FOLDER + "downloading/unknown_type_pb.stbf";
 
+const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
+const PREF_DOWNLOAD_SHOW_STARTING = "browser.download.manager.showWhenStarting";
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
@@ -27,6 +27,9 @@ var setupModule = function(module) {
   // or data in the Download Manager database before beginning
   dm = new downloads.downloadManager();
   dm.cleanAll();
+
+  // Enable the old tookit UI to test the download manager
+  prefs.preferences.setPref(PREF_DOWNLOAD_USE_TOOLKIT, true);
 
   // Array for downloaded files
   downloadedFiles = [];
@@ -44,8 +47,8 @@ var teardownModule = function(module) {
   // Make sure the browser is not in Private Browsing mode
   pb.reset();
 
-  // Reset the "Show Downloads When Downloading" pref
-  prefs.preferences.clearUserPref("browser.download.manager.showWhenStarting");
+  prefs.preferences.clearUserPref(PREF_DOWNLOAD_SHOW_STARTING);
+  prefs.preferences.clearUserPref(PREF_DOWNLOAD_USE_TOOLKIT);
 }
 
 /**
@@ -76,7 +79,7 @@ var testDownloadManagerClosed = function() {
 
   // Get a list of downloaded items in the Download Manager
   var downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
-  dm.controller.waitForElement(downloadView, TIMEOUT);
+  dm.controller.waitForElement(downloadView);
   
   // Check that no items are listed in the Download Manager
   dm.controller.waitFor(function () {
@@ -105,7 +108,7 @@ var testDownloadManagerClosed = function() {
 
   // Get the list of the downloads in the Download Manager
   downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
-  dm.controller.waitForElement(downloadView, TIMEOUT);
+  dm.controller.waitForElement(downloadView);
   
   // The Download Manager should contain the two items downloaded pre-Private Browsing
   dm.controller.waitFor(function () {
@@ -137,7 +140,7 @@ var handlePrefDialog = function(controller)
 
   // Don't show the download manager when a download starts
   var show = new elementslib.ID(controller.window.document, "showWhenDownloading");
-  controller.waitForElement(show, TIMEOUT);
+  controller.waitForElement(show);
   controller.check(show, false);
 
   // Close the Preferences dialog
