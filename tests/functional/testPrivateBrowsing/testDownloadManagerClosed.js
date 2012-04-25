@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
@@ -115,8 +116,8 @@ var testDownloadManagerClosed = function() {
 
   for (i = 0; i < DOWNLOADS.length; i++) {
     var download = new elementslib.ID(dm.controller.window.document, "dl" + (i + 1));
-    dm.controller.assertJS("subject.isCorrectDownload == true",
-                           {isCorrectDownload: download.getNode().getAttribute('uri') == DOWNLOADS[i]});
+    expect.equal(download.getNode().getAttribute("uri"), DOWNLOADS[i],
+                 "File appears in download list");
   }
     
   // Close the Download Manager

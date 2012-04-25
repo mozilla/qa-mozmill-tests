@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
@@ -80,8 +81,8 @@ var startSearch = function(element, engineName, loadInBackground) {
 
   var contextLabel = contextEntry.getNode().getAttribute('label');
 
-  controller.assertJS("subject.isEngineNameInContextMenu == true",
-                      {isEngineNameInContextMenu: contextLabel.indexOf(engineName) != -1});
+  expect.contain(contextLabel, engineName, "The specified search engine is installed");
+
   controller.click(contextEntry);
   utils.closeContentAreaContextMenu(controller);
 

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -75,9 +76,8 @@ var testCloseWindow = function() {
 }
 
 function checkWindowOpen(controller) {
-  // All tabs should be restored
-  controller.assertJS("subject.tabs.length == subject.expectedCount",
-                      {tabs: controller.tabs, expectedCount: (LOCAL_TEST_PAGES.length + 1)});
+  expect.equal(controller.tabs.length, (LOCAL_TEST_PAGES.length + 1),
+               "All tabs have been restored");
 
   // Check if all local pages were re-loaded and show their content
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {

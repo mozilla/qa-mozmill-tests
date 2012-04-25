@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -53,8 +54,7 @@ var testAllTabsClosedOnStop = function() {
   // Stop Private Browsing
   pb.stop();
 
-  // All tabs should have been removed
-  controller.assertJS("subject.tabs.length == 1", controller);
+  expect.equal(controller.tabs.length, 1, "All tabs have been removed");
 }
 
 /**
