@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Include necessary modules
+var { expect } = require("../../../lib/assertions");
+
 const gDelay = 0;
 const gTimeout = 5000;
 
@@ -32,8 +35,8 @@ var testUnknownIssuer = function() {
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
   controller.waitForElement(text, gTimeout);
-  controller.assertJS("subject.errorMessage.indexOf('sec_error_unknown_issuer') != -1",
-                      {errorMessage: text.getNode().textContent});
+  expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
+                 "The error code is an unknown issuer error");
 }
 
 /**

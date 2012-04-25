@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { assert } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
@@ -31,9 +32,8 @@ var teardownModule = function(module)
  */
 var testGetMoreEngines = function()
 {
-  // Check that the search engine is not installed yet
-  controller.assertJS("subject.isEngineInstalled == false",
-                      {isEngineInstalled: searchBar.isEngineInstalled(searchEngine.name)});
+  assert.ok(!searchBar.isEngineInstalled(searchEngine.name),
+            "The specified search engine has not been installed");
 
   // Open the engine manager to browse the search directory
   var tabCount = controller.tabs.length;

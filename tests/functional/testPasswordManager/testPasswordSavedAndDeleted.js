@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -99,8 +100,7 @@ function prefDialogCallback(controller) {
 function deleteAllPasswords(controller) {
   var signOnsTree = controller.window.document.getElementById("signonsTree");
 
-  // Verify there is at least one saved password
-  controller.assertJS("subject.view.rowCount == 1", signOnsTree);
+  assert.equal(signOnsTree.view.rowCount, 1, "There is a saved password");
 
   // Delete all passwords and accept the deletion of the saved passwords
   var md = new modalDialog.modalDialog(controller.window);
@@ -109,8 +109,7 @@ function deleteAllPasswords(controller) {
   controller.click(new elementslib.ID(controller.window.document, "removeAllSignons"));
   md.waitForDialog();
 
-  // No passwords should exist anymore
-  controller.assertJS("subject.view.rowCount == 0", signOnsTree);
+  expect.equal(signOnsTree.view.rowCount, 0, "There are no more saved passwords");
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];

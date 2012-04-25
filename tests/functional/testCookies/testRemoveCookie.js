@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -83,20 +84,12 @@ function deleteCookie(controller) {
 
   controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
 
-  var removed = !cm.cookieExists({
-    host: persisted.hostName, 
-    name: "litmus_1", 
-    path: "/cookies/"
-  });
-
-  controller.assertJS("subject.isCookieRemoved == true", {
-    isCookieRemoved: removed
-  });
-  
-  controller.assertJS("subject.list.view.rowCount == subject.numberCookies", {
-    list: cookiesList, 
-    numberCookies: origNumCookies - 1
-  });
+  var cookieRemoved = !cm.cookieExists({host: persisted.hostName,
+                                        name: "litmus_1", 
+                                        path: "/cookies/" });
+  expect.ok(cookieRemoved, "The cookie has been removed");
+  expect.equal(cookiesList.view.rowCount, (origNumCookies - 1),
+               "There is one less cookie than before");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
