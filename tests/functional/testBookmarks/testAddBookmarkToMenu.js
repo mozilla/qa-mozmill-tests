@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -24,11 +25,6 @@ var teardownModule = function() {
 var testAddBookmarkToBookmarksMenu = function() {
   var uri = utils.createURI(LOCAL_TEST_PAGE);
 
-  // Fail if the URI is already bookmarked
-  controller.assertJS("subject.isBookmarked == false", {
-    isBookmarked: places.bookmarksService.isBookmarked(uri)
-  });
-
   // Open URI and wait until it has been finished loading
   controller.open(uri.spec);
   controller.waitForPageLoad();
@@ -46,12 +42,10 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.type(nameField, "Mozilla");
   controller.click(doneButton);
 
-  // Check if bookmark was created in the Bookmarks Menu
   // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
-  controller.assertJS("subject.isBookmarkInBookmarksMenu == true", {
-    isBookmarkInBookmarksMenu: 
-      places.isBookmarkInFolder(uri, places.bookmarksService.bookmarksMenuFolder)
-  });
+  var bookmarkFolder = places.bookmarksService.bookmarksMenuFolder;
+  var bookmarkExists = places.isBookmarkInFolder(uri, bookmarkFolder);
+  expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");
 }
 
 /**

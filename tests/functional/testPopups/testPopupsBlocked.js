@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -52,9 +53,8 @@ var testPopUpBlocked = function()
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
   controller.waitForElement(button, gTimeout);
 
-  // Check that the window count has not changed
-  controller.assertJS("subject.preWindowCount == subject.postWindowCount",
-                      {preWindowCount: windowCount, postWindowCount: mozmill.utils.getWindows().length});
+  expect.equal(windowCount, mozmill.utils.getWindows().length,
+               "The window count has not changed");
 }
 
 /**

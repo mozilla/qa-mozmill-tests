@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -49,14 +50,17 @@ var testEscape = function() {
     controller.sleep(100);
   }
 
-  // Confirm that 'mozilla' is in the locationbar and the awesomecomplete list is open
-  controller.assertJS("subject.contains('" + TEST_STRING + "') == true", locationBar);
-  controller.assertJS("subject.autoCompleteResults.isOpened == true", locationBar);
+  expect.contain(locationBar.value, TEST_STRING,
+                 "Search string found in the locationbar");
+  expect.ok(locationBar.autoCompleteResults.isOpened,
+            "The auto-complete list is open");
 
-  // After the first Escape press, confirm that 'mozilla' is in the locationbar and awesomecomplete list is closed
+  // After the first Escape press
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
-  controller.assertJS("subject.contains('" + TEST_STRING + "') == true", locationBar);
-  controller.assertJS("subject.autoCompleteResults.isOpened == false", locationBar);
+  expect.contain(locationBar.value, TEST_STRING,
+                 "Search string found in the locationbar");
+  expect.ok(!locationBar.autoCompleteResults.isOpened,
+            "The auto-complete list is closed");
   
   // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});

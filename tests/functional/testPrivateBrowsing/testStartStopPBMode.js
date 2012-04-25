@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -54,14 +55,10 @@ function testStartStopPrivateBrowsingMode() {
   // Start the Private Browsing mode
   pb.start();
 
-  // Check that only one tab is open
-  controller.assertJS("subject.isOnlyOneTab == true", 
-                      {isOnlyOneTab: controller.tabs.length == 1});
+  expect.equal(controller.tabs.length, 1, "Only one tab is open");
 
-  // Title modifier should have been set
-  controller.assertJS("subject.hasTitleModifier == true",
-                      {hasTitleModifier: controller.window.document.
-                                         title.indexOf(modifier) != -1});
+  expect.contain(controller.window.document.title, modifier,
+                 "Title modifier has been set");
 
   // Check descriptions on the about:privatebrowsing page
   var description = utils.getEntity(pb.getDtds(), "privatebrowsingpage.description");
@@ -75,9 +72,8 @@ function testStartStopPrivateBrowsingMode() {
   // Stop Private Browsing mode
   pb.stop();
 
-  // All tabs should be restored
-  controller.assertJS("subject.allTabsRestored == true",
-                      {allTabsRestored: controller.tabs.length == LOCAL_TEST_PAGES.length + 1});
+  expect.equal(controller.tabs.length, (LOCAL_TEST_PAGES.length + 1),
+               "All tabs have been restored");
 
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
     tabBrowser.selectedIndex = i;
@@ -89,10 +85,8 @@ function testStartStopPrivateBrowsingMode() {
     controller.assertNode(elem);
   }
 
-  // No title modifier should have been set
-  controller.assertJS("subject.noTitleModifier == true",
-                      {noTitleModifier: controller.window.document.
-                                        title.indexOf(modifier) == -1});
+  expect.notContain(controller.window.document.title, modifier,
+                    "Title modifier has not been set");
 }
 
 /**
