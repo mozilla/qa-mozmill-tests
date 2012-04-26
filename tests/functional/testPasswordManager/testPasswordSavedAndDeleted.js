@@ -49,14 +49,12 @@ function testSaveAndDeletePassword() {
                  "password-save-notification",
                  '/anon({"anonid":"button"})'
                );
-  var notification = locationBar.getNotificationElement(
-                       "password-save-notification"
-                     );
+  var notification = locationBar.getNotification();
   controller.waitThenClick(button);
   
   // After clicking the 'Remember Password' button, check notification state
   controller.assert(function() {
-    return notification.getNode().parentNode.state == "closed";
+    return notification.getNode().state == "closed";
   }, "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
