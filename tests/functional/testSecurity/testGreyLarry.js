@@ -21,9 +21,9 @@ var testLarryGrey = function() {
   controller.open("http://www.mozilla.org");
   controller.waitForPageLoad();
 
-  // Check the favicon
+  // Check the default grey ("globe image") favicon is present
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/media/img/favicon.png");
+  controller.assertJSProperty(favicon, "hidden", false);
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,
