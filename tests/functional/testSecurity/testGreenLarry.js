@@ -43,8 +43,8 @@ var testLarryGreen = function() {
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
   controller.waitFor(function () {
-    return favicon.getNode().src.indexOf('addons.mozilla') != -1
-  }, "AMO favicon is loaded.");
+    return favicon.getNode().getAttribute("hidden") == false;
+  }, "Lock icon is visible in identity box");
   
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
