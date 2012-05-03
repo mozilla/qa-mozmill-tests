@@ -87,7 +87,7 @@ function deleteCookie(controller) {
   var cookieRemoved = !cm.cookieExists({host: persisted.hostName,
                                         name: "litmus_1", 
                                         path: "/cookies/" });
-  expect.ok(cookieRemoved, "The cookie has been removed"));
+  expect.ok(cookieRemoved, "The cookie has been removed");
   expect.equal(cookiesList.view.rowCount, (origNumCookies - 1),
                "There is one less cookie than before");
 

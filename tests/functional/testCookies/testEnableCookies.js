@@ -106,7 +106,7 @@ function checkSavedCookies(controller) {
   var cookieExists = cm.cookieExists({host: persisted.hostName,
                                       name: "litmus_1", 
                                       path: "/cookies/" });
-  expect.ok(cookieExists, "The single cookie is saved."));
+  expect.ok(cookieExists, "The single cookie is saved.");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
