@@ -8,33 +8,39 @@ var {assert, expect} = require("../../../lib/assertions");
 var domUtils = require("../../../lib/dom-utils");
 var tabs = require("../../../lib/tabs");
 
-function setupModule() {
+function setupModule(aModule) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
+  addonsManager = new addons.AddonsManager(controller);
+
+  tabs.closeAllTabs(controller);
 
   // Skip test if we don't have enabled plugins
-  if (controller.window.navigator.plugins.length < 1) {
+  var activePlugins = addons.getInstalledAddons(function (aAddon) {
+    if (aAddon.isActive && aAddon.type === "plugin")
+      return {
+        id: aAddon.id,
+        name: aAddon.name
+      }
+  });
+
+  if (activePlugins.length !== 0) {
+    aModule.plugin = activePlugins[0];
+  } else {
     testDisableEnablePlugin.__force_skip__ = "No enabled plugins detected";
     teardownModule.__force_skip__ = "No enabled plugins detected";
-  } else {
-    persisted.plugin = controller.window.navigator.plugins[0];
   }
-
-  addonsManager = new addons.AddonsManager(controller);
-  tabs.closeAllTabs(controller);
-  
 }
 
 function teardownModule() {
   // Enable the plugin that was disabled
-  addons.enableAddon(persisted.plugin.getNode().mAddon.id);
-
-  delete persisted.plugin;
+  addons.enableAddon(plugin.id);
+  tabs.closeAllTabs(controller);
 }
 
 /**
- * Tests disabling a plugin is affecting about:plugins 
+ * Tests disabling a plugin is affecting about:plugins
  */
 function testDisableEnablePlugin() {
   addonsManager.open();
@@ -44,36 +50,36 @@ function testDisableEnablePlugin() {
     category: addonsManager.getCategoryById({id: "plugin"})
   });
 
-  persisted.plugin = addonsManager.getAddons({attribute: "name",
-                                             value: persisted.plugin.name})[0];
+  var selectedPlugin = addonsManager.getAddons({attribute: "value",
+                                                value: plugin.id})[0];
+  var pluginName = selectedPlugin.getNode().mAddon.name;
 
   // Check that the plugin is listed on the about:plugins page
-  assert.ok(pluginExistsInAboutPlugins(),
-            persisted.plugin.name + " is listed on the about:plugins page");
+  assert.ok(pluginExistsInAboutPlugins(pluginName),
+            pluginName + " is listed on the about:plugins page");
 
   // Disable the plugin
   tabBrowser.selectedIndex = 1;
-  addonsManager.disableAddon({addon: persisted.plugin});
+  addonsManager.disableAddon({addon: selectedPlugin});
 
   // Check that the plugin is disabled
-  assert.equal(persisted.plugin.getNode().getAttribute("active"),
-               "false", persisted.plugin.getNode().mAddon.name + " has been disabled");
+  assert.ok(!addonsManager.isAddonEnabled({addon: selectedPlugin}),
+            pluginName + " has been disabled");
 
   // Check that the plugin disappeared from about:plugins
-  expect.ok(!pluginExistsInAboutPlugins(),
-            persisted.plugin.getNode().mAddon.name + " does not appear in about:plugins");
+  expect.ok(!pluginExistsInAboutPlugins(pluginName),
+            pluginName + " does not appear in about:plugins");
 
   //Enable the plugin
   tabBrowser.selectedIndex = 1;
-  addonsManager.enableAddon({addon: persisted.plugin});
+  addonsManager.enableAddon({addon: selectedPlugin});
 
   // Check that the plugin is enabled
-  assert.ok(persisted.plugin.getNode().getAttribute("active"),
-            persisted.plugin.getNode().mAddon.name + " has been enabled");
+  assert.ok(addonsManager.isAddonEnabled({addon: selectedPlugin}),
+            pluginName + " has been enabled");
 
-  // Check that the plugin appears in about:plugins
-  expect.ok(pluginExistsInAboutPlugins(),
-            persisted.plugin.getNode().mAddon.name + " appears in about:plugins");
+  expect.ok(pluginExistsInAboutPlugins(pluginName),
+            pluginName + " appears in about:plugins");
 }
 
 /**
@@ -81,17 +87,17 @@ function testDisableEnablePlugin() {
  *
  * @returns {boolean} True if the plugin appears in about:plugins
  */
-function pluginExistsInAboutPlugins() {
+function pluginExistsInAboutPlugins(pluginName) {
   tabBrowser.selectedIndex = 0;
   controller.open("about:plugins");
   controller.waitForPageLoad();
 
   var exists = false;
   var nodeCollector = new domUtils.nodeCollector(controller.tabs.activeTab);
-  pluginNames = nodeCollector.queryNodes(".plugname").nodes;
+  var pluginNames = nodeCollector.queryNodes(".plugname").nodes;
 
   for (var i = 0; i < pluginNames.length; i++) {
-    if (pluginNames[i].textContent === persisted.plugin.getNode().mAddon.name) {
+    if (pluginNames[i].textContent === pluginName) {
       exists = true;
       break;
     }
