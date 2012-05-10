@@ -8,7 +8,7 @@ var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
+const TIMEOUT_SESSION_STORE = 250;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
@@ -32,11 +32,6 @@ var teardownModule = function(module) {
  * Verify when closing window in private browsing that regular session is restored
  */
 var testCloseWindow = function() {
-  // Closing the only browser window while staying in Private Browsing mode
-  // will quit the application on Windows and Linux. So only on the test on OS X.
-  if (!mozmill.isMac)
-    return;
-
   var windowCount = mozmill.utils.getWindows().length;
 
   // Make sure we are not in PB mode and don't show a prompt
@@ -44,7 +39,7 @@ var testCloseWindow = function() {
   pb.showPrompt = false;
 
   // Open local pages in separate tabs and wait for each to finish loading
-  LOCAL_TEST_PAGES.forEach(function(page) {
+  LOCAL_TEST_PAGES.forEach(function (page) {
     controller.open(page.url);
     controller.waitForPageLoad();
 
@@ -68,25 +63,41 @@ var testCloseWindow = function() {
   // Without a window any keypress and menu click will fail.
   // Flipping the pref directly will also do it.
   pb.enabled = false;
+
   controller.waitFor(function () {
     return mozmill.utils.getWindows().length === windowCount;
-  }, "A window has been opened");
+  }, "The closed window has been opened");
 
   utils.handleWindow("type", "navigator:browser", checkWindowOpen, false);
 }
 
 function checkWindowOpen(controller) {
+  // Bug 753763
+  // We do not listen for session store related events yet, so just sleep
+  // for now. It has to be changed once the test is updated for Mozmill 2
+  controller.sleep(TIMEOUT_SESSION_STORE);
+
   expect.equal(controller.tabs.length, (LOCAL_TEST_PAGES.length + 1),
                "All tabs have been restored");
 
   // Check if all local pages were re-loaded and show their content
+  tabBrowser = new tabs.tabBrowser(controller);
+
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
+    tabBrowser.selectedIndex = i;
     var tab = controller.tabs.getTab(i);
     controller.waitForPageLoad(tab);
 
     var elem = new elementslib.Name(tab, LOCAL_TEST_PAGES[i].name);
     controller.assertNode(elem);
   }
+}
+
+// Closing the only browser window while staying in Private Browsing mode
+// will quit the application on Windows and Linux. So only on the test on OS X.
+if (!mozmill.isMac) {
+  setupModule.__force_skip__ = "Test is only supported on OS X";
+  teardownModule.__force_skip__ = "Test is only supported on OS X";
 }
 
 /**
