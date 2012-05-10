@@ -42,6 +42,7 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 const THEME = [
   {name: "Theme (Plain)",
@@ -64,7 +65,10 @@ function setupModule() {
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);  
                 
   // Whitelist add the local test folder
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(LOCAL_TEST_FOLDER); 
+
+  // Don't load discovery pane on AOM startup
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);  
 
   // Store the theme in the persisted object
   persisted.theme = THEME; 

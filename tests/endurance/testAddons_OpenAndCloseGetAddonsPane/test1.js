@@ -37,7 +37,6 @@
 // Include the required modules
 var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
-var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -47,16 +46,17 @@ function setupModule() {
   controller = mozmill.getBrowserController();
 
   enduranceManager = new endurance.EnduranceManager(controller);
+
   addonsManager = new addons.AddonsManager(controller);
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+
   tabBrowser = new tabs.tabBrowser(controller);
 
   tabBrowser.closeAllTabs();
-
-  prefs.preferences.setPref(addons.AMO_DISCOVER_URL, LOCAL_TEST_PAGE);
 }
 
 function teardownModule() {
-  prefs.preferences.clearUserPref(addons.AMO_DISCOVER_URL);
+  addons.resetDiscoveryPaneURL();
 }
 
 function testOpenAndCloseAddonManager() {

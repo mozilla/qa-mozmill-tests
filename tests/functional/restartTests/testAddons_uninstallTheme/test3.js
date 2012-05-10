@@ -49,6 +49,7 @@ function setupModule(module) {
 function teardownModule() {  
   delete persisted.theme;  
 
+  addons.resetDiscoveryPaneURL();
   addonsManager.close();
 }
 

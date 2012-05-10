@@ -42,6 +42,7 @@ var tabs = require("../../../../lib/tabs");
 
 const LOCAL_INSTALL_FILE = "install.html?addon=";
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/addons/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 const ADDON = {
   id: "restartless-addon@quality.mozilla.org",
@@ -54,6 +55,9 @@ function setupModule() {
 
   // Whitelist add the localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
+
+  // Don't load discovery pane on AOM startup
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE); 
   
   tabs.closeAllTabs(controller);
 }

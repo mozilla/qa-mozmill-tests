@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
@@ -50,6 +51,7 @@ function setupModule() {
 
 function teardownModule() {
   prefs.preferences.clearUserPref("browser.urlbar.trimURLs");
+  addons.resetDiscoveryPaneURL();
 
   delete persisted.addon;
 }
