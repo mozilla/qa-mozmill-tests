@@ -7,14 +7,20 @@ var {expect} = require("../../../lib/assertions");
 var addons = require("../../../lib/addons");
 var tabs = require("../../../lib/tabs");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
 function setupModule() {
   controller = mozmill.getBrowserController();
+  
   addonsManager = new addons.AddonsManager(controller);
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
   tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {
+  addons.resetDiscoveryPaneURL();
   addonsManager.close();   
 }
 

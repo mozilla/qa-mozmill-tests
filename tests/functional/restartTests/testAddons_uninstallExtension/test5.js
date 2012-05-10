@@ -14,6 +14,10 @@ function setupModule() {
   tabs.closeAllTabs(controller);
 }
 
+function teardownModule() {
+  addons.resetDiscoveryPaneURL();
+}
+
 /**
  * Verifies enabled add-on was uninstalled 
  */
