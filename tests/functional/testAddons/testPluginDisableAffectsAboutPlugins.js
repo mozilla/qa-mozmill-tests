@@ -8,11 +8,16 @@ var {assert, expect} = require("../../../lib/assertions");
 var domUtils = require("../../../lib/dom-utils");
 var tabs = require("../../../lib/tabs");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
 function setupModule(aModule) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
+  
   addonsManager = new addons.AddonsManager(controller);
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
   tabs.closeAllTabs(controller);
 
@@ -34,6 +39,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule() {
+  addons.resetDiscoveryPaneURL();
+
   // Enable the plugin that was disabled
   addons.enableAddon(plugin.id);
   tabs.closeAllTabs(controller);
