@@ -19,6 +19,7 @@ function setupModule() {
 function teardownModule() {
   delete persisted.addon;
 
+  addons.resetDiscoveryPaneURL();
   addonsManager.close();
 }
 
