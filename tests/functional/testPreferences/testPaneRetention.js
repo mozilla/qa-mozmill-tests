@@ -12,7 +12,7 @@ function setupModule(module) {
 }
 
 function teardownModule(module) {
-  prefs.openPreferencesDialog(controller, prefPaneResetCallback);
+  //prefs.openPreferencesDialog(controller, prefPaneResetCallback);
 }
 
 /**
@@ -23,6 +23,7 @@ function testPreferencesDialogRetention() {
   prefs.openPreferencesDialog(controller, prefPaneSetCallback);
 
   // And check if the Privacy pane is still selected
+  controller.sleep(100);
   prefs.openPreferencesDialog(controller, prefPaneCheckCallback);
 }
 
