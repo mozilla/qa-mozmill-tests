@@ -10,6 +10,7 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 const THEME = [
   {name: "Theme (Plain)",
@@ -26,7 +27,9 @@ const TIMEOUT_USER_SHUTDOWN = 2000;
 
 function setupModule() {
   controller = mozmill.getBrowserController();
+  
   addonsManager = new addons.AddonsManager(controller);
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
   // Set pref for add-on installation dialog timer 
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);  
@@ -78,7 +81,3 @@ function testInstallTheme() {
   //controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
   //controller.click(restartLink); 
 }
-
-// Bug 719973 - Failure in testAddons_changeTheme | Modal dialog has been found and processed
-setupModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
-                             "| Modal dialog has been found and processed";
