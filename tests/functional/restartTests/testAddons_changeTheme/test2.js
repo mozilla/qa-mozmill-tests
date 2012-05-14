@@ -51,7 +51,3 @@ function testThemeIsInstalled() {
   //controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
   //controller.click(restartLink); 
 }
-
-// Bug 719973 - Failure in testAddons_changeTheme | Modal dialog has been found and processed
-setupModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
-                             "| Modal dialog has been found and processed";
