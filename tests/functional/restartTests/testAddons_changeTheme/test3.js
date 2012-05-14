@@ -18,6 +18,7 @@ function teardownModule() {
   delete persisted.theme;  
 
   addonsManager.close();
+  addons.resetDiscoveryPaneURL();
 }
 
 /*
@@ -32,9 +33,3 @@ function testChangedThemeToDefault() {
 
   assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
 }
-
-// Bug 719973 - Failure in testAddons_changeTheme | Modal dialog has been found and processed
-setupModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
-                             "| Modal dialog has been found and processed";
-teardownModule.__force_skip__ = "Bug 719973 - Failure in testAddons_changeTheme " +
-                                "| Modal dialog has been found and processed";
