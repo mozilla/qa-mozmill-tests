@@ -8,6 +8,8 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
 const TIMEOUT_DOWNLOAD = 25000;
 
 const THEME = {
@@ -18,7 +20,9 @@ const THEME = {
 
 function setupModule() {
   controller = mozmill.getBrowserController();
+  
   addonsManager = new addons.AddonsManager(controller);
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
   // Whitelist add the AMO preview site
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
@@ -44,7 +48,3 @@ function testInstallTheme() {
   controller.click(installLink);
   md.waitForDialog(TIMEOUT_DOWNLOAD); 
 }
-
-// Bug 719971 - Failure in testAddons_uninstallTheme | Modal dialog has been found and processed
-setupModule.__force_skip__ = "Bug 719971 - Failure in testAddons_uninstallTheme " +
-                             "| Modal dialog has been found and processed";
