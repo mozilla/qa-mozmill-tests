@@ -7,14 +7,20 @@ var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var tabs = require("../../../../lib/tabs");
 
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
 function setupModule() {
   controller = mozmill.getBrowserController();
+  
   addonsManager = new addons.AddonsManager(controller);
-
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  
   tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {
+  addons.resetDiscoveryPaneURL();
   addonsManager.close();
 }
 
@@ -35,9 +41,3 @@ function testAddonInstalled() {
             "Extension '" + persisted.addon.id + 
             "' has been correctly installed");
 }
-
-// Bug 709932 - Failure in Restart Tests :: testAddons_installFromFTP
-setupModule.__force_skip__ = "Bug 709932 - Failure in Restart Tests :: " + 
-                             "testAddons_installFromFTP";
-teardownModule.__force_skip__ = "Bug 709932 - Failure in Restart Tests :: " + 
-                                "testAddons_installFromFTP";
