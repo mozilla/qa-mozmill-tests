@@ -4,6 +4,7 @@
 
 // Include required modules
 var addons = require("../../../../lib/addons");
+var {assert, expect} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
@@ -13,26 +14,23 @@ const INSTALL_SOURCE = "discovery-upandcoming";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  am = new addons.AddonsManager(controller);
+  addonsManager = new addons.AddonsManager(controller);
 
   tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {
-  am.close();
+  addonsManager.close();
 }
 
 /**
  * Tests installation of an Up & Coming add-on
  */
 function testInstallUpAndComingAddon() {
-  am.open();
-
-  // Select the Get Add-ons pane
-  am.setCategory({category: am.getCategoryById({id: "discover"})});
+  addonsManager.open();
 
   // Wait for the Get Add-ons pane to load
-  var discovery = am.discoveryPane;
+  var discovery = addonsManager.discoveryPane;
   discovery.waitForPageLoad();
   
   // Click on a random addon
@@ -41,6 +39,7 @@ function testInstallUpAndComingAddon() {
   var randomIndex = Math.floor(Math.random() * addonList.length);
   var randomAddon = addonList[randomIndex];
   var addonId = randomAddon.getNode().getAttribute("data-guid");
+  var addonName = randomAddon.getNode().lastElementChild.textContent;
 
   controller.click(randomAddon);
   discovery.waitForPageLoad();
@@ -49,48 +48,22 @@ function testInstallUpAndComingAddon() {
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
 
-  controller.assert(function () {
-    return currentInstallSource === INSTALL_SOURCE;
-  }, "Installation link has source set - got '" + currentInstallSource +
-     "', expected '" + INSTALL_SOURCE + "'");
+  expect.equal(currentInstallSource, INSTALL_SOURCE, "Installation link has source set");
 
-  var md = new modalDialog.modalDialog(am.controller.window);
-  md.start(handleInstallAddonDialog);
+  var md = new modalDialog.modalDialog(addonsManager.controller.window);
+
+  md.start(addons.handleInstallAddonDialog);
   controller.click(addToFirefox);
-
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
-  am.setCategory({category: am.getCategoryById({id: "extension"})});
-  var addon = am.getAddons({attribute: "value", value: addonId})[0];
-  var addonIsInstalled = am.isAddonInstalled({addon: addon});
+  addonsManager.setCategory({
+    category: addonsManager.getCategoryById({id: "extension"})
+  });
 
-  controller.assert(function () {
-    return addonIsInstalled;
-  }, "Add-on has been installed - got '" + addonIsInstalled + 
-      "', expected 'true'");
+  var addon = addonsManager.getAddons({attribute: "value", value: addonId})[0];
+  var addonIsInstalled = addonsManager.isAddonInstalled({addon: addon});
+
+  assert.ok(addonIsInstalled, "Extension '" + addonName + "' has been installed");
 }
 
-/**
- * Handle the modal dialog to install an addon
- */
-function handleInstallAddonDialog(controller) {
-  // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document,
-                                             '/id("xpinstallConfirm")/anon({"anonid":"buttons"})' +
-                                             '/{"dlgtype":"accept"}');
-
-  controller.waitFor(function () {
-    return !installButton.getNode().disabled; 
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled + 
-      "', expected 'true'");
-
-  controller.click(installButton);
-}
-
-// Bug 732353 - Disable all Discovery Pane tests 
-//              due to unpredictable web dependencies
-setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
-                             "due to unpredictable web dependencies";
-teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
-                                "due to unpredictable web dependencies";
