@@ -10,7 +10,6 @@ var tabs = require("../../../../lib/tabs");
 
 const LOCAL_INSTALL_FILE = "install.html?addon=";
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/addons/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 const ADDON = {
   id: "restartless-addon@quality.mozilla.org",
@@ -20,7 +19,6 @@ const ADDON = {
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
   // Whitelist add the localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
@@ -59,3 +57,7 @@ function testInstallRestartlessExtension() {
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
 
+// Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart | 
+//              Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                             " | Modal dialog has been found and processed";

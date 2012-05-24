@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
@@ -18,8 +17,6 @@ function setupModule() {
 
 function teardownModule() {
   prefs.preferences.clearUserPref("browser.urlbar.trimURLs");
-  
-  addons.resetDiscoveryPaneURL();
 
   delete persisted.addon;
 }
@@ -53,3 +50,9 @@ function testRestartlessExtensionWorksAfterRestart() {
                "Current URL should match expected URL");
 }
 
+// Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart | 
+//              Modal dialog has been found and processed
+setupModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                             " | Modal dialog has been found and processed";
+teardownModule.__force_skip__ = "Bug 719982 - Failure in testAddons_RestartlessExtensionWorksAfterRestart " +
+                                " | Modal dialog has been found and processed";
