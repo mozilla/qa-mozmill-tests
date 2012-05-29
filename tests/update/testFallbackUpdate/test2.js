@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var softwareUpdate = require("../../../lib/software-update");
 var utils = require("../../../lib/utils");
 
@@ -53,9 +54,7 @@ function teardownModule(module) {
 
 function testFallbackUpdate_Download() {
   // Check if the user has permissions to run the update
-  controller.assert(function() {
-    return update.allowed;
-  }, "User has permissions to update the build.");
+  assert.ok(update.allowed, "User has permissions to update the build.");
 
   // Open the software update dialog and wait until the check has been finished
   update.openDialog(controller);

@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var softwareUpdate = require("../../../lib/software-update");
 var utils = require("../../../lib/utils");
 
@@ -64,9 +65,9 @@ function testDirectUpdate_AppliedAndNoUpdatesFound() {
   if (update.updatesFound) {
     update.download(persisted.channel, false);
 
-    controller.assert(function() {
-      return update.updateType != persisted.updates[persisted.updateIndex].type;
-    }, "No more update of the same type offered.");
+    var lastUpdateType = persisted.updates[persisted.updateIndex].type;
+    expect.notEqual(update.updateType, lastUpdateType,
+                    "No more update of the same type offered.");
   }
 
   // Check that updates have been applied correctly
