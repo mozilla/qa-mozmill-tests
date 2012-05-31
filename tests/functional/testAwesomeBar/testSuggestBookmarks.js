@@ -14,8 +14,6 @@ const LOCAL_TEST_PAGE = {
   string: 'grants'
 };
 
-const TIMEOUT = 5000;
-
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
@@ -29,9 +27,9 @@ var teardownModule = function() {
 }
 
 /**
- * Check history and bookmarked (done in testStarInAutocomplete()) items appear in autocomplete list.
+ * Check a star appears in autocomplete list for a bookmarked page.
  */
-var testSuggestHistoryAndBookmarks = function() {
+var testStarInAutocomplete = function() {
   // Use preferences dialog to select "When Using the location bar suggest:" History and Bookmarks
   prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
 
@@ -39,43 +37,6 @@ var testSuggestHistoryAndBookmarks = function() {
   locationBar.loadURL(LOCAL_TEST_PAGE.url);
   controller.waitForPageLoad();
 
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
-
-  // Focus the locationbar, delete any contents there
-  locationBar.clear();
-
-  // Type in each letter of the test string to allow the autocomplete to populate with results.
-  for each (var letter in LOCAL_TEST_PAGE.string) {
-    locationBar.type(letter);
-    controller.sleep(200);
-  }
-
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
-
-  // Get the visible results from the autocomplete list. Verify it is 1
-  controller.waitFor(function () {
-    return locationBar.autoCompleteResults.isOpened;
-  }, "Autocomplete list has been opened");
-
-  expect.equal(locationBar.autoCompleteResults.visibleResults.length, 1,
-               "There is one visible result in the autocomplete list");
-
-  // For the page title check matched text is underlined
-  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  for each (var entry in entries) {
-    expect.equal(LOCAL_TEST_PAGE.string, entry.toLowerCase(),
-                 "The page title matches the underlined text");
-  }
-
-  locationBar.autoCompleteResults.close();
-}
-
-/**
- * Check a star appears in autocomplete list for a bookmarked page.
- */
-var testStarInAutocomplete = function() {
   // Bookmark the test page via bookmarks menu
   controller.mainMenu.click("#menu_bookmarkThisPage");
 
@@ -86,8 +47,9 @@ var testStarInAutocomplete = function() {
   var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
   controller.click(doneButton);
 
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
+  // We must open the blank page so the autocomplete result isn't "Swith to tab"
+  controller.open("about:blank");
+  controller.waitForPageLoad();
 
   // Clear history
   places.removeAllHistory();
@@ -105,6 +67,9 @@ var testStarInAutocomplete = function() {
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
+
+  // Define the path to the first auto-complete result
+  var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
   for each (var entry in entries) {
