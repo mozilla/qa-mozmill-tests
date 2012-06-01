@@ -66,7 +66,7 @@ var testCloseWindow = function() {
 
   controller.waitFor(function () {
     return mozmill.utils.getWindows().length === windowCount;
-  }, "The closed window has been opened");
+  }, "The closed window has been reopened.");
 
   utils.handleWindow("type", "navigator:browser", checkWindowOpen, false);
 }

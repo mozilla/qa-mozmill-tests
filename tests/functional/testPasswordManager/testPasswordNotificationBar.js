@@ -50,11 +50,13 @@ var testPasswordNotification = function() {
   var passwordNotification = locationBar.getNotificationElement(
                                "password-save-notification"
                              );
-
+                             
   // Close the notification and check its state
   controller.keypress(passwordNotification, "VK_ESCAPE", {});
+  
+  var notification = locationBar.getNotification();
   controller.waitFor(function () {
-    return passwordNotification.getNode().parentNode.state === "closed";
+    return notification.getNode().state === "closed";
   }, "Password notification has been closed");
 }
 
