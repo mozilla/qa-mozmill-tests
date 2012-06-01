@@ -57,11 +57,8 @@ var testStarInAutocomplete = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Type in each letter of the test string to allow the autocomplete to populate with results.
-  for each (var letter in LOCAL_TEST_PAGE.string) {
-    locationBar.type(letter);
-    controller.sleep(200);
-  }
+  // Type in the test string
+  locationBar.type(LOCAL_TEST_PAGE.string);
 
   // For the page title check matched text is underlined
   controller.waitFor(function () {
