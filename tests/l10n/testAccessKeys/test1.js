@@ -43,7 +43,6 @@
 var domUtils = require("../../../lib/dom-utils");
 var localization = require("../../../lib/localization");
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
 
 const GET_BY_ID = domUtils.DOMWalker.GET_BY_ID;
 const GET_BY_SELECTOR = domUtils.DOMWalker.GET_BY_SELECTOR;
@@ -56,14 +55,6 @@ function setupModule(module) {
 }
 
 function prefPaneInit(controller, prefDialog) {
-  var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd",
-              "chrome://browser/locale/preferences/content.dtd",
-              "chrome://browser/locale/preferences/cookies.dtd",
-              "chrome://pippki/locale/certManager.dtd",
-              "chrome://pippki/locale/deviceManager.dtd",
-              "chrome://pippki/locale/validation.dtd"];
-  var properties = ["chrome://browser/locale/preferences/preferences.properties"];
-
   var ids = [
     { getBy : GET_BY_ID,
       id : "paneMain",
@@ -85,11 +76,11 @@ function prefPaneInit(controller, prefDialog) {
         { getBy : GET_BY_ID,
           id : "popupPolicyButton",
           target : WINDOW_NEW,
-          title : utils.getProperty(properties, "popuppermissionstitle")},
+          type : "Browser:Permissions"},
         { getBy : GET_BY_SELECTOR,
           selector : "#enableImagesRow button",
           target : WINDOW_NEW,
-          title : utils.getProperty(properties, "imagepermissionstitle")},
+          type : "Browser:Permissions"},
         { getBy : GET_BY_ID,
           id : "advancedJSButton",
           target : WINDOW_MODAL},
@@ -131,11 +122,11 @@ function prefPaneInit(controller, prefDialog) {
             { getBy : GET_BY_ID,
               id : "cookieExceptions",
               target : WINDOW_NEW,
-              title : utils.getProperty(properties, "cookiepermissionstitle")},
+              type : "Browser:Permissions"},
             { getBy : GET_BY_ID,
               id : "showCookiesButton",
               target : WINDOW_NEW,
-              title : utils.getEntity(dtds, "window.title")}
+              type : "Browser:Cookies"}
           ]
         }
       ]},
@@ -147,19 +138,23 @@ function prefPaneInit(controller, prefDialog) {
         { getBy : GET_BY_ID,
           id : "addonExceptions",
           target : WINDOW_NEW,
-          title : utils.getProperty(properties, "addons_permissions_title")},
+          type : "Browser:Permissions"},
         { getBy : GET_BY_ID,
           id : "passwordExceptions",
           target : WINDOW_NEW,
-          title : utils.getEntity(dtds, "savedPasswordsExceptions.title")},
+          type : "Toolkit:PasswordManagerExceptions"},
         { getBy : GET_BY_ID,
           id : "useMasterPassword",
           target : WINDOW_MODAL},
         { getBy : GET_BY_ID,
           id : "showPasswords",
           target : WINDOW_NEW,
-          title : utils.getEntity(dtds, "savedPasswords.title")}
+          type : "Toolkit:PasswordManager"}
       ]},
+    { getBy : GET_BY_ID,
+      id : "paneSync",
+      target : WINDOW_CURRENT,
+      windowHandler : prefDialog},
     { getBy : GET_BY_ID,
       id : "paneAdvanced",
       target : WINDOW_CURRENT,
@@ -180,7 +175,7 @@ function prefPaneInit(controller, prefDialog) {
             { getBy : GET_BY_ID,
               id : "offlineNotifyExceptions",
               target : WINDOW_NEW,
-              title : utils.getProperty(properties, "offlinepermissionstitle")}
+              type : "Browser:Permissions"}
           ]},
         { getBy : GET_BY_ID,
           id : "updateTab",
@@ -199,24 +194,20 @@ function prefPaneInit(controller, prefDialog) {
             { getBy : GET_BY_ID,
               id : "viewCertificatesButton",
               target : WINDOW_NEW,
-              title : utils.getEntity(dtds, "certmgr.title")},
+              type : "mozilla:certmanager"},
             { getBy : GET_BY_ID,
               id : "viewCRLButton",
               target : WINDOW_NEW,
-              title : utils.getEntity(dtds, "validation.crlmanager.label")},
+              type : "mozilla:crlmanager"},
+            { getBy : GET_BY_ID,
+              id : "verificationButton",
+              target : WINDOW_MODAL},
             { getBy : GET_BY_ID,
               id : "viewSecurityDevicesButton",
               target : WINDOW_NEW,
-              title : utils.getEntity(dtds, "devmgr.title")},
-            { getBy : GET_BY_ID,
-              id : "verificationButton",
-              target : WINDOW_MODAL}
+              type : "mozilla:devicemanager"}
           ]},
-      ]},
-    { getBy : GET_BY_ID,
-      id : "paneSync",
-      target : WINDOW_CURRENT,
-      windowHandler : prefDialog}
+      ]}
   ];
 
   return ids;
