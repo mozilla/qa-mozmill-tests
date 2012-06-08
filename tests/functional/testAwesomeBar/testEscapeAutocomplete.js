@@ -86,15 +86,17 @@ var testEscape = function() {
 
   expect.contain(locationBar.value, TEST_STRING,
                  "Search string found in the locationbar");
-  expect.ok(locationBar.autoCompleteResults.isOpened,
-            "The auto-complete list is open");
+  controller.waitFor(function () {
+    return locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete list has been opened");
 
   // After the first Escape press
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
   expect.contain(locationBar.value, TEST_STRING,
                  "Search string found in the locationbar");
-  expect.ok(!locationBar.autoCompleteResults.isOpened,
-            "The auto-complete list is closed");
+  controller.waitFor(function () {
+    return !locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete list has been closed");
   
   // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
