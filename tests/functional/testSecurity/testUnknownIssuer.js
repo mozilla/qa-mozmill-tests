@@ -43,3 +43,7 @@ var testUnknownIssuer = function() {
  * Map test functions to litmus tests
  */
 // testUnknownIssuer.meta = {litmusids : [8900]};
+
+// Bug 705182 - Timeout failure in testSafeBrowsingWarningPages.js
+setupModule.__force_skip__ = "Bug 763159 - Test failure 'secure.mur.at == erle.mur.at'" +
+                             " in testSecurity/testUnknownIssuer.js";
