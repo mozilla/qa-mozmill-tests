@@ -16,26 +16,20 @@ var setupModule = function(module)
 var testUntrustedPageGetMeOutOfHereButton = function()
 {
   // Go to an untrusted website
-  controller.open("https://mozilla.org");
+  controller.open("https://ssl-selfsigned.mozqa.com");
   controller.waitForPageLoad();
-  
+
   // Get a reference to the Get Me Out Of Here button
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, 
                                                 "getMeOutOfHereButton");
   controller.assertNode(getMeOutOfHereButton);
-  
+
   // Click the button
   controller.click(getMeOutOfHereButton);
-  
+
   // Wait for the redirected page to load
   controller.waitForPageLoad();
-  
+
   // Verify the loaded page is the homepage
   utils.assertLoadedUrlEqual(controller, utils.getDefaultHomepage());
-  
 }
-
-// XXX: Bug 708494 - testUntrustedConnectionErrorPage.js fails to find element
-//      getMeOutOfHereButton
-setupModule.__force_skip__ = "Bug 708494 - testUntrustedConnectionErrorPage.js" +
-                             "fails to find element getMeOutOfHereButton";
