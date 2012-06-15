@@ -21,15 +21,24 @@ var setupModule = function() {
 var testBackAndForward = function() {
   var backButton = new elementslib.ID(controller.window.document, "back-button");
   var forwardButton = new elementslib.ID(controller.window.document, "forward-button");
-  
+
   // Open up the list of local pages statically assigned in the array
   for each (var localPage in LOCAL_TEST_PAGES) {
     controller.open(localPage.url);
     controller.waitForPageLoad();
-   
+
     var element = new elementslib.ID(controller.tabs.activeTab, localPage.id);
     controller.assertNode(element);
   }
+
+  var transitionFinished = false;
+
+  function onTransitionEnd() {
+    transitionFinished = true;
+    forwardButton.removeEventListener("transitionend", onTransitionEnd, false);
+  }
+
+  forwardButton.getNode().addEventListener("transitionend", onTransitionEnd, false);
 
   // Click on the Back button for the number of local pages visited
   for (var i = LOCAL_TEST_PAGES.length - 2; i >= 0; i--) {
@@ -41,15 +50,13 @@ var testBackAndForward = function() {
 
   // Click on the Forward button for the number of websites visited
   for (var j = 1; j < LOCAL_TEST_PAGES.length; j++) {
+   controller.waitFor(function() {
+     return transitionFinished && !forwardButton.getNode().hasAttribute('disabled');
+   }, "The forward button has been made visible for the " + j + " page");
+
     controller.click(forwardButton);
 
     var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[j].id);
     controller.waitForElement(element, TIMEOUT);
   }
 }
-
-// Bug 704140 - Failure in /testToolbar/testBackForwardButtons.js | 
-//              Timeout waiting for element with id mission_statement
-setupModule.__force_skip__ = "Bug 704140 - Failure in /testToolbar/" +
-                             "testBackForwardButtons.js | " +
-                             "Timeout waiting for element with id mission_statement";
