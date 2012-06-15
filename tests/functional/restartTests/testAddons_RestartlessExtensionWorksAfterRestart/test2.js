@@ -6,14 +6,12 @@
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
-var tabs = require("../../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
 var EXPECTED_URL = "http://mozqa.com/data/firefox/layout/mozilla.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {
@@ -38,7 +36,9 @@ function testRestartlessExtensionWorksAfterRestart() {
 
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
-  // Open content area context menu
+  // Open content area context menu in a blank page
+  controller.open("about:blank");
+  controller.waitForPageLoad();
   controller.rightClick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
 
   // Click the item from the context menu to open mozilla.html from mozqa.com
