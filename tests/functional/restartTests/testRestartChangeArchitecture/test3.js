@@ -20,7 +20,7 @@ function testRestarted32bit() {
 /**
  * Restart normally
  */
-function teardownModule() {
+function teardownTest() {
   controller.startUserShutdown(4000, true);
   var appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].
                    getService(Ci.nsIAppStartup);
@@ -28,10 +28,5 @@ function teardownModule() {
 }
 
 
-//if (persisted.skipTests) {
-//  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.5 and higher";
-//  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.5 and higher";
-//}
-
-setupModule.__force_skip__ = "Bug 747299 - startUserShutdown() broken by jsbridge port selection";
-teardownModule.__force_skip__ = "Bug 747299 - startUserShutdown() broken by jsbridge port selection";
+if (persisted.skipTests)
+  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
