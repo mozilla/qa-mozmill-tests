@@ -109,8 +109,6 @@ function testInstallTheme() {
   var restartLink = addonsManager.getElement({type: "listView_restartLink", 
                                               parent: plainTheme});
 
-  // XXX Bug 747418
-  // startUserShutdown is broken. Needs to wait for Mozmill 2.0
-  //controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-  //controller.click(restartLink); 
+  controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
+  controller.click(restartLink); 
 }
