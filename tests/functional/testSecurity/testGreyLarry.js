@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/**
- * Litmus Test 8806: Grey Larry
- */
-
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
+
+const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -18,12 +18,12 @@ var setupModule = function(module) {
  */
 var testLarryGrey = function() {
   // Go to a "grey" website
-  controller.open("http://www.mozilla.org");
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "src" ,"http://www.mozilla.org/media/img/favicon.png");
+  controller.assertJSProperty(favicon, "src" , LOCAL_TEST_FOLDER + "images/mozilla_favicon.ico");
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,
@@ -59,17 +59,19 @@ function checkSecurityTab(controller) {
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
   controller.assertJSProperty(securityTab, "selected", "true");
 
-  // Check the Web Site label for "www.mozilla.org"
+  // Check the Web Site label for "localhost:port#"
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.assertValue(webIDDomainLabel, "www.mozilla.org");
+  expect.match(webIDDomainLabel.getNode().value, /\/\/(.*[^\/])/.exec(LOCAL_TEST_FOLDER)[1],
+               "The domain label should equal the domain");
 
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
-  controller.assertValue(webIDOwnerLabel, securityOwner);
+  expect.equal(webIDOwnerLabel.getNode().value, securityOwner,
+               "The owner label should equal the security owner");
 
   // Check the Verifier label for "Not Specified"
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
