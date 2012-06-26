@@ -3,46 +3,51 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "private_browsing/about.html?";
 
-var setupModule = function(module)
-{
+const PREF_PRIVATE_BROWSING_SUPPORT = "app.support.baseURL";
+
+var setupModule = function () {
   controller = mozmill.getBrowserController();
 
   // Create Private Browsing instance and set handler
   pb = new privateBrowsing.privateBrowsing(controller);
+
+  prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, LOCAL_TEST_PAGE);
 }
 
-var setupTest = function(module)
-{
+var setupTest = function () {
   // Make sure we are not in PB mode and don't show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
 }
 
-var teardownTest = function(test)
-{
+var teardownTest = function (test) {
   pb.reset();
+}
+
+var teardownModule = function () {
+  prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
 }
 
 /**
  * Verify about:privatebrowsing in regular mode
  */
-var testCheckRegularMode = function()
-{
+var testCheckRegularMode = function () {
   controller.open("about:privatebrowsing");
   controller.waitForPageLoad();
-  
+
   // Check descriptions on the about:privatebrowsing page
   var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
-  controller.waitForElement(statusText, gTimeout);
+  controller.waitForElement(statusText);
   controller.assertText(statusText, issueDesc);
-  
+
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);
@@ -55,8 +60,7 @@ var testCheckRegularMode = function()
 /**
  * Verify about:privatebrowsing in private browsing mode
  */
-var testCheckPrivateBrowsingMode = function()
-{
+var testCheckPrivateBrowsingMode = function () {
   // Start the Private Browsing mode
   pb.start();
   controller.waitForPageLoad();
@@ -65,11 +69,12 @@ var testCheckPrivateBrowsingMode = function()
   controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
-  var targetUrl = utils.formatUrlPref("app.support.baseURL") + "private-browsing";
+  var targetUrl = LOCAL_TEST_PAGE + "private-browsing";
 
   controller.waitFor(function () {
     return controller.tabs.length === 2;
   }, "A new tab has been opened");
+
   controller.waitForPageLoad();
   utils.assertLoadedUrlEqual(controller, targetUrl);
 }
