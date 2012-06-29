@@ -156,3 +156,7 @@ var handleSearchInstall = function(controller)
                                          '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}')
   controller.waitThenClick(addButton);
 }
+
+
+setupModule.__force_skip__ = "Bug 769218 - Test failure 'Disconnect Error: Application unexpectedly closed' in testGetMoreSearchEngines.js";
+teardownModule.__force_skip__ = "Bug 769218 - Test failure 'Disconnect Error: Application unexpectedly closed' in testGetMoreSearchEngines.js";
