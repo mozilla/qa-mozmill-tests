@@ -62,8 +62,8 @@ var testVisibleItemsMax = function() {
   // Get the visible results from the autocomplete list. Verify it is six
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
   controller.waitFor(function() { 
-    return autoCompleteResultsList.getNode().getNumberOfVisibleRows() == 6;
-  }, "Number of visible rows returned should equal 6");
+    return autoCompleteResultsList.getNode().getNumberOfVisibleRows() == 12;
+  }, "Number of visible rows returned should equal 12");
 
   locationBar.autoCompleteResults.close();
 }
