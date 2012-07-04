@@ -62,17 +62,27 @@ var testScrollBackgroundTabIntoView = function()
   // if the fix for bug 578162 will solve it.
   controller.sleep(100);
 
+  // Check that the right scroll button flashes
+  var highlighted = false;
+  var config = { attributes: true, attributeOldValue: true, attributeFilter: ["notifybgtab"]};
+
+  var obs = new controller.window.MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      highlighted = (mutation.oldValue == 'true') &&
+                    !mutation.target.hasAttribute('notifybgtab');
+    });
+  });
+  obs.observe(scrollButtonDown.getNode(), config);
+
   // Open one more tab but with another link for later verification
   tabBrowser.openInNewTab(link2);
 
   // Check that the right scroll button flashes
   controller.waitFor(function () {
-    return scrollButtonDown.getNode().hasAttribute('notifybgtab');
-  }, "Right scroll arrow has been highlighted");
+    return highlighted;
+  }, "Right scroll arrow has been highlighted shortly.");
 
-  controller.waitFor(function () {
-    return !scrollButtonDown.getNode().hasAttribute('notifybgtab');
-  }, "Hightlight should be removed immediately");
+  obs.disconnect();
 
   // Check that the correct link has been loaded in the last tab
   var lastTabIndex = controller.tabs.length - 1;
