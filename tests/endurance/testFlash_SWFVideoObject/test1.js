@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
@@ -50,6 +51,16 @@ function setupModule() {
   tabBrowser = new tabs.tabBrowser(controller);
 
   tabs.closeAllTabs(controller);
+
+  // Skip test if we don't have Flash plugin enabled
+  var isFlashActive = addons.getInstalledAddons(function (aAddon) {
+    if (aAddon.isActive && aAddon.type === "plugin" && aAddon.name.indexOf("Flash") > 0)
+      return true;
+  });
+
+  if (isFlashActive[0] !== true) {
+    testFlashObject.__force_skip__ = "No enabled Flash plugin detected";
+  }
 }
 
 /*
