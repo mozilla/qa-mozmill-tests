@@ -6,9 +6,10 @@
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
-
-const gDelay = 0;
-const gTimeout = 5000;
+                 
+const TEST_DOMAINS = ["http://domain1.mozqa.com",
+                      "http://domain2.mozqa.com"];
+const TEST_PAGE = "/data/firefox/cookies/cookie_single.html";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -22,13 +23,12 @@ var setupModule = function(module) {
  * Test removing all cookies via the cookie manager
  */
 var testRemoveAllCookies = function() {
-  // Go to mozilla.org to build a list of cookies
-  controller.open("http://www.mozilla.org/");
-  controller.waitForPageLoad();
-
-  controller.open("http://www.google.com/");
-  controller.waitForPageLoad();
-
+  // Open cookie test page from different domains to build a list of cookies
+  TEST_DOMAINS.forEach(function(domain) {
+    controller.open(domain + TEST_PAGE);
+    controller.waitForPageLoad();
+  });
+  
   // Call preferences dialog and delete the created cookies
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
@@ -44,7 +44,7 @@ var prefDialogCallback = function(controller) {
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode, gTimeout);
+  controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
 
   // The Show Cookies button doesn't receive focus that fast. Means a click will
@@ -71,7 +71,7 @@ function deleteAllCookies(controller) {
 
   // Verify all cookies have been removed
   var removeAll = new elementslib.ID(controller.window.document, "removeAllCookies");
-  controller.waitThenClick(removeAll, gTimeout);
+  controller.waitThenClick(removeAll);
   expect.equal(cookiesList.view.rowCount, 0, "There are no cookies left on the list");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
