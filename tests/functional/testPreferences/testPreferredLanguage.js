@@ -116,10 +116,3 @@ var langHandler = function(controller) {
  * Map test functions to litmus tests
  */
 // testSetLanguages.meta = {litmusids : [8322]};
-
-// Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | 
-//              could not find element Link: Gruppi
-setupModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
-                             "could not find element Link: Gruppi";
-teardownModule.__force_skip__ = "Bug 731158 - Mozmill test failure /testPreferences/testPreferredLanguage.js | " + 
-                                "could not find element Link: Gruppi";
