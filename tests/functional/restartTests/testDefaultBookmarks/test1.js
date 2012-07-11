@@ -3,11 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
 var modalDialog = require("../../../../lib/modal-dialog");
 var places = require("../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale + 
+                            "/firefox/central/";
 
 function setupModule(module) {
   controller = mozmill.getBrowserController();
@@ -62,13 +66,12 @@ function testVerifyDefaultBookmarks() {
   // Check if the Most Visited folder is visible and has the correct title
   controller.assertJSProperty(items[0], "label", toolbarNodes.getChild(0).title);
 
-  // Check Getting Started bookmarks title and load the page
+  // Check Getting Started bookmarks title
   controller.assertJSProperty(items[1], "label", toolbarNodes.getChild(1).title);
-  controller.click(items[1]);
-  controller.waitForPageLoad();
 
-  // Check for the correct path in the URL which also includes the locale
-  utils.assertLoadedUrlEqual(controller, toolbarNodes.getChild(1).uri);
+  // Check for the correct link of the bookmark which also includes the locale
+  expect.ok(places.isBookmarkInFolder(utils.createURI(GETTING_STARTED_URL), bs.toolbarFolder),
+            GETTING_STARTED_URL + " is in the Toolbar Folder");
 
   // Close the container
   toolbarNodes.containerOpen = false;
