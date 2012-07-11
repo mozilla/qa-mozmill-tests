@@ -19,6 +19,7 @@ const LOCAL_PAGES = [
   LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
 ];
 
+const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -26,19 +27,20 @@ var setupModule = function() {
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
+
+  // Ensure Location bar suggests "History and Bookmarks"
+  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function() {
   locationBar.autoCompleteResults.close(true);
+  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
- * Check Six is the maximum visible items in a match list.
+ * Check six is the maximum visible items in a match list.
  */
 var testVisibleItemsMax = function() {
-  // Use preferences dialog to ensure "When Using the location bar suggest:" History and Bookmarks is selected
-  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
-
   // Open some local pages to set up the test environment
   for each (var page in LOCAL_PAGES) {
     locationBar.loadURL(page);
@@ -66,22 +68,4 @@ var testVisibleItemsMax = function() {
   }, "Number of visible rows returned should equal 6");
 
   locationBar.autoCompleteResults.close();
-}
-
-/**
- * Set matching of the location bar to "History and Bookmarks"
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogSuggestsCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'panePrivacy';
-
-  var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
-  controller.waitForElement(suggests);
-  controller.select(suggests, null, null, 0);
-  controller.sleep(100);
-
-  prefDialog.close(true);
 }

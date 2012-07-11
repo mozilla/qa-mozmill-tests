@@ -14,16 +14,22 @@ const LOCAL_TEST_PAGE = {
   string: "mozilla" 
 };
 
+const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
+
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
+
+  // Location bar suggests "History"
+  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 1);
 }
 
 var teardownModule = function() {
   locationBar.autoCompleteResults.close(true);
+  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
@@ -31,9 +37,6 @@ var teardownModule = function() {
  *
  */
 var testFaviconInAutoComplete = function() {
-  // Use preferences dialog to select "When Using the location bar suggest:" "History"
-  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
-
   // Open the local test page
   locationBar.loadURL(LOCAL_TEST_PAGE.url);
   controller.waitForPageLoad();
@@ -68,22 +71,4 @@ var testFaviconInAutoComplete = function() {
                  "Favicons in auto-complete list and location bar are identical");
 
   locationBar.autoCompleteResults.close();
-}
-
-/**
- * Set suggests in the location bar to "History"
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogSuggestsCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'panePrivacy';
-
-  var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
-  controller.waitForElement(suggests);
-  controller.select(suggests, null, null, 1);
-  controller.sleep(200);
-
-  prefDialog.close(true);
 }
