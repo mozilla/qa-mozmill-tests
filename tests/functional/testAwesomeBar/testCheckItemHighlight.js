@@ -7,7 +7,6 @@ var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const TIMEOUT = 5000;
 const PLACES_DB_TIMEOUT = 4000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -16,26 +15,28 @@ const LOCAL_TEST_PAGES = [
    name: "community" }
 ];
 
+const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
+
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
+
+  // Location bar suggests "History and Bookmarks"
+  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function() {
   locationBar.autoCompleteResults.close(true);
+  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
  * Check matched awesomebar items are highlighted.
  */
 var testCheckItemHighlight = function() {
-  // Use preferences dialog to select:
-  // "When Using the location bar suggest:" History and Bookmarks
-  prefs.openPreferencesDialog(controller, prefDialogSuggestsCallback);
-
   // Open the test page then about:blank to set up the test test environment
   controller.open(LOCAL_TEST_PAGES[0].URL);
   controller.waitForPageLoad();
@@ -70,24 +71,6 @@ var testCheckItemHighlight = function() {
   checkAwesomebarResults(richlistItem, "url");
 
   locationBar.autoCompleteResults.close();
-}
-
-/**
- * Set matching of the location bar to "History and Bookmarks"
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogSuggestsCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'panePrivacy';
-
-  var suggests = new elementslib.ID(controller.window.document, "locationBarSuggestion");
-  controller.waitForElement(suggests);
-  controller.select(suggests, null, null, 0);
-  controller.sleep(100);
-
-  prefDialog.close(true);
 }
 
 /**
