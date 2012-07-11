@@ -79,4 +79,3 @@ function checkPasswordsNotSaved(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
-

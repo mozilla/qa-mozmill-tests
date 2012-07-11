@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const localTestFolder = collector.addHttpResource('../../../data/');
@@ -25,7 +24,6 @@ var setupModule = function(module)
 
 var teardownModule = function()
 {
-  prefs.preferences.clearUserPref("browser.tabs.loadInBackground");
   tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
@@ -34,9 +32,6 @@ var teardownModule = function()
 
 var testScrollBackgroundTabIntoView = function()
 {
-  // Check that we open new tabs in the background
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
-
   // Open the testcase
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();
@@ -111,25 +106,6 @@ var testScrollBackgroundTabIntoView = function()
   controller.waitFor(function () {
     return allTabsPopup.getNode().state == 'closed';
   }, "The all tabs popup should have been closed");
-}
-
-/**
- * Check that we open tabs in the background
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefDialogCallback = function(controller)
-{
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneTabs';
-
-  // Ensure that 'Switch to tabs immediately' is unchecked:
-  var switchToTabsPref = new elementslib.ID(controller.window.document, "switchToNewTabs");
-  controller.waitForElement(switchToTabsPref);
-  controller.check(switchToTabsPref, false);
-
-  prefDialog.close(true);
 }
 
 /**

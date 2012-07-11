@@ -15,6 +15,9 @@ const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + 'cookies/cookie_single.html'
 ];
 
+const PREF_COOKIE_BEHAVIOR = "network.cookie.cookieBehavior";
+const PREF_COOKIE_LIFETIME_POLICY = "network.cookie.lifetimePolicy";
+
 const TIMEOUT = 5000;
 
 var setupModule = function(module) {
@@ -22,13 +25,18 @@ var setupModule = function(module) {
 
   // Create Private Browsing instance
   pb = new privateBrowsing.privateBrowsing(controller);
+
+  // Enable the "Ask me every time" cookie behavior
+  prefs.preferences.setPref(PREF_COOKIE_BEHAVIOR, 0);
+  prefs.preferences.setPref(PREF_COOKIE_LIFETIME_POLICY, 1);
 }
 
 var teardownModule = function(module) {
   pb.reset();
 
   // Reset the user cookie pref
-  prefs.preferences.clearUserPref("network.cookie.lifetimePolicy");
+  prefs.preferences.clearUserPref(PREF_COOKIE_BEHAVIOR);
+  prefs.preferences.clearUserPref(PREF_COOKIE_LIFETIME_POLICY);
 }
 
 /**
@@ -64,40 +72,9 @@ var testPermissionsDisabled = function() {
 
   controller.keypress(null, "VK_ESCAPE", {});
 
-  // Enable the "Ask me every time" cookie behavior
-  prefs.openPreferencesDialog(controller, prefCookieHandler);
-
   // No cookie dialog should show up
   controller.open(LOCAL_TEST_PAGES[1]);
   controller.waitForPageLoad();
-}
-
-/**
- * Select "Ask me every time" for Cookies
- *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
- */
-var prefCookieHandler = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'panePrivacy';
-
-  // Go to custom history settings and select ask me every time for cookies
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode, TIMEOUT);
-  controller.select(historyMode, null, null, "custom");
-  controller.sleep(100);
-
-  var acceptCookies = new elementslib.ID(controller.window.document, "acceptCookies");
-  controller.assertChecked(acceptCookies);
-
-  // Select "ask me every time"
-  var keepCookies = new elementslib.ID(controller.window.document, "keepCookiesUntil");
-  controller.waitForElement(keepCookies, TIMEOUT);
-  controller.select(keepCookies, null, null, 1);
-  controller.sleep(100);
-
-  prefDialog.close(true);
 }
 
 /**
