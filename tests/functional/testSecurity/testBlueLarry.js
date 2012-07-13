@@ -22,20 +22,15 @@ var testLarryBlue = function() {
   controller.open("https://mail.mozilla.org/");
   controller.waitForPageLoad();
 
-  // Get the information from the certificate for comparison
+  // Get the information from the certificate
   var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
-
-  // Check the label displays
-  // Format: Organization
-  var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  controller.assertValue(identLabel, gETLDService.getBaseDomainFromHost(cert.commonName));
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
   controller.assert(function () {
-    return favicon.getNode().src.indexOf("mozilla.org") !== -1;
-  }, "Favicon is loaded: got '" + favicon.getNode().src + "'");
+    return favicon.getNode().getAttribute("hidden") == false;
+  }, "Lock icon is visible in identity box");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");

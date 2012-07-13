@@ -4,21 +4,24 @@
 
 // Include required modules
 var downloads = require("../../../lib/downloads");
+var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
   // Get an instance of the Download Manager class
   module.dm = new downloads.downloadManager();
+
+  // Enable the old tookit UI to test the download manager
+  prefs.preferences.setPref(PREF_DOWNLOAD_USE_TOOLKIT, true);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
+  prefs.preferences.clearUserPref(PREF_DOWNLOAD_USE_TOOLKIT);
+
   // If we failed in closing the Download Manager window do it now
   if (dm.controller.window)
     dm.controller.window.close();
@@ -27,8 +30,7 @@ var teardownModule = function(module)
 /**
  * Test closing the Download Manager
  */
-var testCloseDownloadManager = function()
-{
+var testCloseDownloadManager = function() {
   // Get the initial window count
   var windowCount = mozmill.utils.getWindows().length;
 
