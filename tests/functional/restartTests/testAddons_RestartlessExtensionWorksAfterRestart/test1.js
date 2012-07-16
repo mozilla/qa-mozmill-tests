@@ -42,7 +42,7 @@ function testInstallRestartlessExtension() {
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
   md.start(addons.handleInstallAddonDialog);
-  controller.click(installLink);
+  controller.waitThenClick(installLink);
   md.waitForDialog(); 
 
   addonsManager.open();
