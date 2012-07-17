@@ -38,6 +38,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var setupModule = function(module) {
@@ -54,7 +55,7 @@ var setupModule = function(module) {
  */
 var testLarryBlue = function() {
   // Go to a "blue" website
-  controller.open("https://mail.mozilla.org/");
+  controller.open("https://ssl-dv.mozqa.com");
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
@@ -69,7 +70,7 @@ var testLarryBlue = function() {
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
   controller.assert(function () {
-    return favicon.getNode().src.indexOf("mozilla.org") !== -1;
+    return favicon.getNode().src.indexOf("mozqa.com") !== -1;
   }, "Favicon is loaded: got '" + favicon.getNode().src + "'");
 
   // Check the identity box shows green
@@ -140,23 +141,27 @@ function checkSecurityTab(controller) {
   controller.assertJSProperty(securityTab, "selected", "true");
 
   // Check the Web Site label against the Cert CName
-  // XXX: This cert uses a wildcard (*) in the CName
-  //      Replace this with 'www' as it is the current domain
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.assertValue(webIDDomainLabel, cert.commonName.replace("*", "mail"));
+  var certName = (cert.commonName.replace(/\./g, "\\\.")).replace(/\*/g, ".*");
+  var certNameRegExp = new RegExp("^" + certName + "$");
+
+  expect.match(webIDDomainLabel.getNode().value, certNameRegExp,
+               "Expected web site label found");
 
   // Check the Owner label for "This web site does not supply ownership information."
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
-  controller.assertValue(webIDOwnerLabel, securityOwner);
+  expect.equal(webIDOwnerLabel.getNode().value, securityOwner,
+               "Expected owner label found");
 
   // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
+               "Expected verifier label found");
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
