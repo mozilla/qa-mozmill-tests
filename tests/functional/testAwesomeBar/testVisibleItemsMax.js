@@ -37,6 +37,7 @@
  * ***** END LICENSE BLOCK *****/
 
 // Include required modules
+var {expect} = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -72,7 +73,7 @@ var teardownModule = function() {
 }
 
 /**
- * Check twelve is the maximum visible items in a match list.
+ * Check the maximum visible items in a match list.
  */
 var testVisibleItemsMax = function() {
   // Open some local pages to set up the test environment
@@ -95,11 +96,16 @@ var testVisibleItemsMax = function() {
     controller.sleep(100);
   }
 
-  // Get the visible results from the autocomplete list. Verify it is six
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
-  controller.waitFor(function() { 
-    return autoCompleteResultsList.getNode().getNumberOfVisibleRows() == 6;
-  }, "Number of visible rows returned should equal 6");
+  controller.waitFor(function() {
+    return locationBar.autoCompleteResults.isOpened;
+  }, "Autocomplete list has been opened");
+  
+  // Get the visible results from the autocomplete list. Verify it is equal to maxrows
+  var visibleRows = autoCompleteResultsList.getNode().getNumberOfVisibleRows();
+  var maxRows = locationBar.urlbar.getNode().getAttribute("maxrows");
+  expect.equal(visibleRows, parseInt(maxRows),
+               "Number of visible rows should equal max rows");
 
   locationBar.autoCompleteResults.close();
 }
