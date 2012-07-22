@@ -42,3 +42,6 @@ var testShortcutAndSearch = function()
  */
 // testClickAndSearch.meta = {litmusids : [8241]};
 // testShortcutAndSearch.meta = {litmusids : [8242]};
+
+setupModule.__force_skip__ = "Bug 761984 - Failure in testFocusAndSearch |" +
+                             "Disconnect Error: Application unexpectedly closed";
