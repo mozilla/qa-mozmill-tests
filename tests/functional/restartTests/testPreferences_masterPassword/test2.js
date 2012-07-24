@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
@@ -56,7 +57,9 @@ function checkPasswordManager(controller) {
   var passwordCol = new elementslib.ID(controller.window.document, "passwordCol");
 
   controller.waitForElement(togglePasswords);
-  utils.assertElementVisible(controller, passwordCol, false);
+
+  expect.ok(!utils.isDisplayed(controller, passwordCol),
+            "Password column is hidden");
 
   // Call showPasswords dialog and view the passwords on your profile
   var md = new modalDialog.modalDialog(controller.window);
@@ -65,7 +68,9 @@ function checkPasswordManager(controller) {
   controller.click(togglePasswords);
   md.waitForDialog();
 
-  utils.assertElementVisible(controller, passwordCol, true);
+  expect.ok(utils.isDisplayed(controller, passwordCol),
+            "Password column is visible");
+
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
