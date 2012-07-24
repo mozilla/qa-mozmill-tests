@@ -7,6 +7,7 @@
  */
 
 // Include necessary modules
+var { expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -42,9 +43,10 @@ var testIdentityPopupOpenClose = function() {
 
   controller.sleep(gDelay);
 
-  // Check the visibility of the more info button
-  var button = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
-  utils.assertElementVisible(controller, button, true);
+  var button = new elementslib.ID(controller.window.document,
+                                  "identity-popup-more-info-button");
+  expect.ok(utils.isDisplayed(controller, button),
+            "More Information button is visible");
 
   // Press Escape to close the popup
   controller.keypress(popup, 'VK_ESCAPE', {});
