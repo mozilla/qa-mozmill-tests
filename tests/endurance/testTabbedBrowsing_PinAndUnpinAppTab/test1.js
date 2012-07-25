@@ -26,7 +26,7 @@ function teardownModule(module) {
  * Tests pinning and unpinning app tabs
  */
 function testPinAndUnpinAppTab() {
-  var contextMenu = tabBrowser.controller.getMenu("#tabContextMenu");
+  var contextMenu = controller.getMenu("#tabContextMenu");
   var currentTab = null;
   enduranceManager.run(function () {
 
