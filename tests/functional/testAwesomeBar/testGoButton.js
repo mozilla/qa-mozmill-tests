@@ -37,6 +37,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
+var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
@@ -46,17 +48,19 @@ const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html'
 ];
 
-var setupModule = function() {
+var setupModule = function () {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
-  goButton = locationBar.getElement({type: "goButton"});
+  tabs.closeAllTabs(controller);
 }
 
 /**
- * Test to make sure the GO button only appears while typing.
+ * Test clicking location bar, typing a URL and clicking the GO button
  */
-var testGoButtonOnTypeOnly = function() {
+var testAddressFieldAndGoButton = function () {
+  var goButton = locationBar.getElement({type: "goButton"});
+
   // Start from a local page
   controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
@@ -64,45 +68,22 @@ var testGoButtonOnTypeOnly = function() {
   // Verify GO button is hidden
   utils.assertElementVisible(controller, goButton, false);
 
-  // Typing a single character should show the GO button
-  locationBar.focus({type: "shortcut"});
-  locationBar.type("w");
-  utils.assertElementVisible(controller, goButton, true);
-
-  // Removing content and focus should hide the Go button
-  locationBar.clear();
-  controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
-  utils.assertElementVisible(controller, goButton, false);
-}
-
-/**
- * Test clicking location bar, typing a URL and clicking the GO button
- */
-var testClickLocationBarAndGo = function()
-{
-
-  // Start from a local page
-  controller.open(LOCAL_TEST_PAGES[0]);
-  controller.waitForPageLoad();
-
   // Focus and type a URL; a second local page into the location bar
   locationBar.focus({type: "shortcut"});
   locationBar.type(LOCAL_TEST_PAGES[1]);
+  utils.assertElementVisible(controller, goButton, true);
 
   // Click the GO button
   controller.click(goButton);
   controller.waitForPageLoad();
 
+  expect.equal(controller.tabs.length, 1, "URL opened in current tab.");
+  utils.assertElementVisible(controller, goButton, false);
+
   // Check if an element with an id of 'organization' exists and the Go button is hidden
   var pageElement = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.assertNode(pageElement);
-  utils.assertElementVisible(controller, goButton, false);
 
   // Check if the URL bar matches the expected domain name
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testClickLocationBarAndGo.meta = {litmusids : [7957]};
