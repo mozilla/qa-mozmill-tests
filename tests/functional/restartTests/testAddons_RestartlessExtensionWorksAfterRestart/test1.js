@@ -6,6 +6,7 @@
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_INSTALL_FILE = "install.html?addon=";
@@ -24,6 +25,9 @@ function setupModule() {
 
   // Whitelist add the localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  
+  // Enable extensions logging
+  prefs.preferences.setPref("extensions.logging.enabled", true);
   
   tabs.closeAllTabs(controller);
 }

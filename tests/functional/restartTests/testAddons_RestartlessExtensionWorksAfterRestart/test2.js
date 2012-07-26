@@ -16,6 +16,7 @@ function setupModule() {
 
 function teardownModule() {
   prefs.preferences.clearUserPref("browser.urlbar.trimURLs");
+  prefs.preferences.clearUserPref("extensions.logging.enabled");
   
   addons.resetDiscoveryPaneURL();
 
