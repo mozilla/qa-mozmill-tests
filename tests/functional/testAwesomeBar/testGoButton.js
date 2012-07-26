@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -31,22 +31,22 @@ var testAddressFieldAndGoButton = function () {
   controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
 
-  // Verify GO button is hidden
-  utils.assertElementVisible(controller, goButton, false);
+  expect.ok(!utils.isDisplayed(controller, goButton), "Go button is hidden");
 
   // Focus and type a URL; a second local page into the location bar
   locationBar.focus({type: "shortcut"});
   locationBar.type(LOCAL_TEST_PAGES[1]);
-  utils.assertElementVisible(controller, goButton, true);
+
+  assert.ok(utils.isDisplayed(controller, goButton), "Go button is visible");
 
   // Click the GO button
   controller.click(goButton);
   controller.waitForPageLoad();
 
   expect.equal(controller.tabs.length, 1, "URL opened in current tab.");
-  utils.assertElementVisible(controller, goButton, false);
+  expect.ok(!utils.isDisplayed(controller, goButton), "Go button is hidden");
 
-  // Check if an element with an id of 'organization' exists and the Go button is hidden
+  // Check if an element with an id of 'organization' exists
   var pageElement = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.assertNode(pageElement);
 

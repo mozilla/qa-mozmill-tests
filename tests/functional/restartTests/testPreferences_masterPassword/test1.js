@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
@@ -44,9 +45,10 @@ var testSetMasterPassword = function() {
                  "password-save-notification",
                  '/anon({"anonid":"button"})'
                );
-  // Check that the Remember Password button is visible
-  utils.assertElementVisible(controller, button, true);
-  
+
+  expect.ok(utils.isDisplayed(controller, button),
+            "Remember password button is visible");
+
   // Click the Remember Password button
   controller.waitThenClick(button);
   
