@@ -8,5 +8,12 @@
       </targetApplication>
     </versionRange>
   </emItem>
+  <emItem id="restartless-inlinesettings@quality.mozilla.org" blockID="em1">
+    <versionRange minVersion="0.1" maxVersion="50.0">
+      <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+        <versionRange minVersion="3.5.*" maxVersion="*"/>
+      </targetApplication>
+    </versionRange>
+  </emItem>
 </emItems>
 </blocklist>
