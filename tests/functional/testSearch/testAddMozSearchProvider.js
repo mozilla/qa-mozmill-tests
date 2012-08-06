@@ -11,7 +11,7 @@ const localTestFolder = collector.addHttpResource('../../../data/');
 
 const TIMEOUT_INSTALL_DIALOG = 30000;
 
-const searchEngine = {name: "MDC",
+const searchEngine = {name: "mozqa.com",
                       url : localTestFolder + "search/mozsearch.html"};
 
 var setupModule = function(module)
