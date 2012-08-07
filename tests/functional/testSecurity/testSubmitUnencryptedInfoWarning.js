@@ -9,11 +9,10 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 const TIMEOUT_MODAL_DIALOG = 30000;
-const TEST_SITE = "https://www.mozilla.org/";
+
+const TEST_SITE = "https://ssl-dv.mozqa.com/"
+const TEST_PAGE = TEST_SITE + "data/firefox/security/unencryptedsearch.html";
 
 var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_entering_weak",
@@ -41,24 +40,24 @@ function testSubmitUnencryptedInfoWarning() {
     prefs.preferences.setPref(gPreferences[i], (i == 3));
 
   // Load an unencrypted page
-  controller.open(TEST_SITE);
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get the web page's search box
   var searchbox = new elementslib.ID(controller.tabs.activeTab, "q");
-  controller.waitForElement(searchbox, gTimeout);
+  controller.waitForElement(searchbox);
 
   // Use the web page search box to submit information
-  var goButton = new elementslib.ID(controller.tabs.activeTab,
-                                    "quick-search-btn");
-  controller.waitForElement(goButton, gTimeout);
+  var submitButton = new elementslib.ID(controller.tabs.activeTab,
+                                        "submit");
+  controller.waitForElement(submitButton);
 
   // Create a listener for the warning dialog
   var md = new modalDialog.modalDialog(controller.window);
   md.start(handleSecurityWarningDialog);
 
   controller.type(searchbox, "mozilla");
-  controller.click(goButton);
+  controller.click(submitButton);
 
   // A warning dialog should appear to caution the submit
   md.waitForDialog(TIMEOUT_MODAL_DIALOG);
@@ -67,10 +66,10 @@ function testSubmitUnencryptedInfoWarning() {
   controller.waitForPageLoad();
 
   // Check that the search results page loaded
-  var searchResultsField = new elementslib.Selector(controller.tabs.activeTab,
-                                                    'input.gsc-input');
-  expect.equal(searchResultsField.getNode().value, "mozilla",
-               "The value in the search field is the expected search term");
+  var searchTerm = new elementslib.ID(controller.tabs.activeTab,
+                                      'search-term');
+  expect.equal(searchTerm.getNode().textContent, "mozilla",
+               "Search term correctly submitted");
 }
 
 /**
@@ -86,7 +85,7 @@ function handleSecurityWarningDialog(controller) {
 
   // Wait for the content to load
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
-  controller.waitForElement(infoBody, gTimeout);
+  controller.waitForElement(infoBody);
 
   // The message string contains "##" instead of \n for newlines.
   // There are two instances in the string. Replace them both.
@@ -102,11 +101,3 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
-
-// XXX: Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js | 
-// The value in the search field should equal 'mozilla'
-setupModule.__force_skip__ = "Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js" + 
-                             " | The value in the search field should equal 'mozilla'";
-teardownModule.__force_skip__ = "Bug 725486 - Failure in testSecurity/testSubmitUnencryptedInfoWarning.js" + 
-                                " | The value in the search field should equal 'mozilla'";
-
