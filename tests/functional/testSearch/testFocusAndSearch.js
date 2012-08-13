@@ -4,26 +4,30 @@
 
 // Include necessary modules
 var search = require("../../../lib/search");
+var tabs = require("../../../lib/tabs");
+var utils = require("../../../lib/utils");
 
-const gDelay = 0;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 
+                        'search/searchresults.html?q={searchTerms}';
 
-var setupModule = function(module)
-{
+function setupModule() {
   controller = mozmill.getBrowserController();
-
   searchBar = new search.searchBar(controller);
+
+  searchBar.installEngine("Test Search Engine", LOCAL_TEST_PAGE,
+                          {selected: true});
 }
 
-var teardownTest = function()
-{
+function teardownModule() {
   searchBar.clear();
+  searchBar.restoreDefaultEngines();
 }
 
 /**
  * Use the mouse to focus the search bar and start a search
  */
-var testClickAndSearch = function()
-{
+function testClickAndSearch() {
   searchBar.focus({type: "click"});
   searchBar.search({text: "Firefox", action: "returnKey"});
 }
@@ -31,8 +35,7 @@ var testClickAndSearch = function()
 /**
  * Use the keyboard shortcut to focus the search bar and start a search
  */
-var testShortcutAndSearch = function()
-{
+function testShortcutAndSearch() {
   searchBar.focus({type: "shortcut"});
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
@@ -43,5 +46,3 @@ var testShortcutAndSearch = function()
 // testClickAndSearch.meta = {litmusids : [8241]};
 // testShortcutAndSearch.meta = {litmusids : [8242]};
 
-setupModule.__force_skip__ = "Bug 761984 - Failure in testFocusAndSearch |" +
-                             "Disconnect Error: Application unexpectedly closed";
