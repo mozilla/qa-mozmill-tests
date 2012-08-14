@@ -4,8 +4,6 @@
 
 // Include necessary modules
 var search = require("../../../lib/search");
-var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 
@@ -25,14 +23,6 @@ function teardownModule() {
 }
 
 /**
- * Use the mouse to focus the search bar and start a search
- */
-function testClickAndSearch() {
-  searchBar.focus({type: "click"});
-  searchBar.search({text: "Firefox", action: "returnKey"});
-}
-
-/**
  * Use the keyboard shortcut to focus the search bar and start a search
  */
 function testShortcutAndSearch() {
@@ -43,6 +33,4 @@ function testShortcutAndSearch() {
 /**
  * Map test functions to litmus tests
  */
-// testClickAndSearch.meta = {litmusids : [8241]};
 // testShortcutAndSearch.meta = {litmusids : [8242]};
-
