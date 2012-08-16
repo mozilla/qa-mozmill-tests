@@ -18,16 +18,21 @@ const ADDON = {
   url: LOCAL_TEST_FOLDER + LOCAL_INSTALL_FILE + "extensions/restartless.xpi"
 };
 
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 1000;
+const TIMEOUT_DOWNLOAD = 25000;
+
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
-  // Whitelist add the localhost
+  // Set pref for add-on installation dialog timer 
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+
+  // Whitelist localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
-  
-  // Enable extensions logging
-  prefs.preferences.setPref("extensions.logging.enabled", true);
   
   tabs.closeAllTabs(controller);
 }
@@ -47,7 +52,7 @@ function testInstallRestartlessExtension() {
 
   md.start(addons.handleInstallAddonDialog);
   controller.waitThenClick(installLink);
-  md.waitForDialog(); 
+  md.waitForDialog(TIMEOUT_DOWNLOAD); 
 
   addonsManager.open();
 
