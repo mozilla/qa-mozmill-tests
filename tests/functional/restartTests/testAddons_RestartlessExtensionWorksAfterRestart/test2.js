@@ -11,13 +11,22 @@ var utils = require("../../../../lib/utils");
 
 var EXPECTED_URL = "http://mozqa.com/data/firefox/layout/mozilla.html";
 
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_TRIM_URL = "browser.urlbar.trimURLs";
+
 function setupModule() {
   controller = mozmill.getBrowserController();
+
+  // Change pref to show the full url in the location bar
+  prefs.preferences.setPref(PREF_TRIM_URL, false);
+
   tabs.closeAllTabs(controller);
 }
 
 function teardownModule() {
-  prefs.preferences.clearUserPref("browser.urlbar.trimURLs");
+  prefs.preferences.clearUserPref(PREF_TRIM_URL);
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
   addons.resetDiscoveryPaneURL();
 
   delete persisted.addon;
@@ -27,9 +36,6 @@ function teardownModule() {
  * Test that verifies the addon works after browser restart
  */
 function testRestartlessExtensionWorksAfterRestart() {
-  // Change pref to show the full url in the location bar
-  prefs.preferences.setPref("browser.urlbar.trimURLs", false);
-
   // Context menu item that is provided by the restartless extension
   var contextMenuItem = new elementslib.ID(controller.window.document,
                                            persisted.addon.id +
