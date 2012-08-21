@@ -62,16 +62,12 @@ var testVisibleItemsMax = function() {
     controller.sleep(100);
   }
 
-  var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
-  controller.waitFor(function() {
-    return locationBar.autoCompleteResults.isOpened;
-  }, "Autocomplete list has been opened");
-  
   // Get the visible results from the autocomplete list. Verify it is equal to maxrows
-  var visibleRows = autoCompleteResultsList.getNode().getNumberOfVisibleRows();
+  var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
   var maxRows = locationBar.urlbar.getNode().getAttribute("maxrows");
-  expect.equal(visibleRows, parseInt(maxRows),
-               "Number of visible rows should equal max rows");
+  controller.waitFor(function () {
+    return autoCompleteResultsList.getNode().getNumberOfVisibleRows() === parseInt(maxRows);
+  }, "Number of visible rows should equal " + maxRows);
 
   locationBar.autoCompleteResults.close();
 }
