@@ -34,9 +34,9 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assert(function () {
+  controller.waitFor(function () {
     return favicon.getNode().src.indexOf("mozqa.com") !== -1;
-  }, "Favicon is loaded: got '" + favicon.getNode().src + "'");
+  }, "Favicon is loaded");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
