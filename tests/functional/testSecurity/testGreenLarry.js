@@ -43,7 +43,7 @@ var testLarryGreen = function() {
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
   controller.waitFor(function () {
-    return favicon.getNode().src.indexOf('addons.mozilla') != -1
+    return favicon.getNode().src.indexOf('addons.cdn.mozilla') != -1;
   }, "AMO favicon is loaded.");
   
   // Check the identity box shows green
