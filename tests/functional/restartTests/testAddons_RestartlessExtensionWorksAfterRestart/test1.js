@@ -28,7 +28,7 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
-  // Set pref for add-on installation dialog timer
+  // Set pref for add-on installation dialog timer 
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist localhost
@@ -68,3 +68,4 @@ function testInstallRestartlessExtension() {
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
 
+setupModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";
