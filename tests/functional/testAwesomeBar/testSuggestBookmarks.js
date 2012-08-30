@@ -56,12 +56,15 @@ var testStarInAutocomplete = function() {
 
   // Clear history
   places.removeAllHistory();
-  
+
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Type in the test string
+  // Type the test string into the location bar
   locationBar.type(LOCAL_TEST_PAGE.string);
+  controller.waitFor(function () {
+    return locationBar.value === LOCAL_TEST_PAGE.string;
+  }, "Location bar contains the typed data");
 
   // For the page title check matched text is underlined
   controller.waitFor(function () {
