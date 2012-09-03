@@ -101,3 +101,6 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
+
+setupModule.__force_skip__ = "Bug 787891 - Disable SSL DV tests due to broken certificate";
+teardownModule.__force_skip__ = "Bug 787891 - Disable SSL DV tests due to broken certificate";
