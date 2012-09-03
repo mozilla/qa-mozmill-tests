@@ -135,3 +135,5 @@ function checkSecurityTab(controller) {
  * Map test functions to litmus tests
  */
 // testLarryBlue.meta = {litmusids : [8901]};
+
+setupModule.__force_skip__ = "Bug 787891 - Disable SSL DV tests due to broken certificate";
