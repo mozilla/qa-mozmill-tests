@@ -3,18 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 // Include necessary modules
 var {expect} = require("../../../lib/assertions");
-var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
-const FAVICON_URL = LOCAL_TEST_FOLDER + "images/mozilla_favicon.ico";
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
-
-  tabs.closeAllTabs(controller);
 }
 
 /**
@@ -27,9 +22,7 @@ var testLarryGrey = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.waitFor(function () {
-    return favicon.getNode().src === FAVICON_URL;
-  }, "Favicon is loaded.");
+  controller.assertJSProperty(favicon, "src" , LOCAL_TEST_FOLDER + "images/mozilla_favicon.ico");
 
   // Check the favicon has no label
   controller.assertValue(new elementslib.ID(controller.window.document,
