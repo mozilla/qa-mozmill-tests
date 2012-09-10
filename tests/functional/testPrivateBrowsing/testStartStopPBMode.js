@@ -45,10 +45,10 @@ function testStartStopPrivateBrowsingMode() {
   LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
-    
+
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
     controller.assertNode(elem);
-    
+
     tabBrowser.openTab();
   });
 
@@ -65,7 +65,7 @@ function testStartStopPrivateBrowsingMode() {
   var learnMore = utils.getEntity(pb.getDtds(), "privatebrowsingpage.learnMore");
   var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText");
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-  controller.waitForElement(longDescElem, TIMEOUT);  
+  controller.waitForElement(longDescElem, TIMEOUT);
   controller.assertText(longDescElem, description);
   controller.assertText(moreInfoElem, learnMore);
 
@@ -78,7 +78,7 @@ function testStartStopPrivateBrowsingMode() {
   for (var i = 0; i < LOCAL_TEST_PAGES.length; i++) {
     controller.waitForPageLoad(controller.tabs.getTab(i));
 
-    // waitForElement is used on exit of PB mode because pages are loaded from bfcache 
+    // waitForElement is used on exit of PB mode because pages are loaded from bfcache
     var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
     controller.waitForElement(elem);
     controller.assertNode(elem);
@@ -99,7 +99,7 @@ function pbStartHandler(controller) {
   var checkbox = new elementslib.ID(controller.window.document, 'checkbox');
   controller.waitThenClick(checkbox, TIMEOUT);
 
-  var okButton = new elementslib.Lookup(controller.window.document, 
+  var okButton = new elementslib.Lookup(controller.window.document,
                                         '/id("commonDialog")' +
                                         '/anon({"anonid":"buttons"})' +
                                         '/{"dlgtype":"accept"}');

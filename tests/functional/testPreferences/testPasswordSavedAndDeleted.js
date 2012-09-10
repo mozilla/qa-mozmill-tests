@@ -54,7 +54,7 @@ function testSaveAndDeletePassword() {
                        "password-save-notification"
                      );
   controller.waitThenClick(button);
-  
+
   // After clicking the 'Remember Password' button, check notification state
   controller.assert(function() {
     return notification.getNode().parentNode.state == "closed";
@@ -129,7 +129,7 @@ function confirmHandler(controller) {
                                             '/id("commonDialog")' +
                                             '/anon({"anonid":"buttons"})' +
                                             '/{"dlgtype":"accept"}');
-  
+
   controller.waitThenClick(dialogButton, TIMEOUT);
 }
 

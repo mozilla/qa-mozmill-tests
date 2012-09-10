@@ -18,7 +18,7 @@ function teardownModule(module) {
 }
 
 /**
- *  Setting and verifying a named tab group 
+ *  Setting and verifying a named tab group
  */
 function testTabGroupNaming() {
   // Open Tab Groups View (default via keyboard shortcut)

@@ -14,8 +14,8 @@ function setupModule(module) {
   tabs.closeAllTabs(controller)
 }
 
-function teardownModule() {  
-  delete persisted.theme;  
+function teardownModule() {
+  delete persisted.theme;
 
   addons.resetDiscoveryPaneURL();
   addonsManager.close();
@@ -27,7 +27,7 @@ function teardownModule() {
 function testThemeIsUninstalled() {
   addonsManager.open();
 
-  var theme = addonsManager.getAddons({attribute: "value", 
+  var theme = addonsManager.getAddons({attribute: "value",
                                        value: persisted.theme.id});
 
   assert.equal(theme.length, 0, persisted.theme.id + " is uninstalled");

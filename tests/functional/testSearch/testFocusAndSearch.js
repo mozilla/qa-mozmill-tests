@@ -6,7 +6,7 @@
 var search = require("../../../lib/search");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER +
                         'search/searchresults.html?q={searchTerms}';
 
 function setupModule() {

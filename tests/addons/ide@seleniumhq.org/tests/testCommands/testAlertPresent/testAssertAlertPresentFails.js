@@ -29,7 +29,7 @@ function testAssertAlertPresentCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "false");
-  
+
   //check final command is not executed
   assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
 }

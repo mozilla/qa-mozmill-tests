@@ -19,7 +19,7 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
 
   // Store the extension data in the persisted object
-  persisted.addon = ADDON[0]; 
+  persisted.addon = ADDON[0];
 
   tabs.closeAllTabs(controller);
 }
@@ -29,8 +29,8 @@ function setupModule() {
  */
 function testInstallAddonFromFTP() {
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
-                                        
-  // Install the extension 
+
+  // Install the extension
   md.start(addons.handleInstallAddonDialog);
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);

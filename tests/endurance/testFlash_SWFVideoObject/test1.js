@@ -37,16 +37,16 @@ function setupModule() {
 function testFlashObject() {
   enduranceManager.run(function () {
     enduranceManager.loop(function () {
-      // If entity > 1 then open a new tab 
+      // If entity > 1 then open a new tab
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
-      } 
+      }
 
       // Load the test page in the currently opened tab
       enduranceManager.addCheckpoint("Load a web page with flash content loaded via object");
       controller.open(TEST_PAGE);
       controller.waitForPageLoad(TIMEOUT_PAGE);
-      enduranceManager.addCheckpoint("Web page has been loaded"); 
+      enduranceManager.addCheckpoint("Web page has been loaded");
     });
     // Close all tabs
     tabBrowser.closeAllTabs();

@@ -15,7 +15,7 @@ function setupModule() {
   enduranceManager = new endurance.EnduranceManager(controller);
   tabBrowser = new tabs.tabBrowser(controller);
   activeTabView = new tabView.tabView(controller);
-  
+
   tabBrowser.closeAllTabs();
 }
 
@@ -35,7 +35,7 @@ function testOpenNewTab() {
       controller.open(LOCAL_TEST_PAGE);
       controller.waitForPageLoad();
       enduranceManager.addCheckpoint("Web page has been loaded");
-      
+
       // Open a new tab via Panorama
       activeTabView.open();
       enduranceManager.addCheckpoint("Open a new tab from within the Tab Groups view");

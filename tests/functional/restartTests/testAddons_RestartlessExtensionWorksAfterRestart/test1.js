@@ -34,8 +34,8 @@ function setupModule() {
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
 
   // Don't load discovery pane on AOM startup
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE); 
-  
+  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+
   tabs.closeAllTabs(controller);
 }
 
@@ -54,7 +54,7 @@ function testInstallRestartlessExtension() {
 
   md.start(addons.handleInstallAddonDialog);
   controller.click(installLink);
-  md.waitForDialog(TIMEOUT_DOWNLOAD); 
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   addonsManager.open();
 

@@ -45,7 +45,7 @@ var testLarryGreen = function() {
   controller.waitFor(function () {
     return favicon.getNode().src.indexOf('addons.cdn.mozilla') != -1;
   }, "AMO favicon is loaded.");
-  
+
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertJSProperty(identityBox, "className", "verifiedIdentity");

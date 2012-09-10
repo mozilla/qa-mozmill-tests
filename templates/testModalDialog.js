@@ -25,5 +25,5 @@ var testSampleTestcase = function() {
 
 var callbackHandler = function(controller) {
   // Code to be executed in the modal dialog
-  
+
 }

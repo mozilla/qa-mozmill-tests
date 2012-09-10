@@ -85,9 +85,9 @@ var testScrollBackgroundTabIntoView = function()
   }, "The all tabs popup should have been opened");
 
   // Check that the correct title is shown for all tabs except the last one
-  // Last tab in the 'List all Tabs' menu 
-  var lastMenuItemIndex = allTabsPopup.getNode().childNodes.length - 1; 
-  
+  // Last tab in the 'List all Tabs' menu
+  var lastMenuItemIndex = allTabsPopup.getNode().childNodes.length - 1;
+
   for (var i = 3; i < lastMenuItemIndex; i++) {
     controller.waitFor(function () {
       var node = allTabsPopup.getNode().childNodes[i];

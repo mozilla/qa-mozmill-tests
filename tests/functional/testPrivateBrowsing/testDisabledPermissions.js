@@ -61,7 +61,7 @@ var testPermissionsDisabled = function() {
 
   controller.keypress(null, accessKey, {ctrlKey: mozmill.isMac, altKey: !mozmill.isMac});
 
-  var allow = new elementslib.XPath(controller.window.document, 
+  var allow = new elementslib.XPath(controller.window.document,
                                     '/*[name()="window"]' +
                                     '/*[name()="popupset"][1]' +
                                     '/*[name()="menupopup"][4]' +

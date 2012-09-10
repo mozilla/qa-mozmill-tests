@@ -21,16 +21,16 @@ function setupModule() {
 
 function teardownModule() {
   addons.resetDiscoveryPaneURL();
-  addonsManager.close();   
+  addonsManager.close();
 }
 
 /**
-* Tests opening Add-ons Manager via keyboard shortcut 
+* Tests opening Add-ons Manager via keyboard shortcut
 */
 function testKeyboardShortcut() {
   addonsManager.open({type: "shortcut"});
 
   // Check that there are two opened tabs
-  expect.equal(controller.tabs.length, 2, 
-               "The Add-ons Manager has been opened in a second tab");  
+  expect.equal(controller.tabs.length, 2,
+               "The Add-ons Manager has been opened in a second tab");
 }

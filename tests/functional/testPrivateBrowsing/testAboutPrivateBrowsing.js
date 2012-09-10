@@ -36,13 +36,13 @@ var testCheckRegularMode = function()
 {
   controller.open("about:privatebrowsing");
   controller.waitForPageLoad();
-  
+
   // Check descriptions on the about:privatebrowsing page
   var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
   controller.waitForElement(statusText, gTimeout);
   controller.assertText(statusText, issueDesc);
-  
+
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);

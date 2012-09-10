@@ -10,15 +10,15 @@ const BROWSER_STARTUP_PAGE = 'browser.startup.page';
 const PROXY_TYPE = 'network.proxy.type';
 
 /**
- * Sets browser start up page, home page, and proxy settings 
+ * Sets browser start up page, home page, and proxy settings
  */
 var setupModule = function() {
  // Set browser home page to about:blank
  prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
- 
+
  // Set browser start up to display current home page
  prefs.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
- 
+
  // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
- prefs.preferences.setPref(PROXY_TYPE, 4); 
+ prefs.preferences.setPref(PROXY_TYPE, 4);
 }

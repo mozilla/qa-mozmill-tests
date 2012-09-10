@@ -11,7 +11,7 @@ var setupModule = function(module)
 {
   module.controller = mozmill.getBrowserController();
   module.dm = new downloads.downloadManager();
-  
+
   // Make sure Download Manager is clean before starting
   dm.cleanAll();
 }
@@ -22,7 +22,7 @@ var teardownModule = function(module)
   dm.close();
 }
 
-/* 
+/*
  * This tests all four download states:
  *   Pause, Resume, Cancel, and Retry
  */
@@ -30,14 +30,14 @@ var testDownloadStates = function()
 {
   // Download a file
   downloads.downloadFileOfUnknownType(controller, URL);
-  
+
   // Wait for the Download Manager to open
   dm.waitForOpened(controller);
-  
+
   // Get the download object
-  var download = dm.getElement({type: "download", subtype: "id", value: "dl1"}); 
+  var download = dm.getElement({type: "download", subtype: "id", value: "dl1"});
   controller.waitForElement(download);
-  
+
   // Click the pause button and verify the download is paused
   var pauseButton = dm.getElement({type: "download_button", subtype: "pause", value: download});
   controller.waitThenClick(pauseButton);
@@ -63,4 +63,3 @@ var testDownloadStates = function()
  //             but programmatically expects the full version of the Save File dialog
  setupModule.__force_skip__ = "Bug 631246: Unexpected SIMPLE version of Save File dialog";
  teardownModule.__force_skip__ = true;
- 

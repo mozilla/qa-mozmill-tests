@@ -28,12 +28,12 @@ function teardownModule() {
 function testEnabledAddon() {
   addonsManager.open();
 
-  // Get the addon by name 
-  var addon = addonsManager.getAddons({attribute: "value", 
+  // Get the addon by name
+  var addon = addonsManager.getAddons({attribute: "value",
                                        value: persisted.addon.id})[0];
 
   // Check if the addon is enabled
-  assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");   
+  assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
 }
 
 // Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension

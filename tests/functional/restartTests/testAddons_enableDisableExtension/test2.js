@@ -26,21 +26,21 @@ function testDisableExtension() {
     category: addonsManager.getCategoryById({id: "extension"})
   });
 
-  // Get the addon by name 
-  var addon = addonsManager.getAddons({attribute: "value", 
+  // Get the addon by name
+  var addon = addonsManager.getAddons({attribute: "value",
                                        value: persisted.addon.id})[0];
 
   // Disable the addon
   addonsManager.disableAddon({addon: addon});
 
-  // Click on the list view restart link 
-  var restartLink = addonsManager.getElement({type: "listView_restartLink", 
+  // Click on the list view restart link
+  var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: addon});
-  
+
   // User initiated restart
   controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
 
-  controller.click(restartLink);    
+  controller.click(restartLink);
 }
 
 // Bug 688375 - Test failure "Add-on not specified" in testAddons_enableDisableExtension

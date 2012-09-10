@@ -38,7 +38,7 @@ var testEnableCookies = function() {
 
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
-  
+
   // Call preferences dialog and check cookies
   prefs.openPreferencesDialog(controller, prefCheckEnableDialogCallback);
 }
@@ -104,7 +104,7 @@ function checkSavedCookies(controller) {
   controller.assertJSProperty(removeCookieButton, "disabled", false);
 
   var cookieExists = cm.cookieExists({host: persisted.hostName,
-                                      name: "litmus_1", 
+                                      name: "litmus_1",
                                       path: "/cookies/" });
   expect.ok(cookieExists, "The single cookie is saved.");
 

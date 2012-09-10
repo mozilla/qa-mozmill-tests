@@ -34,9 +34,9 @@ var testAddBookmarkToBookmarksMenu = function() {
   }, "Edit This Bookmark doorhanger has been loaded");
 
   // Bookmark should automatically be stored under the Bookmark Menu
-  var nameField = new elementslib.ID(controller.window.document, 
+  var nameField = new elementslib.ID(controller.window.document,
                                      "editBMPanel_namePicker");
-  var doneButton = new elementslib.ID(controller.window.document, 
+  var doneButton = new elementslib.ID(controller.window.document,
                                       "editBookmarkPanelDoneButton");
 
   controller.type(nameField, "Mozilla");

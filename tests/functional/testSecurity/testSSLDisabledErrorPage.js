@@ -19,11 +19,11 @@ const property = "chrome://pipnss/locale/pipnss.properties";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  
+
   // XXX: Bug 513129
   //      Disable Keep-alive connections
   prefs.preferences.setPref(PREF_KEEP_ALIVE, false);
-  
+
   // Disable SSL 3.0 and TLS for secure connections
   prefs.preferences.setPref(PREF_SSL_3, false);
   prefs.preferences.setPref(PREF_TLS, false);
@@ -33,7 +33,7 @@ var teardownModule = function(module) {
   // Reset the SSL and TLS pref
   prefs.preferences.clearUserPref(PREF_SSL_3);
   prefs.preferences.clearUserPref(PREF_TLS);
-  
+
   // XXX: Bug 513129
   //      Re-enable Keep-alive connections
   prefs.preferences.clearUserPref(PREF_KEEP_ALIVE);

@@ -19,7 +19,7 @@ const TEST_STRING = "mozilla";
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
-  
+
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
 }
@@ -40,7 +40,7 @@ var testEscape = function() {
 
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
-  
+
   // Focus the locationbar and delete any content that is there
   locationBar.clear();
 
@@ -63,7 +63,7 @@ var testEscape = function() {
   controller.waitFor(function () {
     return !locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been closed");
-  
+
   // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);

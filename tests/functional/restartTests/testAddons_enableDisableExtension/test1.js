@@ -11,7 +11,7 @@ const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
-  url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi", 
+  url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi",
   id: "test-icons@quality.mozilla.org"
 };
 
@@ -20,7 +20,7 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
 
   // Store the addon in the persisted object
-  persisted.addon = ADDON; 
+  persisted.addon = ADDON;
 
   tabs.closeAllTabs(controller);
 }
@@ -30,8 +30,8 @@ function setupModule() {
  */
 function testInstallAddon() {
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
-                                           
-  // Install the add-on 
+
+  // Install the add-on
   md.start(addons.handleInstallAddonDialog);
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);

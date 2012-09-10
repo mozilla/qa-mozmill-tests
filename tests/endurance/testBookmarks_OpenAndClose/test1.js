@@ -32,7 +32,7 @@ function teardownModule() {
   places.restoreDefaultBookmarks();
 }
 
-/* 
+/*
  * Test open all bookmarks one by one and close all
  */
 function testOpenAndCloseAllBookmarks() {

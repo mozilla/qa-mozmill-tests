@@ -87,7 +87,7 @@ var checkNoPhishingButton = function(badUrl) {
                                   "safebrowsing.notAForgeryButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-    
+
     tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
     controller.waitThenClick(button, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
@@ -103,7 +103,7 @@ var checkNoPhishingButton = function(badUrl) {
                                   "safebrowsing.notAnAttackButton.label");
     var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-    
+
     tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
     controller.waitThenClick(button, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
@@ -137,7 +137,7 @@ var checkGetMeOutOfHereButton = function() {
   controller.waitForPageLoad();
 
   var defaultHomepage = utils.getDefaultHomepage();
-  utils.assertLoadedUrlEqual(controller, defaultHomepage);  
+  utils.assertLoadedUrlEqual(controller, defaultHomepage);
 }
 
 /**
@@ -148,10 +148,10 @@ var checkXButton = function() {
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +
                                              '/{"class":"messageCloseButton tabbable"}');
-  
+
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
   controller.waitThenClick(button, gTimeout);
-  
+
   controller.sleep(1000);
   controller.assertNodeNotExist(button);
 }

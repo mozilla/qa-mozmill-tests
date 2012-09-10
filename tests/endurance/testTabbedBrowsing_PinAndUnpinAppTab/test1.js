@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
+
 // Include required modules
 var tabs = require("../../../lib/tabs");
 var endurance = require("../../../lib/endurance");
@@ -14,7 +14,7 @@ function setupModule(module) {
   tabBrowser = new tabs.tabBrowser(controller);
   enduranceManager = new endurance.EnduranceManager(controller);
   tabBrowser.closeAllTabs();
-  
+
   scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
 }
 
@@ -42,13 +42,13 @@ function testPinAndUnpinAppTab() {
     // Pin tabs
     enduranceManager.loop(function () {
       var lastTabIndex = tabBrowser.length-1;
-      
+
       // Switch to the last tab and wait for it to scroll into view if necessary
       controller.tabs.selectTabIndex(lastTabIndex);
       controller.waitFor(function () {
         return scrollButtonDown.getNode().hasAttribute("collapsed") || scrollButtonDown.getNode().disabled;
       }, "Tab has scrolled into view.");
-      
+
       currentTab = tabBrowser.getTab(tabBrowser.length-1);
       enduranceManager.addCheckpoint("Pinning tab");
       contextMenu.select("#context_pinTab", currentTab);

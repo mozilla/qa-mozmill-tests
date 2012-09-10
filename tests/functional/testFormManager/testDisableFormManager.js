@@ -22,7 +22,7 @@ var setupModule = function() {
   var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
                     getService(Ci.nsIFormHistory2);
   formHistory.removeAllEntries();
-  
+
   // Do not save form and search history
   prefs.preferences.setPref(PREF_SAVE_FORM_SEARCH_HISTORY, false);
 }
@@ -53,11 +53,11 @@ var testToggleFormManager = function() {
 
   // Verify no form completion in each submitted form field
   var popDownAutoCompList = new elementslib.Lookup(
-                              controller.tabs.activeTab, 
-                              '/id("main-window")' + 
-                              '/id("mainPopupSet")' + 
-                              '/id("PopupAutoComplete")' + 
-                              '/anon({"anonid":"tree"})' + 
+                              controller.tabs.activeTab,
+                              '/id("main-window")' +
+                              '/id("mainPopupSet")' +
+                              '/id("PopupAutoComplete")' +
+                              '/anon({"anonid":"tree"})' +
                               '/{"class":"autocomplete-treebody"}'
   );
 

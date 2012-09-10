@@ -112,7 +112,7 @@ var startSearch = function(element, engineName, loadInBackground) {
 }
 
 /**
- * Bug 701903 - Failure in testSearchSelection.js: Timeout exceed for 
+ * Bug 701903 - Failure in testSearchSelection.js: Timeout exceed for
  *             'subject.selectedTabIndex == subject.expectedIndex'
  */
 setupModule.__force_skip__ = "Bug 701903 - Failure in testSearchSelection.js: " +
