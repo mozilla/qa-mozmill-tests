@@ -10,7 +10,7 @@ var tabs = require("../../../../lib/tabs");
 const TIMEOUT_DOWNLOAD = 25000;
 const TIMEOUT_SWITCH = 100;
 
-const CLICK_COUNT = 3; 
+const CLICK_COUNT = 3;
 const INSTALL_SOURCE = "discovery-promo";
 
 function setupModule() {
@@ -35,20 +35,20 @@ function testInstallPickOfTheMonthAddon() {
   am.setCategory({category: am.getCategoryById({id: "discover"})});
   var discovery = am.discoveryPane;
   discovery.waitForPageLoad();
-  
+
   // Go to Mozilla's pick of the Month panel
   // XXX: Bug 666530
-  //      Add a property or attribute on "main-feature" which changes when clicking 
+  //      Add a property or attribute on "main-feature" which changes when clicking
   //      next/prev buttons - currently we are clicking the third subsection without
   //      checking if it is the right one
   var section = discovery.getSection("main-feature");
   var nextLink = discovery.getElement({type: "mainFeature_nextLink", parent: section});
-  
+
   for (var i = 0; i < CLICK_COUNT; i++) {
     controller.click(nextLink);
     controller.sleep(TIMEOUT_SWITCH);
   }
-  
+
   // Install the addon
   var addToFirefox = discovery.getElement({type: "addon_installButton", parent: section});
 
@@ -61,26 +61,26 @@ function testInstallPickOfTheMonthAddon() {
      "', expected '" + INSTALL_SOURCE + "'");
 
   var md = new modalDialog.modalDialog(am.controller.window);
-  md.start(addons.handleInstallAddonDialog);  
+  md.start(addons.handleInstallAddonDialog);
   controller.click(addToFirefox);
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
   am.setCategory({category: am.getCategoryById({id: "extension"})});
-  
+
   var addon = am.getAddons({attribute: "name", value: persisted.currentAddon})[0];
 
   controller.assert(function () {
     return am.isAddonInstalled({addon: addon});
-  }, "Add-on has been installed - got '" + 
-     am.isAddonInstalled({addon: addon}) + "', expected 'true'"); 
+  }, "Add-on has been installed - got '" +
+     am.isAddonInstalled({addon: addon}) + "', expected 'true'");
 }
 
 // XXX: Bug 688146
 //      Pick of the Month add-ons are not compatible with this version of Firefox
-setupModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+setupModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " +
                              "are not compatible with this version of Firefox";
-teardownModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " + 
+teardownModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " +
                                 "are not compatible with this version of Firefox";
 

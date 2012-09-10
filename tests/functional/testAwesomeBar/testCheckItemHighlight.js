@@ -87,9 +87,9 @@ function checkAwesomebarResults(aResult, aType) {
                    getUnderlinedText(aResult, aType);
 
   // Check that there is only 1 entry
-  controller.assert(function () { 
+  controller.assert(function () {
     return underlined.length === 1;
-  }, "Only one autocompleted result is underlined - got '" + 
+  }, "Only one autocompleted result is underlined - got '" +
      underlined.length + "', expected '1'");
 
   // Check that the underlined URL matches the entered URL

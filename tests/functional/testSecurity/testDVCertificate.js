@@ -106,7 +106,7 @@ function checkSecurityTab(controller) {
   var certName = (cert.commonName.replace(/\./g, "\\\.")).replace(/\*/g, ".*");
   var certNameRegExp = new RegExp("^" + certName + "$");
 
-  expect.match(webIDDomainLabel.getNode().value, certNameRegExp, 
+  expect.match(webIDDomainLabel.getNode().value, certNameRegExp,
                "Expected web site label found");
 
   // Check the Owner label for "This web site does not supply ownership information."
@@ -114,13 +114,13 @@ function checkSecurityTab(controller) {
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
-  expect.equal(webIDOwnerLabel.getNode().value, securityOwner, 
+  expect.equal(webIDOwnerLabel.getNode().value, securityOwner,
                "Expected owner label found");
 
   // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization, 
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Expected verifier label found");
 
   controller.keypress(null, 'VK_ESCAPE', {});

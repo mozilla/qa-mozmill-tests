@@ -32,7 +32,7 @@ function testVerifyAlertCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "Actual value 'hello' did not match 'goodbye'");
-  
+
   //check final command is executed
   assert.equal(sm.finalLogInfoMessage, "echo: final command");
 }

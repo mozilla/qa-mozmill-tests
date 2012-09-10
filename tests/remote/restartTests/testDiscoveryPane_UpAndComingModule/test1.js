@@ -32,7 +32,7 @@ function testInstallUpAndComingAddon() {
   // Wait for the Get Add-ons pane to load
   var discovery = addonsManager.discoveryPane;
   discovery.waitForPageLoad();
-  
+
   // Click on a random addon
   var upComing = discovery.getSection("up-and-coming");
   var addonList = discovery.getElements({type: "upAndComing_addons", parent: upComing});
@@ -43,7 +43,7 @@ function testInstallUpAndComingAddon() {
 
   controller.click(randomAddon);
   discovery.waitForPageLoad();
-  
+
   // Install the addon
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
   var currentInstallSource = discovery.getInstallSource(addToFirefox);

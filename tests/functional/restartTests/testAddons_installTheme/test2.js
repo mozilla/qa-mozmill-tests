@@ -17,8 +17,8 @@ function setupModule() {
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 }
 
-function teardownModule() {  
-  delete persisted.theme;  
+function teardownModule() {
+  delete persisted.theme;
 
   addons.resetDiscoveryPaneURL();
   addonsManager.close();
@@ -29,7 +29,7 @@ function teardownModule() {
  */
 function testThemeIsInstalled() {
   addonsManager.open();
-  
+
   // Set category to 'Appearance'
   addonsManager.setCategory({
     category: addonsManager.getCategoryById({id: "theme"})

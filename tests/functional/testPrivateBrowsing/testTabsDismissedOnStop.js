@@ -20,7 +20,7 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   pb = new privateBrowsing.privateBrowsing(controller);
 
-  tabBrowser = new tabs.tabBrowser(controller);  
+  tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
@@ -41,13 +41,13 @@ var testAllTabsClosedOnStop = function() {
   pb.start();
 
   // Open local pages in seperate tabs and wait for each to finish loading
-  LOCAL_TEST_PAGES.forEach(function(page) { 
+  LOCAL_TEST_PAGES.forEach(function(page) {
     controller.open(page.url);
     controller.waitForPageLoad();
-    
+
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
     controller.assertNode(elem);
-    
+
     tabBrowser.openTab();
   });
 

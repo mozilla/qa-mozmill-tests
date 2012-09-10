@@ -34,7 +34,7 @@ function testInstallFeaturedAddon() {
   // Wait for the Get Add-ons pane to load
   var discovery = am.discoveryPane;
   discovery.waitForPageLoad();
- 
+
   // Click on a random addon
   var featured = discovery.getSection("featured-addons");
   var addonList = discovery.getElements({type: "upAndComing_addons", parent: featured});
@@ -44,7 +44,7 @@ function testInstallFeaturedAddon() {
 
   controller.click(randomAddon);
   discovery.waitForPageLoad();
-  
+
   // Install the addon
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
@@ -67,7 +67,7 @@ function testInstallFeaturedAddon() {
 
   controller.assert(function () {
     return addonIsInstalled;
-  }, "Add-on has been installed - got '" + addonIsInstalled + 
+  }, "Add-on has been installed - got '" + addonIsInstalled +
       "', expected 'true'");
 }
 
@@ -76,21 +76,21 @@ function testInstallFeaturedAddon() {
  */
 function handleInstallAddonDialog(controller) {
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, 
+  var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
 
   controller.waitFor(function () {
-    return !installButton.getNode().disabled; 
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled + 
+    return !installButton.getNode().disabled;
+  }, "Install button is enabled: got '" + !installButton.getNode().disabled +
       "', expected 'true'");
 
   controller.click(installButton);
 }
 
-// Bug 732353 - Disable all Discovery Pane tests 
+// Bug 732353 - Disable all Discovery Pane tests
 //              due to unpredictable web dependencies
-setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
+setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                              "due to unpredictable web dependencies";
-teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
+teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                                 "due to unpredictable web dependencies";

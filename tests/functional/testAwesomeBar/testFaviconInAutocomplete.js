@@ -9,9 +9,9 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = { 
+const LOCAL_TEST_PAGE = {
   url: LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  string: "mozilla" 
+  string: "mozilla"
 };
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";

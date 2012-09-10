@@ -20,7 +20,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
   controller.waitForPageLoad();
 
   // Get a reference to the Get Me Out Of Here button
-  var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, 
+  var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab,
                                                 "getMeOutOfHereButton");
   controller.assertNode(getMeOutOfHereButton);
 

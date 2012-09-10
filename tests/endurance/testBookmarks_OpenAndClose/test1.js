@@ -32,7 +32,7 @@ function teardownModule() {
   places.restoreDefaultBookmarks();
 }
 
-/* 
+/*
  * Test open all bookmarks one by one and close all
  */
 function testOpenAndCloseAllBookmarks() {
@@ -81,7 +81,7 @@ function setupBookmarks(aController) {
     var URI = utils.createURI(LOCAL_TEST_PAGE + i);
 
     // Bookmark page and save in a custom folder
-    places.bookmarksService.insertBookmark(customFolder, URI, defaultIndex,  
+    places.bookmarksService.insertBookmark(customFolder, URI, defaultIndex,
                                            "Test Bookmark " + i);
 
     // Polling the bookmarks service if such a bookmark has been added

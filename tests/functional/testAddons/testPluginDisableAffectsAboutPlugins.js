@@ -15,7 +15,7 @@ function setupModule(aModule) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
-  
+
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 

@@ -33,7 +33,7 @@ function setupModule() {
 
   // Whitelist localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
-  
+
   tabs.closeAllTabs(controller);
 }
 
@@ -52,7 +52,7 @@ function testInstallRestartlessExtension() {
 
   md.start(addons.handleInstallAddonDialog);
   controller.waitThenClick(installLink);
-  md.waitForDialog(TIMEOUT_DOWNLOAD); 
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   addonsManager.open();
 

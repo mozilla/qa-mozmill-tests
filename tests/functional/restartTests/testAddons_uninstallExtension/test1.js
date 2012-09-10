@@ -11,7 +11,7 @@ var tabs = require("../../../../lib/tabs");
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
 
 const ADDONS = [
-  {id: "test-icons@quality.mozilla.org", 
+  {id: "test-icons@quality.mozilla.org",
    url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi"},
   {id: "test-long-name@quality.mozilla.org",
    url: LOCAL_TEST_FOLDER + "addons/extensions/long-name.xpi"},
@@ -25,7 +25,7 @@ function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
 
-  // Set pref for add-on installation dialog timer 
+  // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add the local test folder
@@ -40,7 +40,7 @@ function setupModule() {
 /*
  * Install some add-ons to test uninstallation
  */
-function testInstallExtensions() { 
+function testInstallExtensions() {
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
   persisted.addons.forEach(function (addon) {
@@ -51,5 +51,5 @@ function testInstallExtensions() {
 
     // Dispose of the restart doorhanger notification by keyboard event
     controller.keypress(null , 'VK_ESCAPE', {});
-  });  
+  });
 }

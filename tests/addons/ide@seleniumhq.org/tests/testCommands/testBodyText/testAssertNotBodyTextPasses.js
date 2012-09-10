@@ -30,7 +30,7 @@ function testAsserNotBodyTextCommandPasses() {
   sm.playTest();
 
   checks.commandPassed(sm);
-  
+
   //check final command is executed
   assert.equal(sm.finalLogInfoMessage, "echo: final command");
 }

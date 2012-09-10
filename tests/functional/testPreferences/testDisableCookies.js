@@ -23,7 +23,7 @@ var setupModule = function() {
 var teardownModule = function() {
   prefs.preferences.clearUserPref("network.cookie.cookieBehavior");
   cm.removeAll();
-  
+
   persisted.hostName = undefined;
 }
 
@@ -40,7 +40,7 @@ var testDisableCookies = function() {
 
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
-  
+
   // Call preferences dialog and check cookies
   prefs.openPreferencesDialog(controller, prefCheckDisableDialogCallback);
 }

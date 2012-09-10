@@ -32,7 +32,7 @@ function testAssertBodyTextCommandFails() {
   checks.commandFailed(sm, "Actual value 'link with onclick attribute " +
                            "\n Show 10 20 30 items \n \n tab 1 tab 2'" +
                            " did not match 'elephants and zebras'");
-  
+
   //check final command is not executed
   assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
 }
