@@ -32,27 +32,27 @@ function testInstallCollectionAddon() {
 
   var discovery = am.discoveryPane;
   discovery.waitForPageLoad();
-  
+
   // Go to Collections pane
   var section = discovery.getSection("main-feature");
   var nextLink = discovery.getElement({type: "mainFeature_nextLink", parent: section});
-  
+
   controller.click(nextLink);
   discovery.waitForPageLoad();
- 
-  // Click on a random addon  
-  var addonList = discovery.getElements({type: "mainFeature_collectionAddons", 
+
+  // Click on a random addon
+  var addonList = discovery.getElements({type: "mainFeature_collectionAddons",
                                        parent: section});
   var randomIndex = Math.floor(Math.random() * addonList.length);
   var randomAddon = addonList[randomIndex];
   var addonId = randomAddon.getNode().getAttribute("data-guid");
- 
-  controller.click(randomAddon);
-  discovery.waitForPageLoad(TIMEOUT_DOWNLOAD);  
 
-  // Install the addon 
+  controller.click(randomAddon);
+  discovery.waitForPageLoad(TIMEOUT_DOWNLOAD);
+
+  // Install the addon
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
- 
+
   // Retrieve addon src parameter from installation link
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
 
@@ -62,20 +62,20 @@ function testInstallCollectionAddon() {
      "', expected '" + INSTALL_SOURCE + "'");
 
   var md = new modalDialog.modalDialog(am.controller.window);
-  md.start(handleInstallAddonDialog);  
+  md.start(handleInstallAddonDialog);
   controller.click(addToFirefox);
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   // Verify the addon is installed
   am.setCategory({category: am.getCategoryById({id: "extension"})});
- 
+
   var addon = am.getAddons({attribute: "value", value: addonId})[0];
 
   controller.assert(function() {
     return am.isAddonInstalled({addon: addon});
-  }, "Add-on has been installed - got '" + 
-     am.isAddonInstalled({addon: addon}) + "', expected 'true'"); 
+  }, "Add-on has been installed - got '" +
+     am.isAddonInstalled({addon: addon}) + "', expected 'true'");
 }
 
 /**
@@ -83,21 +83,21 @@ function testInstallCollectionAddon() {
  */
 function handleInstallAddonDialog(controller) {
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, 
+  var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")' +
-                                             '/anon({"anonid":"buttons"})' + 
+                                             '/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
   controller.waitFor(function(){
-    return !installButton.getNode().disabled; 
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled + 
+    return !installButton.getNode().disabled;
+  }, "Install button is enabled: got '" + !installButton.getNode().disabled +
      "', expected 'true'");
 
-  controller.click(installButton); 
+  controller.click(installButton);
 }
 
-// Bug 732353 - Disable all Discovery Pane tests 
+// Bug 732353 - Disable all Discovery Pane tests
 //              due to unpredictable web dependencies
-setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
+setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                              "due to unpredictable web dependencies";
-teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " + 
+teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                                 "due to unpredictable web dependencies";

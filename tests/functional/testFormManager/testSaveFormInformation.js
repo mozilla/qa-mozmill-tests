@@ -59,7 +59,7 @@ function testSaveFormInformation() {
 
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
-  
+
   controller.waitFor(function() {
   return popDownAutoCompList.getNode().popupOpen;
   }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");

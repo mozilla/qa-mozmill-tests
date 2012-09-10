@@ -15,12 +15,12 @@ const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html',
   'about:blank'
 ];
-                          
+
 function setupModule(module) {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
-  // Clear complete history so we don't get interference from 
+  // Clear complete history so we don't get interference from
   // previous entries
   places.removeAllHistory();
 }
@@ -33,8 +33,8 @@ function teardownModule() {
  * Check access to the location bar drop down list via autocomplete
  */
 function testAccessLocationBarHistory() {
-  // Open a few different sites to create a small history 
-  // NOTE: about:blank doesn't appear in history and clears the page 
+  // Open a few different sites to create a small history
+  // NOTE: about:blank doesn't appear in history and clears the page
   //       for clean test arena
   for each (var page in LOCAL_TEST_PAGES) {
     locationBar.loadURL(page);
@@ -48,7 +48,7 @@ function testAccessLocationBarHistory() {
   locationBar.clear();
 
   // Second - Arrow down to open the autocomplete list, displaying
-  // the most recent visit first, then arrow down again to the first entry, 
+  // the most recent visit first, then arrow down again to the first entry,
   // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   controller.waitFor(function () {
@@ -60,7 +60,7 @@ function testAccessLocationBarHistory() {
   // Check that the first item in the drop down list is selected
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.selectedIndex === 0;
-  }, "The first item should be selected - expected 0 - got " + 
+  }, "The first item should be selected - expected 0 - got " +
   locationBar.autoCompleteResults.selectedIndex);
 
   locationBar.contains("mission");

@@ -34,8 +34,8 @@ function teardownModule() {
 function testPluginDisabled() {
   // Open the Add-ons Manager
   addonsManager.open();
-  
-  plugin = addonsManager.getAddons({attribute: "value", 
+
+  plugin = addonsManager.getAddons({attribute: "value",
                                     value: persisted.plugin.id})[0];
 
   // Check that the plugin is disabled

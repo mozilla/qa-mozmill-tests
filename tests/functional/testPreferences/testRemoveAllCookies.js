@@ -6,7 +6,7 @@
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
-                 
+
 const TEST_DOMAINS = ["http://domain1.mozqa.com",
                       "http://domain2.mozqa.com"];
 const TEST_PAGE = "/data/firefox/cookies/cookie_single.html";
@@ -28,7 +28,7 @@ var testRemoveAllCookies = function() {
     controller.open(domain + TEST_PAGE);
     controller.waitForPageLoad();
   });
-  
+
   // Call preferences dialog and delete the created cookies
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 }

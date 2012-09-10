@@ -22,23 +22,23 @@ function setupModule() {
 function testEnableExtension() {
   addonsManager.open();
 
-  // Get the addon by name 
-  var addon = addonsManager.getAddons({attribute: "value", 
+  // Get the addon by name
+  var addon = addonsManager.getAddons({attribute: "value",
                                        value: persisted.addon.id})[0];
 
   // Check if the addon is disabled
-  assert.ok(!addonsManager.isAddonEnabled({addon: addon}), 
+  assert.ok(!addonsManager.isAddonEnabled({addon: addon}),
             "The addon is disabled");
 
   // Enable the addon
-  addonsManager.enableAddon({addon: addon}); 
+  addonsManager.enableAddon({addon: addon});
 
-  // Click on the list view restart link 
-  var restartLink = addonsManager.getElement({type: "listView_restartLink", 
+  // Click on the list view restart link
+  var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: addon});
-   
+
   // User initiated restart
   controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
 
-  controller.click(restartLink); 
+  controller.click(restartLink);
 }

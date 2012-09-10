@@ -45,7 +45,7 @@ var testBreakpadInstalled = function()
 
   expect.ok(execFile.exists(), "The crash reporter executable is present");
 
-  expect.equal(crashReporter.enabled, states["Enabled"], 
+  expect.equal(crashReporter.enabled, states["Enabled"],
                "The crash reporter is enabled");
 
   expect.match(crashReporter.serverURL.spec, states["ServerURLPattern"],

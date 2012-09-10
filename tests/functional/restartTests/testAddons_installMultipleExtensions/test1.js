@@ -41,10 +41,10 @@ function testInstallMultipleExtensions() {
     // Open the addon page
     controller.open(addon.url);
     controller.waitForPageLoad();
-    
+
     var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
     var md = new modalDialog.modalDialog(addonsManager.controller.window);
-    
+
     // Install the addon
     md.start(addons.handleInstallAddonDialog);
     controller.click(installLink);

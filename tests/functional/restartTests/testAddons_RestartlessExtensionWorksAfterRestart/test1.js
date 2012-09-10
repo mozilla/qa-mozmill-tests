@@ -28,12 +28,12 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
 
-  // Set pref for add-on installation dialog timer 
+  // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
-  
+
   tabs.closeAllTabs(controller);
 }
 
@@ -52,7 +52,7 @@ function testInstallRestartlessExtension() {
 
   md.start(addons.handleInstallAddonDialog);
   controller.waitThenClick(installLink);
-  md.waitForDialog(TIMEOUT_DOWNLOAD); 
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 
   addonsManager.open();
 

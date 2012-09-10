@@ -75,11 +75,11 @@ function checkOpenTab(aEventType) {
   var newTabURL = prefs.preferences.getPref(PREF_NEWTAB_URL, '');
 
   expect.equal(tabBrowser.length, 2, "Two tabs visible - opened via " + aEventType);
-  expect.equal(controller.tabs.activeTab.location.href, newTabURL, 
+  expect.equal(controller.tabs.activeTab.location.href, newTabURL,
                "Opened new tab");
 
   // The tabs title should be 'New Tab'
-  var title = utils.getProperty("chrome://browser/locale/tabbrowser.properties", 
+  var title = utils.getProperty("chrome://browser/locale/tabbrowser.properties",
                                 "tabs.emptyTabTitle");
 
   expect.equal(tabBrowser.getTab().getNode().label, title, "Correct tab title");

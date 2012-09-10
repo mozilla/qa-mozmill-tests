@@ -15,7 +15,7 @@ const DOWNLOADS = [
                    LOCAL_TEST_FOLDER + "downloading/unknown_type.mtdl",
                    LOCAL_TEST_FOLDER + "downloading/unknown_type.fmtd"
                   ];
-                   
+
 const DOWNLOAD_PB = LOCAL_TEST_FOLDER + "downloading/unknown_type_pb.stbf";
 
 const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
@@ -47,7 +47,7 @@ var setupModule = function(module) {
 var teardownModule = function(module) {
   // Clean all downloaded files from the system
   dm.cleanAll(downloadedFiles);
-  
+
   // Make sure the browser is not in Private Browsing mode
   pb.reset();
 
@@ -81,7 +81,7 @@ var testDownloadManagerClosed = function() {
   // Get a list of downloaded items in the Download Manager
   var downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
   dm.controller.waitForElement(downloadView);
-  
+
   // Check that no items are listed in the Download Manager
   dm.controller.waitFor(function () {
     return downloadView.getNode().itemCount === 0;
@@ -110,7 +110,7 @@ var testDownloadManagerClosed = function() {
   // Get the list of the downloads in the Download Manager
   downloadView = new elementslib.ID(dm.controller.window.document, "downloadView");
   dm.controller.waitForElement(downloadView);
-  
+
   // The Download Manager should contain the two items downloaded pre-Private Browsing
   dm.controller.waitFor(function () {
     return downloadView.getNode().itemCount === DOWNLOADS.length;
@@ -122,7 +122,7 @@ var testDownloadManagerClosed = function() {
     expect.equal(download.getNode().getAttribute("uri"), DOWNLOADS[i],
                  "File appears in download list");
   }
-    
+
   // Close the Download Manager
   dm.close();
 }

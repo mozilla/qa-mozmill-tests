@@ -45,7 +45,7 @@ var testCloseDownloadManager = function() {
   // This is tested by dm.close()
   dm.open(controller, false);
   dm.close();
-  
+
   // Test ACCEL+SHIFT+Y
   // NOTE: This test is only performed on Linux
   if (mozmill.isLinux) {
@@ -54,7 +54,7 @@ var testCloseDownloadManager = function() {
     dm._controller.keypress(null, cmdKey, {shiftKey:true, accelKey:true});
     controller.waitFor(function () {
       return mozmill.utils.getWindows().length === windowCount;
-    }, "The Download Manager has been closed"); 
+    }, "The Download Manager has been closed");
   }
 
   // Test ACCEL+J
@@ -65,7 +65,7 @@ var testCloseDownloadManager = function() {
     dm._controller.keypress(null, cmdKey, {accelKey:true});
     controller.waitFor(function () {
       return mozmill.utils.getWindows().length === windowCount;
-    }, "The Download Manager has been closed"); 
+    }, "The Download Manager has been closed");
   }
 }
 

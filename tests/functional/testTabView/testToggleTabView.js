@@ -15,13 +15,13 @@ function teardownModule(module) {
 }
 
 /**
- *  Toggle and Dismiss Tab View 
+ *  Toggle and Dismiss Tab View
  */
 function testToggleTabView() {
   // Open Tab View (default via keyboard shortcut)
   activeTabView.open();
 
-  // Check that Tab View has opened 
+  // Check that Tab View has opened
   controller.assert(function () {
     return activeTabView.isOpen;
   }, "Tab View has opened");

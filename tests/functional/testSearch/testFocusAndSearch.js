@@ -8,7 +8,7 @@ var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER +
                         'search/searchresults.html?q={searchTerms}';
 
 function setupModule() {

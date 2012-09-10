@@ -10,7 +10,7 @@ var toolbars = require("../../../lib/toolbars");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html', 
+  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
   LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
   LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html',
   LOCAL_TEST_FOLDER + 'layout/mozilla_governance.html',
