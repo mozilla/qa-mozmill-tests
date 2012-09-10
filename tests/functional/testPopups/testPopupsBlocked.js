@@ -51,7 +51,7 @@ var testPopUpBlocked = function()
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
                                              '/{"class":"messageCloseButton tabbable"}');
-  
+
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
   controller.waitForElement(button, gTimeout);
 

@@ -32,7 +32,7 @@ function testAssertNotAlertCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "Actual value 'hello' did match 'hello'");
-  
+
   //check final command is not executed
   assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
 }

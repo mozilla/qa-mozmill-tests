@@ -32,10 +32,10 @@ function testDisableExtension() {
     category: addonsManager.getCategoryById({id: "extension"})
   });
 
-  var enabledExtension = addonsManager.getAddons({attribute: "value", 
-                                                  value: persisted.addons[0].id})[0]; 
-  var toDisableExtension = addonsManager.getAddons({attribute: "value", 
-                                                    value: persisted.addons[1].id})[0]; 
+  var enabledExtension = addonsManager.getAddons({attribute: "value",
+                                                  value: persisted.addons[0].id})[0];
+  var toDisableExtension = addonsManager.getAddons({attribute: "value",
+                                                    value: persisted.addons[1].id})[0];
 
   // Check that the extensions were installed
   assert.ok(addonsManager.isAddonInstalled({addon: enabledExtension}),
@@ -47,13 +47,13 @@ function testDisableExtension() {
   addonsManager.disableAddon({addon: toDisableExtension});
 
   // Check that the extension was marked for disable
-  assert.equal(toDisableExtension.getNode().getAttribute("pending"), "disable", 
+  assert.equal(toDisableExtension.getNode().getAttribute("pending"), "disable",
                "The extension '" + persisted.addons[1].id + "' was marked for disable");
 
   // Restart the browser using restart prompt
-  var restartLink = addonsManager.getElement({type: "listView_restartLink", 
+  var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: toDisableExtension});
 
   controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-  controller.click(restartLink); 
-}  
+  controller.click(restartLink);
+}

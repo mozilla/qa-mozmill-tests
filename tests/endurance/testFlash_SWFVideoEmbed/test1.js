@@ -19,8 +19,8 @@ function setupModule() {
   tabBrowser = new tabs.tabBrowser(controller);
 
   tabs.closeAllTabs(controller);
-  
-  // Skip test if we don't have Flash plugin enabled 
+
+  // Skip test if we don't have Flash plugin enabled
   var isFlashActive = addons.getInstalledAddons(function (aAddon) {
     if (aAddon.isActive && aAddon.type === "plugin" && aAddon.name.indexOf("Flash") > 0)
       return true;
@@ -37,16 +37,16 @@ function setupModule() {
 function testFlashViaEmbedTag() {
   enduranceManager.run(function () {
     enduranceManager.loop(function () {
-      // If entity > 1 then open a new tab 
+      // If entity > 1 then open a new tab
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
-      } 
+      }
 
       // Load the test page in the currently opened tab
       enduranceManager.addCheckpoint("Load a web page with embeded flash content");
       controller.open(TEST_PAGE);
       controller.waitForPageLoad(TIMEOUT_PAGE);
-      enduranceManager.addCheckpoint("Web page has been loaded"); 
+      enduranceManager.addCheckpoint("Web page has been loaded");
     });
 
     // Close all tabs

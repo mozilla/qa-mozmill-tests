@@ -30,7 +30,7 @@ function testVerifyTextNotPresentCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "true");
-  
+
   //check final command is executed
   assert.equal(sm.finalLogInfoMessage, "echo: final command");
 }

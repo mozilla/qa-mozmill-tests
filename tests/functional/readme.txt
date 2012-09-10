@@ -1,6 +1,6 @@
 # Firefox Non-Restart Tests #
 
-This location holds the Mozmill tests for Firefox. 
+This location holds the Mozmill tests for Firefox.
 
 For more information on running the normal Firefox tests visit:
 https://developer.mozilla.org/en/Mozmill_Tests#Run_normal_Mozmill_tests

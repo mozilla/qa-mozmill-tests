@@ -31,7 +31,7 @@ function testVerifyTextCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "Actual value 'link with onclick attribute' did not match 'flying monkies!'");
-  
+
   //check final command is executed
   assert.equal(sm.finalLogInfoMessage, "echo: final command");
 }

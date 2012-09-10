@@ -26,7 +26,7 @@ function setupModule() {
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
 
   // Store the theme in the persisted object
-  persisted.theme = THEME; 
+  persisted.theme = THEME;
 
   tabs.closeAllTabs(controller);
 }
@@ -38,12 +38,12 @@ function testInstallTheme() {
   // Go to theme url and perform install
   controller.open(persisted.theme.url);
   controller.waitForPageLoad();
-    
-  var installLink = new elementslib.Selector(controller.tabs.activeTab, 
+
+  var installLink = new elementslib.Selector(controller.tabs.activeTab,
                                              "#addon");
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
-  
+
   md.start(addons.handleInstallAddonDialog);
   controller.click(installLink);
-  md.waitForDialog(TIMEOUT_DOWNLOAD); 
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 }

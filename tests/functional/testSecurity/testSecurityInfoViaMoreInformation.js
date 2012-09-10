@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
- 
+
 // Include necessary modules
 var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
@@ -14,14 +14,14 @@ var setupModule = function() {
 }
 
 /**
- * Test clicking the 'More Information' button in Larry, 
+ * Test clicking the 'More Information' button in Larry,
  * to open the Page Info dialog to the Security tab
  */
 var testSecurityInfoViaMoreInformation = function() {
   // Go to a secure website
   controller.open("https://addons.mozilla.org/licenses/5.txt");
   controller.waitForPageLoad();
-  
+
   // Get the information from the certificate for comparison
   var secUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
@@ -30,13 +30,13 @@ var testSecurityInfoViaMoreInformation = function() {
   var identityBox = new elementslib.ID(controller.window.document,
                                        "identity-box");
   controller.click(identityBox);
-  
+
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
   controller.waitFor(function () {
     return doorhanger.getNode().state === 'open';
   }, "Identity doorhanger is open: got '" + doorhanger.getNode().state + "', expected 'open'");
-  
+
   // Click the 'More Information' button in the Larry popup notification
   var moreInfoButton = new elementslib.ID(controller.window.document,
                                     "identity-popup-more-info-button");
@@ -70,7 +70,7 @@ function checkSecurityTab(controller) {
   // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization, 
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Certificate Verifier matches Website Verifier");
 
   // Close the Page Info window by pressing Escape

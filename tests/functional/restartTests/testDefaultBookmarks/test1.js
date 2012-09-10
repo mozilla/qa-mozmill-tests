@@ -10,7 +10,7 @@ var places = require("../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
-const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale + 
+const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale +
                             "/firefox/central/";
 
 function setupModule(module) {

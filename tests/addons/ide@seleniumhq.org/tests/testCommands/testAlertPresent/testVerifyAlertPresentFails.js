@@ -29,7 +29,7 @@ function testVerifyAlertPresentCommandFails() {
   sm.playTest();
 
   checks.commandFailed(sm, "false");
-  
+
   //check final command is executed
   assert.equal(sm.finalLogInfoMessage, "echo: final command");
 }

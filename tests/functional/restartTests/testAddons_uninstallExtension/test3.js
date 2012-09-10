@@ -8,7 +8,7 @@ var {assert} = require("../../../../lib/assertions");
 var tabs = require("../../../../lib/tabs");
 
 const TIMEOUT_USER_SHUTDOWN = 2000;
- 
+
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
@@ -23,12 +23,12 @@ function testUninstallDisabledExtension() {
   addonsManager.open();
 
   // Check that the extension was disabled
-  var disabledExtension = addonsManager.getAddons({attribute: "value", 
+  var disabledExtension = addonsManager.getAddons({attribute: "value",
                                                    value: persisted.addons[1].id})[0];
 
-  assert.ok(!addonsManager.isAddonEnabled({addon: disabledExtension}), 
-            "Extension '" + persisted.addons[1].id + "' is disabled"); 
-  
+  assert.ok(!addonsManager.isAddonEnabled({addon: disabledExtension}),
+            "Extension '" + persisted.addons[1].id + "' is disabled");
+
   // Remove the disabled extension
   addonsManager.removeAddon({addon: disabledExtension});
 
@@ -42,12 +42,12 @@ function testUninstallDisabledExtension() {
   addonsManager.setCategory({
     category: addonsManager.getCategoryById({id: "extension"})
   });
- 
+
   // Check that the disabled extension was uninstalled
-  var addonIdList = addonsManager.getAddons({attribute: "value", 
+  var addonIdList = addonsManager.getAddons({attribute: "value",
                                              value: persisted.addons[1].id});
 
-  assert.equal(addonIdList.length, 0, 
-               "Extension '" + persisted.addons[1].id + 
+  assert.equal(addonIdList.length, 0,
+               "Extension '" + persisted.addons[1].id +
                "' has been uninstalled");
 }

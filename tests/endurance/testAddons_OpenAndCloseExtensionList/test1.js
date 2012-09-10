@@ -16,7 +16,7 @@ function setupModule() {
 
   enduranceManager = new endurance.EnduranceManager(controller);
   addonsManager = new addons.AddonsManager(controller);
-  tabBrowser = new tabs.tabBrowser(controller);  
+  tabBrowser = new tabs.tabBrowser(controller);
 
   tabBrowser.closeAllTabs();
 

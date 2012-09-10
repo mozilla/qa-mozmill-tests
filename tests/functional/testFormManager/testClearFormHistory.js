@@ -71,7 +71,7 @@ function testClearFormHistory() {
  */
 function clearHistoryHandler(controller) {
   // Verify the checkbox to clear form data is checked
-  var checkBox = new elementslib.XPath(controller.window.document, 
+  var checkBox = new elementslib.XPath(controller.window.document,
                                        "/*[name()='prefwindow']" +
                                        "/*[name()='prefpane'][1]" +
                                        "/*[name()='listbox'][1]" +

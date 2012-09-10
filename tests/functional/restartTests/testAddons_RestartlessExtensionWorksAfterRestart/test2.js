@@ -23,7 +23,7 @@ function setupModule() {
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_TRIM_URL);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  
+
   addons.resetDiscoveryPaneURL();
 
   delete persisted.addon;

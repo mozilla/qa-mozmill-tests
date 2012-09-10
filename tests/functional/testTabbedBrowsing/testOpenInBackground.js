@@ -37,7 +37,7 @@ var testOpenInBackgroundTab = function() {
   for (var i = 0; i < TAB_ORDER.length; i++) {
     // Reference to the current link in the testcase:
     var currentLink = new elementslib.Name(controller.tabs.activeTab, "link_" + (i + 1));
-    
+
     if (i == 2) {
       // Open another tab by middle-clicking on the link
       tabBrowser.openInNewTab(currentLink);
@@ -54,7 +54,7 @@ var testOpenInBackgroundTab = function() {
     controller.waitFor(function () {
       return tabBrowser.selectedIndex === 0;
     }, "First tab has been selected");
-    
+
     if(i == 0) {
       // Switch to the newly opened tab and back to the first tab
       tabBrowser.selectedIndex = 1;
