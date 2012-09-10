@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var {assert} = require("../../../lib/assertions"); 
+var {assert} = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
 var places = require("../../../lib/places");
 var tabs = require("../../../lib/tabs");
@@ -19,7 +19,7 @@ function setupModule() {
   enduranceManager = new endurance.EnduranceManager(controller);
   locationBar = new toolbars.locationBar(controller);
   tabBrowser = new tabs.tabBrowser(controller);
-  
+
   // Open test page and wait until it has been finished loading
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
@@ -39,7 +39,7 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     var starButton = locationBar.getElement({type: "starButton"});
     var URI = utils.createURI(LOCAL_TEST_PAGE);
 
-    controller.click(starButton); 
+    controller.click(starButton);
 
     // Wait for the bookmark event
     controller.waitFor(function () {
@@ -51,10 +51,10 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     // Trigger editBookmarksPanel and remove bookmark
     controller.click(starButton);
     locationBar.editBookmarksPanel.waitForPanel();
-  
+
     var removeBookmark = locationBar.editBookmarksPanel.getElement({type: "removeButton"});
 
-    controller.click(removeBookmark); 
+    controller.click(removeBookmark);
 
     // Verify the bookmark was removed
     assert.ok(!places.bookmarksService.isBookmarked(URI), "The bookmark was removed");

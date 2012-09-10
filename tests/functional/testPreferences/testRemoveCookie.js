@@ -35,7 +35,7 @@ var testRemoveCookie = function() {
 
   // Get the test page hostname
   persisted.hostName = controller.window.content.location.hostname;
-  
+
   // Call preferences dialog and delete the created cookie
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 }
@@ -85,7 +85,7 @@ function deleteCookie(controller) {
   controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
 
   var cookieRemoved = !cm.cookieExists({host: persisted.hostName,
-                                        name: "litmus_1", 
+                                        name: "litmus_1",
                                         path: "/cookies/" });
   expect.ok(cookieRemoved, "The cookie has been removed");
   expect.equal(cookiesList.view.rowCount, (origNumCookies - 1),

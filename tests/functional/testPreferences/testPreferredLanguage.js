@@ -92,7 +92,7 @@ var langHandler = function(controller) {
     controller.keypress(langDropDown, language[i], {});
     controller.sleep(100);
   };
-  
+
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(controller.window.document, "addButton");
   controller.waitFor(function () {

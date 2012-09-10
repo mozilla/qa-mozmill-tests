@@ -12,7 +12,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 function setupModule() {
   controller = mozmill.getBrowserController();
   enduranceManager = new endurance.EnduranceManager(controller);
-  
+
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
@@ -24,7 +24,7 @@ function teardownModule() {
 /**
  * Test opening new tabs from the main window
  **/
-function testOpenNewTab() {  
+function testOpenNewTab() {
   enduranceManager.run(function () {
     enduranceManager.loop(function () {
       // Load a web page
@@ -32,7 +32,7 @@ function testOpenNewTab() {
       controller.open(LOCAL_TEST_PAGE);
       controller.waitForPageLoad();
       enduranceManager.addCheckpoint("Web page has been loaded");
-      
+
       // Open a new tab
       enduranceManager.addCheckpoint("Open a new tab");
       tabBrowser.openTab();

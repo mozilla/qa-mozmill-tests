@@ -48,7 +48,7 @@ function testInstallFirstTimeAddon() {
 
   controller.click(randomAddon);
   discovery.waitForPageLoad();
-  
+
   // Install the addon
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
@@ -71,7 +71,7 @@ function testInstallFirstTimeAddon() {
 
   controller.assert(function () {
     return addonIsInstalled;
-  }, "Add-on has been installed - got '" + addonIsInstalled + 
+  }, "Add-on has been installed - got '" + addonIsInstalled +
       "', expected 'true'");
 }
 
@@ -80,20 +80,20 @@ function testInstallFirstTimeAddon() {
  */
 function handleInstallAddonDialog(controller) {
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document, 
+  var installButton = new elementslib.Lookup(controller.window.document,
                                              '/id("xpinstallConfirm")/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
 
   controller.waitFor(function () {
-    return !installButton.getNode().disabled; 
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled + 
+    return !installButton.getNode().disabled;
+  }, "Install button is enabled: got '" + !installButton.getNode().disabled +
       "', expected 'true'");
 
   controller.click(installButton);
 }
 
 // XXX: "Bug 664018 - 'First Time' add-ons are incompatible with this version of Firefox"
-setupModule.__force_skip__ = "Bug 664018 - 'First Time' add-ons are incompatible " + 
+setupModule.__force_skip__ = "Bug 664018 - 'First Time' add-ons are incompatible " +
                              "with this version of Firefox";
 teardownModule.__force_skip__ = "Bug 664018 - 'First Time' add-ons are incompatible " +
                                 "with this version of Firefox";

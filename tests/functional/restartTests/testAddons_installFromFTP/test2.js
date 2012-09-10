@@ -12,10 +12,10 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  
+
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
-  
+
   tabs.closeAllTabs(controller);
 }
 
@@ -34,10 +34,10 @@ function testAddonInstalled() {
     category: addonsManager.getCategoryById({id: "extension"})
   });
 
-  var addon = addonsManager.getAddons({attribute: "value", 
+  var addon = addonsManager.getAddons({attribute: "value",
                                        value: persisted.addon.id})[0];
 
-  assert.ok(addonsManager.isAddonInstalled({addon: addon}), 
-            "Extension '" + persisted.addon.id + 
+  assert.ok(addonsManager.isAddonInstalled({addon: addon}),
+            "Extension '" + persisted.addon.id +
             "' has been correctly installed");
 }

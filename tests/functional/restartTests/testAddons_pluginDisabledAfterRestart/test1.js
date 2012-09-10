@@ -28,7 +28,7 @@ function setupModule(aModule) {
   persisted.enabledPlugins = controller.window.navigator.plugins.length;
 
   addonsManager = new addons.AddonsManager(controller);
-  tabs.closeAllTabs(controller); 
+  tabs.closeAllTabs(controller);
 }
 
 /**

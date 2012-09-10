@@ -53,11 +53,11 @@ var testToggleFormManager = function() {
 
   // Verify no form completion in each submitted form field
   var popDownAutoCompList = new elementslib.Lookup(
-                              controller.tabs.activeTab, 
-                              '/id("main-window")' + 
-                              '/id("mainPopupSet")' + 
-                              '/id("PopupAutoComplete")' + 
-                              '/anon({"anonid":"tree"})' + 
+                              controller.tabs.activeTab,
+                              '/id("main-window")' +
+                              '/id("mainPopupSet")' +
+                              '/id("PopupAutoComplete")' +
+                              '/anon({"anonid":"tree"})' +
                               '/{"class":"autocomplete-treebody"}'
   );
 

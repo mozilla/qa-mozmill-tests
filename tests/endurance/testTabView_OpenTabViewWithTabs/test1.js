@@ -15,7 +15,7 @@ function setupModule() {
   enduranceManager = new endurance.EnduranceManager(controller);
   tabBrowser = new tabs.tabBrowser(controller);
   activeTabView = new tabView.tabView(controller);
-  
+
   tabBrowser.closeAllTabs();
 
   //Open test pages in tabs

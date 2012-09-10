@@ -29,7 +29,7 @@ var testFormCompletion = function() {
 
   // Fill out the name field with the input text: 'John' and click the Submit button
   controller.type(inputField, inputText);
-  
+
   var submitButton = new elementslib.ID(controller.tabs.activeTab, "SubmitButton");
   controller.click(submitButton);
   controller.waitForPageLoad();

@@ -23,7 +23,7 @@ function setupModule() {
   // Make sure we are not in PB mode and do not show a prompt
   pb.enabled = false;
   pb.showPrompt = false;
-  
+
   tabBrowser = new Tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
@@ -41,7 +41,7 @@ function testEnterAndLeaveWithMutlipleTabsOpen() {
     controller.waitForPageLoad();
     tabBrowser.openTab();
   });
-  
+
   enduranceManager.run(function () {
     pb.start();
     enduranceManager.addCheckpoint("Entered private browsing mode");

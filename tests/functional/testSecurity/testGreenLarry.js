@@ -45,7 +45,7 @@ var testLarryGreen = function() {
   controller.waitFor(function () {
     return favicon.getNode().getAttribute("hidden") == false;
   }, "Lock icon is visible in identity box");
-  
+
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   controller.assertJSProperty(identityBox, "className", "verifiedIdentity");

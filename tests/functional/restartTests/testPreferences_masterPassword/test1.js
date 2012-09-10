@@ -39,7 +39,7 @@ var testSetMasterPassword = function() {
 
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.waitThenClick(loginButton);
-  
+
   // After logging in, remember the login information
   var button = locationBar.getNotificationElement(
                  "password-save-notification",
@@ -51,14 +51,14 @@ var testSetMasterPassword = function() {
 
   // Click the Remember Password button
   controller.waitThenClick(button);
-  
+
   // After clicking the 'Remember Password' button, check notification state
   var notification = locationBar.getNotification();
-  
-  controller.waitFor(function() { 
+
+  controller.waitFor(function() {
     return notification.getNode().state == 'closed';
   }, "Password notification should be closed");
- 
+
   // Call preferences dialog and invoke master password functionality
   prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
 }

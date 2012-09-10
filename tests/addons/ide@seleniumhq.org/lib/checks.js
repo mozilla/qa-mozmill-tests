@@ -8,8 +8,8 @@
 
 /**
  * Checks that the command passed.
- * 
- * @param {SeleniumManager} seleniumManager Selenium manager instance 
+ *
+ * @param {SeleniumManager} seleniumManager Selenium manager instance
  */
 function commandPassed(seleniumManager) {
  // XXX: Bug 621214 - Find a way to check properties of treeView rows
@@ -33,8 +33,8 @@ function commandPassed(seleniumManager) {
 
 /**
  * Checks that the command passed.
- * 
- * @param {SeleniumManager} seleniumManager Selenium manager instance 
+ *
+ * @param {SeleniumManager} seleniumManager Selenium manager instance
  * @param {String} message Expected error message
  */
 function commandFailed(seleniumManager, message) {

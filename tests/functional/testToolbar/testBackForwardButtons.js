@@ -8,7 +8,7 @@ const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'community'},
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', id: 'mission_statement'},
-  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html', id: 'accessibility'} 
+  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html', id: 'accessibility'}
 ];
 
 var setupModule = function() {

@@ -23,18 +23,18 @@ function testThemeIsInstalled() {
   addonsManager.open();
 
   // Verify the plain-theme is installed
-  var plainTheme = addonsManager.getAddons({attribute: "value", 
+  var plainTheme = addonsManager.getAddons({attribute: "value",
                                             value: persisted.theme[0].id})[0];
 
-  assert.ok(addonsManager.isAddonInstalled({addon: plainTheme}), 
+  assert.ok(addonsManager.isAddonInstalled({addon: plainTheme}),
             "The theme '" + persisted.theme[0].id + "' is installed");
 
   // Verify the plain-theme is enabled
-  assert.ok(addonsManager.isAddonEnabled({addon: plainTheme}), 
+  assert.ok(addonsManager.isAddonEnabled({addon: plainTheme}),
             "The theme '" + persisted.theme[0].id + "' is enabled");
 
   // Enable the default theme
-  var defaultTheme = addonsManager.getAddons({attribute: "value", 
+  var defaultTheme = addonsManager.getAddons({attribute: "value",
                                               value: persisted.theme[1].id})[0];
 
   addonsManager.enableAddon({addon: defaultTheme});
@@ -43,9 +43,9 @@ function testThemeIsInstalled() {
   assert.equal(defaultTheme.getNode().getAttribute("pending"), "enable");
 
   // Restart the browser using restart prompt
-  var restartLink = addonsManager.getElement({type: "listView_restartLink", 
+  var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: defaultTheme});
 
   controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-  controller.click(restartLink); 
+  controller.click(restartLink);
 }

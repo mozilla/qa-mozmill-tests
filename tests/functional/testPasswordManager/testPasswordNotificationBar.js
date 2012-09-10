@@ -42,7 +42,7 @@ var testPasswordNotification = function() {
   controller.type(passField, "foo");
 
   // Click the login button and wait for the form to process
-  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn"); 
+  var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
   controller.click(loginButton);
   controller.waitForPageLoad();
 
@@ -50,10 +50,10 @@ var testPasswordNotification = function() {
   var passwordNotification = locationBar.getNotificationElement(
                                "password-save-notification"
                              );
-                             
+
   // Close the notification and check its state
   controller.keypress(passwordNotification, "VK_ESCAPE", {});
-  
+
   var notification = locationBar.getNotification();
   controller.waitFor(function () {
     return notification.getNode().state === "closed";

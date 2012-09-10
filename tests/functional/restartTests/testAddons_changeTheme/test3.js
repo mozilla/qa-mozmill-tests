@@ -14,8 +14,8 @@ function setupModule() {
   tabs.closeAllTabs(controller);
 }
 
-function teardownModule() {  
-  delete persisted.theme;  
+function teardownModule() {
+  delete persisted.theme;
 
   addonsManager.close();
   addons.resetDiscoveryPaneURL();
@@ -28,7 +28,7 @@ function testChangedThemeToDefault() {
   addonsManager.open();
 
   // Verify the default theme is active
-  var defaultTheme = addonsManager.getAddons({attribute: "value", 
+  var defaultTheme = addonsManager.getAddons({attribute: "value",
                                               value: persisted.theme[1].id})[0];
 
   assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
