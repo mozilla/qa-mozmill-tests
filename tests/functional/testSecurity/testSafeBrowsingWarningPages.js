@@ -11,6 +11,8 @@ var utils = require("../../../lib/utils");
 const gDelay = 0;
 const gTimeout = 5000;
 
+const DOMAIN_NAME = "www.mozilla.org";
+
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
@@ -19,12 +21,12 @@ var setupModule = function(module) {
 
 function teardownModule(module) {
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.com", "safe-browsing");
+  utils.removePermission(DOMAIN_NAME, "safe-browsing");
 }
 
 var testWarningPages = function() {
-  var urls = ['http://www.mozilla.com/firefox/its-a-trap.html',
-              'http://www.mozilla.com/firefox/its-an-attack.html'];
+  var urls = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
+              'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
 
   for (var i = 0; i < urls.length; i++ ) {
     // Open one of the mozilla phishing protection test pages
@@ -119,14 +121,9 @@ var checkIgnoreWarningButton = function(url) {
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
 
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.com", "safe-browsing");
+  utils.removePermission(DOMAIN_NAME, "safe-browsing");
 }
 
-// Bug 705182 - Timeout failure in testSafeBrowsingWarningPages.js
-setupModule.__force_skip__ = "Bug 705182 - Timeout exceeded for waitForElement ID: " +
-                             "getMeOutButton in testSafeBrowsingWarningPages.js";
-teardownModule.__force_skip__ = "Bug 705182 - Timeout exceeded for waitForElement ID: " +
-                                "getMeOutButton in testSafeBrowsingWarningPages.js";
 /**
  * Map test functions to litmus tests
  */
