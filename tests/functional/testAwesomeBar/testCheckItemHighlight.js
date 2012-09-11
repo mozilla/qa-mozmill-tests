@@ -87,16 +87,16 @@ function checkAwesomebarResults(aResult, aType) {
                    getUnderlinedText(aResult, aType);
 
   // Check that there is only 1 entry
-  controller.assert(function () {
+  controller.waitFor(function () {
     return underlined.length === 1;
-  }, "Only one autocompleted result is underlined - got '" +
-     underlined.length + "', expected '1'");
+  }, "Only one autocompleted result is underlined");
 
   // Check that the underlined URL matches the entered URL
   underlined.forEach(function (element) {
-    controller.assert(function() {
+    controller.waitFor(function() {
       return element.toLowerCase() === LOCAL_TEST_PAGES[0].name;
-    }, "Underlined " + aType + " matches entered " + aType + " - got '" +
-       element.toLowerCase() + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
+    }, "Underlined " + aType + " matches entered " + aType +
+       " - expected '" + LOCAL_TEST_PAGES[0].name + "'");
   });
 }
+
