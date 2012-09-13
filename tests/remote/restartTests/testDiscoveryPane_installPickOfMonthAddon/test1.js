@@ -4,6 +4,7 @@
 
 // Include required modules
 var addons = require("../../../../lib/addons");
+var {assert, expect} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 
@@ -55,10 +56,8 @@ function testInstallPickOfTheMonthAddon() {
   // Retrieve addon src parameter from installation link
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
 
-  controller.assert(function () {
-    return currentInstallSource === INSTALL_SOURCE;
-  }, "Installation link has source set - got '" + currentInstallSource +
-     "', expected '" + INSTALL_SOURCE + "'");
+  assert.equal(currentInstallSource, INSTALL_SOURCE,
+               "Installation link has source set");
 
   var md = new modalDialog.modalDialog(am.controller.window);
   md.start(addons.handleInstallAddonDialog);
@@ -71,10 +70,7 @@ function testInstallPickOfTheMonthAddon() {
 
   var addon = am.getAddons({attribute: "name", value: persisted.currentAddon})[0];
 
-  controller.assert(function () {
-    return am.isAddonInstalled({addon: addon});
-  }, "Add-on has been installed - got '" +
-     am.isAddonInstalled({addon: addon}) + "', expected 'true'");
+  assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
 
 // XXX: Bug 657492

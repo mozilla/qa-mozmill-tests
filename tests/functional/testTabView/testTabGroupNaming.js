@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert, expect} = require("../../../lib/assertions");
 var tabView = require("../../../lib/tabview");
 
 const TABGROUP_TITLE = "Mozilla";
@@ -24,11 +25,7 @@ function testTabGroupNaming() {
   // Open Tab Groups View (default via keyboard shortcut)
   activeTabView.open();
 
-  // Verify that one tab group exists
-  controller.assert(function () {
-    return activeTabView.getGroups().length === 1;
-  }, "One tab group exists - got: " + "'" + activeTabView.getGroups().length +
-    ", expected: " + "'" + 1 + "'");
+  assert.equal(activeTabView.getGroups().length, 1, "One tab group exists");
 
   // Get the single tab group and title
   var groups = activeTabView.getGroups();
@@ -37,11 +34,8 @@ function testTabGroupNaming() {
   // Set a name for the tab group
   controller.type(title, TABGROUP_TITLE);
 
-  // Verify that the tab group has a new name
-  controller.assert(function () {
-    return title.getNode().value === TABGROUP_TITLE;
-  }, "Tab group title has been set - got: " + "'" +  title.getNode().value +
-    "'" + ", expected: " + "'" + TABGROUP_TITLE + "'");
+  expect.equal(title.getNode().value, TABGROUP_TITLE,
+               "Tab group title has been set");
 
   // Close Tab Groups View
   activeTabView.close();
@@ -49,11 +43,8 @@ function testTabGroupNaming() {
   // Open Tab Groups View
   activeTabView.open();
 
-   // Verify that the tab group has retained its new name
-  controller.assert(function () {
-    return title.getNode().value === TABGROUP_TITLE;
-  }, "Tab group title has been set - got: " + "'" +  title.getNode().value +
-    "'" + ", expected: " + "'" + TABGROUP_TITLE + "'");
+  expect.equal(title.getNode().value, TABGROUP_TITLE,
+               "Tab group has retained its new name");
 
   // Close Tab Groups View
   activeTabView.close();

@@ -57,10 +57,8 @@ function testInstallCollectionAddon() {
   // Retrieve addon src parameter from installation link
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
 
-  controller.assert(function () {
-    return currentInstallSource === INSTALL_SOURCE;
-  }, "Installation link has source set - got '" + currentInstallSource +
-     "', expected '" + INSTALL_SOURCE + "'");
+  assert.equal(currentInstallSource, INSTALL_SOURCE,
+               "Installation link has source set");
 
   var md = new modalDialog.modalDialog(am.controller.window);
   md.start(handleInstallAddonDialog);
@@ -73,10 +71,7 @@ function testInstallCollectionAddon() {
 
   var addon = am.getAddons({attribute: "value", value: addonId})[0];
 
-  controller.assert(function() {
-    return am.isAddonInstalled({addon: addon});
-  }, "Add-on has been installed - got '" +
-     am.isAddonInstalled({addon: addon}) + "', expected 'true'");
+  assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
 
 /**

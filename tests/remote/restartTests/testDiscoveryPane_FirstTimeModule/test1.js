@@ -54,10 +54,8 @@ function testInstallFirstTimeAddon() {
   var addToFirefox = discovery.getElement({type: "addon_installButton"});
   var currentInstallSource = discovery.getInstallSource(addToFirefox);
 
-  controller.assert(function () {
-    return currentInstallSource === INSTALL_SOURCE;
-  }, "Installation link has source set - got '" + currentInstallSource +
-     "', expected '" + INSTALL_SOURCE + "'");
+  assert.equal(currentInstallSource, INSTALL_SOURCE,
+               "Installation link has source set");
 
   var md = new modalDialog.modalDialog(am.controller.window);
   md.start(handleInstallAddonDialog);
@@ -68,12 +66,8 @@ function testInstallFirstTimeAddon() {
   // Verify the addon is installed
   am.setCategory({category: am.getCategoryById({id: "extension"})});
   var addon = am.getAddons({attribute: "value", value: addonId})[0];
-  var addonIsInstalled = am.isAddonInstalled({addon: addon});
 
-  controller.assert(function () {
-    return addonIsInstalled;
-  }, "Add-on has been installed - got '" + addonIsInstalled +
-      "', expected 'true'");
+  assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
 
 /**
