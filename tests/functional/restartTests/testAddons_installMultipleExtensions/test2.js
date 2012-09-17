@@ -36,8 +36,3 @@ function testCheckMultipleExtensionsAreInstalled() {
   });
 }
 
-// Bug 701908 - restartTests/testAddons_installMultipleExtensions causing a hang in testruns
-setupModule.__force_skip__ = "Bug 701908 - restartTests/testAddons_installMultipleExtensions " +
-                             "causing a hang in testruns";
-teardownModule.__force_skip__ = "Bug 701908 - restartTests/testAddons_installMultipleExtensions " +
-                                "causing a hang in testruns";
