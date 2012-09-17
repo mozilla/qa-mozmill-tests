@@ -97,9 +97,6 @@ function checkAwesomebarResults(aResult, aType) {
     controller.assert(function() {
       return element.toLowerCase() === LOCAL_TEST_PAGES[0].name;
     }, "Underlined " + aType + " matches entered " + aType + " - got '" +
-       element.toLowerCase() + "', expected '" + LOCAL_TEST_PAGES[0].name +
-       "'. Try again, got underlined string: " +
-       locationBar.autoCompleteResults.
-       getUnderlinedText(locationBar.autoCompleteResults.getResult(0), aType));
+       element.toLowerCase() + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
   });
 }
