@@ -39,10 +39,6 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     var starButton = locationBar.getElement({type: "starButton"});
     var URI = utils.createURI(LOCAL_TEST_PAGE);
 
-    controller.waitFor(function () {
-      return utils.isDisplayed(controller, starButton);
-    }, "Star button is displayed");
-
     controller.click(starButton);
 
     // Wait for the bookmark event
