@@ -36,10 +36,10 @@ function testAccessLocationBarHistory() {
   // Open a few different sites to create a small history
   // NOTE: about:blank doesn't appear in history and clears the page
   //       for clean test arena
-  for each (var page in LOCAL_TEST_PAGES) {
-    locationBar.loadURL(page);
+  LOCAL_TEST_PAGES.forEach(function (aPage) {
+    locationBar.loadURL(aPage);
     controller.waitForPageLoad();
-  }
+  });
 
   // Wait about 4s so the history gets populated
   controller.sleep(4000);
@@ -56,12 +56,9 @@ function testAccessLocationBarHistory() {
   }, "Autocomplete results should be visible");
 
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-
-  // Check that the first item in the drop down list is selected
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.selectedIndex === 0;
-  }, "The first item should be selected - expected 0 - got " +
-  locationBar.autoCompleteResults.selectedIndex);
+  }, "The first item in the drop down list should be selected");
 
   locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
@@ -75,3 +72,4 @@ function testAccessLocationBarHistory() {
   // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
   locationBar.contains(LOCAL_TEST_PAGES[2]);
 }
+
