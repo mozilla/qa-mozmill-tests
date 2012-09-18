@@ -50,19 +50,18 @@ var testFaviconInAutoComplete = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Type in each letter of the test string to allow the autocomplete to populate with results
-  for each (var letter in LOCAL_TEST_PAGE.string) {
-    locationBar.type(letter);
-    controller.sleep(200);
-  }
-
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
+  locationBar.type(LOCAL_TEST_PAGE.string);
+  controller.waitFor(function () {
+    return locationBar.value === LOCAL_TEST_PAGE.string;
+  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
 
   // Ensure the autocomplete list is open
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
+
+  // Define the path to the first auto-complete result
+  var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // Get the URL for the autocomplete Favicon for the matched entry
   var listFaviconUrl = richlistItem.getNode().boxObject.firstChild.childNodes[0].getAttribute("src");
@@ -72,3 +71,4 @@ var testFaviconInAutoComplete = function() {
 
   locationBar.autoCompleteResults.close();
 }
+

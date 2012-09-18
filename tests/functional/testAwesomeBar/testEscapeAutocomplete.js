@@ -33,10 +33,10 @@ var teardownModule = function() {
  */
 var testEscape = function() {
   // Open some local pages to set up the test environment
-  for each (var localPage in LOCAL_TEST_PAGES) {
-    locationBar.loadURL(localPage);
+  LOCAL_TEST_PAGES.forEach(function (aPage) {
+    locationBar.loadURL(aPage);
     controller.waitForPageLoad();
-  }
+  });
 
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
@@ -44,14 +44,11 @@ var testEscape = function() {
   // Focus the locationbar and delete any content that is there
   locationBar.clear();
 
-  // Use type and sleep on each letter to allow the autocomplete to populate with results
-  for (var i = 0; i < TEST_STRING.length; i++) {
-    locationBar.type(TEST_STRING[i]);
-    controller.sleep(100);
-  }
+  locationBar.type(TEST_STRING);
+  controller.waitFor(function () {
+    return locationBar.value === TEST_STRING;
+  }, "Location bar contains the typed data - expected '" + TEST_STRING + "'");
 
-  expect.contain(locationBar.value, TEST_STRING,
-                 "Search string found in the locationbar");
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
