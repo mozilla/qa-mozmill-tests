@@ -43,10 +43,10 @@ var teardownModule = function() {
  */
 var testVisibleItemsMax = function() {
   // Open some local pages to set up the test environment
-  for each (var page in LOCAL_PAGES) {
-    locationBar.loadURL(page);
+  LOCAL_PAGES.forEach(function (aPage) {
+    locationBar.loadURL(aPage);
     controller.waitForPageLoad();
-  }
+  });
 
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(4000);
@@ -56,11 +56,10 @@ var testVisibleItemsMax = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Use type and sleep on each letter to allow the autocomplete to populate with results.
-  for each (var letter in testString) {
-    locationBar.type(letter);
-    controller.sleep(100);
-  }
+  locationBar.type(testString);
+  controller.waitFor(function () {
+    return locationBar.value === testString;
+  }, "Location bar contains the typed data - expected '" + testString + "'");
 
   // Get the visible results from the autocomplete list. Verify it is equal to maxrows
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});

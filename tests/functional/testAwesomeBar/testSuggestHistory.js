@@ -46,26 +46,27 @@ var testSuggestHistoryAndBookmarks = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Type in the test string
   locationBar.type(LOCAL_TEST_PAGE.string);
+  controller.waitFor(function () {
+    return locationBar.value === LOCAL_TEST_PAGE.string;
+  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
 
-  // Get the visible results from the autocomplete list. Verify it is 1
   controller.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
   expect.equal(locationBar.autoCompleteResults.visibleResults.length, 1,
-               "There is one visible result in the autocomplete list");
+               "Expected to be one visible result in the autocomplete list");
 
   // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // For the page title check matched text is underlined
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  for each (var entry in entries) {
-    expect.equal(LOCAL_TEST_PAGE.string, entry.toLowerCase(),
+  entries.forEach(function (aEntry) {
+    expect.equal(aEntry.toLowerCase(), LOCAL_TEST_PAGE.string,
                  "The page title matches the underlined text");
-  }
+  });
 
   locationBar.autoCompleteResults.close();
 }

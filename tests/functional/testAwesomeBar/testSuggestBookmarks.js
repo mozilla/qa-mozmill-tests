@@ -47,7 +47,7 @@ var testStarInAutocomplete = function() {
   controller.waitFor(function () {
     return controller.window.top.StarUI._overlayLoaded;
   }, "Edit This Bookmark doorhanger has been loaded");
-  var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
+  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
   controller.click(doneButton);
 
   // We must open the blank page so the autocomplete result isn't "Swith to tab"
@@ -60,11 +60,10 @@ var testStarInAutocomplete = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  // Type the test string into the location bar
   locationBar.type(LOCAL_TEST_PAGE.string);
   controller.waitFor(function () {
     return locationBar.value === LOCAL_TEST_PAGE.string;
-  }, "Location bar contains the typed data");
+  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
 
   // For the page title check matched text is underlined
   controller.waitFor(function () {
@@ -75,10 +74,10 @@ var testStarInAutocomplete = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  for each (var entry in entries) {
-    expect.equal(LOCAL_TEST_PAGE.string, entry.toLowerCase(),
+  entries.forEach(function (aEntry) {
+    expect.equal(aEntry.toLowerCase(), LOCAL_TEST_PAGE.string,
                  "The page title matches the underlined text");
-  }
+  });
 
   expect.contain(richlistItem.getNode().getAttribute("type"), "bookmark",
                  "The auto-complete result is a bookmark");
