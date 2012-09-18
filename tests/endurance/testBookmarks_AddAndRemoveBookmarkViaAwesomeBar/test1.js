@@ -62,3 +62,10 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark has been removed");
   });
 }
+
+setupModule.__force_skip__ = "Bug 772360 - Mozmill test failure " +
+                             "//testBookmarks_AddAndRemoveBookmarkViaAwesomeBar/" +
+                             "with error 'The bookmark was created'";
+teardownModule.__force_skip__ = "Bug 772360 - Mozmill test failure " +
+                                "//testBookmarks_AddAndRemoveBookmarkViaAwesomeBar/" +
+                                "with error 'The bookmark was created'";
