@@ -47,7 +47,7 @@ var testStarInAutocomplete = function() {
   controller.waitFor(function () {
     return controller.window.top.StarUI._overlayLoaded;
   }, "Edit This Bookmark doorhanger has been loaded");
-  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
+  var doneButton = new elementslib.ID(controller.window.document, "editBookmarkPanelDoneButton");
   controller.click(doneButton);
 
   // We must open the blank page so the autocomplete result isn't "Swith to tab"
