@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert} = require("../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
@@ -87,10 +88,9 @@ function handleInstallAddonDialog(controller) {
                                              '/id("xpinstallConfirm")' +
                                              '/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
-  controller.waitFor(function(){
+  assert.waitFor(function () {
     return !installButton.getNode().disabled;
-  }, "Install button is enabled: got '" + !installButton.getNode().disabled +
-     "', expected 'true'");
+  }, "Install button is enabled");
 
   controller.click(installButton);
 }

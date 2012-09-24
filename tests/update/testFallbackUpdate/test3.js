@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert} = require("../../../lib/assertions");
 var softwareUpdate = require("../../../lib/software-update");
 var utils = require("../../../lib/utils");
 
@@ -36,7 +37,7 @@ function testFallbackUpdate_ErrorPatching() {
     update.waitForCheckFinished();
 
     // Download the update
-    update.controller.waitFor(function() {
+    assert.waitFor(function() {
       return update.updatesFound;
     }, "An update has been found.");
 

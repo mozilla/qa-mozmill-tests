@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var {expect} = require("../../../../lib/assertions");
+var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
 var modalDialog = require("../../../../lib/modal-dialog");
 var places = require("../../../../lib/places");
@@ -30,7 +30,7 @@ function teardownModule(module) {
 
 function testVerifyDefaultBookmarks() {
   var toolbar = new elementslib.ID(controller.window.document, "PersonalToolbar");
-  controller.waitFor(function() {
+  assert.waitFor(function() {
     return toolbar.getNode().collapsed == true;
   }, "Bookmarks Toolbar is hidden by default");
 
@@ -47,7 +47,7 @@ function testVerifyDefaultBookmarks() {
   controller.mouseUp(toggle);
 
   // Make sure bookmarks toolbar is now open
-  controller.waitFor(function() {
+  assert.waitFor(function() {
     return toolbar.getNode().collapsed == false;
   }, "Bookmarks Toolbar is visible");
 
