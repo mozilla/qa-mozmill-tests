@@ -55,7 +55,7 @@ var testSetMasterPassword = function() {
   // After clicking the 'Remember Password' button, check notification state
   var notification = locationBar.getNotification();
 
-  controller.waitFor(function() {
+  expect.waitFor(function() {
     return notification.getNode().state == 'closed';
   }, "Password notification should be closed");
 
