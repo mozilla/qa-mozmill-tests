@@ -5,6 +5,7 @@
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -12,6 +13,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
+  locationBar =  new toolbars.locationBar(controller);
 }
 
 var teardownModule = function() {
@@ -29,15 +31,11 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.mainMenu.click("#menu_bookmarkThisPage");
 
   // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
-  controller.waitFor(function () {
-    return controller.window.top.StarUI._overlayLoaded;
-  }, "Edit This Bookmark doorhanger has been loaded");
+  locationBar.editBookmarksPanel.waitForPanel();
 
   // Bookmark should automatically be stored under the Bookmark Menu
-  var nameField = new elementslib.ID(controller.window.document,
-                                     "editBMPanel_namePicker");
-  var doneButton = new elementslib.ID(controller.window.document,
-                                      "editBookmarkPanelDoneButton");
+  var nameField = locationBar.editBookmarksPanel.getElement({type: "nameField"});
+  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
 
   controller.type(nameField, "Mozilla");
   controller.click(doneButton);
