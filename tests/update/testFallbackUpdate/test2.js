@@ -29,7 +29,7 @@ function testFallbackUpdate_Download() {
   update.waitForCheckFinished();
 
   // Download the update
-  update.controller.waitFor(function() {
+  assert.waitFor(function() {
     return update.updatesFound;
   }, "An update has been found.");
 
