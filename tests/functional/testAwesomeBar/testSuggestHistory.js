@@ -63,9 +63,10 @@ var testSuggestHistoryAndBookmarks = function() {
 
   // For the page title check matched text is underlined
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  entries.forEach(function (aEntry) {
-    expect.equal(aEntry.toLowerCase(), LOCAL_TEST_PAGE.string,
-                 "The page title matches the underlined text");
+  entries.forEach(function (aEntry, aIndex) {
+    expect.waitFor(function () {
+      return aEntry.toLowerCase() === LOCAL_TEST_PAGE.string;
+    }, "The page title matches the underlined text for iteration " + (aIndex + 1));
   });
 
   locationBar.autoCompleteResults.close();
