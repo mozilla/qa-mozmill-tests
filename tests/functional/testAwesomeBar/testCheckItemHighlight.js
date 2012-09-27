@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert, expect} = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -87,16 +88,13 @@ function checkAwesomebarResults(aResult, aType) {
                    getUnderlinedText(aResult, aType);
 
   // Check that there is only 1 entry
-  controller.assert(function () {
-    return underlined.length === 1;
-  }, "Only one autocompleted result is underlined - got '" +
-     underlined.length + "', expected '1'");
+  assert.equal(underlined.length, 1,
+               "Only one autocompleted result is underlined");
 
   // Check that the underlined URL matches the entered URL
-  underlined.forEach(function (element) {
-    controller.assert(function() {
-      return element.toLowerCase() === LOCAL_TEST_PAGES[0].name;
-    }, "Underlined " + aType + " matches entered " + aType + " - got '" +
-       element.toLowerCase() + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
+  underlined.forEach(function (aElement, aIndex) {
+    expect.waitFor(function () {
+      return aElement.toLowerCase() === LOCAL_TEST_PAGES[0].name;
+    }, "The page " + aType + " matches the underlined text for iteration " + (aIndex + 1));
   });
 }
