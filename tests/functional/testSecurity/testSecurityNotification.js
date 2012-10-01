@@ -5,8 +5,9 @@
 // Include necessary modules
 var { expect } = require("../../../lib/assertions");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const INVALID_CERT_PAGE = "https://summitbook.mozilla.org";
+const SECURE_PAGE = "https://addons.mozilla.org/licenses/5.txt";
+const UNSECURE_PAGE = "http://www.mozilla.org";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -17,7 +18,7 @@ var setupModule = function(module) {
  */
 var testSecNotification = function() {
   // Go to a secure HTTPS site
-  controller.open("https://addons.mozilla.org/licenses/5.txt");
+  controller.open(SECURE_PAGE);
   controller.waitForPageLoad();
 
   // Identity box should have a green background
@@ -25,20 +26,21 @@ var testSecNotification = function() {
   controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
 
   // Go to an unsecure (HTTP) site
-  controller.open("http://www.mozilla.org/");
+  controller.open(UNSECURE_PAGE);
   controller.waitForPageLoad();
 
   // Identity box should have a gray background
   controller.assertJSProperty(identityBox, "className", "unknownIdentity");
 
   // Go to a website which does not have a valid cert
-  controller.open("https://mozilla.org/");
+  controller.open(INVALID_CERT_PAGE);
   controller.waitForPageLoad();
 
-  // Verify the link in Technical Details is correct
-  var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link, gTimeout);
-  controller.assertJSProperty(link, "textContent", "*.mozilla.org");
+  // Verify the info in Technical Details contains the invalid cert page
+  var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
+  controller.waitForElement(text);
+  expect.contain(text.getNode().textContent, INVALID_CERT_PAGE.substring(8),
+                 "Details contain the invalid cert page");
 
   // Verify "Get Me Out Of Here!" button appears
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
@@ -47,13 +49,7 @@ var testSecNotification = function() {
   controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton"));
 
   // Verify the error code is correct
-  var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text, gTimeout);
-  expect.contain(text.getNode().textContent, "ssl_error_bad_cert_domain",
-                 "The error code is a SSL Bad Cert Error");
+  expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
+                 "The error code is a SEC Expired certificate error");
 }
 
-// XXX: Bug 708491 - testSecurityNotification.js fails due to timeout
-//      on cert_domain_link
-setupModule.__force_skip__ = "Bug 708491 - testSecurityNotification.js fails"+
-                             "due to timeout on cert_domain_link";
