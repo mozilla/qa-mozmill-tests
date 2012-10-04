@@ -86,3 +86,8 @@ function checkSecurityTab(controller) {
  * Map test functions to litmus tests
  */
 // testLarryGrey.meta = {litmusids : [8806]};
+
+setupModule.__force_skip__= "Bug 785041 -'Controller.assertJSProperty(ID: page-proxy-favicon): " +
+                            "http://localhost:43336/images/mozilla_favicon.ico == " +
+                            "http://localhost:43336/favicon.ico'";
+
