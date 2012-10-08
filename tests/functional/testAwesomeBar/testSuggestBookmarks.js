@@ -74,9 +74,10 @@ var testStarInAutocomplete = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  entries.forEach(function (aEntry) {
-    expect.equal(aEntry.toLowerCase(), LOCAL_TEST_PAGE.string,
-                 "The page title matches the underlined text");
+  entries.forEach(function (aEntry, aIndex) {
+    expect.waitFor(function () {
+      return aEntry.toLowerCase() === LOCAL_TEST_PAGE.string;
+    }, "The page title matches the underlined text for iteration " + (aIndex + 1));
   });
 
   expect.contain(richlistItem.getNode().getAttribute("type"), "bookmark",
