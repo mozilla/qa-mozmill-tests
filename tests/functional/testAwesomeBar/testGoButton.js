@@ -57,9 +57,3 @@ var testAddressFieldAndGoButton = function () {
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
 }
 
-if (mozmill.isMac) {
-  setupModule.__force_skip__ = "Bug 790191 - Mozmill test failure " +
-                               "/testAwesomeBar/testGoButton.js | " +
-                               "controller.waitForPageLoad(): Timeout waiting " +
-                               "for page loaded.";
-}
