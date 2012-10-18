@@ -12,8 +12,8 @@ const PLACES_DB_TIMEOUT = 4000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
-  {URL: LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
-   name: "community" }
+  {URL: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
+   name: "grants"}
 ];
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
