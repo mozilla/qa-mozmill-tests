@@ -9,9 +9,9 @@ var toolbars = require("../../../lib/toolbars");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/layout/');
 const LOCAL_TEST_PAGES = [
-  {url: LOCAL_TEST_FOLDER + 'mozilla_community.html', string: "community"},
   {url: LOCAL_TEST_FOLDER + 'mozilla_contribute.html', string: "contribute"},
-  {url: LOCAL_TEST_FOLDER + 'mozilla_governance.html', string: "governance"}
+  {url: LOCAL_TEST_FOLDER + 'mozilla_governance.html', string: "governance"},
+  {url: LOCAL_TEST_FOLDER + 'mozilla_grants.html', string: "grants"}
 ];
 
 function setupModule() {
