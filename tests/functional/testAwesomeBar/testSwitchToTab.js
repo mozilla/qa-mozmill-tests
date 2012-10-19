@@ -7,6 +7,8 @@ var {assert, expect} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 
+const PLACES_DB_TIMEOUT = 4000;
+
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/layout/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'mozilla_contribute.html', string: "contribute"},
@@ -35,6 +37,9 @@ function testSwitchToTab() {
     controller.waitForPageLoad();
     tabBrowser.openTab();
   });
+
+  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
+  controller.sleep(PLACES_DB_TIMEOUT);
 
   LOCAL_TEST_PAGES.forEach(function (aPage) {
     locationBar.focus({type: "shortcut"});
