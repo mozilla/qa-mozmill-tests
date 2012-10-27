@@ -3,39 +3,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var Toolbars = require("../../../lib/toolbars");
+var toolbars = require("../../../lib/toolbars");
+
+const TEST_PAGE = "http://www.mozilla.org/en-US/about/contact";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
-  locationBar =  new Toolbars.locationBar(controller);
+  locationBar = new toolbars.locationBar(controller);
 }
 
 /**
  * Test the stop and reload buttons
  */
-var testStopAndReload = function()
-{
-  var url = "http://www.mozilla.com/en-US/";
-
+var testStopAndReload = function() {
   // Make sure we have a blank page
   controller.open("about:blank");
   controller.waitForPageLoad();
 
   // Go to the URL and start loading for some milliseconds
-  controller.open(url);
+  controller.open(TEST_PAGE);
   var stopButton = locationBar.getElement({type: "stopButton"});
   controller.click(stopButton);
 
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
-  var header = new elementslib.ID(controller.tabs.activeTab, "masthead");
-  controller.assertNodeNotExist(header);
+  var footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
+  controller.assertNodeNotExist(footer);
 
   // Reload, wait for it to completely loading and test again
-  controller.open(url);
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
-  controller.assertNode(header);
+  footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
+  controller.assertNode(footer);
 }
 
 /**
