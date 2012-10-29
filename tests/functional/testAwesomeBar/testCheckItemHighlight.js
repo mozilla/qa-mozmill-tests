@@ -94,7 +94,10 @@ function checkAwesomebarResults(aResult, aType) {
   // Check that the underlined URL matches the entered URL
   underlined.forEach(function (aElement, aIndex) {
     expect.waitFor(function () {
-      return aElement.toLowerCase() === LOCAL_TEST_PAGES[0].name;
-    }, "The page " + aType + " matches the underlined text for iteration " + (aIndex + 1));
+      aElement = locationBar.autoCompleteResults.
+                 getUnderlinedText(aResult, aType)[aIndex];
+      return aElement.toString().toLowerCase() === LOCAL_TEST_PAGES[0].name;
+    }, "The page " + aType + " matches the underlined text");
   });
 }
+

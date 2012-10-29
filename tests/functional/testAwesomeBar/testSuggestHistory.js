@@ -62,11 +62,14 @@ var testSuggestHistoryAndBookmarks = function() {
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   // For the page title check matched text is underlined
-  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  entries.forEach(function (aEntry, aIndex) {
+  var underlined = locationBar.autoCompleteResults.
+                   getUnderlinedText(richlistItem, "title");
+  underlined.forEach(function (aElement, aIndex) {
     expect.waitFor(function () {
-      return aEntry.toLowerCase() === LOCAL_TEST_PAGE.string;
-    }, "The page title matches the underlined text for iteration " + (aIndex + 1));
+      aElement = locationBar.autoCompleteResults.
+                 getUnderlinedText(richlistItem, "title")[aIndex];
+      return aElement.toString().toLowerCase() === LOCAL_TEST_PAGE.string;
+    }, "The page title matches the underlined text");
   });
 
   locationBar.autoCompleteResults.close();
