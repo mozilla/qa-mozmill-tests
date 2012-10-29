@@ -73,11 +73,15 @@ var testStarInAutocomplete = function() {
   // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
-  var entries = locationBar.autoCompleteResults.getUnderlinedText(richlistItem, "title");
-  entries.forEach(function (aEntry, aIndex) {
+  // For the page title check matched text is underlined
+  var underlined = locationBar.autoCompleteResults.getUnderlinedText(richlistItem,
+                                                                     "title");
+  underlined.forEach(function (aElement, aIndex) {
     expect.waitFor(function () {
-      return aEntry.toLowerCase() === LOCAL_TEST_PAGE.string;
-    }, "The page title matches the underlined text for iteration " + (aIndex + 1));
+      aElement = locationBar.autoCompleteResults.
+                 getUnderlinedText(richlistItem, "title")[aIndex];
+      return aElement.toString().toLowerCase() === LOCAL_TEST_PAGE.string;
+    }, "The page title matches the underlined text");
   });
 
   expect.contain(richlistItem.getNode().getAttribute("type"), "bookmark",

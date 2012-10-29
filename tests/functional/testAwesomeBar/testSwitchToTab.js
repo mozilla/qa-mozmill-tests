@@ -59,12 +59,17 @@ function testSwitchToTab() {
     // Go through all results and click 'Switch to tab'
     var autoCompleteList = locationBar.autoCompleteResults.visibleResults;
     var switchToTab = autoCompleteList.some(function (aRichlistItem) {
-      var item = locationBar.autoCompleteResults.getUnderlinedText(aRichlistItem,
-                                                                   "title");
       if (aRichlistItem.getNode().getAttribute("actiontype") === "switchtab") {
-        assert.waitFor(function () {
-          return item.toString().toLowerCase() === aPage.string;
-        }, "The page title matches the underlined text");
+        // For the page title check matched text is underlined
+        var underlined = locationBar.autoCompleteResults.
+                         getUnderlinedText(aRichlistItem, "title");
+        underlined.forEach(function (aElement, aIndex) {
+          assert.waitFor(function () {
+            aElement = locationBar.autoCompleteResults.
+                       getUnderlinedText(aRichlistItem, "title")[aIndex];
+            return aElement.toString().toLowerCase() === aPage.string;
+          }, "The page title matches the underlined text");
+        });
 
         controller.click(aRichlistItem);
         expect.equal(controller.tabs.activeTab.location.href, aPage.url,
