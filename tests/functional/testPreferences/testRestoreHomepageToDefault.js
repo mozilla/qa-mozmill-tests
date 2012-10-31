@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var {assert, expect} = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -50,10 +51,7 @@ var testRestoreHomeToDefault = function() {
   var currentHomepage = prefs.preferences.getPref("browser.startup.homepage", "");
   var defaultHomepage = utils.getDefaultHomepage();
 
-  controller.assert(function () {
-    return currentHomepage == defaultHomepage;
-  }, "Default homepage restored - got " + currentHomepage + ", expected " +
-    defaultHomepage);
+  assert.equal(currentHomepage, defaultHomepage, "Default homepage restored");
 }
 
 /**
@@ -88,10 +86,7 @@ var prefDialogDefHomePageCallback = function(controller) {
   var browserHomepageField = new elementslib.ID(controller.window.document, "browserHomePage");
   var browserHomepagePlaceholderText = browserHomepageField.getNode().placeholder;
 
-  controller.assert(function () {
-    return browserHomepagePlaceholderText == defaultHomepageTitle;
-  }, "Default homepage title - got " + browserHomepagePlaceholderText + ", expected " +
-    defaultHomepageTitle);
+  expect.equal(browserHomepagePlaceholderText, defaultHomepageTitle, "Default homepage title");
 
   prefDialog.close(true);
 }

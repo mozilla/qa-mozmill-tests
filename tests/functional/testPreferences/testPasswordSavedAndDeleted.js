@@ -54,9 +54,8 @@ function testSaveAndDeletePassword() {
   controller.waitThenClick(button);
 
   // After clicking the 'Remember Password' button, check notification state
-  controller.assert(function() {
-    return notification.getNode().state == "closed";
-  }, "Password notification should be closed");
+  expect.equal(notification.getNode().state, "closed",
+               "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
   controller.open(LOCAL_TEST_PAGE);
