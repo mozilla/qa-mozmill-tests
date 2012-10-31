@@ -6,6 +6,9 @@
  * @fileoverview Helper module containing assertions for Selenium IDE
  */
 
+// Include the required modules
+var {assert, expect} = require("../../../../lib/assertions");
+
 /**
  * Checks that the command passed.
  *
@@ -16,9 +19,7 @@ function commandPassed(seleniumManager) {
 
  //check suite progress indicator
  var isSuiteProgressIndicatorGreen = seleniumManager.isSuiteProgressIndicatorGreen;
- seleniumManager.controller.assert(function () {
-   return isSuiteProgressIndicatorGreen;
- }, "Suite progress indicator is green");
+ expect.ok(isSuiteProgressIndicatorGreen, "Suite progress indicator is green");
 
  //check suite counts
  seleniumManager.controller.assertValue(seleniumManager.runCount, "1");
@@ -26,9 +27,7 @@ function commandPassed(seleniumManager) {
 
  //check no errors in log
  var logErrors = seleniumManager.logErrors;
- seleniumManager.controller.assert(function () {
-   return logErrors.length === 0;
- }, "No error messages present - got '" + logErrors.length +"', expected '" + 0 + "'");
+ assert.equal(logErrors.length, 0, "No error messages present");
 }
 
 /**
@@ -42,9 +41,7 @@ function commandFailed(seleniumManager, message) {
 
   //check suite progress indicator
   var isSuiteProgressIndicatorRed = seleniumManager.isSuiteProgressIndicatorRed;
-  seleniumManager.controller.assert(function () {
-    return isSuiteProgressIndicatorRed;
-  }, "Suite progress indicator is red");
+  expect.ok(isSuiteProgressIndicatorRed, "Suite progress indicator is red");
 
   //check suite counts
   seleniumManager.controller.assertValue(seleniumManager.runCount, "1");
@@ -53,15 +50,13 @@ function commandFailed(seleniumManager, message) {
   //check error in log
   message = "[error] " + message + "\n";
   var logErrors = seleniumManager.logErrors;
-  seleniumManager.controller.assert(function () {
-    return logErrors.length === 1;
-  }, "One error message present - got '" + logErrors.length +"', expected '" + 1 + "'");
+  assert.equal(logErrors.length, 1, "One error message present");
 
-  seleniumManager.controller.assert(function () {
-    return logErrors[0].getNode().textContent === message;
-  }, "Correct error message is present - got '" + logErrors[0].getNode().textContent +"', expected '" + message + "'");
+  assert.equal(logErrors[0].getNode().textContent, message,
+               "Correct error message is present");
 }
 
 // Export of functions
 exports.commandPassed = commandPassed;
 exports.commandFailed = commandFailed;
+
