@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Include required modules
+var {expect} = require("../../../../lib/assertions");
+
 function setupModule(module) {
   controller = mozmill.getBrowserController();
 }
@@ -12,9 +15,8 @@ function setupModule(module) {
 function testRestarted64bit() {
   var runtime = Cc["@mozilla.org/xre/runtime;1"].
                 getService(Ci.nsIXULRuntime);
-  controller.assert(function () {
-    return runtime.XPCOMABI === "x86_64-gcc3";
-  }, "ABI should be correct - got '" + runtime.XPCOMABI + "', expected 'x86_64-gcc3'");
+  expect.equal(runtime.XPCOMABI, "x86_64-gcc3",
+               "Successfully restarted in 64bit mode after requesting it");
 }
 
 
