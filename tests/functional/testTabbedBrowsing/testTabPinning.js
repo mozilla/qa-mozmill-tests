@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -31,17 +32,11 @@ function testTabPinning() {
   var currentTab = tabBrowser.getTab(tabBrowser.length - 1);
   contextMenu.select("#context_pinTab", currentTab);
 
-  // check whether it's sucessfully pinned
   var appTabPinned = tabBrowser.isAppTab(currentTab);
-  controller.assert(function () {
-    return appTabPinned;
-  }, "This tab has been pinned - got '" + appTabPinned + "', expected 'true'");
+  assert.ok(appTabPinned, "Current tab has been pinned");
 
   contextMenu.select("#context_unpinTab", currentTab);
 
-  // check whether it's successfully unpinned
   var appTabUnpinned = !tabBrowser.isAppTab(currentTab);
-  controller.assert(function () {
-    return appTabUnpinned;
-  }, "The tab is unpinned - got '" + appTabUnpinned + "', expected 'true'");
+  assert.ok(appTabUnpinned, "Current tab has been unpinned");
 }

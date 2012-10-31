@@ -34,9 +34,11 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.waitFor(function () {
-    return favicon.getNode().src.indexOf("mozqa.com") !== -1;
-  }, "Favicon is loaded");
+  expect.ok(!favicon.getNode().hasAttribute("hidden"),
+            "Lock icon is visible in identity box");
+
+  var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
+  expect.contain(faviconImage, "identity-icons-https.png", "There is a lock icon");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
@@ -57,11 +59,8 @@ var testLarryBlue = function() {
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
   var cssInfoLockImage = utils.getElementStyle(lockIcon, 'list-style-image');
-  var lockImageVisible = (cssInfoLockImage !== 'none');
 
-  controller.assert(function () {
-    return lockImageVisible;
-  }, "There is a lock icon - got '" + lockImageVisible + "', expected 'true'.");
+  expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
   // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService

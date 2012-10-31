@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
@@ -65,11 +66,8 @@ var testLarryGreen = function() {
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
   var cssInfoLockImage = utils.getElementStyle(lockIcon, 'list-style-image');
-  var lockImageVisible = (cssInfoLockImage !== 'none');
 
-  controller.assert(function () {
-    return lockImageVisible;
-  }, "There is a lock icon - got '" + lockImageVisible + "', expected 'true'.");
+  expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
   // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService

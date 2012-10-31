@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
@@ -50,9 +51,8 @@ var testAddMozSearchPlugin = function()
   }, "Search engine '" + searchEngine.name + "' has been installed");
 
   // The engine should not be selected by default
-  controller.assert(function () {
-    return searchBar.selectedEngine !== searchEngine.name;
-  }, "New search engine is not selected - got '" + searchBar.selectedEngine + "'");
+  expect.notEqual(searchBar.selectedEngine, searchEngine.name,
+                  "New search engine is not selected");
 
   // Select search engine and start a search
   searchBar.selectedEngine = searchEngine.name;
@@ -76,10 +76,8 @@ var handleSearchInstall = function(controller)
   else
     var title = controller.window.document.title;
 
-  controller.assert(function () {
-    return title.windowTitle === confirmTitle.addEngineTitle;
-  }, "Window contains search engine title - got '" + title.windowTitle +
-    "', expected '" + confirmTitle.addEngineTitle + "'");
+  expect.equal(title.windowTitle, confirmTitle.addEngineTitle,
+               "Window contains search engine title");
 
   // Check that the correct domain is shown
   var infoBody = controller.window.document.getElementById("info.body");

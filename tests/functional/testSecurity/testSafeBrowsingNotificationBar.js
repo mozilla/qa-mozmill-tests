@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -111,10 +112,7 @@ var checkNoPhishingButton = function(badUrl) {
     // Verify the not-an-attack-site report page is loaded
     var locationBar = new elementslib.ID(controller.window.document, "urlbar");
     var currentURL = locationBar.getNode().value;
-    controller.assert(function () {
-      return currentURL.indexOf('www.stopbadware.org/') != -1;
-    }, "Loaded URL is the report page - got " + currentURL + ", expected " +
-       "'www.stopbadware.org/'");
+    expect.contain(currentURL, 'www.stopbadware.org/', "Loaded URL is the report page");
   }
 
   tabs.closeAllTabs(controller);

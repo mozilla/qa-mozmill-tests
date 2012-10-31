@@ -59,9 +59,7 @@ function testVerifyDefaultBookmarks() {
   var items = nodeCollector.queryNodes("toolbarbutton").elements;
 
   // For a default profile there should be exactly 2 items
-  controller.assert(function() {
-    return items.length == 2;
-  }, "Bookmarks Toolbar contains 2 items");
+  assert.equal(items.length, 2, "Bookmarks Toolbar contains 2 items");
 
   // Check if the Most Visited folder is visible and has the correct title
   controller.assertJSProperty(items[0], "label", toolbarNodes.getChild(0).title);
