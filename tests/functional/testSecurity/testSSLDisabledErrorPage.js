@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var {expect} = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -56,10 +57,8 @@ var testDisableSSL = function() {
   controller.waitForElement(title, gTimeout);
 
   var nssFailure2title = utils.getEntity(dtds, "nssFailure2.title")
-  controller.assert(function () {
-    return title.getNode().textContent === nssFailure2title;
-  }, "The correct SSL error title is shown - got '" + title.getNode().textContent +
-    "', expected '" + nssFailure2title + "'");
+  expect.equal(title.getNode().textContent, nssFailure2title,
+               "The correct SSL error title is shown");
 
   // Verify "Try Again" button appears
   var tryAgain = new elementslib.ID(controller.tabs.activeTab, "errorTryAgain");
@@ -69,21 +68,15 @@ var testDisableSSL = function() {
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text, gTimeout);
 
-  controller.assert(function () {
-    return text.getNode().textContent.indexOf('ssl_error_ssl_disabled') != -1;
-  }, "The SSL error message contains 'ssl_error_ssl_disabled' - got '" +
-    text.getNode().textContent + "'");
+  expect.contain(text.getNode().textContent, 'ssl_error_ssl_disabled',
+                 "The SSL error message contains disabled information");
 
-  controller.assert(function () {
-    return text.getNode().textContent.indexOf('mail.mozilla.org') != -1;
-  }, "The SSL error message contains 'mail.mozilla.org' - got '" +
-    text.getNode().textContent + "'");
+  expect.contain(text.getNode().textContent, 'mail.mozilla.org',
+                 "The SSL error message contains domain name");
 
   var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled');
-  controller.assert(function () {
-    return text.getNode().textContent.indexOf(PSMERR_SSL_Disabled) != -1;
-  }, "The SSL error message contains '" + PSMERR_SSL_Disabled + "' - got '" +
-    text.getNode().textContent + "'");
+  expect.contain(text.getNode().textContent, PSMERR_SSL_Disabled,
+                 "The SSL error message contains disabled property");
 }
 
 /**

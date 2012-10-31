@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var {assert} = require("../../../lib/assertions");
 var tabView = require("../../../lib/tabview");
 
 function setupModule(module) {
@@ -21,16 +22,10 @@ function testToggleTabView() {
   // Open Tab View (default via keyboard shortcut)
   activeTabView.open();
 
-  // Check that Tab View has opened
-  controller.assert(function () {
-    return activeTabView.isOpen;
-  }, "Tab View has opened");
+  assert.ok(activeTabView.isOpen, "Tab View has been opened");
 
   // Close Tab View (default via keyboard shortcut)
   activeTabView.close();
 
-  // Check that Tab View has closed
-  controller.assert(function () {
-    return !activeTabView.isOpen;
-  }, "Tab View has closed");
+  assert.ok(!activeTabView.isOpen, "Tab View has been closed");
 }
