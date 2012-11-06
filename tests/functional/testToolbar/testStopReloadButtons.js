@@ -16,12 +16,28 @@ var setupModule = function(module) {
  * Test the stop and reload buttons
  */
 var testStopAndReload = function() {
+
+  var pageUnloaded = false;
+  var contentWindow = controller.tabs.activeTab.defaultView;
+
+  function onUnload() {
+    contentWindow.removeEventListener("unload", onUnload, false);
+    pageUnloaded = true;
+  }
+
   // Make sure we have a blank page
   controller.open("about:blank");
   controller.waitForPageLoad();
 
+  // Add event handler to the current page so we can wait for it to unload
+  contentWindow.addEventListener("unload", onUnload, false);
+
   // Go to the URL and start loading for some milliseconds
   controller.open(TEST_PAGE);
+  controller.waitFor(function () {
+    return pageUnloaded;
+  }, "about:blank page has been unloaded.");
+
   var stopButton = locationBar.getElement({type: "stopButton"});
   controller.click(stopButton);
 
@@ -31,7 +47,8 @@ var testStopAndReload = function() {
   controller.assertNodeNotExist(footer);
 
   // Reload, wait for it to completely loading and test again
-  controller.open(TEST_PAGE);
+  var reloadButton = locationBar.getElement({type: "reloadButton"});
+  controller.click(reloadButton);
   controller.waitForPageLoad();
 
   footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
