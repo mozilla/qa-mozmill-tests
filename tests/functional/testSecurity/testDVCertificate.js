@@ -29,8 +29,11 @@ var testLarryBlue = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  expect.equal(favicon.getNode().getAttribute("hidden"), "false",
-               "Lock icon is visible in identity box");
+  expect.ok(!favicon.getNode().hasAttribute("hidden"),
+            "Lock icon is visible in identity box");
+
+  var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
+  expect.contain(faviconImage, "identity-icons-https.png", "There is a lock icon");
 
   // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
