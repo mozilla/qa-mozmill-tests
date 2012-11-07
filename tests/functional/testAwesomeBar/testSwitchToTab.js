@@ -72,8 +72,10 @@ function testSwitchToTab() {
         });
 
         controller.click(aRichlistItem);
-        expect.equal(controller.tabs.activeTab.location.href, aPage.url,
-                     "Active tab url should equal the page url");
+        expect.waitFor(function () {
+          return controller.tabs.activeTab.location.href === aPage.url;
+        }, "Active tab url should equal the page url");
+
         return true;
       }
 
