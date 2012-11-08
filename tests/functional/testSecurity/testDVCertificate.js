@@ -129,6 +129,3 @@ function checkSecurityTab(controller) {
  * Map test functions to litmus tests
  */
 // testLarryBlue.meta = {litmusids : [8901]};
-
-setupModule.__force_skip__ = "Bug 804374 - Test failure \"Lock icon is " +
-                             "visible in identity box - '' should equal 'false'\"";
