@@ -55,7 +55,7 @@ var testScrollBackgroundTabIntoView = function()
   // Not sure for which state we have to wait here, but without the sleep
   // call or smaller numbers the test always fails on Windows. Lets see
   // if the fix for bug 578162 will solve it.
-  controller.sleep(100);
+  controller.sleep(300);
 
   // Open one more tab but with another link for later verification
   tabBrowser.openInNewTab(link2);
