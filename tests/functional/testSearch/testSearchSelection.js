@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
@@ -88,17 +88,17 @@ var startSearch = function(element, engineName, loadInBackground) {
   utils.closeContentAreaContextMenu(controller);
 
   // A new tab will be opened in the background
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return tabs.length === (tabCount + 1);
   }, "A new tab has been opened");
 
   if (loadInBackground) {
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabs.selectedIndex === tabIndex;
     }, "A new tab has been opened in the background");
     tabs.selectedIndex = tabs.selectedIndex + 1;
   } else {
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabs.selectedIndex === tabIndex + 1;
     }, "A new tab has been opened in the foreground");
   }

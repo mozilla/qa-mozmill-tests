@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
@@ -34,7 +34,7 @@ function testGetMoreEngines () {
   // Open the engine manager and click "Get more search engines..."
   searchBar.openEngineManager(enginesHandler);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return controller.tabs.length === (tabCount + 1);
   }, "The 'Get More Engines' link has been opened in a new tab");
   controller.waitForPageLoad();

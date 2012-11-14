@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
@@ -45,7 +45,7 @@ var testLarryGreen = function() {
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return favicon.getNode().getAttribute("hidden") == false;
   }, "Lock icon is visible in identity box");
 
@@ -58,7 +58,7 @@ var testLarryGreen = function() {
 
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 
@@ -137,9 +137,8 @@ function checkSecurityTab(controller) {
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  controller.waitFor(function () {
-    return webIDDomainLabel.getNode().value.indexOf(cert.commonName) !== -1;
-  }, "Found certificate common name '" + cert.commonName + "'");
+  expect.notEqual(webIDDomainLabel.getNode().value.indexOf(cert.commonName), -1,
+                  "Found certificate common name '" + cert.commonName + "'");
 
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
