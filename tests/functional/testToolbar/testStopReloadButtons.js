@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 
 const TEST_PAGE = "http://www.mozilla.org/en-US/about/contact";
@@ -34,7 +35,7 @@ var testStopAndReload = function() {
 
   // Go to the URL and start loading for some milliseconds
   controller.open(TEST_PAGE);
-  controller.waitFor(function () {
+  expect.waitFor(function () {
     return pageUnloaded;
   }, "about:blank page has been unloaded.");
 

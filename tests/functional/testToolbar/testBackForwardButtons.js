@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Include necessary modules
+var { assert } = require("../../../lib/assertions");
+
 const TIMEOUT = 5000;
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
@@ -50,7 +53,7 @@ var testBackAndForward = function() {
 
   // Click on the Forward button for the number of websites visited
   for (var j = 1; j < LOCAL_TEST_PAGES.length; j++) {
-   controller.waitFor(function() {
+   assert.waitFor(function () {
      return transitionFinished && !forwardButton.getNode().hasAttribute('disabled');
    }, "The forward button has been made visible for the " + j + " page");
 

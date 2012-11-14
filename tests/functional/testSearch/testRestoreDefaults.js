@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 // Global variable to share engine names
@@ -56,7 +56,7 @@ function removeEngines(controller) {
     var name = manager.engines[i - 1].name;
 
     manager.removeEngine(name);
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return manager.engines.length === i - 1;
     }, "Engine '" + name + "' has been removed.");
   }
