@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
@@ -54,7 +54,7 @@ var testTabRestoration = function()
 
   try {
     var result = new elementslib.ID(controller.tabs.activeTab, "result");
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return results.getNode().innerHTML !== 'undefined';
     }, "Geolocation position has been found");
     available = true;

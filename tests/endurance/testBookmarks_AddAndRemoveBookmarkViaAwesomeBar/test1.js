@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var {assert} = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
 var places = require("../../../lib/places");
 var tabs = require("../../../lib/tabs");
@@ -39,13 +39,13 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     var starButton = locationBar.getElement({type: "starButton"});
     var URI = utils.createURI(LOCAL_TEST_PAGE);
 
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);
     });
     controller.click(starButton);
 
     // Wait for the bookmark event
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return places.bookmarksService.isBookmarked(URI);
     }, "The bookmark was created");
 

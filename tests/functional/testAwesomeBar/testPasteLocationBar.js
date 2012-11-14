@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -55,7 +56,7 @@ var testPasteLocationBar = function() {
   controller.click(contextMenuEntry);
 
   // Get contents of the location bar and compare it to the expected result
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.value === docSelection;
   }, "Location bar should contain pasted clipboard content - got " +
     locationBar.value + ", expected " + docSelection);

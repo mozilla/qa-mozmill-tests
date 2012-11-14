@@ -8,6 +8,7 @@
  */
 
 // Include required modules
+var { assert } = require("../../../../lib/assertions");
 var DOMUtils = require("../../../../lib/dom-utils");
 var Utils = require("../../../../lib/utils");
 var Widgets = require("../../../../lib/widgets");
@@ -137,7 +138,7 @@ SeleniumManager.prototype = {
     this._controller.click(playTest);
 
     //wait until play button is enabled
-    this._controller.waitFor(function () {
+    assert.waitFor(function () {
       return !playTest.getNode().disabled;
     }, "Play test button is enabled");
   },
