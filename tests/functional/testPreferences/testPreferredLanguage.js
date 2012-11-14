@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
@@ -88,7 +88,7 @@ var langHandler = function(controller) {
 
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(controller.window.document, "addButton");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return !addButton.getNode().disabled;
   }, "The 'Add' button has been enabled");
   controller.click(addButton);

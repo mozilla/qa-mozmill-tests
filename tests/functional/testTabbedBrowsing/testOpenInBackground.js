@@ -48,11 +48,11 @@ var testOpenInBackgroundTab = function() {
     }
 
     // Check that i+1 tabs are open and the first tab is selected
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabBrowser.length === (i + 2);
     }, i + 2 + " tabs have been opened");
 
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabBrowser.selectedIndex === 0;
     }, "First tab has been selected");
 
@@ -75,11 +75,11 @@ var testOpenInBackgroundTab = function() {
   tabBrowser.closeTab("closeButton");
 
   // Verify that the last tab is selected:
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return tabBrowser.length === 3;
   }, "A tab has been closed via the close button");
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return tabBrowser.selectedIndex === 2;
   }, "The last tab has been selected");
 }

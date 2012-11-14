@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var setupModule = function(module) {
@@ -44,7 +44,7 @@ var testLarryBlue = function() {
 
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 

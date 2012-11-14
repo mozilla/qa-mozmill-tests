@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var {assert} = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -28,7 +28,7 @@ function testOpenAndCloseMultipleWindows() {
     enduranceManager.loop(function () {
       enduranceManager.addCheckpoint("Open a new window");
       controller.mainMenu.click("#menu_newNavigator");
-      controller.waitFor(function () {
+      assert.waitFor(function () {
         var windows = mozmill.utils.getWindows("navigator:browser");
 
         return (windows.length === controllers.length + 2);

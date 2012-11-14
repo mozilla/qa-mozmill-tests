@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var endurance = require("../../../lib/endurance");
 
@@ -45,7 +46,7 @@ function testPinAndUnpinAppTab() {
 
       // Switch to the last tab and wait for it to scroll into view if necessary
       controller.tabs.selectTabIndex(lastTabIndex);
-      controller.waitFor(function () {
+      assert.waitFor(function () {
         return scrollButtonDown.getNode().hasAttribute("collapsed") || scrollButtonDown.getNode().disabled;
       }, "Tab has scrolled into view.");
 

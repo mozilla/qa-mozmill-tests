@@ -36,7 +36,7 @@ var testAddressFieldAndGoButton = function () {
   // Focus and type a URL; a second local page into the location bar
   locationBar.focus({type: "shortcut"});
   locationBar.type(LOCAL_TEST_PAGES[1]);
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.value === LOCAL_TEST_PAGES[1];
   }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGES[1] + "'");
 
