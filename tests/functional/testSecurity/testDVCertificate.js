@@ -43,7 +43,7 @@ var testLarryBlue = function() {
 
   // Make sure the doorhanger is "open" before continuing
   var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 

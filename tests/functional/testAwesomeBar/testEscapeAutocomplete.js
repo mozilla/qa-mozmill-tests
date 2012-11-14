@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -45,11 +45,11 @@ var testEscape = function() {
   locationBar.clear();
 
   locationBar.type(TEST_STRING);
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.value === TEST_STRING;
   }, "Location bar contains the typed data - expected '" + TEST_STRING + "'");
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
@@ -57,7 +57,7 @@ var testEscape = function() {
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
   expect.contain(locationBar.value, TEST_STRING,
                  "Search string found in the locationbar");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return !locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been closed");
 

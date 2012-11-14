@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 const gDelay = 0;
@@ -31,7 +31,7 @@ var testRemoveEngine = function()
   // Remove the first engine in the list
   searchBar.openEngineManager(handleEngines);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return engine.name !== searchBar.visibleEngines[1].name;
   }, "Search engine " + engine.name + " has been removed");
 }

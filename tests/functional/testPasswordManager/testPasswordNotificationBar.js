@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -55,7 +56,7 @@ var testPasswordNotification = function() {
   controller.keypress(passwordNotification, "VK_ESCAPE", {});
 
   var notification = locationBar.getNotification();
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return notification.getNode().state === "closed";
   }, "Password notification has been closed");
 }

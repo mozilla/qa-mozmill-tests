@@ -7,7 +7,7 @@
  */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -37,7 +37,7 @@ var testIdentityPopupOpenClose = function() {
 
   // Check the popup state
   var popup = new elementslib.ID(controller.window.document, "identity-popup");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return popup.getNode().state === 'open';
   }, "Identity popup has been opened");
 
@@ -52,7 +52,7 @@ var testIdentityPopupOpenClose = function() {
   controller.keypress(popup, 'VK_ESCAPE', {});
 
   // Check the popup state again
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return popup.getNode().state === 'closed';
   }, "Identity popup has been closed");
 }

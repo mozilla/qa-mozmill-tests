@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var utils = require("../../../lib/utils");
@@ -55,7 +55,7 @@ var testCheckRegularMode = function () {
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
   controller.click(button);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return pb.enabled;
   }, "Private Browsing mode has been enabled");
 }
@@ -74,7 +74,7 @@ var testCheckPrivateBrowsingMode = function () {
   // Clicking on the more info link opens a new tab with a page on SUMO
   var targetUrl = LOCAL_TEST_PAGE + "private-browsing";
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return controller.tabs.length === 2;
   }, "A new tab has been opened");
 

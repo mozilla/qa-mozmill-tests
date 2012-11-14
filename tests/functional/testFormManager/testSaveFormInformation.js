@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
 const TIMEOUT = 5000;
@@ -50,7 +50,7 @@ function testSaveFormInformation() {
   // Verify form completion in each inputted field
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  controller.waitFor(function() {
+  assert.waitFor(function() {
     return popDownAutoCompList.getNode().popupOpen;
   }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
 
@@ -61,7 +61,7 @@ function testSaveFormInformation() {
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
 
-  controller.waitFor(function() {
+  assert.waitFor(function() {
   return popDownAutoCompList.getNode().popupOpen;
   }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
 

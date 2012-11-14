@@ -63,11 +63,11 @@ var testOpenInForegroundTab = function()
     }
 
     // Let's see if we have the right number of tabs open and that the first opened tab is selected
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabBrowser.length === (i + 2);
     }, (i + 2) + " tabs have been opened");
 
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return tabBrowser.selectedIndex === 1;
     }, "The first opened tab has been selected");
   }
@@ -84,11 +84,11 @@ var testOpenInForegroundTab = function()
   tabBrowser.closeTab("closeButton");
 
   // Verify that we have 3 tabs now and the first tab is selected:
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return tabBrowser.length === 3;
   }, "3 tabs have been opened");
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return tabBrowser.selectedIndex === 0;
   }, "The first tab has been selected");
 }

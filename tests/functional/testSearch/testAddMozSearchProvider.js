@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
@@ -46,7 +46,7 @@ var testAddMozSearchPlugin = function()
   controller.click(addButton);
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return searchBar.isEngineInstalled(searchEngine.name);
   }, "Search engine '" + searchEngine.name + "' has been installed");
 
@@ -81,7 +81,7 @@ var handleSearchInstall = function(controller)
 
   // Check that the correct domain is shown
   var infoBody = controller.window.document.getElementById("info.body");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return infoBody.textContent.indexOf('localhost') !== -1;
   }, "Search Engine URL contains correct domain - got '" + infoBody.textContent +
     "', expected 'localhost'");

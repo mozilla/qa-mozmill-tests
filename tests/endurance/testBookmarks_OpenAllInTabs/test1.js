@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
@@ -87,7 +88,7 @@ function setupBookmarks() {
                                            enduranceManager.currentEntity);
 
     // Polling the bookmarks service if such a bookmark has been added
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return places.bookmarksService.isBookmarked(URI);
     }, "The bookmark was created");
   }
