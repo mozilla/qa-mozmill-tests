@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Include the required modules
+var { assert } = require("../../../lib/assertions");
+
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
@@ -56,8 +59,8 @@ var testFormCompletion = function() {
   controller.sleep(1000);
   controller.click(popDownAutoCompList);
 
-  // Verify the field element and the text in it
-  controller.assertValue(inputField, inputText);
+  assert.equal(inputField.getNode().value, inputText,
+               "Input field has the correct text in it");
 }
 
 /**

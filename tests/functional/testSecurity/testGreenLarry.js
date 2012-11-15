@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
@@ -38,8 +38,10 @@ var testLarryGreen = function() {
                                                   "identity-icon-label");
   var identCountryLabel = new elementslib.ID(controller.window.document,
                                              "identity-icon-country-label");
-  controller.assertValue(identOrganizationLabel, cert.organization);
-  controller.assertValue(identCountryLabel, '(' + country + ')');
+  expect.equal(identOrganizationLabel.getNode().value, cert.organization,
+               "Certificate's organization is displayed");
+  expect.equal(identCountryLabel.getNode().value, '(' + country + ')',
+               "Certificate's country code is displayed");
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
@@ -139,15 +141,15 @@ function checkSecurityTab(controller) {
     return webIDDomainLabel.getNode().value.indexOf(cert.commonName) !== -1;
   }, "Found certificate common name '" + cert.commonName + "'");
 
-  // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  controller.assertValue(webIDOwnerLabel, cert.organization);
+  expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
+               "Owner matches certificate's organization");
 
-  // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
+               "Verifier matches certificate's issuer");
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }

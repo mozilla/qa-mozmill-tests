@@ -66,8 +66,10 @@ function testStartStopPrivateBrowsingMode() {
   var longDescElem = new elementslib.ID(controller.tabs.activeTab, "errorLongDescText");
   var moreInfoElem = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
   controller.waitForElement(longDescElem, TIMEOUT);
-  controller.assertText(longDescElem, description);
-  controller.assertText(moreInfoElem, learnMore);
+  expect.equal(longDescElem.getNode().textContent, description,
+               "Private Browsing description is displayed correctly");
+  expect.equal(moreInfoElem.getNode().textContent, learnMore,
+               "Text in 'Learn More' link is displayed correctly");
 
   // Stop Private Browsing mode
   pb.stop();

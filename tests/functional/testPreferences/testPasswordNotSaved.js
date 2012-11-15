@@ -36,8 +36,8 @@ var testPasswordNotSaved = function() {
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
   controller.waitForElement(userField, TIMEOUT);
-  controller.assertValue(userField, "");
-  controller.assertValue(passField, "");
+  expect.equal(userField.getNode().value, "", "Username has not been saved");
+  expect.equal(passField.getNode().value, "", "Password has not been saved");
 
   // Call preferences dialog and check that no password has been saved
   prefs.openPreferencesDialog(controller, prefDialogCallback);
