@@ -22,8 +22,8 @@ function commandPassed(seleniumManager) {
  expect.ok(isSuiteProgressIndicatorGreen, "Suite progress indicator is green");
 
  //check suite counts
- seleniumManager.controller.assertValue(seleniumManager.runCount, "1");
- seleniumManager.controller.assertValue(seleniumManager.failureCount, "0");
+ expect.equal(seleniumManager.runCount.getNode().value, "1", "1 test has run");
+ expect.equal(seleniumManager.failureCount.getNode().value, "0", "No tests have failed");
 
  //check no errors in log
  var logErrors = seleniumManager.logErrors;
@@ -44,8 +44,8 @@ function commandFailed(seleniumManager, message) {
   expect.ok(isSuiteProgressIndicatorRed, "Suite progress indicator is red");
 
   //check suite counts
-  seleniumManager.controller.assertValue(seleniumManager.runCount, "1");
-  seleniumManager.controller.assertValue(seleniumManager.failureCount, "1");
+  expect.equal(seleniumManager.runCount.getNode().value, "1", "1 test has run");
+  expect.equal(seleniumManager.failureCount.getNode().value, "1", "1 test has failed");
 
   //check error in log
   message = "[error] " + message + "\n";

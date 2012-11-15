@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
@@ -25,8 +25,9 @@ var testLarryGrey = function() {
   expect.ok(!favicon.getNode().hidden, "The globe favicon is visible");
 
   // Check the favicon has no label
-  controller.assertValue(new elementslib.ID(controller.window.document,
-                                            "identity-icon-label"), "");
+  var identityIconLabel = new elementslib.ID(controller.window.document,
+                                             "identity-icon-label");
+  expect.equal(identityIconLabel.getNode().value, "", "The favicon has no label");
 
   // Click the identity button to display Larry
   controller.click(new elementslib.ID(controller.window.document, "identity-box"));
@@ -71,12 +72,12 @@ function checkSecurityTab(controller) {
   expect.equal(webIDOwnerLabel.getNode().value, securityOwner,
                "The owner label should equal the security owner");
 
-  // Check the Verifier label for "Not Specified"
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
   var securityIdentifier = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                              "notset");
-  controller.assertValue(webIDVerifierLabel, securityIdentifier);
+  expect.equal(webIDVerifierLabel.getNode().value, securityIdentifier,
+               "Verifier label present for 'Not Specified'");
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
