@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
 const TIMEOUT = 5000;
@@ -55,7 +56,7 @@ function testSaveFormInformation() {
 
   controller.keypress(firstName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
-  controller.assertValue(firstName, FNAME);
+  expect.equal(firstName.getNode().value, FNAME, "First name has been autocompleted");
 
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
@@ -66,6 +67,6 @@ function testSaveFormInformation() {
 
   controller.keypress(lastName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
-  controller.assertValue(lastName, LNAME);
+  expect.equal(lastName.getNode().value, LNAME, "Last name has been autocompleted");
 }
 

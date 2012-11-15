@@ -4,7 +4,7 @@
 
 
 // Include necessary modules
-var {assert, expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var sessionStore = require("../../../lib/sessionstore");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -54,7 +54,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Check for correct id on 2nd tab, should be 2
   var linkId = new elementslib.ID(controller.tabs.activeTab, "id");
-  controller.assertText(linkId, "2");
+  expect.equal(linkId.getNode().textContent, "2", "Second tab has correct id");
 
   // Check 'Recently Closed Tabs' count, should be 1
   tabCount = sessionStore.getClosedTabCount(controller);
@@ -71,7 +71,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Check for correct id on 2nd tab, should be 1
   linkId = new elementslib.ID(controller.tabs.activeTab, "id");
-  controller.assertText(linkId, "1");
+  expect.equal(linkId.getNode().textContent, "1", "Second tab has correct id");
 
   // Check 'Recently Closed Tabs' count, should be 0
   tabCount = sessionStore.getClosedTabCount(controller);
