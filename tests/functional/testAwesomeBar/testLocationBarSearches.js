@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
@@ -34,9 +35,9 @@ var testLocationBarSearches = function() {
   locationBar.loadURL(testString);
   controller.waitForPageLoad();
 
-  // Check for presense of search term in return results count
-  var resultsStringCheck = new elementslib.ID(controller.tabs.activeTab, "term");
-  controller.assertText(resultsStringCheck, testString);
+  var searchTerm = new elementslib.ID(controller.tabs.activeTab, "term");
+  assert.equal(searchTerm.getNode().textContent, testString,
+               "Returned results contain the search term");
 }
 
 /**

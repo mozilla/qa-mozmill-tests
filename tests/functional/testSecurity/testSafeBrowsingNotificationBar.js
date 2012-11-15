@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -93,10 +93,10 @@ var checkNoPhishingButton = function(badUrl) {
     controller.waitThenClick(button, gTimeout);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
-    // Verify the not-a-web-forgery report page is loaded
     var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
     controller.waitForElement(urlField, gTimeout);
-    controller.assertValue(urlField, 'http://www.mozilla.com/firefox/its-a-trap.html');
+    expect.equal(urlField.getNode().value, 'http://www.mozilla.org/firefox/its-a-trap.html',
+                 "not-a-web-forgery report page is loaded");
 
   } else if (badUrl == 'http://www.mozilla.com/firefox/its-an-attack.html' ) {
     // Click on the attack site report button

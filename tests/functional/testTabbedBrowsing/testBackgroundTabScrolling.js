@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
 const localTestFolder = collector.addHttpResource('../../../data/');
@@ -73,9 +74,8 @@ var testScrollBackgroundTabIntoView = function()
   var lastTabIndex = controller.tabs.length - 1;
   var linkId = new elementslib.ID(controller.tabs.getTab(lastTabIndex), "id");
 
-  // Need to wait for element to appear, then we check text is correct
   controller.waitForElement(linkId);
-  controller.assertText(linkId, "2");
+  expect.equal(linkId.getNode().textContent, "2", "Link text is correct");
 
   // and is displayed inside the all tabs popup menu
   controller.click(allTabsButton);

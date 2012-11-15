@@ -41,7 +41,9 @@ var testCheckRegularMode = function()
   var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
   controller.waitForElement(statusText, gTimeout);
-  controller.assertText(statusText, issueDesc);
+
+  var statusTextContent = statusText.getNode().textContent;
+  expect.equal(statusTextContent, issueDesc, "Status text indicates we are in private browsing mode");
 
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
