@@ -56,7 +56,7 @@ function testSaveAndDeletePassword() {
   controller.waitThenClick(button);
 
   // After clicking the 'Remember Password' button, check notification state
-  expect.equal(notification.getNode().state, "closed",
+  expect.equal(notification.getNode().parentNode.state, "closed",
                "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
