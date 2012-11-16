@@ -132,5 +132,4 @@ function confirmHandler(controller) {
   controller.waitThenClick(dialogButton, TIMEOUT);
 }
 
-setupModule.__force_skip__ = "Bug 810770 - Test failure \"Password notification should be closed - 'undefined' should equal 'closed'\"";
-teardownModule.__force_skip__ = "Bug 810770 - Test failure \"Password notification should be closed - 'undefined' should equal 'closed'\"";
+
