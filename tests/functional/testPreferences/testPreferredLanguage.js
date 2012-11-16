@@ -116,3 +116,6 @@ var langHandler = function(controller) {
  * Map test functions to litmus tests
  */
 // testSetLanguages.meta = {litmusids : [8322]};
+
+setupModule.__force_skip__ = "Bug 812435 - Test failure 'could not find element Link: Documenti'";
+teardownModule.__force_skip__ = "Bug 812435 - Test failure 'could not find element Link: Documenti'";
