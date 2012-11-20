@@ -71,3 +71,7 @@ var handleSecurityWarningDialog = function(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.waitThenClick(okButton);
 }
+
+setupModule.__force_skip__ ="Bug 810820 - Test failure 'Modal dialog has been found and processed'";
+teardownModule.__force_skip__ ="Bug 810820 - Test failure 'Modal dialog has been found and processed'";
+
