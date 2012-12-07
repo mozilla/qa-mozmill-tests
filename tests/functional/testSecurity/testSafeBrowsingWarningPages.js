@@ -13,6 +13,8 @@ const gDelay = 0;
 const gTimeout = 5000;
 
 const DOMAIN_NAME = "www.mozilla.org";
+const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
+                            'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -26,30 +28,27 @@ function teardownModule(module) {
 }
 
 var testWarningPages = function() {
-  var urls = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
-              'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
-
-  for (var i = 0; i < urls.length; i++ ) {
+  for (var i = 0; i < WARNING_PAGES_URLS.length; i++ ) {
     // Open one of the mozilla phishing protection test pages
-    controller.open(urls[i]);
+    controller.open(WARNING_PAGES_URLS[i]);
     controller.waitForPageLoad();
 
     // Test the getMeOutButton
     checkGetMeOutOfHereButton();
 
     // Go back to the warning page
-    controller.open(urls[i]);
+    controller.open(WARNING_PAGES_URLS[i]);
     controller.waitForPageLoad();
 
     // Test the reportButton
-    checkReportButton(i, urls[i]);
+    checkReportButton(i, WARNING_PAGES_URLS[i]);
 
     // Go back to the warning page
-    controller.open(urls[i]);
+    controller.open(WARNING_PAGES_URLS[i]);
     controller.waitForPageLoad();
 
     // Test the ignoreWarning button
-    checkIgnoreWarningButton(urls[i]);
+    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
   }
 }
 
