@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const PREF_ACCEPT_LANG = "intl.accept_languages";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -16,34 +16,27 @@ var setupModule = function(module) {
 }
 
 var teardownModule = function(module) {
-  prefs.preferences.clearUserPref("intl.accept_languages");
+  prefs.preferences.clearUserPref(PREF_ACCEPT_LANG);
 }
 
 /**
  * Choose your preferred language for display
  */
 var testSetLanguages = function () {
-  controller.open("about:blank");
-
   // Call preferences dialog and set primary language to Italian
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 
-  // Open the Google Home page
-  controller.open('http://www.google.com/');
-  controller.waitForPageLoad();
+  var acceptedLanguage = prefs.preferences.getPref(PREF_ACCEPT_LANG, '');
 
-  // Test the language of the site
-  // If we test an Italian build, we have to use a non-Italian version of Google
-  if (browserLocale == "it") {
-    // Verify the site is Polish oriented
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Zaloguj"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Dokumenty"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Szukanie zaawansowane"));
-  } else {
-    // Verify the site is Italian oriented
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Accedi"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Documenti"));
-    controller.assertNode(new elementslib.Link(controller.tabs.activeTab, "Ricerca avanzata"));
+  // If we test an Italian build, check that the primary language is Polish
+  if (browserLocale === "it") {
+    expect.ok(acceptedLanguage.indexOf("pl") === 0,
+              "The primary language set is Polish");
+  }
+  else {
+    // Verify the primary language is Italian
+    expect.ok(acceptedLanguage.indexOf("it") === 0,
+              "The primary language set is Italian");
   }
 }
 
@@ -62,7 +55,7 @@ var prefDialogCallback = function(controller) {
   md.start(langHandler);
 
   var language = new elementslib.ID(controller.window.document, "chooseLanguage");
-  controller.waitThenClick(language, gTimeout);
+  controller.waitThenClick(language);
   md.waitForDialog();
 
   prefDialog.close(true);
@@ -76,17 +69,17 @@ var prefDialogCallback = function(controller) {
  */
 var langHandler = function(controller) {
   // Add the Italian Language, or Polish, if it is an Italian build
-  if (browserLocale == "it") {
+  if (browserLocale === "it") {
     var language = utils.getProperty("chrome://global/locale/languageNames.properties",
-                                        "pl");
+                                     "pl");
   } else {
     var language = utils.getProperty("chrome://global/locale/languageNames.properties",
-                                        "it");
+                                     "it");
   }
 
   // Select the language from the list
   var langDropDown = new elementslib.ID(controller.window.document, "availableLanguages");
-  controller.waitForElement(langDropDown, gTimeout);
+  controller.waitForElement(langDropDown);
 
   for (i = 0; i < language.length; i++) {
     controller.keypress(langDropDown, language[i], {});
@@ -105,17 +98,12 @@ var langHandler = function(controller) {
 
   while (upButton.getNode().getAttribute("disabled") != "true") {
     controller.click(upButton);
-    controller.sleep(gDelay);
+    controller.sleep(0);
   };
 
   // Save and close the languages dialog window
-  controller.click(new elementslib.Lookup(controller.window.document, '/id("LanguagesDialog")/anon({"anonid":"dlg-buttons"})/{"dlgtype":"accept"}'));
+  var okButton = new elementslib.Lookup(controller.window.document, '/id("LanguagesDialog")' +
+                                                                    '/anon({"anonid":"dlg-buttons"})' +
+                                                                    '/{"dlgtype":"accept"}');
+  controller.click(okButton);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testSetLanguages.meta = {litmusids : [8322]};
-
-setupModule.__force_skip__ = "Bug 812435 - Test failure 'could not find element Link: Documenti'";
-teardownModule.__force_skip__ = "Bug 812435 - Test failure 'could not find element Link: Documenti'";
