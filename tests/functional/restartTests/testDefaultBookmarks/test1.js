@@ -61,11 +61,10 @@ function testVerifyDefaultBookmarks() {
   // For a default profile there should be exactly 2 items
   assert.equal(items.length, 2, "Bookmarks Toolbar contains 2 items");
 
-  // Check if the Most Visited folder is visible and has the correct title
-  controller.assertJSProperty(items[0], "label", toolbarNodes.getChild(0).title);
-
-  // Check Getting Started bookmarks title
-  controller.assertJSProperty(items[1], "label", toolbarNodes.getChild(1).title);
+  expect.equal(items[0].getNode().label, toolbarNodes.getChild(0).title,
+	       "The label of the Most Visited folder bookmark has been set correctly");
+  expect.equal(items[1].getNode().label, toolbarNodes.getChild(1).title,
+	       "The label of the Getting Started bookmark has been set correctly");
 
   // Check for the correct link of the bookmark which also includes the locale
   expect.ok(places.isBookmarkInFolder(utils.createURI(GETTING_STARTED_URL), bs.toolbarFolder),

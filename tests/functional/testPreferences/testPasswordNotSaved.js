@@ -72,7 +72,7 @@ function checkPasswordsNotSaved(controller) {
   controller.waitForElement(filterField, TIMEOUT);
 
   var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
-  controller.assertJSProperty(removeLogin, 'disabled', 'true');
+  expect.ok(removeLogin.getNode().disabled, "Remove Passwords Button is disabled");
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
