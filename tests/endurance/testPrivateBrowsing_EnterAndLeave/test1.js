@@ -49,3 +49,8 @@ function testEnterAndLeaveWithMutlipleTabsOpen() {
     enduranceManager.addCheckpoint("Left private browsing mode");
   });
 }
+
+setupModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                             " for per window private browsing";
+teardownModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                                " for per window private browsing";

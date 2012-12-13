@@ -83,3 +83,8 @@ var testCheckPrivateBrowsingMode = function () {
  * Map test functions to litmus tests
  */
 // testCheckAboutPrivateBrowsing.meta = {litmusids : [9203]};
+
+setupModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                             " for per window private browsing";
+teardownModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                                " for per window private browsing";
