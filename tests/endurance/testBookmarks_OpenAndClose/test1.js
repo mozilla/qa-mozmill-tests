@@ -45,7 +45,8 @@ function testOpenAndCloseAllBookmarks() {
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
       }
-      controller.waitThenClick(testFolder);
+      controller.mouseDown(testFolder);
+      controller.mouseUp(testFolder);
 
       var bookmark = new elementslib.Selector(controller.window.document,
                                               "*[label='Test Bookmark " +
