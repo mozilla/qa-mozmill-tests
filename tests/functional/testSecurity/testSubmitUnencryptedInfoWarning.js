@@ -91,8 +91,7 @@ function handleSecurityWarningDialog(controller) {
   // There are two instances in the string. Replace them both.
   message = message.replace(/##/g, "\n\n");
 
-  // Verify the message text
-  controller.assertJSProperty(infoBody, "textContent", message);
+  expect.equal(infoBody.getNode().textContent, message, "The dialog shows the security message");
 
   // Click the OK button
   var okButton = new elementslib.Lookup(controller.window.document,
