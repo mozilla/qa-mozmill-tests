@@ -23,14 +23,6 @@ function teardownModule() {
 }
 
 /**
- * Use the mouse to focus the search bar and start a search
- */
-function testClickAndSearch() {
-  searchBar.focus({type: "click"});
-  searchBar.search({text: "Firefox", action: "returnKey"});
-}
-
-/**
  * Use the keyboard shortcut to focus the search bar and start a search
  */
 function testShortcutAndSearch() {
@@ -38,8 +30,3 @@ function testShortcutAndSearch() {
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testClickAndSearch.meta = {litmusids : [8241]};
-// testShortcutAndSearch.meta = {litmusids : [8242]};
