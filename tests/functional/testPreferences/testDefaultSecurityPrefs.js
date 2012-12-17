@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
 const gDelay = 0;
@@ -35,13 +36,9 @@ var prefDialogCallback = function(controller) {
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
   var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
   controller.waitForElement(sslPref, gTimeout);
-  controller.assertChecked(sslPref);
-  controller.assertChecked(tlsPref);
+  expect.ok(sslPref.getNode().checked, "SSL3 Preferences checkbox is checked");
+  expect.ok(tlsPref.getNode().checked, "TLS1 Preferences checkbox is checked");
 
   prefDialog.close();
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDefaultSecurityPreferences.meta = {litmusids : [8060]};
