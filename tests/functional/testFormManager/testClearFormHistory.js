@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
 const TIMEOUT = 5000;
@@ -77,7 +78,7 @@ function clearHistoryHandler(controller) {
                                        "/*[name()='listbox'][1]" +
                                        "/*[name()='listitem'][2]");
   controller.waitForElement(checkBox, TIMEOUT);
-  controller.assertChecked(checkBox);
+  assert.ok(checkBox.getNode().checked, "The checkbox to clear form data is checked");
 
   var clearButton = new elementslib.Lookup(controller.window.document,
                                            '/id("SanitizeDialog")' +
