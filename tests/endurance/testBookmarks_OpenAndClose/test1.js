@@ -45,6 +45,7 @@ function testOpenAndCloseAllBookmarks() {
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
       }
+      controller.waitForElement(testFolder);
       controller.mouseDown(testFolder);
       controller.mouseUp(testFolder);
 
