@@ -43,6 +43,7 @@ function testOpenAllBookmarksInTabs() {
 
     var testFolder = new elementslib.Selector(controller.window.document,
                                               ".bookmark-item[label='Test Folder']");
+    controller.waitForElement(testFolder);
     controller.rightClick(testFolder);
 
     var openAllInTabs = new elementslib.ID(controller.window.document,
