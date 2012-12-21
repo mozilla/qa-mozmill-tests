@@ -6,7 +6,7 @@
 var { assert, expect } = require("../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
 var prefs = require("../../../lib/prefs");
-var privateBrowsing = require("../../../lib/private-browsing");
+var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
