@@ -5,7 +5,7 @@
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
-var privateBrowsing = require("../../../lib/private-browsing");
+var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../lib/utils");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
@@ -13,81 +13,50 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "private_browsing/about.html?";
 
 const PREF_PRIVATE_BROWSING_SUPPORT = "app.support.baseURL";
 
-var setupModule = function () {
+function setupModule() {
   controller = mozmill.getBrowserController();
-
-  // Create Private Browsing instance and set handler
-  pb = new privateBrowsing.privateBrowsing(controller);
+  pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
   prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, LOCAL_TEST_PAGE);
 }
-
-var setupTest = function () {
-  // Make sure we are not in PB mode and don't show a prompt
-  pb.enabled = false;
-  pb.showPrompt = false;
-}
-
-var teardownTest = function (test) {
-  pb.reset();
-}
-
-var teardownModule = function () {
+function teardownModule() {
   prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
+  pbWindow.close();
 }
 
 /**
- * Verify about:privatebrowsing in regular mode
+ * Verify about:privatebrowsing
  */
-var testCheckRegularMode = function () {
+function testCheckAboutPrivateBrowsing() {
   controller.open("about:privatebrowsing");
   controller.waitForPageLoad();
 
   // Check descriptions on the about:privatebrowsing page
-  var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
+  var issueDesc = utils.getEntity(pbWindow.getDtds(),
+                                  "privatebrowsingpage.perwindow.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
   controller.waitForElement(statusText);
 
   var statusTextContent = statusText.getNode().textContent;
   expect.equal(statusTextContent, issueDesc, "Status text indicates we are in private browsing mode");
 
-  // Check button to enter Private Browsing mode
-  var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
-  controller.click(button);
+  pbWindow.open(controller, "callback", function () {
+    var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
+    controller.click(button);
+  });
+  pbWindow.controller.waitForPageLoad();
 
-  assert.waitFor(function () {
-    return pb.enabled;
-  }, "Private Browsing mode has been enabled");
-}
-
-/**
- * Verify about:privatebrowsing in private browsing mode
- */
-var testCheckPrivateBrowsingMode = function () {
-  // Start the Private Browsing mode
-  pb.start();
-  controller.waitForPageLoad();
-
-  var moreInfo = new elementslib.ID(controller.tabs.activeTab, "moreInfoLink");
-  controller.click(moreInfo);
+  var moreInfo = new elementslib.ID(pbWindow.controller.tabs.activeTab, "moreInfoLink");
+  pbWindow.controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
   var targetUrl = LOCAL_TEST_PAGE + "private-browsing";
 
   assert.waitFor(function () {
-    return controller.tabs.length === 2;
+    return pbWindow.controller.tabs.length === 2;
   }, "A new tab has been opened");
 
-  controller.waitForPageLoad();
-  utils.assertLoadedUrlEqual(controller, targetUrl);
+  pbWindow.controller.waitForPageLoad();
+  utils.assertLoadedUrlEqual(pbWindow.controller, targetUrl);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testCheckAboutPrivateBrowsing.meta = {litmusids : [9203]};
-
-setupModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
-                             " for per window private browsing";
-teardownModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
-                                " for per window private browsing";
