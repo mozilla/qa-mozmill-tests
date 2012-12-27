@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { assert } = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
 const gDelay = 0;
@@ -36,8 +36,8 @@ var prefPaneSetCallback = function(controller) {
 
   // Verify Block Attack Sites and Reported Web Forgeries are checked by default
   controller.waitForElement(attackElem, gTimeout);
-  assert.ok(attackElem.getNode().checked, "Block Attack Sites checkbox is checked");
-  assert.ok(forgeryElem.getNode().checked, "Reported Web Forgeries checkbox is checked");
+  expect.ok(attackElem.getNode().checked, "Block Attack Sites checkbox is checked");
+  expect.ok(forgeryElem.getNode().checked, "Reported Web Forgeries checkbox is checked");
 
   prefDialog.close();
 }
