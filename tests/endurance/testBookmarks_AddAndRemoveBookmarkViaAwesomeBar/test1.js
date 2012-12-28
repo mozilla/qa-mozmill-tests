@@ -39,6 +39,9 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     var starButton = locationBar.getElement({type: "starButton"});
     var URI = utils.createURI(LOCAL_TEST_PAGE);
 
+    controller.waitFor(function () {
+      return places.isBookmarkStarButtonReady(controller);
+    });
     controller.click(starButton);
 
     // Wait for the bookmark event
@@ -63,9 +66,3 @@ function testAddRemoveBookmarkViaAwesomeBar() {
   });
 }
 
-setupModule.__force_skip__ = "Bug 772360 - Mozmill test failure " +
-                             "//testBookmarks_AddAndRemoveBookmarkViaAwesomeBar/" +
-                             "with error 'The bookmark was created'";
-teardownModule.__force_skip__ = "Bug 772360 - Mozmill test failure " +
-                                "//testBookmarks_AddAndRemoveBookmarkViaAwesomeBar/" +
-                                "with error 'The bookmark was created'";
