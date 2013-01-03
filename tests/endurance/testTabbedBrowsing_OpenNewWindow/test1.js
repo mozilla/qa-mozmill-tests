@@ -28,7 +28,7 @@ function testOpenAndCloseMultipleWindows() {
     enduranceManager.loop(function () {
       enduranceManager.addCheckpoint("Open a new window");
       controller.mainMenu.click("#menu_newNavigator");
-      controller.waitFor(function () {
+      assert.waitFor(function () {
         var windows = mozmill.utils.getWindows("navigator:browser");
 
         return (windows.length === controllers.length + 2);
@@ -45,7 +45,7 @@ function testOpenAndCloseMultipleWindows() {
 
       controller.window.close();
 
-      mozmill.utils.waitFor(function () {
+      assert.waitFor(function () {
         return !mozmill.controller.windowMap.contains(windowId);
       }, "Window '" + windowId + "' has been closed.");
       enduranceManager.addCheckpoint("Window '" + windowId + "' has been closed");
