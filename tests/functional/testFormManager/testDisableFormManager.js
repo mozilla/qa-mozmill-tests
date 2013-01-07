@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
 const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
@@ -62,13 +63,15 @@ var testToggleFormManager = function() {
   );
 
   controller.assertNodeNotExist(popDownAutoCompList);
-  controller.assertValue(firstName, FNAME.substring(0,2));
+  expect.notEqual(firstName.getNode().value, FNAME,
+                  "First name has not been autocompleted");
 
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
   controller.sleep(TIMEOUT);
   controller.assertNodeNotExist(popDownAutoCompList);
-  controller.assertValue(lastName, LNAME.substring(0,2));
+  expect.notEqual(lastName.getNode().value, LNAME,
+                  "Last name has not been autocompleted");
 }
 
 /**

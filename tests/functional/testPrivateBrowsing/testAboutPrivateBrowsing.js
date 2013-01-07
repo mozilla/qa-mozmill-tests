@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
 var utils = require("../../../lib/utils");
@@ -46,7 +47,9 @@ var testCheckRegularMode = function () {
   var issueDesc = utils.getEntity(pb.getDtds(), "privatebrowsingpage.issueDesc.normal");
   var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
   controller.waitForElement(statusText);
-  controller.assertText(statusText, issueDesc);
+
+  var statusTextContent = statusText.getNode().textContent;
+  expect.equal(statusTextContent, issueDesc, "Status text indicates we are in private browsing mode");
 
   // Check button to enter Private Browsing mode
   var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
@@ -83,3 +86,8 @@ var testCheckPrivateBrowsingMode = function () {
  * Map test functions to litmus tests
  */
 // testCheckAboutPrivateBrowsing.meta = {litmusids : [9203]};
+
+setupModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                             " for per window private browsing";
+teardownModule.__force_skip__ = "Bug 818456 - Investigate and prepare existing Mozmill tests" +
+                                " for per window private browsing";

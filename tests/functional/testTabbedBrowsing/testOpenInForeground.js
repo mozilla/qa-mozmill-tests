@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -71,11 +72,11 @@ var testOpenInForegroundTab = function()
     }, "The first opened tab has been selected");
   }
 
-  // Verify that the order of tabs is correct
   for each(tab in gTabOrder) {
     var linkId = new elementslib.ID(controller.tabs.getTab(tab.index), "id");
     controller.waitForElement(linkId);
-    controller.assertText(linkId, tab.linkid);
+    assert.equal(linkId.getNode().textContent, tab.linkid.toString(),
+                 "Order of tabs is correct");
   }
 
   // Click the close button of the second tab

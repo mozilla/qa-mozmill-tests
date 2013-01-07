@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -36,8 +37,8 @@ var testPasswordNotSaved = function() {
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
   controller.waitForElement(userField, TIMEOUT);
-  controller.assertValue(userField, "");
-  controller.assertValue(passField, "");
+  expect.equal(userField.getNode().value, "", "Username has not been saved");
+  expect.equal(passField.getNode().value, "", "Password has not been saved");
 
   // Call preferences dialog and check that no password has been saved
   prefs.openPreferencesDialog(controller, prefDialogCallback);
@@ -71,7 +72,7 @@ function checkPasswordsNotSaved(controller) {
   controller.waitForElement(filterField, TIMEOUT);
 
   var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
-  controller.assertJSProperty(removeLogin, 'disabled', 'true');
+  expect.ok(removeLogin.getNode().disabled, "Remove Passwords Button is disabled");
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];

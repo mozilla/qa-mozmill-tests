@@ -126,3 +126,6 @@ var testDownloadManagerClosed = function() {
   // Close the Download Manager
   dm.close();
 }
+
+setupModule.__force_skip__ = "Bug 823064 - Refactor for the new PB per-window mode";
+teardownModule.__force_skip__ = "Bug 823064 - Refactor for the new PB per-window mode";

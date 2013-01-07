@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
@@ -38,8 +38,10 @@ var testLarryGreen = function() {
                                                   "identity-icon-label");
   var identCountryLabel = new elementslib.ID(controller.window.document,
                                              "identity-icon-country-label");
-  controller.assertValue(identOrganizationLabel, cert.organization);
-  controller.assertValue(identCountryLabel, '(' + country + ')');
+  expect.equal(identOrganizationLabel.getNode().value, cert.organization,
+               "Certificate's organization is displayed");
+  expect.equal(identCountryLabel.getNode().value, '(' + country + ')',
+               "Certificate's country code is displayed");
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
@@ -47,9 +49,8 @@ var testLarryGreen = function() {
     return favicon.getNode().getAttribute("hidden") == false;
   }, "Lock icon is visible in identity box");
 
-  // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
+  expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
 
   // Click the identity button to display Larry
   controller.click(identityBox);
@@ -60,8 +61,7 @@ var testLarryGreen = function() {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 
-  // Check that the Larry UI is verified (aka Green)
-  controller.assertJSProperty(doorhanger, "className", "verifiedIdentity");
+  expect.equal(doorhanger.getNode().className, "verifiedIdentity", "Larry UI is verified aka Green");
 
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
@@ -69,15 +69,15 @@ var testLarryGreen = function() {
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
-  // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService
   //      This is expected behaviour for the time being (bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  controller.assertJSProperty(host, "textContent", gETLDService.getBaseDomainFromHost(cert.commonName));
+  expect.equal(host.getNode().textContent, gETLDService.getBaseDomainFromHost(cert.commonName),
+	       "The site identifier string is equal to the Cert host");
 
-  // Check the owner string against the Cert
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
-  controller.assertJSProperty(owner, "textContent", cert.organization);
+  expect.equal(owner.getNode().textContent, cert.organization,
+	       "Owner string is equal to the Cert organization");
 
   // Check the owner location string against the Cert
   // Format: City
@@ -97,22 +97,22 @@ var testLarryGreen = function() {
   var location = city + '\n' + state + comma + ' ' + country;
   var ownerLocation = new elementslib.ID(controller.window.document,
                                          "identity-popup-content-supplemental");
-  controller.assertJSProperty(ownerLocation, "textContent", location);
+  expect.equal(ownerLocation.getNode().textContent, location,
+	       "Owner location string is equal to the Cert location");
 
-  // Check the "Verified by: %S" string
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document,
                                     "identity-popup-content-verifier");
-  controller.assertJSProperty(verifier, "textContent", l10nVerifierLabel);
+  expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
+	       "The 'Verified by: %S' string is set");
 
-  // Check the Encryption Label text
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted");
   var label = new elementslib.ID(controller.window.document,
                                  "identity-popup-encryption-label");
-  controller.assertJSProperty(label, "textContent", l10nEncryptionLabel);
+  expect.equal(label.getNode().textContent, l10nEncryptionLabel, "Encryption Label text is set");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document,
@@ -128,9 +128,8 @@ var testLarryGreen = function() {
  *        MozMillController of the window to operate on
  */
 function checkSecurityTab(controller) {
-  // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertJSProperty(securityTab, "selected", "true");
+  expect.ok(securityTab.getNode().selected, "Security tab is selected by default");
 
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
@@ -139,15 +138,15 @@ function checkSecurityTab(controller) {
     return webIDDomainLabel.getNode().value.indexOf(cert.commonName) !== -1;
   }, "Found certificate common name '" + cert.commonName + "'");
 
-  // Check the Owner label against the Cert Owner
   var webIDOwnerLabel = new elementslib.ID(controller.window.document,
                                            "security-identity-owner-value");
-  controller.assertValue(webIDOwnerLabel, cert.organization);
+  expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
+               "Owner matches certificate's organization");
 
-  // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(controller.window.document,
                                               "security-identity-verifier-value");
-  controller.assertValue(webIDVerifierLabel, cert.issuerOrganization);
+  expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
+               "Verifier matches certificate's issuer");
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
