@@ -27,3 +27,5 @@ function testSoftwareUpdateAutoProxy() {
 
   update.closeDialog();
 }
+
+setupModule.__force_skip__ = "Bug 827276 - Test failure 'Check for updates has been completed' in proxy environment";
