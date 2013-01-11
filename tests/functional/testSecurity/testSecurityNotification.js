@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 
 const INVALID_CERT_PAGE = "https://summitbook.mozilla.org";
 const SECURE_PAGE = "https://addons.mozilla.org/licenses/5.txt";
@@ -43,10 +43,14 @@ var testSecNotification = function() {
                  "Details contain the invalid cert page");
 
   // Verify "Get Me Out Of Here!" button appears
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
+  var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab,
+                                                "getMeOutOfHereButton");
+  assert.ok(getMeOutOfHereButton.exists(), "'Get me out of here' button has been found");
 
   // Verify "Add Exception" button appears
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton"));
+  var exceptionDialogButton = new elementslib.ID(controller.tabs.activeTab,
+                                                 "exceptionDialogButton");
+  assert.ok(exceptionDialogButton.exists(), "'Exception dialog' button has been found");
 
   // Verify the error code is correct
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",

@@ -82,7 +82,7 @@ var testPermissionsDisabled = function() {
  */
 var cookieHandler = function(controller) {
   var button = new elementslib.ID(controller.window.document, "ok");
-  controller.assertNodeNotExist(button);
+  assert.ok(!button.exists(), "OK button has not been found");
 }
 
 /**

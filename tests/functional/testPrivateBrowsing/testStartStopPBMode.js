@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -47,7 +47,7 @@ function testStartStopPrivateBrowsingMode() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "Element has been found");
 
     tabBrowser.openTab();
   });
@@ -83,7 +83,7 @@ function testStartStopPrivateBrowsingMode() {
     // waitForElement is used on exit of PB mode because pages are loaded from bfcache
     var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
     controller.waitForElement(elem);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "The page ID has been found");
   }
 
   expect.notContain(controller.window.document.title, modifier,
