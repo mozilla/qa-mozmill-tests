@@ -31,7 +31,7 @@ var testBackAndForward = function() {
     controller.waitForPageLoad();
 
     var element = new elementslib.ID(controller.tabs.activeTab, localPage.id);
-    controller.assertNode(element);
+    assert.ok(element.exists(), "Page ID element has been found");
   }
 
   var transitionFinished = false;

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -44,7 +44,7 @@ var testCloseWindow = function() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.Name(controller.tabs.activeTab, page.name);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "The name of the page has been found");
 
     tabBrowser.openTab();
   });
@@ -85,7 +85,7 @@ function checkWindowOpen(controller) {
 
     var elem = new elementslib.Name(controller.tabs.activeTab,
                                     LOCAL_TEST_PAGES[i].name);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "The name of the page has been found");
   }
 }
 
