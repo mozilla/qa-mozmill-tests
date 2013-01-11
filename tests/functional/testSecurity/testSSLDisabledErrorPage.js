@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -62,7 +62,7 @@ var testDisableSSL = function() {
 
   // Verify "Try Again" button appears
   var tryAgain = new elementslib.ID(controller.tabs.activeTab, "errorTryAgain");
-  controller.assertNode(tryAgain);
+  assert.ok(tryAgain.exists(), "'Try again' button has been found");
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");

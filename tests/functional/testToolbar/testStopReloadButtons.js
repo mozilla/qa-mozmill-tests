@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 
 const TEST_PAGE = "http://www.mozilla.org/en-US/about/contact";
@@ -45,7 +45,7 @@ var testStopAndReload = function() {
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
   var footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
-  controller.assertNodeNotExist(footer);
+  assert.ok(!footer.exists(), "'Footer' element has not been found");
 
   // Reload, wait for it to completely loading and test again
   var reloadButton = locationBar.getElement({type: "reloadButton"});
@@ -53,7 +53,7 @@ var testStopAndReload = function() {
   controller.waitForPageLoad();
 
   footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
-  controller.assertNode(footer);
+  assert.ok(footer.exists(), "'Footer' element has been found");
 }
 
 /**

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -46,7 +46,7 @@ var testAllTabsClosedOnStop = function() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "The page ID has been found");
 
     tabBrowser.openTab();
   });

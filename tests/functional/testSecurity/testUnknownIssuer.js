@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 
 const gDelay = 0;
 const gTimeout = 5000;
@@ -27,10 +27,12 @@ var testUnknownIssuer = function() {
   controller.assertJSProperty(link, "textContent", "secure.mur.at");
 
   // Verify "Get Me Out Of Here!" button appears
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton"));
+  var  getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton");
+  assert.ok(getMeOutOfHereButton.exists(), "'Get me out of here' button has been found");
 
   // Verify "Add Exception" button appears
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton"));
+  var exceptionDialogButton = new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton");
+  assert.ok(exceptionDialogButton.exists(), "'Exception dialog' button has been found");
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
