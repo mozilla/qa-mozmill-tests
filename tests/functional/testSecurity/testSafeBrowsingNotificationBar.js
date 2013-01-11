@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
@@ -62,6 +62,7 @@ var testNotificationBar = function() {
 var checkIgnoreWarningButton = function(badUrl) {
   // Verify the element is loaded onto the page and go to the phishing site
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
+  var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
   controller.waitThenClick(ignoreWarningButton, gTimeout);
   controller.waitForPageLoad();
 
@@ -69,8 +70,8 @@ var checkIgnoreWarningButton = function(badUrl) {
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
   utils.assertLoadedUrlEqual(controller, badUrl);
-  controller.assertNodeNotExist(ignoreWarningButton);
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
+  assert.ok(!ignoreWarningButton.exists(), "'Ignore warning' button has not been found");
+  assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
   utils.removePermission("www.mozilla.org", "safe-browsing");
@@ -151,5 +152,5 @@ var checkXButton = function() {
   controller.waitThenClick(button, gTimeout);
 
   controller.sleep(1000);
-  controller.assertNodeNotExist(button);
+  assert.ok(!button.exists(), "The Close button has not been found");
 }

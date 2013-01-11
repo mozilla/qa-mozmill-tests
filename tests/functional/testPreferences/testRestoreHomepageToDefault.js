@@ -32,7 +32,7 @@ var testRestoreHomeToDefault = function() {
   controller.waitForPageLoad();
 
   var link = new elementslib.Link(controller.tabs.activeTab, "Organization");
-  controller.assertNode(link);
+  assert.ok(link.exists(), "'Organization' link has been found");
 
   // Call Preferences dialog and set home page
   prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
@@ -42,7 +42,7 @@ var testRestoreHomeToDefault = function() {
   controller.waitForPageLoad();
 
   link = new elementslib.Link(controller.tabs.activeTab, "Organization");
-  controller.assertNode(link);
+  assert.ok(link.exists(), "'Organization' link has been found");
 
   // Open Preferences dialog and reset home page to default
   prefs.openPreferencesDialog(controller, prefDialogDefHomePageCallback);

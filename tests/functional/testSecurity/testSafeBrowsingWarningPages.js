@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -89,14 +90,14 @@ var checkReportButton = function(type, badUrl) {
     url = utils.formatUrlPref("browser.safebrowsing.warning.infoURL");
 
     var phishingElement = new elementslib.ID(controller.tabs.activeTab, "phishing-protection")
-    controller.assertNode(phishingElement);
+    assert.ok(phishingElement.exists(), "'Phishing protection' element has been found");
 
   } else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
     url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
 
     var malwareElement = new elementslib.ID(controller.tabs.activeTab, "date");
-    controller.assertNode(malwareElement);
+    assert.ok(malwareElement.exists(), "'Malware element' has been found");
   }
 
   utils.assertLoadedUrlEqual(controller, url);
@@ -110,6 +111,7 @@ var checkReportButton = function(type, badUrl) {
  */
 var checkIgnoreWarningButton = function(url) {
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
+  var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
 
   // Wait for the ignoreButton to be safely loaded on the warning page
   controller.waitThenClick(ignoreWarningButton, gTimeout);
@@ -117,8 +119,8 @@ var checkIgnoreWarningButton = function(url) {
 
   // Verify the warning button is not visible and the location bar displays the correct url
   utils.assertLoadedUrlEqual(controller, url);
-  controller.assertNodeNotExist(ignoreWarningButton);
-  controller.assertNode(new elementslib.ID(controller.tabs.activeTab, "main-feature"));
+  assert.ok(!ignoreWarningButton.exists(), "'Ignore warning' button has not been found");
+  assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
   utils.removePermission(DOMAIN_NAME, "safe-browsing");

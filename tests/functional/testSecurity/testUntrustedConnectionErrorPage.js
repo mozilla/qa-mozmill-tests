@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { assert } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var setupModule = function(module)
@@ -22,7 +23,7 @@ var testUntrustedPageGetMeOutOfHereButton = function()
   // Get a reference to the Get Me Out Of Here button
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab,
                                                 "getMeOutOfHereButton");
-  controller.assertNode(getMeOutOfHereButton);
+  assert.ok(getMeOutOfHereButton.exists(), "'Get me out of here' button has been found");
 
   // Click the button
   controller.click(getMeOutOfHereButton);

@@ -28,7 +28,7 @@ var testFormCompletion = function() {
   controller.waitForPageLoad();
 
   var inputField = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
-  controller.assertNode(inputField);
+  assert.ok(inputField.exists(), "Name field has been found");
 
   // Fill out the name field with the input text: 'John' and click the Submit button
   controller.type(inputField, inputText);
