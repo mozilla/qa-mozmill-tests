@@ -51,7 +51,7 @@ var testAddressFieldAndGoButton = function () {
 
   // Check if an element with an id of 'organization' exists
   var pageElement = new elementslib.ID(controller.tabs.activeTab, "organization");
-  controller.assertNode(pageElement);
+  assert.ok(pageElement.exists(), "'Organization' element has been found");
 
   // Check if the URL bar matches the expected domain name
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);

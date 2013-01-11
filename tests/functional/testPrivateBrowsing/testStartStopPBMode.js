@@ -47,7 +47,7 @@ function testStartStopPrivateBrowsingMode() {
     controller.waitForPageLoad();
 
     var elem = new elementslib.ID(controller.tabs.activeTab, page.id);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "Element has been found");
 
     tabBrowser.openTab();
   });
@@ -84,7 +84,7 @@ function testStartStopPrivateBrowsingMode() {
     // waitForElement is used on exit of PB mode because pages are loaded from bfcache
     var elem = new elementslib.ID(controller.tabs.getTab(i), LOCAL_TEST_PAGES[i].id);
     controller.waitForElement(elem);
-    controller.assertNode(elem);
+    assert.ok(elem.exists(), "Element has been found");
   }
 
   expect.notContain(controller.window.document.title, modifier,
