@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -51,7 +51,7 @@ var testPopUpAllowed = function()
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
                                              '/{"class":"messageCloseButton tabbable"}');
-  controller.assertNodeNotExist(button);
+  assert.ok(!button.exists(), "The X button has been found");
 
   expect.notEqual(windowCount, mozmill.utils.getWindows().length,
                   "The window count has changed");

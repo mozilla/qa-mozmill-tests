@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -31,7 +32,7 @@ function testSetHomePage() {
   controller.waitForPageLoad();
 
   var link = new elementslib.Link(controller.tabs.activeTab, "Community");
-  controller.assertNode(link);
+  assert.ok(link.exists(), "'Community' link has been found");
 
   // Call Prefs Dialog and set Home Page
   prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
