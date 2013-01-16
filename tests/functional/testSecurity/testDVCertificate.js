@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {expect} = require("../../../lib/assertions");
+var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var setupModule = function(module) {
@@ -27,10 +27,9 @@ var testLarryBlue = function() {
   var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
-  // Check the label displays
-  // Format: Organization
   var identLabel = new elementslib.ID(controller.window.document, "identity-icon-label");
-  controller.assertValue(identLabel, gETLDService.getBaseDomainFromHost(cert.commonName));
+  expect.equal(identLabel.getNode().value, gETLDService.getBaseDomainFromHost(cert.commonName),
+               "Domain name is shown in the identity field");
 
   // Check the favicon
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
