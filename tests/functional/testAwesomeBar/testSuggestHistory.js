@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require ("../../../lib/assertions");
+var { assert, expect } = require ("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -47,11 +47,11 @@ var testSuggestHistoryAndBookmarks = function() {
   locationBar.clear();
 
   locationBar.type(LOCAL_TEST_PAGE.string);
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.value === LOCAL_TEST_PAGE.string;
   }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 

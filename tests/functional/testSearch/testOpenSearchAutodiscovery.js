@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {assert, expect} = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 const TIMEOUT_INSTALLATION = 30000;
@@ -47,7 +47,7 @@ var testOpenSearchAutodiscovery = function() {
   });
   controller.waitThenClick(engine);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return searchBar.selectedEngine === SEARCH_ENGINE.name;
   }, "Search engine has been installed and selected - got '" + searchBar.selectedEngine +
     "', expected '" + SEARCH_ENGINE.name + "'", TIMEOUT_INSTALLATION);

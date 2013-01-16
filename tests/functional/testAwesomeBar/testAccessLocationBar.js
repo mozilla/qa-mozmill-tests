@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 
@@ -51,12 +52,12 @@ function testAccessLocationBarHistory() {
   // the most recent visit first, then arrow down again to the first entry,
   // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete results should be visible");
 
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.autoCompleteResults.selectedIndex === 0;
   }, "The first item in the drop down list should be selected");
 

@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
+var { assert } = require("../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
 var utils = require("../../../lib/utils");
 
@@ -35,7 +36,7 @@ var testCloseDownloadManager = function()
   // Test ESC
   dm.open(controller, false);
   dm._controller.keypress(null, "VK_ESCAPE", {});
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return mozmill.utils.getWindows().length === windowCount;
   }, "The Download Manager has been closed");
 
@@ -50,7 +51,7 @@ var testCloseDownloadManager = function()
     var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2Unix.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {shiftKey:true, accelKey:true});
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return mozmill.utils.getWindows().length === windowCount;
     }, "The Download Manager has been closed");
   }
@@ -61,7 +62,7 @@ var testCloseDownloadManager = function()
     var cmdKey = utils.getEntity(dm.getDtds(), "cmd.close2.commandKey");
     dm.open(controller, false);
     dm._controller.keypress(null, cmdKey, {accelKey:true});
-    controller.waitFor(function () {
+    assert.waitFor(function () {
       return mozmill.utils.getWindows().length === windowCount;
     }, "The Download Manager has been closed");
   }

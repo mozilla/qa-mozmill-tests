@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var {expect} = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
@@ -57,14 +57,14 @@ var testVisibleItemsMax = function() {
   locationBar.clear();
 
   locationBar.type(testString);
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return locationBar.value === testString;
   }, "Location bar contains the typed data - expected '" + testString + "'");
 
   // Get the visible results from the autocomplete list. Verify it is equal to maxrows
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
   var maxRows = locationBar.urlbar.getNode().getAttribute("maxrows");
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return autoCompleteResultsList.getNode().getNumberOfVisibleRows() === parseInt(maxRows);
   }, "Number of visible rows should equal " + maxRows);
 

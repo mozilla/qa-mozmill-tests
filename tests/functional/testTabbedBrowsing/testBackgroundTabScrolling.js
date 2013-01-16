@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
 const localTestFolder = collector.addHttpResource('../../../data/');
@@ -40,7 +40,7 @@ var testScrollBackgroundTabIntoView = function()
   var link1 = new elementslib.Name(controller.tabs.activeTab, "link_1");
   var link2 = new elementslib.Name(controller.tabs.activeTab, "link_2");
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     tabBrowser.openInNewTab(link1);
 
     // Wait until the pages have been loaded, so they can be loaded from the cache
@@ -62,11 +62,11 @@ var testScrollBackgroundTabIntoView = function()
   tabBrowser.openInNewTab(link2);
 
   // Check that the right scroll button flashes
-  controller.waitFor(function () {
+  expect.waitFor(function () {
     return scrollButtonDown.getNode().hasAttribute('notifybgtab');
   }, "Right scroll arrow has been highlighted");
 
-  controller.waitFor(function () {
+  expect.waitFor(function () {
     return !scrollButtonDown.getNode().hasAttribute('notifybgtab');
   }, "Hightlight should be removed immediately");
 
@@ -80,7 +80,7 @@ var testScrollBackgroundTabIntoView = function()
   // and is displayed inside the all tabs popup menu
   controller.click(allTabsButton);
 
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return allTabsPopup.getNode().state == 'open';
   }, "The all tabs popup should have been opened");
 
@@ -89,21 +89,21 @@ var testScrollBackgroundTabIntoView = function()
   var lastMenuItemIndex = allTabsPopup.getNode().childNodes.length - 1;
 
   for (var i = 3; i < lastMenuItemIndex; i++) {
-    controller.waitFor(function () {
+    expect.waitFor(function () {
       var node = allTabsPopup.getNode().childNodes[i];
       return node && node.label == '1';
     }, "Link 1 title is visible for the tab");
   }
 
   // Also check the last title
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     var node = allTabsPopup.getNode().childNodes[lastMenuItemIndex];
     return node && node.label == '2';
   }, "Link 2 title is visible for the last tab");
 
   // Close the all tabs menu
   controller.click(allTabsButton);
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return allTabsPopup.getNode().state == 'closed';
   }, "The all tabs popup should have been closed");
 }

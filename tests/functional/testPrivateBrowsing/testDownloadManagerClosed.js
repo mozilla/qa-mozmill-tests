@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
@@ -67,7 +67,7 @@ var testDownloadManagerClosed = function() {
   downloadedFiles = dm.getAllDownloads();
 
   // Wait until all downloads have been finished
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return dm.activeDownloadCount === 0;
   }, "All downloads have been finished");
 
@@ -82,7 +82,7 @@ var testDownloadManagerClosed = function() {
   dm.controller.waitForElement(downloadView, TIMEOUT);
 
   // Check that no items are listed in the Download Manager
-  dm.controller.waitFor(function () {
+  assert.waitFor(function () {
     return downloadView.getNode().itemCount === 0;
   }, "The Download Manager has been cleared");
 
@@ -96,7 +96,7 @@ var testDownloadManagerClosed = function() {
   downloadedFiles = downloadedFiles.concat(dm.getAllDownloads());
 
   // Wait until all downloads have been finished
-  controller.waitFor(function () {
+  assert.waitFor(function () {
     return dm.activeDownloadCount === 0;
   }, "All downloads have been finished");
 
@@ -111,7 +111,7 @@ var testDownloadManagerClosed = function() {
   dm.controller.waitForElement(downloadView, TIMEOUT);
 
   // The Download Manager should contain the two items downloaded pre-Private Browsing
-  dm.controller.waitFor(function () {
+  assert.waitFor(function () {
     return downloadView.getNode().itemCount === DOWNLOADS.length;
   }, "Download Manager contains pre-Private Browsing downloaded items - got: " +
     downloadView.getNode().itemCount + ", expected " + DOWNLOADS.length);
