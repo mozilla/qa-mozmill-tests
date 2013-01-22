@@ -69,3 +69,7 @@ function testInstallRestartlessExtension() {
 
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
+
+setupModule.__force_skip__ = "Bug 813170 - Test failure 'Disconnect Error: " +
+                             "Application unexpectedly closed'";
+
