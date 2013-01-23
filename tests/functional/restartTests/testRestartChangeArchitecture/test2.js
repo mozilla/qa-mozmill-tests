@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
 
@@ -13,9 +15,7 @@ function setupModule(module) {
  * Verify that we're in 64 bit mode
  */
 function testRestartedNormally() {
-  var runtime = Cc["@mozilla.org/xre/runtime;1"].
-                getService(Ci.nsIXULRuntime);
-  expect.equal(runtime.XPCOMABI, "x86_64-gcc3",
+  expect.equal(Services.appinfo.XPCOMABI, "x86_64-gcc3",
                "After a restart the application still launches in 64bit mode");
 }
 
@@ -24,10 +24,9 @@ function testRestartedNormally() {
  */
 function teardownTest() {
   controller.startUserShutdown(4000, true);
-  var appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].
-                   getService(Ci.nsIAppStartup);
-  appStartup.quit(Ci.nsIAppStartup.eAttemptQuit |  Ci.nsIAppStartup.eRestart |
-                  Ci.nsIAppStartup.eRestarti386);
+
+  Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart |
+                        Ci.nsIAppStartup.eRestarti386);
 }
 
 

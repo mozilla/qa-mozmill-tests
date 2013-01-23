@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
@@ -18,14 +20,12 @@ function setupModule() {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 
-  pm = Cc["@mozilla.org/login-manager;1"].
-       getService(Ci.nsILoginManager);
-  pm.removeAllLogins();
+  Services.logins.removeAllLogins();
 }
 
 function teardownModule() {
   // Just in case the test fails remove all cookies
-  pm.removeAllLogins();
+  Services.logins.removeAllLogins();
 }
 
 /* Test if Password is saved and deleted */

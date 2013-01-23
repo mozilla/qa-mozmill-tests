@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -14,9 +16,7 @@ const TEST_PAGE = "/data/firefox/cookies/cookie_single.html";
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
-  module.cm = Cc["@mozilla.org/cookiemanager;1"]
-                 .getService(Ci.nsICookieManager2);
-  cm.removeAll();
+  Services.cookies.removeAll();
 }
 
 /**
