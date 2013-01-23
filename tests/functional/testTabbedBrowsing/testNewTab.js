@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var {expect} = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -51,9 +53,7 @@ function testNewTab() {
   // NOTE: On Linux and beginning with Windows Vista a double click onto the
   //       tabstrip maximizes the window instead. So don't execute this test
   //       on those os versions.
-  var sysInfo = Cc["@mozilla.org/system-info;1"].
-                   getService(Ci.nsIPropertyBag2);
-  var version = sysInfo.getProperty("version");
+  var version = Services.sysinfo.getProperty("version");
 
   if (mozmill.isMac || (mozmill.isWindows && (version < "6.0"))) {
    checkOpenTab("tabStrip");

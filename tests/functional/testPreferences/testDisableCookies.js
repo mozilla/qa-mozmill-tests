@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -15,14 +17,12 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  cm = Cc["@mozilla.org/cookiemanager;1"].
-       getService(Ci.nsICookieManager2);
-  cm.removeAll();
+  Services.cookies.removeAll();
 }
 
 var teardownModule = function() {
   prefs.preferences.clearUserPref("network.cookie.cookieBehavior");
-  cm.removeAll();
+  Services.cookies.removeAll();
 
   persisted.hostName = undefined;
 }
@@ -100,7 +100,7 @@ function checkCookieNotSaved(controller) {
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   //expect.ok(removeCookieButton.getNode().disabled, "Remove Cookie Button is disabled");
 
-  expect.equal(cm.countCookiesFromHost(persisted.hostName), 0,
+  expect.equal(Services.cookies.countCookiesFromHost(persisted.hostName), 0,
                "Cookie is not saved");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
