@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
@@ -9,9 +11,6 @@ var utils = require("../../../lib/utils");
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
-  // Effective TLD Service for grabbing certificate info
-  gETLDService = Cc["@mozilla.org/network/effective-tld-service;1"].
-                 getService(Ci.nsIEffectiveTLDService);
   cert = null;
 }
 
@@ -61,7 +60,8 @@ var testLarryBlue = function() {
   // XXX: Larry strips the 'www.' from the CName using the eTLDService
   //      This is expected behaviour for the time being (Bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  controller.assertJSProperty(host, "textContent", gETLDService.getBaseDomainFromHost(cert.commonName));
+  controller.assertJSProperty(host, "textContent",
+                              Services.eTLD.getBaseDomainFromHost(cert.commonName));
 
   // Check the owner identifier string, should be "(unknown)"
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
