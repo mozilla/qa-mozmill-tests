@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include the required modules
 var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -17,14 +19,12 @@ var setupModule = function() {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
 
-  pm = Cc["@mozilla.org/login-manager;1"].
-       getService(Ci.nsILoginManager);
-  pm.removeAllLogins();
+  Services.logins.removeAllLogins();
 }
 
 var teardownModule = function(module) {
   // Just in case the test fails remove all passwords
-  pm.removeAllLogins();
+  Services.logins.removeAllLogins();
 }
 
 /**

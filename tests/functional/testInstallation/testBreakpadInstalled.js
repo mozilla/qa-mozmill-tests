@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 
@@ -22,11 +24,6 @@ var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
 
-  // Get the application folder
-  var dirService = Cc["@mozilla.org/file/directory_service;1"].
-                   getService(Ci.nsIProperties);
-  module.appDir = dirService.get("XCurProcD", Ci.nsILocalFile);
-
   // Get the crash reporter service
   module.crashReporter = Cc["@mozilla.org/toolkit/crash-reporter;1"]
                            .getService(Ci.nsICrashReporter);
@@ -40,7 +37,7 @@ var testBreakpadInstalled = function()
   // Check that the crash reporter executable is present
   var execFile = Cc["@mozilla.org/file/local;1"]
                     .createInstance(Ci.nsILocalFile);
-  execFile.initWithPath(appDir.path);
+  execFile.initWithPath(Services.dirsvc.get("XCurProcD", Ci.nsILocalFile).path);
   execFile.append(fileNames[mozmill.platform]);
 
   expect.ok(execFile.exists(), "The crash reporter executable is present");
