@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
@@ -19,9 +21,7 @@ function setupModule() {
   pb.showPrompt = false;
 
   // Clear cache
-  cs = Cc["@mozilla.org/network/cache-service;1"].
-       getService(Ci.nsICacheService);
-  cs.evictEntries(Ci.nsICache.STORE_ANYWHERE);
+  Services.cache.evictEntries(Ci.nsICache.STORE_ANYWHERE);
 
   tabs.closeAllTabs(controller);
 }
@@ -63,7 +63,7 @@ function testPrivateBrowsingCache() {
   }
 
   // Get entries information for both disk and memory devices
-  cs.visitEntries(visitor);
+  Services.cache.visitEntries(visitor);
 
   assert.equal(diskEntriesCount, 0, "Disk cache has no entries");
   assert.equal(diskSize, 0, "There is no disk storage in use");
@@ -75,7 +75,7 @@ function testPrivateBrowsingCache() {
     controller.waitForPageLoad();
   });
 
-  cs.visitEntries(visitor);
+  Services.cache.visitEntries(visitor);
   TEST_DOMAINS.forEach(function (aPage) {
     expect.ok(diskEntries.indexOf(aPage) === -1,
               "Visited page " + aPage + " is not present in PB disk cache entries");
@@ -85,7 +85,7 @@ function testPrivateBrowsingCache() {
 
   pb.stop();
 
-  cs.visitEntries(visitor);
+  Services.cache.visitEntries(visitor);
   assert.equal(memoryEntriesCount, 0, "Memory cache has no entries after PB mode");
 
   TEST_DOMAINS.forEach(function (aPage) {

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -15,13 +17,11 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 
-  cm = Cc["@mozilla.org/cookiemanager;1"].
-       getService(Ci.nsICookieManager2);
-  cm.removeAll();
+  Services.cookies.removeAll();
 }
 
 var teardownModule = function() {
-  cm.removeAll();
+  Services.cookies.removeAll();
   persisted.hostName = undefined;
 }
 
@@ -84,9 +84,9 @@ function deleteCookie(controller) {
 
   controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
 
-  var cookieRemoved = !cm.cookieExists({host: persisted.hostName,
-                                        name: "litmus_1",
-                                        path: "/cookies/" });
+  var cookieRemoved = !Services.cookies.cookieExists({host: persisted.hostName,
+                                                      name: "litmus_1",
+                                                      path: "/cookies/" });
   expect.ok(cookieRemoved, "The cookie has been removed");
   expect.equal(cookiesList.view.rowCount, (origNumCookies - 1),
                "There is one less cookie than before");
