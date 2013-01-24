@@ -56,7 +56,7 @@ var testCloseWindow = function() {
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 
-  mozmill.utils.waitFor(function () {
+  assert.waitFor(function () {
     return mozmill.utils.getWindows().length === (windowCount - 1);
   }, "The browser window has been closed");
 
