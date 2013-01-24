@@ -45,7 +45,7 @@ function testOpenAndCloseMultipleWindows() {
 
       controller.window.close();
 
-      mozmill.utils.waitFor(function () {
+      assert.waitFor(function () {
         return !mozmill.controller.windowMap.contains(windowId);
       }, "Window '" + windowId + "' has been closed.");
       enduranceManager.addCheckpoint("Window '" + windowId + "' has been closed");
