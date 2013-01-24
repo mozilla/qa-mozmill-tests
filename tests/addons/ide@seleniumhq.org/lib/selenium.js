@@ -8,7 +8,7 @@
  */
 
 // Include required modules
-var { assert } = require("../../../../lib/assertions");
+var { assert, expect } = require("../../../../lib/assertions");
 var DOMUtils = require("../../../../lib/dom-utils");
 var Utils = require("../../../../lib/utils");
 var Widgets = require("../../../../lib/widgets");
@@ -75,7 +75,7 @@ SeleniumManager.prototype = {
    * Wait for the Selenium IDE window to be closed
    */
   waitForClosed : function SeleniumManager_waitForClosed() {
-    mozmill.utils.waitFor(function () {
+    assert.waitFor(function () {
       return !mozmill.utils.getWindowByType("global:selenium-ide");
     }, "Selenium IDE has been closed.");
     this._controller = null;
