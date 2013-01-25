@@ -112,3 +112,8 @@ function pluginExistsInAboutPlugins(pluginName) {
 
   return exists;
 }
+
+setupModule.__force_skip__= "Bug 834632 - Update test to work with the current" +
+                            "features of Firefox about:plugins";
+teardownModule.__force_skip__= "Bug 834632 - Update test to work with the current" +
+                               "features of Firefox about:plugins";
