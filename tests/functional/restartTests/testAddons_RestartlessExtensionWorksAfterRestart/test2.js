@@ -57,8 +57,3 @@ function testRestartlessExtensionWorksAfterRestart() {
                "Current URL should match expected URL");
 }
 
-setupModule.__force_skip__ = "Bug 813170 - Test failure 'Disconnect Error: " +
-                             "Application unexpectedly closed'";
-teardownModule.__force_skip__ = "Bug 813170 - Test failure 'Disconnect Error: " +
-                                "Application unexpectedly closed'";
-
