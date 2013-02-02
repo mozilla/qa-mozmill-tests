@@ -12,7 +12,7 @@ function setupModule() {
 
   // Skip test if we have no plugins
   if (persisted.enabledPlugins < 1) {
-    testPluginDisabled.__force_skip__ = "No enabled plugins detected";
+    testDisablePlugin.__force_skip__ = "No enabled plugins detected";
     teardownModule.__force_skip__ = "No enabled plugins detected";
   }
 
