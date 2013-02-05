@@ -72,11 +72,11 @@ var testLarryGreen = function() {
   //      This is expected behaviour for the time being (bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
   expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
-	       "The site identifier string is equal to the Cert host");
+               "The site identifier string is equal to the Cert host");
 
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
   expect.equal(owner.getNode().textContent, cert.organization,
-	       "Owner string is equal to the Cert organization");
+               "Owner string is equal to the Cert organization");
 
   // Check the owner location string against the Cert
   // Format: City
@@ -97,7 +97,7 @@ var testLarryGreen = function() {
   var ownerLocation = new elementslib.ID(controller.window.document,
                                          "identity-popup-content-supplemental");
   expect.equal(ownerLocation.getNode().textContent, location,
-	       "Owner location string is equal to the Cert location");
+               "Owner location string is equal to the Cert location");
 
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
@@ -105,7 +105,7 @@ var testLarryGreen = function() {
   var verifier = new elementslib.ID(controller.window.document,
                                     "identity-popup-content-verifier");
   expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
-	       "The 'Verified by: %S' string is set");
+               "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted");
