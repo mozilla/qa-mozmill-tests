@@ -39,7 +39,7 @@ var testLarryGrey = function() {
   }, "Identity popup has been opened");
 
   expect.equal(doorhanger.getNode().className, "unknownIdentity",
-	       "The Larry UI is unknown (aka Grey)");
+               "The Larry UI is unknown (aka Grey)");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document,
