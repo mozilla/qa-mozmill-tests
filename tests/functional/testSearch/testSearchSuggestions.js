@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
-var {assert} = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 
@@ -33,6 +33,7 @@ function setupModule() {
 function testMultipleEngines() {
   var allSuggestions = [ ];
   var suggestionsForEngine;
+  var searchEngines = [ ];
 
   // Get suggested auto-complete results for two engines
   for (var i = 0; i < enginesWithSuggestions.length; i++) {
@@ -43,8 +44,10 @@ function testMultipleEngines() {
 
     // Get suggestions
     suggestionsForEngine = searchBar.getSuggestions("Moz");
-    if (suggestionsForEngine.length !== 0)
+    if (suggestionsForEngine.length !== 0) {
       allSuggestions.push(suggestionsForEngine);
+      searchEngines.push(searchBar.selectedEngine);
+    }
 
     // Exit the for loop in case we have suggestions for 2 engines
     if (allSuggestions.length === 2)
@@ -64,5 +67,6 @@ function testMultipleEngines() {
     }
   }
 
-  assert.ok(different, "Suggestions are different");
+  assert.ok(different, "Suggestions " + allSuggestions[0].join(", ") + " from " +
+            searchEngines[0] + " and " + searchEngines[1] + " search providers are different");
 }
