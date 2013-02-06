@@ -62,9 +62,9 @@ function testVerifyDefaultBookmarks() {
   assert.equal(items.length, 2, "Bookmarks Toolbar contains 2 items");
 
   expect.equal(items[0].getNode().label, toolbarNodes.getChild(0).title,
-	       "The label of the Most Visited folder bookmark has been set correctly");
+               "The label of the Most Visited folder bookmark has been set correctly");
   expect.equal(items[1].getNode().label, toolbarNodes.getChild(1).title,
-	       "The label of the Getting Started bookmark has been set correctly");
+               "The label of the Getting Started bookmark has been set correctly");
 
   // Check for the correct link of the bookmark which also includes the locale
   expect.ok(places.isBookmarkInFolder(utils.createURI(GETTING_STARTED_URL), bs.toolbarFolder),

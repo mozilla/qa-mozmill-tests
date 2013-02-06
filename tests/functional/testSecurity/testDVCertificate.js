@@ -47,7 +47,7 @@ var testLarryBlue = function() {
   }, "Identity popup has been opened");
 
   expect.equal(doorhanger.getNode().className, "verifiedDomain",
-	       "The Larry UI is domain verified (aka Blue)");
+               "The Larry UI is domain verified (aka Blue)");
 
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
@@ -59,7 +59,7 @@ var testLarryBlue = function() {
   //      This is expected behaviour for the time being (Bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
   expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
-	       "The site identifier string is equal to the cert host");
+               "The site identifier string is equal to the cert host");
 
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
@@ -71,13 +71,13 @@ var testLarryBlue = function() {
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document, "identity-popup-content-verifier");
   expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
-	       "The 'Verified by: %S' string is set");
+               "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted");
   var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
   expect.equal(encryptionLabel.getNode().textContent, l10nEncryptionLabel,
-	       "The Encryption Label text is set");
+               "The Encryption Label text is set");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
