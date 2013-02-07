@@ -34,9 +34,8 @@ var testLarryBlue = function() {
   var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
   expect.contain(faviconImage, "identity-icons-https.png", "There is a lock icon");
 
-  // Check the identity box shows green
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.assertJSProperty(identityBox, "className", "verifiedDomain");
+  expect.equal(identityBox.getNode().className, "verifiedDomain", "Identity is verified");
 
   // Click the identity button to display Larry
   controller.click(identityBox);
@@ -47,8 +46,8 @@ var testLarryBlue = function() {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 
-  // Check that the Larry UI is domain verified (aka Blue)
-  controller.assertJSProperty(doorhanger, "className", "verifiedDomain");
+  expect.equal(doorhanger.getNode().className, "verifiedDomain",
+               "The Larry UI is domain verified (aka Blue)");
 
   // Check for the Lock icon is visible
   var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
@@ -56,31 +55,29 @@ var testLarryBlue = function() {
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
-  // Check the site identifier string against the Cert
   // XXX: Larry strips the 'www.' from the CName using the eTLDService
   //      This is expected behaviour for the time being (Bug 443116)
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  controller.assertJSProperty(host, "textContent",
-                              Services.eTLD.getBaseDomainFromHost(cert.commonName));
+  expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
+               "The site identifier string is equal to the cert host");
 
-  // Check the owner identifier string, should be "(unknown)"
   var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
                                    "identity.ownerUnknown2");
-  controller.assertJSProperty(owner, "textContent", property);
+  expect.equal(owner.getNode().textContent, property, "The owner identifier string is set");
 
-  // Check the "Verified by: %S" string
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
   var verifier = new elementslib.ID(controller.window.document, "identity-popup-content-verifier");
-  controller.assertJSProperty(verifier, "textContent", l10nVerifierLabel);
+  expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
+               "The 'Verified by: %S' string is set");
 
-  // Check the Encryption Label text
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted");
   var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
-  controller.assertJSProperty(encryptionLabel, "textContent", l10nEncryptionLabel);
+  expect.equal(encryptionLabel.getNode().textContent, l10nEncryptionLabel,
+               "The Encryption Label text is set");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
@@ -95,9 +92,8 @@ var testLarryBlue = function() {
  *        MozMillController of the window to operate on
  */
 function checkSecurityTab(controller) {
-  // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertJSProperty(securityTab, "selected", "true");
+  assert.ok(securityTab.getNode().selected, "The Security tab is selected by default");
 
   // Check the Web Site label against the Cert CName
   var webIDDomainLabel = new elementslib.ID(controller.window.document,

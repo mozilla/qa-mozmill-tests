@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var {expect} = require("../../../lib/assertions");
 var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
@@ -50,7 +51,7 @@ function checkImportMenu(controller) {
   controller.click(maintenanceButton);
 
   var importEntry = new elementslib.ID(controller.window.document, "browserImport");
-  controller.assertJSProperty(importEntry, "disabled", true);
+  expect.ok(importEntry.getNode().disabled, "Import Menu entry is disabled");
 
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});

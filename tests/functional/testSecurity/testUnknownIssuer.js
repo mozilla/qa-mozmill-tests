@@ -21,10 +21,9 @@ var testUnknownIssuer = function() {
   controller.open('https://mur.at');
   controller.waitForPageLoad();
 
-  // Verify the link in Technical Details is correct
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
   controller.waitForElement(link, gTimeout);
-  controller.assertJSProperty(link, "textContent", "secure.mur.at");
+  expect.equal(link.getNode().textContent, "secure.mur.at", "Domain name is visible");
 
   // Verify "Get Me Out Of Here!" button appears
   var  getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton");

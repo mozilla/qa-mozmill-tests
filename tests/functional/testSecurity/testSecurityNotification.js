@@ -21,16 +21,14 @@ var testSecNotification = function() {
   controller.open(SECURE_PAGE);
   controller.waitForPageLoad();
 
-  // Identity box should have a green background
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.assertJSProperty(identityBox, "className", "verifiedIdentity");
+  expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
 
   // Go to an unsecure (HTTP) site
   controller.open(UNSECURE_PAGE);
   controller.waitForPageLoad();
 
-  // Identity box should have a gray background
-  controller.assertJSProperty(identityBox, "className", "unknownIdentity");
+  expect.equal(identityBox.getNode().className, "unknownIdentity", "Identity is unknown");
 
   // Go to a website which does not have a valid cert
   controller.open(INVALID_CERT_PAGE);

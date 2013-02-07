@@ -98,7 +98,7 @@ var prefCheckDisableDialogCallback = function(controller) {
 function checkCookieNotSaved(controller) {
   // XXX: Bug 513820 - Remove Cookies button is not cleared when cookie list is cleared
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
-  //controller.assertJSProperty(removeCookieButton, "disabled", true);
+  //expect.ok(removeCookieButton.getNode().disabled, "Remove Cookie Button is disabled");
 
   expect.equal(Services.cookies.countCookiesFromHost(persisted.hostName), 0,
                "Cookie is not saved");
