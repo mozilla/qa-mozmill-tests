@@ -61,9 +61,9 @@ function testDisableEnablePlugin() {
                                                 value: plugin.id})[0];
   var pluginName = selectedPlugin.getNode().mAddon.name;
 
-  // Check that the plugin is listed on the about:plugins page
-  assert.ok(pluginExistsInAboutPlugins(pluginName),
-            pluginName + " is listed on the about:plugins page");
+  // Check that the plugin is listed as enabled on the about:plugins page
+  assert.ok(pluginStateInAboutPlugins(pluginName),
+            pluginName + " state is Enabled in about:plugins");
 
   // Disable the plugin
   tabBrowser.selectedIndex = 1;
@@ -73,11 +73,11 @@ function testDisableEnablePlugin() {
   assert.ok(!addonsManager.isAddonEnabled({addon: selectedPlugin}),
             pluginName + " has been disabled");
 
-  // Check that the plugin disappeared from about:plugins
-  expect.ok(!pluginExistsInAboutPlugins(pluginName),
-            pluginName + " does not appear in about:plugins");
+  // Check that the plugin state is Disabled in about:plugins
+  expect.ok(!pluginStateInAboutPlugins(pluginName),
+            pluginName + " state is Disabled in about:plugins");
 
-  //Enable the plugin
+  // Enable the plugin
   tabBrowser.selectedIndex = 1;
   addonsManager.enableAddon({addon: selectedPlugin});
 
@@ -85,27 +85,29 @@ function testDisableEnablePlugin() {
   assert.ok(addonsManager.isAddonEnabled({addon: selectedPlugin}),
             pluginName + " has been enabled");
 
-  expect.ok(pluginExistsInAboutPlugins(pluginName),
-            pluginName + " appears in about:plugins");
+  // Check that the plugin state is Enabled in about:plugins
+  expect.ok(pluginStateInAboutPlugins(pluginName),
+            pluginName + " state is Enabled in about:plugins");
 }
 
 /**
- * Checks that the plugin appears in about:plugins
+ * Tests if the plugin is enabled or disabled in about:plugins
  *
- * @returns {boolean} True if the plugin appears in about:plugins
+ * @returns {boolean} State of the plugin in about:plugins
  */
-function pluginExistsInAboutPlugins(pluginName) {
+function pluginStateInAboutPlugins(aPluginName) {
   tabBrowser.selectedIndex = 0;
   controller.open("about:plugins");
   controller.waitForPageLoad();
 
-  var exists = false;
   var nodeCollector = new domUtils.nodeCollector(controller.tabs.activeTab);
   var pluginNames = nodeCollector.queryNodes(".plugname").nodes;
+  var pluginState = nodeCollector.queryNodes("[label=state]").nodes;
+  var exists = false;
 
   for (var i = 0; i < pluginNames.length; i++) {
-    if (pluginNames[i].textContent === pluginName) {
-      exists = true;
+    if (pluginNames[i].textContent === aPluginName) {
+      exists = pluginState[i].parentNode.textContent.contains("Enabled");
       break;
     }
   }
@@ -113,7 +115,3 @@ function pluginExistsInAboutPlugins(pluginName) {
   return exists;
 }
 
-setupModule.__force_skip__= "Bug 834632 - Update test to work with the current" +
-                            "features of Firefox about:plugins";
-teardownModule.__force_skip__= "Bug 834632 - Update test to work with the current" +
-                               "features of Firefox about:plugins";
