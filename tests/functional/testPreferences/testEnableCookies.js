@@ -98,10 +98,9 @@ var prefCheckEnableDialogCallback = function(controller) {
 function checkSavedCookies(controller) {
   controller.sleep(1000);
 
-  // Verify that the single cookie is saved
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   controller.waitForElement(removeCookieButton, TIMEOUT);
-  controller.assertJSProperty(removeCookieButton, "disabled", false);
+  expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");
 
   var cookieExists = Services.cookies.cookieExists({host: persisted.hostName,
                                                     name: "litmus_1",

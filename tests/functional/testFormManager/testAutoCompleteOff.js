@@ -42,10 +42,9 @@ var testAutoCompleteOff = function() {
   controller.type(searchField, SEARCH_TERM.substring(0, 3));
   controller.sleep(500);
 
-  // Verify source autocomplete=off
   var popupAutoCompList = new elementslib.ID(controller.window.document,
                                              "PopupAutoComplete");
-  controller.assertJSProperty(popupAutoCompList, "popupOpen", false);
+  expect.ok(!popupAutoCompList.getNode().popupOpen, "Auto-complete popup is not visible");
 }
 
 /**

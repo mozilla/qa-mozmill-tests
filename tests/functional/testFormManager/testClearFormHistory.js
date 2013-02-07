@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var { assert } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
 const TIMEOUT = 5000;
@@ -56,15 +56,15 @@ function testClearFormHistory() {
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  // Begin typing into the name fields and verify no popup
+  // Begin typing into the name fields
   controller.waitForElement(firstName, TIMEOUT);
   controller.type(firstName, FNAME.substring(0,2));
   controller.sleep(500);
-  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
+  expect.ok(!popDownAutoCompList.getNode().popupOpen, "Auto-complete popup is not visible");
 
   controller.type(lastName, LNAME.substring(0,2));
   controller.sleep(500);
-  controller.assertJSProperty(popDownAutoCompList, "popupOpen", false);
+  expect.ok(!popDownAutoCompList.getNode().popupOpen, "Auto-complete popup is not visible");
 }
 
 /**

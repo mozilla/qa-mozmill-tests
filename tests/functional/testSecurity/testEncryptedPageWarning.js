@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include necessary modules
+var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var tabbedbrowser = require("../../../lib/tabs");
@@ -57,8 +58,8 @@ var handleSecurityWarningDialog = function(controller) {
   var infoBody = new elementslib.ID(controller.window.document, "info.body");
   controller.waitForElement(infoBody);
 
-  // Verify the message text
-  controller.assertJSProperty(infoBody, "textContent", enterSecureMessage);
+  expect.equal(infoBody.getNode().textContent, enterSecureMessage,
+               "Secure message content is present and correct");
 
   // Verify the "Alert me whenever" checkbox is checked by default
   var checkbox = new elementslib.ID(controller.window.document, "checkbox");

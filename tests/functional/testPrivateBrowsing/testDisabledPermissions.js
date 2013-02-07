@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include the required modules
+var {expect} = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/private-browsing");
@@ -55,7 +56,7 @@ var testPermissionsDisabled = function() {
   controller.open(LOCAL_TEST_PAGES[0]);
   controller.waitForPageLoad();
 
-  // Open context menu and check "Allow Popups" is disabled
+  // Open context menu
   var property = mozmill.isWindows ? "popupWarningButton.accesskey" : "popupWarningButtonUnix.accesskey";
   var accessKey = utils.getProperty("chrome://browser/locale/browser.properties", property);
 
@@ -68,7 +69,7 @@ var testPermissionsDisabled = function() {
                                     '/*[name()="menuitem"][1]');
 
   controller.waitForElement(allow);
-  controller.assertJSProperty(allow, "disabled", true);
+  expect.ok(allow.getNode().disabled, "'Allow Popups' is disabled");
 
   controller.keypress(null, "VK_ESCAPE", {});
 

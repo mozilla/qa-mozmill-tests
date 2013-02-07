@@ -21,9 +21,8 @@ var testLarryGrey = function() {
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
-  // Check the default grey ("globe image") favicon is present
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
-  controller.assertJSProperty(favicon, "hidden", false);
+  expect.ok(!favicon.getNode().hidden, "The globe favicon is visible");
 
   var identityIconLabel = new elementslib.ID(controller.window.document,
                                              "identity-icon-label");
@@ -38,8 +37,8 @@ var testLarryGrey = function() {
     return doorhanger.getNode().state === 'open';
   }, "Identity popup has been opened");
 
-  // Check that the Larry UI is unknown (aka Grey)
-  controller.assertJSProperty(doorhanger, "className", "unknownIdentity");
+  expect.equal(doorhanger.getNode().className, "unknownIdentity",
+               "The Larry UI is unknown (aka Grey)");
 
   // Check the More Information button
   var moreInfoButton = new elementslib.ID(controller.window.document,
@@ -55,9 +54,8 @@ var testLarryGrey = function() {
  *        MozMillController of the window to operate on
  */
 function checkSecurityTab(controller) {
-  // Check that the Security tab is selected by default
   var securityTab = new elementslib.ID(controller.window.document, "securityTab");
-  controller.assertJSProperty(securityTab, "selected", "true");
+  expect.ok(securityTab.getNode().selected, "The Security tab is selected by default");
 
   // Check the Web Site label for "localhost:port#"
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
