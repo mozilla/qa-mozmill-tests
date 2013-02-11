@@ -24,7 +24,6 @@ var testLarryGrey = function() {
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
   expect.ok(!favicon.getNode().hidden, "The globe favicon is visible");
 
-  // Check the favicon has no label
   var identityIconLabel = new elementslib.ID(controller.window.document,
                                              "identity-icon-label");
   expect.equal(identityIconLabel.getNode().value, "", "The favicon has no label");
