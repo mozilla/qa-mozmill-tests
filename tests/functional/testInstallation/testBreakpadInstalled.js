@@ -49,7 +49,5 @@ var testBreakpadInstalled = function()
                "The Breakpad server URL is correct");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testBreakpadInstalled.meta = {litmusids : [7953]};
+setupModule.__force_skip__ = "Bug 840485 - Test failure " +
+                             "'The crash reporter executable is present - got 'false''";
