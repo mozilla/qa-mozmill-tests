@@ -37,7 +37,7 @@ var testStopAndReload = function() {
   controller.open(TEST_PAGE);
   expect.waitFor(function () {
     return pageUnloaded;
-  }, "about:blank page has been unloaded.");
+  }, "about:blank page has been unloaded.", 2000, 10);
 
   var stopButton = locationBar.getElement({type: "stopButton"});
   controller.click(stopButton);
