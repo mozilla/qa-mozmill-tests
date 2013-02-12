@@ -29,4 +29,3 @@ function testShortcutAndSearch() {
   searchBar.focus({type: "shortcut"});
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
-

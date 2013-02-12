@@ -60,5 +60,3 @@ var testPasswordNotification = function() {
     return notification.getNode().state === "closed";
   }, "Password notification has been closed");
 }
-
-

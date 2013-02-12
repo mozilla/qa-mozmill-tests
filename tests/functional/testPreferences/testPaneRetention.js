@@ -66,4 +66,3 @@ function prefPaneResetCallback(controller) {
   prefDialog.paneId = 'paneMain';
   prefDialog.close();
 }
-

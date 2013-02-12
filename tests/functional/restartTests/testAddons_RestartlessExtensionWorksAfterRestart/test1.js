@@ -67,4 +67,3 @@ function testInstallRestartlessExtension() {
 
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
-

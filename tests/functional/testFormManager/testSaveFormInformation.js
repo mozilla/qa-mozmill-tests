@@ -69,4 +69,3 @@ function testSaveFormInformation() {
   controller.click(popDownAutoCompList);
   expect.equal(lastName.getNode().value, LNAME, "Last name has been autocompleted");
 }
-

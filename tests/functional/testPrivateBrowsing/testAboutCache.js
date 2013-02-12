@@ -93,4 +93,3 @@ function testPrivateBrowsingCache() {
               "Page " + aPage + " visited in PB is not present in disk cache entries");
   });
 }
-
