@@ -35,4 +35,3 @@ function testOpenClosePBKeyboardShortcut() {
   pbWindow.controller.assertText(moreInfoElem, learnMore);
   pbWindow.close();
 }
-

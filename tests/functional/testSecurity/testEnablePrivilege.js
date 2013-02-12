@@ -23,4 +23,3 @@ function testEnablePrivilege() {
   assert.equal(result.getNode().textContent, "PASS",
                "enablePrivilege is not accessible");
 }
-
