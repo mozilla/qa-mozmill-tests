@@ -56,4 +56,3 @@ var testAddressFieldAndGoButton = function () {
   // Check if the URL bar matches the expected domain name
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
 }
-

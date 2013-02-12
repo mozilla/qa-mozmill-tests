@@ -59,4 +59,3 @@ function commandFailed(seleniumManager, message) {
 // Export of functions
 exports.commandPassed = commandPassed;
 exports.commandFailed = commandFailed;
-

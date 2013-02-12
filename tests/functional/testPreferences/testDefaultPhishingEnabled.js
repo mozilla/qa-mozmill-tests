@@ -41,4 +41,3 @@ var prefPaneSetCallback = function(controller) {
 
   prefDialog.close();
 }
-

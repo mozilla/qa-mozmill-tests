@@ -100,4 +100,3 @@ function checkAwesomebarResults(aResult, aType) {
     }, "The page " + aType + " matches the underlined text");
   });
 }
-

@@ -74,4 +74,3 @@ var testSuggestHistoryAndBookmarks = function() {
 
   locationBar.autoCompleteResults.close();
 }
-

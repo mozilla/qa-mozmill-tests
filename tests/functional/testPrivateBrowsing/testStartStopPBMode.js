@@ -108,4 +108,3 @@ function pbStartHandler(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
-

@@ -55,4 +55,3 @@ function testOpenAndCloseMultipleWindows() {
 
 setupModule.__force_skip__ = "Bug 800872 - Test failure 'Window number '1' has been opened'";
 teardownModule.__force_skip__ = "Bug 800872 - Test failure 'Window number '1' has been opened'";
-

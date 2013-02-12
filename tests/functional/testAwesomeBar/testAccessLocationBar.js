@@ -73,4 +73,3 @@ function testAccessLocationBarHistory() {
   // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
   locationBar.contains(LOCAL_TEST_PAGES[2]);
 }
-

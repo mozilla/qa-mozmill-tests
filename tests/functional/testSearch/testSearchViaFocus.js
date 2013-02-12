@@ -29,4 +29,3 @@ function testClickAndSearch() {
   searchBar.focus({type: "click"});
   searchBar.search({text: "Firefox", action: "returnKey"});
 }
-

@@ -54,4 +54,3 @@ var testSecNotification = function() {
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
                  "The error code is a SEC Expired certificate error");
 }
-
