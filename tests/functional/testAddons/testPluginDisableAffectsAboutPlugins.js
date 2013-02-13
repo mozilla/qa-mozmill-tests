@@ -114,4 +114,3 @@ function pluginStateInAboutPlugins(aPluginName) {
 
   return exists;
 }
-

@@ -64,4 +64,3 @@ function prefDialogHomePageCallback(controller) {
 
   prefDialog.close(true);
 }
-

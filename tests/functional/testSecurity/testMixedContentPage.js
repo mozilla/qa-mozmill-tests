@@ -37,4 +37,3 @@ function testMixedContentPage() {
                                    "identity.mixed_content");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }
-

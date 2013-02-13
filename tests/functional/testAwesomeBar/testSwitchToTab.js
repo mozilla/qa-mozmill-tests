@@ -90,4 +90,3 @@ function testSwitchToTab() {
  * Map test functions to moztrap tests
  */
 testSwitchToTab.meta = {moztrap_case: 327};
-

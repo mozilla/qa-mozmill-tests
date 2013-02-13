@@ -52,4 +52,3 @@ function testInstallMultipleExtensions() {
     controller.keypress(null , 'VK_ESCAPE', {});
   });
 }
-

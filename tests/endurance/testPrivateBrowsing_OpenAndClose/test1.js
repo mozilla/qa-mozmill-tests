@@ -24,4 +24,3 @@ function testOpenAndClosePrivateBrowsingWindow() {
     enduranceManager.addCheckpoint("Closed a private browsing window");
   });
 }
-

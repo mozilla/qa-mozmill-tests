@@ -59,4 +59,3 @@ function testCheckAboutPrivateBrowsing() {
   pbWindow.controller.waitForPageLoad();
   utils.assertLoadedUrlEqual(pbWindow.controller, targetUrl);
 }
-

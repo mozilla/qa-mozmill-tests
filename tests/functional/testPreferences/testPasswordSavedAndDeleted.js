@@ -129,5 +129,3 @@ function confirmHandler(controller) {
 
   controller.waitThenClick(dialogButton, TIMEOUT);
 }
-
-

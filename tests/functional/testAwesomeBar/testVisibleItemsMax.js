@@ -70,4 +70,3 @@ var testVisibleItemsMax = function() {
 
   locationBar.autoCompleteResults.close();
 }
-
