@@ -41,4 +41,3 @@ var prefDialogCallback = function(controller) {
 
   prefDialog.close();
 }
-

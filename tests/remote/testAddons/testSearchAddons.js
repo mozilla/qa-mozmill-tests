@@ -59,4 +59,3 @@ var testSearchAddons = function () {
   assert.contain(locationBar.value, addons.AMO_PREVIEW_DOMAIN,
                  "The URL contains the correct address ");
  }
-

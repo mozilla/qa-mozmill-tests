@@ -86,4 +86,3 @@ function clearHistoryHandler(controller) {
                                            '/{"dlgtype":"accept"}');
   controller.waitThenClick(clearButton);
 }
-

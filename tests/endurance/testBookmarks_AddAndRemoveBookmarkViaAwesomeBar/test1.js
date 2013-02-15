@@ -65,4 +65,3 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark has been removed");
   });
 }
-

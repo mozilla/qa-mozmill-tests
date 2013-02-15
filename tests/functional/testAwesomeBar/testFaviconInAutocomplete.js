@@ -71,4 +71,3 @@ var testFaviconInAutoComplete = function() {
 
   locationBar.autoCompleteResults.close();
 }
-

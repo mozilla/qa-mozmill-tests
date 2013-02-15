@@ -37,4 +37,3 @@ function testKeyboardShortcut() {
   // Stop the Private Browsing mode via the keyboard shortcut
   pb.stop(true);
 }
-

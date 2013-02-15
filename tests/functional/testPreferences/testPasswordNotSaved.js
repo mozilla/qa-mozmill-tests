@@ -79,4 +79,3 @@ function checkPasswordsNotSaved(controller) {
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
-

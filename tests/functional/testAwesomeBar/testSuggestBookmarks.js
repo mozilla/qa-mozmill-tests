@@ -89,4 +89,3 @@ var testStarInAutocomplete = function() {
 
   locationBar.autoCompleteResults.close();
 }
-

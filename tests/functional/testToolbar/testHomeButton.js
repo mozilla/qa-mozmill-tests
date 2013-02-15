@@ -36,4 +36,3 @@ function testHomeButton() {
   // Verify location bar with the saved home page
   utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGE);
 }
-

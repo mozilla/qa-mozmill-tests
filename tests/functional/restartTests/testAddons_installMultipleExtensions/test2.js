@@ -35,4 +35,3 @@ function testCheckMultipleExtensionsAreInstalled() {
     expect.ok(addonIsInstalled, "Add-on has been installed");
   });
 }
-
