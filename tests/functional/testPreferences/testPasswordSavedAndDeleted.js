@@ -129,3 +129,7 @@ function confirmHandler(controller) {
 
   controller.waitThenClick(dialogButton, TIMEOUT);
 }
+
+testSaveAndDeletePassword.__force_skip__ = "Bug 841355 - Test failure 'Password notification" +
+                                           "should be closed' in some functional tests that use" +
+                                           "notification.getNode().state";
