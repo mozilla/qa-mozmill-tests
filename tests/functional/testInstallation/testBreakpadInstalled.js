@@ -20,24 +20,22 @@ const states = {
                 "ServerURLPattern" : /^https:\/\/crash-reports\.mozilla\.com\/submit.*/
                };
 
-var setupModule = function(module)
-{
-  controller = mozmill.getBrowserController();
+var setupModule = function (aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   // Get the crash reporter service
-  module.crashReporter = Cc["@mozilla.org/toolkit/crash-reporter;1"]
-                           .getService(Ci.nsICrashReporter);
+  aModule.crashReporter = Cc["@mozilla.org/toolkit/crash-reporter;1"].
+                          getService(Ci.nsICrashReporter);
 }
 
 /**
  * Test that Breakpad is installed
  */
-var testBreakpadInstalled = function()
-{
+var testBreakpadInstalled = function () {
   // Check that the crash reporter executable is present
-  var execFile = Cc["@mozilla.org/file/local;1"]
-                    .createInstance(Ci.nsILocalFile);
-  execFile.initWithPath(Services.dirsvc.get("XCurProcD", Ci.nsILocalFile).path);
+  var execFile = Cc["@mozilla.org/file/local;1"].
+                 createInstance(Ci.nsILocalFile);
+  execFile.initWithPath(Services.dirsvc.get("GreD", Ci.nsILocalFile).path);
   execFile.append(fileNames[mozmill.platform]);
 
   expect.ok(execFile.exists(), "The crash reporter executable is present");
@@ -48,6 +46,3 @@ var testBreakpadInstalled = function()
   expect.match(crashReporter.serverURL.spec, states["ServerURLPattern"],
                "The Breakpad server URL is correct");
 }
-
-setupModule.__force_skip__ = "Bug 840485 - Test failure " +
-                             "'The crash reporter executable is present - got 'false''";
