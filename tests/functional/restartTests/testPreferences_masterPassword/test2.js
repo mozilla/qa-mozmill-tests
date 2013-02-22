@@ -93,7 +93,3 @@ var checkMasterHandler = function(controller) {
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.click(button);
 }
-
-// Bug 611455 - Disconnect error in restart test module testMasterPassword
-//              Reported as a top-failure
-setupModule.__force_skip__ = "Bug 611455: Disconnect error in restart test module testMasterPassword";
