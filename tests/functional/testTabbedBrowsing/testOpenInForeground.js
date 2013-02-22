@@ -21,8 +21,7 @@ var gTabOrder = [
   {index: 3, linkid: 1}
 ];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
@@ -31,15 +30,13 @@ var setupModule = function(module)
   prefs.preferences.setPref(PREF_TAB_LOAD_IN_BACKGROUND, false);
 }
 
-var teardownModule = function()
-{
+var teardownModule = function() {
   prefs.preferences.clearUserPref(PREF_TAB_LOAD_IN_BACKGROUND);
   utils.closeContentAreaContextMenu(controller);
   tabBrowser.closeAllTabs();
 }
 
-var testOpenInForegroundTab = function()
-{
+var testOpenInForegroundTab = function() {
   // Open the HTML testcase:
   controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
   controller.waitForPageLoad();

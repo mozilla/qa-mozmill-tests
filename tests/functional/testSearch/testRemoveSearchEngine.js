@@ -9,23 +9,20 @@ var search = require("../../../lib/search");
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   searchBar.restoreDefaultEngines();
 }
 
 /**
  * Manage search engine (Remove)
  */
-var testRemoveEngine = function()
-{
+var testRemoveEngine = function() {
   var engine = searchBar.visibleEngines[1];
 
   // Remove the first engine in the list
@@ -42,8 +39,7 @@ var testRemoveEngine = function()
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var handleEngines = function(controller)
-{
+var handleEngines = function(controller) {
   var manager = new search.engineManager(controller);
 
   // Remove the second search engine

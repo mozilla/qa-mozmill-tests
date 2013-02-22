@@ -9,16 +9,14 @@ var tabs = require("../../../lib/tabs");
 const gDelay = 0;
 const gTimeout = 5000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
 }
 
-var testCloseTab = function()
-{
+var testCloseTab = function() {
   // Let's have 5 tabs open
   for(var i = 0; i < 4; i++) {
     tabBrowser.openTab();

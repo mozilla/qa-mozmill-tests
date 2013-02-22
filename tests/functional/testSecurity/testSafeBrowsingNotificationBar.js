@@ -14,8 +14,7 @@ const DOMAIN_NAME = "www.mozilla.org";
 const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
                             'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);

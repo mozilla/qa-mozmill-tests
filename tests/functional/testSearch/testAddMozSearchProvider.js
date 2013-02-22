@@ -15,15 +15,13 @@ const TIMEOUT_INSTALL_DIALOG = 30000;
 const searchEngine = {name: "mozqa.com",
                       url : localTestFolder + "search/mozsearch.html"};
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   searchBar.removeEngine(searchEngine.name);
   searchBar.restoreDefaultEngines();
 }
@@ -31,8 +29,7 @@ var teardownModule = function(module)
 /**
  * Add a MozSearch Search plugin
  */
-var testAddMozSearchPlugin = function()
-{
+var testAddMozSearchPlugin = function() {
   // Open the web page with the test MozSearch plugin
   controller.open(searchEngine.url);
   controller.waitForPageLoad();
@@ -65,8 +62,7 @@ var testAddMozSearchPlugin = function()
  * @param {MozMillController} controller
  *        MozMillController of the browser window to operate on
  */
-var handleSearchInstall = function(controller)
-{
+var handleSearchInstall = function(controller) {
   // Installation successful?
   var confirmTitle = utils.getProperty("chrome://global/locale/search/search.properties",
                                        "addEngineConfirmTitle");

@@ -21,13 +21,13 @@ var setupModule = function () {
   addons.useAmoPreviewUrls();
   prefs.preferences.setPref(PREF_MAX_RESULTS, NUMBER_OF_MAX_RESULTS);
   tabBrowser.closeAllTabs();
- }
+}
 
 var teardownModule = function () {
   prefs.preferences.clearUserPref(PREF_MAX_RESULTS);
   addons.resetAmoPreviewUrls();
   tabBrowser.closeAllTabs();
- }
+}
 
  /**
   * Test the search for Add-ons
@@ -58,4 +58,4 @@ var testSearchAddons = function () {
   // Verify that the URL contains an AMO address
   assert.contain(locationBar.value, addons.AMO_PREVIEW_DOMAIN,
                  "The URL contains the correct address ");
- }
+}
