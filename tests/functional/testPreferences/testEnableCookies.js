@@ -5,7 +5,7 @@
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -56,6 +56,9 @@ var prefEnableCookieDialogCallback = function(controller) {
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
+  assert.waitFor(function () {
+    return historyMode.getNode().value === "custom";
+  }, "History mode is set to custom");
 
   // Enable cookies
   var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
@@ -77,12 +80,11 @@ var prefCheckEnableDialogCallback = function(controller) {
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
+  assert.waitFor(function () {
+    return historyMode.getNode().value === "custom";
+  }, "History mode is set to custom");
 
-  // The Show Cookies button doesn't receive focus that fast. Means a click will
-  // fail if sent too early. There is no property we can check so far. So lets
-  // use a sleep call for now.
   var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.sleep(500);
   controller.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", checkSavedCookies);
@@ -96,8 +98,6 @@ var prefCheckEnableDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 function checkSavedCookies(controller) {
-  controller.sleep(1000);
-
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   controller.waitForElement(removeCookieButton, TIMEOUT);
   expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");

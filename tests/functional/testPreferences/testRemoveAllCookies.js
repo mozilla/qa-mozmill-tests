@@ -46,12 +46,11 @@ var prefDialogCallback = function(controller) {
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
+  assert.waitFor(function () {
+    return historyMode.getNode().value === "custom";
+  }, "History mode is set to custom");
 
-  // The Show Cookies button doesn't receive focus that fast. Means a click will
-  // fail if sent too early. There is no property we can check so far. So lets
-  // use a sleep call for now.
   var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.sleep(500);
   controller.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", deleteAllCookies);

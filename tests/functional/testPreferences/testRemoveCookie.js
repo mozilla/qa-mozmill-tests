@@ -5,7 +5,7 @@
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -53,12 +53,11 @@ var prefDialogCallback = function(controller) {
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
+  assert.waitFor(function () {
+    return historyMode.getNode().value === "custom";
+  }, "History mode is set to custom");
 
-  // The Show Cookies button doesn't receive focus that fast. Means a click will
-  // fail if sent too early. There is no property we can check so far. So lets
-  // use a sleep call for now.
   var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.sleep(500);
   controller.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", deleteCookie);
@@ -76,7 +75,6 @@ function deleteCookie(controller) {
   var filterField = new elementslib.ID(controller.window.document, "filter");
   controller.waitForElement(filterField, TIMEOUT);
   controller.type(filterField, "litmus_1");
-  controller.sleep(500);
 
   // Get the number of cookies in the file manager before removing a single cookie
   var cookiesList = controller.window.document.getElementById("cookiesList");
