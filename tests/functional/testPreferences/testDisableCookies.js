@@ -5,7 +5,7 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
-var { expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
@@ -58,12 +58,11 @@ var prefDisableCookieDialogCallback = function(controller) {
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
   controller.waitForElement(historyMode, TIMEOUT);
   controller.select(historyMode, null, null, "custom");
+  assert.waitFor(function () {
+    return historyMode.getNode().value === "custom";
+  }, "History mode is set to custom");
 
-  // The Disable Cookies button doesn't receive focus that fast. Means a click will
-  // fail if sent too early. There is no property we can check so far. So lets
-  // use a sleep call for now.
   var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
-  controller.sleep(500);
   controller.check(acceptCookiesPref, false);
 
   // Close the preferences dialog
@@ -77,12 +76,7 @@ var prefDisableCookieDialogCallback = function(controller) {
  */
 var prefCheckDisableDialogCallback = function(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
-
-  // The Show Cookies button doesn't receive focus that fast. Means a click will
-  // fail if sent too early. There is no property we can check so far. So lets
-  // use a sleep call for now.
   var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.sleep(500);
   controller.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", checkCookieNotSaved);
