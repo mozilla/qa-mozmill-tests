@@ -5,12 +5,15 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const TIMEOUT_DOWNLOAD = 25000;
 
 const LOCAL_INSTALL_FILE = "install.html?addon="
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/addons/");
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const ADDONS = [
   {id: "test-empty@quality.mozilla.org",
@@ -23,6 +26,7 @@ const ADDONS = [
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add localhost
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
