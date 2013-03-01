@@ -21,7 +21,6 @@ function setupModule(module) {
 
   bs = places.bookmarksService;
   hs = places.historyService;
-  ls = places.livemarkService;
 }
 
 function teardownModule(module) {
