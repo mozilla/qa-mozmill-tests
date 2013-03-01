@@ -5,10 +5,13 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
 const TIMEOUT_DOWNLOAD = 25000;
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const ADDON = {
   url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi",
@@ -18,6 +21,7 @@ const ADDON = {
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Store the addon in the persisted object
   persisted.addon = ADDON;

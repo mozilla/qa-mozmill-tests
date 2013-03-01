@@ -9,6 +9,7 @@ var prefs = require("../../../../lib/prefs");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -18,6 +19,7 @@ function setupModule() {
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   delete persisted.addon;
   addonsManager.close();

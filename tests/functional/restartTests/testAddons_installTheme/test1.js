@@ -5,10 +5,13 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_INSTALL_SCRIPT = "addons/install.html?addon=";
 const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const THEME = {
   name: "Theme (Plain)",
@@ -21,6 +24,7 @@ const TIMEOUT_DOWNLOAD = 25000;
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add the local test folder
   addons.addToWhiteList(LOCAL_TEST_FOLDER);
