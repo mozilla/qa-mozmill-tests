@@ -18,12 +18,15 @@ const ADDONS = [
 ];
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
