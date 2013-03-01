@@ -20,6 +20,7 @@ const ADDON = {
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
@@ -29,6 +30,8 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
 
   persisted.addon = ADDON;
+
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Update extensions.blocklist.url pref to our blocklist
   prefs.preferences.setPref(PREF_BLOCKLIST, BLOCKLIST_URL);

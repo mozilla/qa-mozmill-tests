@@ -5,10 +5,13 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const TIMEOUT_DOWNLOAD = 25000;
 
@@ -20,6 +23,8 @@ const THEME = {
 
 function setupModule() {
   controller = mozmill.getBrowserController();
+
+  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
