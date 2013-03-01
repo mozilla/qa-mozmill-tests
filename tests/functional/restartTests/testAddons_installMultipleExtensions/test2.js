@@ -5,7 +5,10 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {expect} = require("../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -16,6 +19,8 @@ function setupModule() {
 
 function teardownModule() {
   addonsManager.close();
+
+  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   delete persisted.addons;
 }

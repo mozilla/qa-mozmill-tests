@@ -5,10 +5,13 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {expect} = require("../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+
+const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -19,6 +22,7 @@ function setupModule() {
 
 function teardownModule() {
   delete persisted.theme;
+  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   addons.resetDiscoveryPaneURL();
   addonsManager.close();
