@@ -6,8 +6,7 @@
 var { expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-const gDelay   = 0;
-const gTimeout = 5000;
+const DELAY = 0;
 
 // Global variable to share engine names
 var gSharedData = {preEngines: [ ], postEngines: [ ]};
@@ -71,15 +70,15 @@ var reorderEngines = function(controller)
 
   // Move two of the engines down
   manager.moveDownEngine(engines[0].name); // [2-1-3]
-  manager.controller.sleep(gDelay);
+  manager.controller.sleep(DELAY);
   manager.moveDownEngine(engines[0].name); // [2-3-1]
-  manager.controller.sleep(gDelay);
+  manager.controller.sleep(DELAY);
   manager.moveDownEngine(engines[1].name); // [3-2-1]
-  manager.controller.sleep(gDelay);
+  manager.controller.sleep(DELAY);
 
   // Move one engine up
   manager.moveUpEngine(engines[engines.length - 1].name);
-  manager.controller.sleep(gDelay);
+  manager.controller.sleep(DELAY);
 
   // Save initial state
   gSharedData.preEngines = engines;
