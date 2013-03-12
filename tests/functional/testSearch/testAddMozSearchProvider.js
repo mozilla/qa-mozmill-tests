@@ -8,12 +8,12 @@ var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
 
-const localTestFolder = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 
 const TIMEOUT_INSTALL_DIALOG = 30000;
 
-const searchEngine = {name: "mozqa.com",
-                      url : localTestFolder + "search/mozsearch.html"};
+const SEARCH_ENGINE = {name: "mozqa.com",
+                       url : LOCAL_TEST_FOLDER + "search/mozsearch.html"};
 
 var setupModule = function(module)
 {
@@ -24,7 +24,7 @@ var setupModule = function(module)
 
 var teardownModule = function(module)
 {
-  searchBar.removeEngine(searchEngine.name);
+  searchBar.removeEngine(SEARCH_ENGINE.name);
   searchBar.restoreDefaultEngines();
 }
 
@@ -34,7 +34,7 @@ var teardownModule = function(module)
 var testAddMozSearchPlugin = function()
 {
   // Open the web page with the test MozSearch plugin
-  controller.open(searchEngine.url);
+  controller.open(SEARCH_ENGINE.url);
   controller.waitForPageLoad();
 
   // Create a modal dialog instance to handle the installation dialog
@@ -47,15 +47,15 @@ var testAddMozSearchPlugin = function()
   md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
 
   assert.waitFor(function () {
-    return searchBar.isEngineInstalled(searchEngine.name);
-  }, "Search engine '" + searchEngine.name + "' has been installed");
+    return searchBar.isEngineInstalled(SEARCH_ENGINE.name);
+  }, "Search engine '" + SEARCH_ENGINE.name + "' has been installed");
 
   // The engine should not be selected by default
-  expect.notEqual(searchBar.selectedEngine, searchEngine.name,
+  expect.notEqual(searchBar.selectedEngine, SEARCH_ENGINE.name,
                   "New search engine is not selected");
 
   // Select search engine and start a search
-  searchBar.selectedEngine = searchEngine.name;
+  searchBar.selectedEngine = SEARCH_ENGINE.name;
   searchBar.search({text: "Firefox", action: "goButton"});
 }
 

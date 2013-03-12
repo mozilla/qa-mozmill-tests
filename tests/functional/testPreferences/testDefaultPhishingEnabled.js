@@ -6,8 +6,7 @@
 var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const TIMEOUT = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -35,7 +34,7 @@ var prefPaneSetCallback = function(controller) {
   var forgeryElem = new elementslib.ID(controller.window.document, "blockWebForgeries");
 
   // Verify Block Attack Sites and Reported Web Forgeries are checked by default
-  controller.waitForElement(attackElem, gTimeout);
+  controller.waitForElement(attackElem, TIMEOUT);
   expect.ok(attackElem.getNode().checked, "Block Attack Sites checkbox is checked");
   expect.ok(forgeryElem.getNode().checked, "Reported Web Forgeries checkbox is checked");
 

@@ -9,9 +9,6 @@ var prefs = require("../../../lib/prefs");
 var tabbedbrowser = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 const TIMEOUT_MODAL_DIALOG = 30000;
 
 var gPreferences = new Array("security.warn_entering_secure",

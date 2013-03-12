@@ -8,9 +8,6 @@ var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new tabs.tabBrowser(controller);

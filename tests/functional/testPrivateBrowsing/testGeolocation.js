@@ -9,12 +9,10 @@ var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const gDelay = 0;
-const gTimeout = 7000;
-
 const PREF_GEO_TOKEN = "geo.wifi.access_token";
 
-const localTestFolder = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "geolocation/position.html";
 
 var setupModule = function(module)
 {
@@ -45,7 +43,7 @@ var testTabRestoration = function()
   pb.start();
 
   // Load a page which supports geolocation and accept sharing the location
-  controller.open(localTestFolder + "geolocation/position.html");
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   var shortcut = utils.getProperty("chrome://browser/locale/browser.properties",

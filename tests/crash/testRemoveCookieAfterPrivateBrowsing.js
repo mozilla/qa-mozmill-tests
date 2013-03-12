@@ -6,8 +6,6 @@
 var modalDialog = require("../../lib/modal-dialog");
 var privateBrowsing = require("../../lib/private-browsing");
 
-const gTimeout = 5000;
-
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
