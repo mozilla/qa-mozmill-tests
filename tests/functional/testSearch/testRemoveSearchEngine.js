@@ -6,9 +6,6 @@
 var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 var setupModule = function(module)
 {
   controller = mozmill.getBrowserController();
