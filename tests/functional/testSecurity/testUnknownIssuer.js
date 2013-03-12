@@ -5,8 +5,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const gDelay = 0;
-const gTimeout = 5000;
+const G_TIMEOUT = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -22,7 +21,7 @@ var testUnknownIssuer = function() {
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link, gTimeout);
+  controller.waitForElement(link, G_TIMEOUT);
   expect.equal(link.getNode().textContent, "secure.mur.at", "Domain name is visible");
 
   // Verify "Get Me Out Of Here!" button appears
@@ -35,7 +34,7 @@ var testUnknownIssuer = function() {
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text, gTimeout);
+  controller.waitForElement(text, G_TIMEOUT);
   expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
                  "The error code is an unknown issuer error");
 }

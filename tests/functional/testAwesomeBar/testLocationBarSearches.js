@@ -7,20 +7,20 @@ var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const gTimeout = 5000;
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "search/searchresults.html?q=";
 
-const localTestFolder = collector.addHttpResource('../../../data/');
-const prefName = "keyword.URL";
+const PREF_NAME = "keyword.URL";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   locationBar =  new toolbars.locationBar(controller);
 
-  prefs.preferences.setPref(prefName, localTestFolder + "search/searchresults.html?q=");
+  prefs.preferences.setPref(PREF_NAME, LOCAL_TEST_PAGE);
 }
 
 var teardownModule = function() {
-  prefs.preferences.clearUserPref(prefName);
+  prefs.preferences.clearUserPref(PREF_NAME);
 }
 
 /**

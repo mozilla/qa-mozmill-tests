@@ -11,12 +11,11 @@ const PREF_KEEP_ALIVE = "network.http.keep-alive";
 const PREF_SSL_3 = "security.enable_ssl3";
 const PREF_TLS = "security.enable_tls";
 
-const gDelay = 0;
-const gTimeout = 5000;
+const G_TIMEOUT = 5000;
 
 // TODO: move the dtds to a SecurityAPI, if one will be created
-const dtds = ["chrome://browser/locale/netError.dtd"];
-const property = "chrome://pipnss/locale/pipnss.properties";
+const DTDS = ["chrome://browser/locale/netError.dtd"];
+const PROPERTY = "chrome://pipnss/locale/pipnss.properties";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -54,9 +53,9 @@ var testDisableSSL = function() {
 
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
-  controller.waitForElement(title, gTimeout);
+  controller.waitForElement(title, G_TIMEOUT);
 
-  var nssFailure2title = utils.getEntity(dtds, "nssFailure2.title")
+  var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title")
   expect.equal(title.getNode().textContent, nssFailure2title,
                "The correct SSL error title is shown");
 
@@ -66,7 +65,7 @@ var testDisableSSL = function() {
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
-  controller.waitForElement(text, gTimeout);
+  controller.waitForElement(text, G_TIMEOUT);
 
   expect.contain(text.getNode().textContent, 'ssl_error_ssl_disabled',
                  "The SSL error message contains disabled information");
@@ -74,7 +73,7 @@ var testDisableSSL = function() {
   expect.contain(text.getNode().textContent, 'mail.mozilla.org',
                  "The SSL error message contains domain name");
 
-  var PSMERR_SSL_Disabled = utils.getProperty(property, 'PSMERR_SSL_Disabled');
+  var PSMERR_SSL_Disabled = utils.getProperty(PROPERTY, 'PSMERR_SSL_Disabled');
   expect.contain(text.getNode().textContent, PSMERR_SSL_Disabled,
                  "The SSL error message contains disabled property");
 }

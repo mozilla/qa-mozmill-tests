@@ -6,9 +6,6 @@
 var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
-const gDelay = 0;
-const gTimeout = 5000;
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 

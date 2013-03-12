@@ -8,14 +8,14 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { expect } = require("../../../lib/assertions");
 
 // File names for crash reporter application on all platforms
-const fileNames = {
-                   "darwin" : "crashreporter.app",
-                   "win32"  : "crashreporter.exe",
-                   "linux"  : "crashreporter"
-                  };
+const FILE_NAMES = {
+                    "darwin" : "crashreporter.app",
+                    "win32"  : "crashreporter.exe",
+                    "linux"  : "crashreporter"
+                   };
 
 // Expected states of the crash reporter
-const states = {
+const STATES = {
                 "Enabled" : true,
                 "ServerURLPattern" : /^https:\/\/crash-reports\.mozilla\.com\/submit.*/
                };
@@ -36,13 +36,13 @@ var testBreakpadInstalled = function () {
   var execFile = Cc["@mozilla.org/file/local;1"].
                  createInstance(Ci.nsILocalFile);
   execFile.initWithPath(Services.dirsvc.get("GreD", Ci.nsILocalFile).path);
-  execFile.append(fileNames[mozmill.platform]);
+  execFile.append(FILE_NAMES[mozmill.platform]);
 
   expect.ok(execFile.exists(), "The crash reporter executable is present");
 
-  expect.equal(crashReporter.enabled, states["Enabled"],
+  expect.equal(crashReporter.enabled, STATES["Enabled"],
                "The crash reporter is enabled");
 
-  expect.match(crashReporter.serverURL.spec, states["ServerURLPattern"],
+  expect.match(crashReporter.serverURL.spec, STATES["ServerURLPattern"],
                "The Breakpad server URL is correct");
 }

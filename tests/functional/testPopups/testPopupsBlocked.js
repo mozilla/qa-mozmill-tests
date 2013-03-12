@@ -8,12 +8,12 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const localTestFolder = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "popups/popup_trigger.html?count=2";
 
 const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
 
-const gDelay = 0;
-const gTimeout = 5000;
+const G_TIMEOUT = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -41,7 +41,7 @@ var testPopUpBlocked = function() {
   var windowCount = mozmill.utils.getWindows().length;
 
   // Open the Pop-up test site
-  controller.open(localTestFolder + "popups/popup_trigger.html?count=2");
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   // Check for the close button in the notification bar
@@ -50,7 +50,7 @@ var testPopUpBlocked = function() {
                                              '/{"class":"messageCloseButton tabbable"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
-  controller.waitForElement(button, gTimeout);
+  controller.waitForElement(button, G_TIMEOUT);
 
   expect.equal(windowCount, mozmill.utils.getWindows().length,
                "The window count has not changed");

@@ -6,7 +6,8 @@
 var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
-const localTestFolder = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
 
 const TIMEOUT_ARROWS = 10000;
 
@@ -31,7 +32,7 @@ var teardownModule = function() {
 
 var testScrollBackgroundTabIntoView = function() {
   // Open the testcase
-  controller.open(localTestFolder + "tabbedbrowsing/openinnewtab.html");
+  controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();
 
   var link1 = new elementslib.Name(controller.tabs.activeTab, "link_1");

@@ -9,8 +9,7 @@ var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 
-const gDelay = 0;
-const gTimeout = 5000;
+const G_TIMEOUT = 5000;
 
 const DOMAIN_NAME = "www.mozilla.org";
 const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
@@ -59,7 +58,7 @@ var checkGetMeOutOfHereButton = function() {
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutButton");
 
   // Wait for the getMeOutOfHereButton to be safely loaded on the warning page and click it
-  controller.waitThenClick(getMeOutOfHereButton, gTimeout);
+  controller.waitThenClick(getMeOutOfHereButton, G_TIMEOUT);
   controller.waitForPageLoad();
 
   // Check that the default home page has been opened
@@ -77,7 +76,7 @@ var checkGetMeOutOfHereButton = function() {
 var checkReportButton = function(type, badUrl) {
   // Wait for the reportButton to be safely loaded onto the warning page
   var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
-  controller.waitThenClick(reportButton, gTimeout);
+  controller.waitThenClick(reportButton, G_TIMEOUT);
   controller.waitForPageLoad();
 
   var locale = prefs.preferences.getPref("general.useragent.locale", "");
@@ -112,7 +111,7 @@ var checkIgnoreWarningButton = function(url) {
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
 
   // Wait for the ignoreButton to be safely loaded on the warning page
-  controller.waitThenClick(ignoreWarningButton, gTimeout);
+  controller.waitThenClick(ignoreWarningButton, G_TIMEOUT);
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
