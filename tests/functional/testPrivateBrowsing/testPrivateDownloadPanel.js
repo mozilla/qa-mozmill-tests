@@ -19,34 +19,33 @@ const DOWNLOADS = {
     "unknown_type.fmtd"
   ],
   pb: [
-    "unknown_type_pb.stbf",
-    "unknown_type_pb.dets"
+    "unknown_type_pb.stbf"
   ]
 };
 
-var setupModule = function () {
-  controller = mozmill.getBrowserController();
+var setupModule = function (aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  pb = new privateBrowsing.PrivateBrowsingWindow();
-  pb.open(controller);
+  aModule.pb = new privateBrowsing.PrivateBrowsingWindow();
+  aModule.pb.open(aModule.controller);
 
-  dm = new downloads.downloadManager();
+  aModule.dm = new downloads.downloadManager();
 
   // Set the Download Folder to %profile%/downloads
-  dm.DownloadLocation = DOWNLOAD_LOCATION;
+  aModule.dm.downloadDir = DOWNLOAD_LOCATION;
 
   // Clean the Download Manager database
-  dm.cleanAll();
+  aModule.dm.cleanAll();
 }
 
-var teardownModule = function () {
+var teardownModule = function (aModule) {
   // Clean all downloaded files from the system
-  dm.cleanAll();
+  aModule.dm.cleanAll();
 
-  dm.resetDownloadLocation();
+  aModule.dm.resetDownloadDir();
 
-  dm.close();
-  pb.close();
+  aModule.dm.close();
+  aModule.pb.close();
 }
 
 /**
@@ -74,15 +73,13 @@ var testPrivateDownloadPanel = function () {
   var downloadedFiles = dm.getPanelDownloads(controller);
 
   // Check that number of normal downloaded files is identical to the original download list
-  var intersection = utils.arrayIntersection(downloadedFiles, DOWNLOADS.normal);
-  assert.equal(intersection.length, DOWNLOADS.normal.length,
-               "Normal Downloads are correctly shown in the Downloads Indicator Panel");
+  assert._deepEqual(downloadedFiles, DOWNLOADS.normal,
+                    "Normal Downloads are correctly shown in the Downloads Panel");
 
   // Open the Private Download Indicator and read the downloaded item list
   var downloadedPBFiles = dm.getPanelDownloads(pb.controller);
 
   // Check that number of pb downloaded files is identical to the original pb download list
-  var PBIntersection = utils.arrayIntersection(downloadedPBFiles, DOWNLOADS.pb);
-  assert.equal(PBIntersection.length, DOWNLOADS.pb.length,
-               "Private Downloads are correctly shown in the Private Downloads Indicator Panel");
+  assert._deepEqual(downloadedPBFiles, DOWNLOADS.pb,
+                    "Private Downloads are correctly shown in the Private Downloads Panel");
 }
