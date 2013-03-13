@@ -4,40 +4,49 @@
 
 // Include required modules
 var { assert } = require("../../../lib/assertions");
-var tabs = require("../../../lib/tabs");
 var endurance = require("../../../lib/endurance");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  tabBrowser = new tabs.tabBrowser(controller);
-  enduranceManager = new endurance.EnduranceManager(controller);
-  tabBrowser.closeAllTabs();
+const SCROLL_DELAY = "toolkit.scrollbox.clickToScroll.scrollDelay";
+const SCROLL_SMOOTH = "toolkit.scrollbox.smoothScroll";
 
-  scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
+
+  prefs.preferences.setPref(SCROLL_DELAY, 0);
+  prefs.preferences.setPref(SCROLL_SMOOTH, false);
+
+  aModule.scrollButtonDown = aModule.tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
 }
 
-function teardownModule(module) {
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(SCROLL_DELAY);
+  prefs.preferences.clearUserPref(SCROLL_SMOOTH);
+
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**
  * Tests pinning and unpinning app tabs
  */
 function testPinAndUnpinAppTab() {
-  var contextMenu = controller.getMenu("#tabContextMenu");
   var currentTab = null;
   enduranceManager.run(function () {
 
     // Open tabs
     enduranceManager.loop(function () {
-        if (enduranceManager.currentEntity > 1) {
-          tabBrowser.openTab();
-        }
-        controller.open(LOCAL_TEST_PAGE);
-        controller.waitForPageLoad();
+      if (enduranceManager.currentEntity > 1) {
+        tabBrowser.openTab();
+      }
+      controller.open(LOCAL_TEST_PAGE);
+      controller.waitForPageLoad();
     });
 
     // Pin tabs
@@ -47,12 +56,13 @@ function testPinAndUnpinAppTab() {
       // Switch to the last tab and wait for it to scroll into view if necessary
       controller.tabs.selectTabIndex(lastTabIndex);
       assert.waitFor(function () {
-        return scrollButtonDown.getNode().hasAttribute("collapsed") || scrollButtonDown.getNode().disabled;
+        return scrollButtonDown.getNode().hasAttribute("collapsed") ||
+               scrollButtonDown.getNode().disabled;
       }, "Tab has scrolled into view.");
 
-      currentTab = tabBrowser.getTab(tabBrowser.length-1);
+      currentTab = tabBrowser.getTab(lastTabIndex);
       enduranceManager.addCheckpoint("Pinning tab");
-      contextMenu.select("#context_pinTab", currentTab);
+      tabBrowser.pinTab(currentTab);
       enduranceManager.addCheckpoint("Tab has been pinned");
     });
 
@@ -60,7 +70,7 @@ function testPinAndUnpinAppTab() {
     enduranceManager.loop(function () {
       currentTab = tabBrowser.getTab(0);
       enduranceManager.addCheckpoint("Unpinning tab");
-      contextMenu.select("#context_unpinTab", currentTab);
+      tabBrowser.unpinTab(currentTab);
       enduranceManager.addCheckpoint("Tab has been unpinned");
     });
 
@@ -68,9 +78,3 @@ function testPinAndUnpinAppTab() {
     tabBrowser.closeAllTabs();
   });
 }
-
-// Bug 707663 - Timeout failure | Tab has scrolled into view
-setupModule.__force_skip__ = "Bug 707663 - Timeout failure | " +
-                             "Tab has scrolled into view";
-teardownModule.__force_skip__ = "Bug 707663 - Timeout failure | " +
-                                "Tab has scrolled into view";
