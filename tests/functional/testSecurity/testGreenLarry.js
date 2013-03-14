@@ -10,6 +10,8 @@ var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
 
+const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
@@ -21,7 +23,7 @@ var setupModule = function(module) {
  */
 var testLarryGreen = function() {
   // Go to a "green" website
-  controller.open("https://addons.mozilla.org/licenses/5.txt");
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
