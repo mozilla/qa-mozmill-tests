@@ -22,5 +22,3 @@ var setupModule = function() {
  // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
  prefs.preferences.setPref(PROXY_TYPE, 4);
 }
-
-setupModule.__force_skip__ = "Bug 827276 - Test failure 'Check for updates has been completed' in proxy environment";
