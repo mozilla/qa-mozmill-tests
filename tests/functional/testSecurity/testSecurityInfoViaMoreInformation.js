@@ -8,6 +8,8 @@ var utils = require("../../../lib/utils");
 
 const TIMEOUT = 5000;
 
+const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
+
 var setupModule = function() {
   controller = mozmill.getBrowserController();
   cert = null;
@@ -19,7 +21,7 @@ var setupModule = function() {
  */
 var testSecurityInfoViaMoreInformation = function() {
   // Go to a secure website
-  controller.open("https://addons.mozilla.org/licenses/5.txt");
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
