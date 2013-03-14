@@ -4,58 +4,55 @@
 
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
+var { nodeCollector } = require("../../../lib/dom-utils");
 var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
 const PREF_ACCEPT_LANG = "intl.accept_languages";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.browserLocale = utils.appInfo.locale;
+var setupModule = function (aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.contentLocale = null;
+
+  var intlProperties = prefs.preferences.getPref(PREF_ACCEPT_LANG, "", false);
+  var initLangString = utils.getProperty(intlProperties, PREF_ACCEPT_LANG);
+  aModule.initLang = initLangString.toLowerCase().split(/\s*,\s*/);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function (aModule) {
   prefs.preferences.clearUserPref(PREF_ACCEPT_LANG);
 }
 
 /**
  * Choose your preferred language for display
  */
-var testSetLanguages = function () {
-  // Call preferences dialog and set primary language to Italian
+var testChangeContentLanguage = function () {
+  // Set a primary language, other than preinstalled locales
   prefs.openPreferencesDialog(controller, prefDialogCallback);
 
-  var acceptedLanguage = prefs.preferences.getPref(PREF_ACCEPT_LANG, '');
+  var acceptedLanguage = prefs.preferences.getPref(PREF_ACCEPT_LANG, "");
 
-  // If we test an Italian build, check that the primary language is Polish
-  if (browserLocale === "it") {
-    expect.ok(acceptedLanguage.indexOf("pl") === 0,
-              "The primary language set is Polish");
-  }
-  else {
-    // Verify the primary language is Italian
-    expect.ok(acceptedLanguage.indexOf("it") === 0,
-              "The primary language set is Italian");
-  }
+  // Verify the primary language is correctly set
+  expect.match(acceptedLanguage, "/^" + contentLocale + "/",
+               "The primary language has been correctly updated");
 }
 
 /**
  * Open preferences dialog to switch the primary language
  *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
+ * @param {MozMillController} aController Controller of the window to operate on
  */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  prefDialog.paneId = 'paneContent';
+var prefDialogCallback = function (aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
+  prefDialog.paneId = "paneContent";
 
-  // Call language dialog and set Italian as primary language
-  var md = new modalDialog.modalDialog(controller.window);
+  // Call language dialog and set a new primary language
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(langHandler);
 
-  var language = new elementslib.ID(controller.window.document, "chooseLanguage");
-  controller.waitThenClick(language);
+  var language = new elementslib.ID(aController.window.document, "chooseLanguage");
+  aController.waitThenClick(language);
   md.waitForDialog();
 
   prefDialog.close(true);
@@ -64,46 +61,52 @@ var prefDialogCallback = function(controller) {
 /**
  * Callback handler for languages dialog
  *
- * @param {MozMillController} controller
- *        MozMillController of the window to operate on
+ * @param {MozMillController} aController MozMillController of the window to operate on
  */
-var langHandler = function(controller) {
-  // Add the Italian Language, or Polish, if it is an Italian build
-  if (browserLocale === "it") {
-    var language = utils.getProperty("chrome://global/locale/languageNames.properties",
-                                     "pl");
-  } else {
-    var language = utils.getProperty("chrome://global/locale/languageNames.properties",
-                                     "it");
-  }
+var langHandler = function (aController) {
+  // Get the UI for the language list
+  var langDropDown = new elementslib.ID(aController.window.document, "availableLanguages");
+  aController.waitForElement(langDropDown);
 
-  // Select the language from the list
-  var langDropDown = new elementslib.ID(controller.window.document, "availableLanguages");
-  controller.waitForElement(langDropDown);
+  // Get the language list
+  var collector = new nodeCollector(langDropDown.getNode());
+  var languageList = collector.queryNodes("menuitem");
 
-  for (i = 0; i < language.length; i++) {
-    controller.keypress(langDropDown, language[i], {});
-    controller.sleep(100);
-  };
+  // Filter out installed locales
+  var filteredLanguageList = languageList.filter(function (aElement) {
+    return initLang.indexOf(aElement.getAttribute("id")) === -1;
+  });
+
+  // Pick a random language
+  var randomPosition = Math.floor(Math.random() * filteredLanguageList.nodes.length);
+  var languageName = filteredLanguageList.nodes[randomPosition].getAttribute("label");
+  contentLocale = filteredLanguageList.nodes[randomPosition].getAttribute("id");
+
+  // Select the language in the dropdown
+  aController.click(langDropDown);
+  assert.waitFor(function () {
+    return langDropDown.getNode().open === true;
+  }, "Language Drop Down has been opened");
+  aController.click(filteredLanguageList.elements[randomPosition]);
 
   // Wait until the add button has been enabled
-  var addButton = new elementslib.ID(controller.window.document, "addButton");
+  var addButton = new elementslib.ID(aController.window.document, "addButton");
   assert.waitFor(function () {
     return !addButton.getNode().disabled;
   }, "The 'Add' button has been enabled");
-  controller.click(addButton);
+  aController.click(addButton);
 
   // Move the Language to the Top of the List and Accept the new settings
-  var upButton = new elementslib.ID(controller.window.document, "up");
-
-  while (upButton.getNode().getAttribute("disabled") != "true") {
-    controller.click(upButton);
-    controller.sleep(0);
-  };
+  var upButton = new elementslib.ID(aController.window.document, "up");
+  assert.waitFor(function () {
+    aController.click(upButton);
+    return upButton.getNode().getAttribute("disabled") === "true";
+  }, "The Language has been moved to the top of the list");
 
   // Save and close the languages dialog window
-  var okButton = new elementslib.Lookup(controller.window.document, '/id("LanguagesDialog")' +
-                                                                    '/anon({"anonid":"dlg-buttons"})' +
-                                                                    '/{"dlgtype":"accept"}');
-  controller.click(okButton);
+  var okButton = new elementslib.Lookup(aController.window.document,
+                                        '/id("LanguagesDialog")' +
+                                        '/anon({"anonid":"dlg-buttons"})' +
+                                        '/{"dlgtype":"accept"}');
+  aController.click(okButton);
 }
