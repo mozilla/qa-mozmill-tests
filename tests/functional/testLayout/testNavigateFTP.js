@@ -4,13 +4,15 @@
 
 const TIMEOUT = 5000;
 
+const TEST_URL = "ftp://ftp.mozilla.org/pub/";
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
 var testNavigateFTP = function () {
   // opens the mozilla.org ftp page then navigates through a couple levels.
-  controller.open('ftp://ftp.mozilla.org/pub/');
+  controller.open(TEST_URL);
   controller.waitForPageLoad();
 
   var firefox = new elementslib.Link(controller.tabs.activeTab, 'firefox');

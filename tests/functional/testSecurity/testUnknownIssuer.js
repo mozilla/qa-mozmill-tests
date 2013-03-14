@@ -7,6 +7,8 @@ var { assert, expect } = require("../../../lib/assertions");
 
 const TIMEOUT = 5000;
 
+const TEST_URL = "https://mur.at";
+
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 }
@@ -17,7 +19,7 @@ var setupModule = function(module) {
  */
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
-  controller.open('https://mur.at');
+  controller.open(TEST_URL);
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");

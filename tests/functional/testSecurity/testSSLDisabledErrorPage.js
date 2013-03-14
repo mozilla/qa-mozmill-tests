@@ -5,6 +5,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const PREF_KEEP_ALIVE = "network.http.keep-alive";
@@ -13,12 +14,16 @@ const PREF_TLS = "security.enable_tls";
 
 const TIMEOUT = 5000;
 
+const TEST_URL = "https://mail.mozilla.org";
+
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
 const PROPERTY = "chrome://pipnss/locale/pipnss.properties";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
+
+  tabs.closeAllTabs(controller);
 
   // XXX: Bug 513129
   //      Disable Keep-alive connections
@@ -44,11 +49,8 @@ var teardownModule = function(module) {
  *
  */
 var testDisableSSL = function() {
-  // Open a blank page so we don't have any error page shown
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-
-  controller.open("https://mail.mozilla.org");
+  // Open the test page
+  controller.open(TEST_URL);
   controller.waitForPageLoad();
 
   // Verify "Secure Connection Failed" error page title
