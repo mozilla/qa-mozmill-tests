@@ -13,7 +13,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "popups/popup_trigger.html?count=2";
 
 const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
 
-const G_TIMEOUT = 5000;
+const TIMEOUT = 5000;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -50,7 +50,7 @@ var testPopUpBlocked = function() {
                                              '/{"class":"messageCloseButton tabbable"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
-  controller.waitForElement(button, G_TIMEOUT);
+  controller.waitForElement(button, TIMEOUT);
 
   expect.equal(windowCount, mozmill.utils.getWindows().length,
                "The window count has not changed");

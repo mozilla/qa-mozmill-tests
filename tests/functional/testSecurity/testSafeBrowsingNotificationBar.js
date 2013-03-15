@@ -7,7 +7,7 @@ var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const G_TIMEOUT = 5000;
+const TIMEOUT = 5000;
 
 const DOMAIN_NAME = "www.mozilla.org";
 const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
@@ -62,7 +62,7 @@ var checkIgnoreWarningButton = function(badUrl) {
   // Verify the element is loaded onto the page and go to the phishing site
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
-  controller.waitThenClick(ignoreWarningButton, G_TIMEOUT);
+  controller.waitThenClick(ignoreWarningButton, TIMEOUT);
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
@@ -90,11 +90,11 @@ var checkNoPhishingButton = function(badUrl) {
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
     tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-    controller.waitThenClick(button, G_TIMEOUT);
+    controller.waitThenClick(button, TIMEOUT);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
-    controller.waitForElement(urlField, G_TIMEOUT);
+    controller.waitForElement(urlField, TIMEOUT);
     expect.equal(urlField.getNode().value, 'http://www.mozilla.org/firefox/its-a-trap.html',
                  "not-a-web-forgery report page is loaded");
 
@@ -106,7 +106,7 @@ var checkNoPhishingButton = function(badUrl) {
                                                '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
     tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-    controller.waitThenClick(button, G_TIMEOUT);
+    controller.waitThenClick(button, TIMEOUT);
     controller.waitForPageLoad(controller.tabs.getTab(1));
 
     // Verify the not-an-attack-site report page is loaded
@@ -129,7 +129,7 @@ var checkGetMeOutOfHereButton = function() {
                                              '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button, G_TIMEOUT);
+  controller.waitThenClick(button, TIMEOUT);
 
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
@@ -148,7 +148,7 @@ var checkXButton = function() {
                                              '/{"class":"messageCloseButton tabbable"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button, G_TIMEOUT);
+  controller.waitThenClick(button, TIMEOUT);
 
   controller.sleep(1000);
   assert.ok(!button.exists(), "The Close button has not been found");

@@ -10,7 +10,7 @@
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const G_DELAY = 100;
+const DELAY = 100;
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -41,7 +41,7 @@ var prefDialogCallback = function(controller) {
   // Step through each of the panes
   panes.forEach(function (pane) {
     prefDialog.paneId = pane;
-    controller.sleep(G_DELAY);
+    controller.sleep(DELAY);
   });
 
   // Close the Preferences window
