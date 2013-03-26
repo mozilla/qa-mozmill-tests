@@ -20,12 +20,13 @@ function setupModule(aModule) {
 
   // Skip test if we don't have Flash plugin enabled
   var isFlashActive = addons.getInstalledAddons(function (aAddon) {
-    if (aAddon.isActive && aAddon.type === "plugin" && aAddon.name.indexOf("Flash") > 0)
+    if (aAddon.isActive && aAddon.type === "plugin" && aAddon.name === "Shockwave Flash")
       return true;
   });
 
   if (!isFlashActive[0]) {
     testCheckFlashCookie.__force_skip__ = "No enabled Flash plugin detected";
+    teardownModule.__force_skip__ = "No enabled Flash plugin detected";
   }
 
   places.clearPluginData();
