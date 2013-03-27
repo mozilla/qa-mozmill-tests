@@ -71,7 +71,9 @@ function testInstallAddonWithEULA() {
             "The add-on has been correctly installed");
 }
 
-setupModule.__force_skip__ = "Bug 658369 - 'Echofon' add-on is not compatible" +
-                             "with Firefox Nightly, Aurora and Beta builds";
-teardownModule.__force_skip__ = "Bug 658369 - 'Echofon' add-on is not compatible" +
-                                "with Firefox Nightly, Aurora and Beta builds";
+// Bug 732353 - Disable all Discovery Pane tests
+//              due to unpredictable web dependencies
+setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
+                             "due to unpredictable web dependencies";
+teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
+                                "due to unpredictable web dependencies";
