@@ -6,7 +6,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
+var privateBrowsing = require("../../../lib/private-browsing");
 var tabs = require("../../../lib/tabs");
 
 const TEST_DOMAINS = ["http://domain1.mozqa.com",
@@ -14,7 +14,11 @@ const TEST_DOMAINS = ["http://domain1.mozqa.com",
 
 function setupModule() {
   controller = mozmill.getBrowserController();
-  pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+  pb = new privateBrowsing.privateBrowsing(controller);
+
+  // Make sure we are not in PB mode and don't show a prompt
+  pb.enabled = false;
+  pb.showPrompt = false;
 
   // Clear cache
   Services.cache.evictEntries(Ci.nsICache.STORE_ANYWHERE);
@@ -23,20 +27,21 @@ function setupModule() {
 }
 
 function teardownModule() {
-  pbWindow.close();
+  pb.reset();
 }
 
 /**
  * Test to check caching in Private Browsing
  */
 function testPrivateBrowsingCache() {
-  var diskEntriesCount, memoryEntriesCount, diskEntry, memoryEntry,
+  var diskEntriesCount, memoryEntriesCount, diskSize, diskEntry, memoryEntry,
       diskEntries = [], memoryEntries = [];
 
   var visitor = {
     visitDevice: function (aDeviceID, aDeviceInfo) {
       if (aDeviceID === "disk") {
         diskEntriesCount = aDeviceInfo.entryCount;
+        diskSize = aDeviceInfo.totalSize;
       }
       else if (aDeviceID === "memory") {
         memoryEntriesCount = aDeviceInfo.entryCount;
@@ -59,13 +64,15 @@ function testPrivateBrowsingCache() {
 
   // Get entries information for both disk and memory devices
   Services.cache.visitEntries(visitor);
-  assert.equal(diskEntriesCount, 0, "Disk cache has no entries");
 
-  pbWindow.open(controller);
+  assert.equal(diskEntriesCount, 0, "Disk cache has no entries");
+  assert.equal(diskSize, 0, "There is no disk storage in use");
+
+  pb.start();
 
   TEST_DOMAINS.forEach(function (aPage) {
-    pbWindow.controller.open(aPage);
-    pbWindow.controller.waitForPageLoad();
+    controller.open(aPage);
+    controller.waitForPageLoad();
   });
 
   Services.cache.visitEntries(visitor);
@@ -74,10 +81,13 @@ function testPrivateBrowsingCache() {
               "Visited page " + aPage + " is not present in PB disk cache entries");
   });
 
-  pbWindow.close();
+  expect.notEqual(memoryEntriesCount, 0, "Memory cache contains entries in PB");
+
+  pb.stop();
 
   Services.cache.visitEntries(visitor);
-  expect.equal(memoryEntriesCount, 0, "Memory cache has no entries after PB mode");
+  assert.equal(memoryEntriesCount, 0, "Memory cache has no entries after PB mode");
+
   TEST_DOMAINS.forEach(function (aPage) {
     assert.ok(diskEntries.indexOf(aPage) === -1,
               "Page " + aPage + " visited in PB is not present in disk cache entries");
