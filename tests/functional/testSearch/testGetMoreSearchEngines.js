@@ -48,8 +48,7 @@ function testGetMoreEngines () {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-var enginesHandler = function(controller)
-{
+var enginesHandler = function(controller) {
   // Click Browse link - dialog will close automatically
   var browseLink = new elementslib.ID(controller.window.document, "addEngines");
   controller.waitThenClick(browseLink);

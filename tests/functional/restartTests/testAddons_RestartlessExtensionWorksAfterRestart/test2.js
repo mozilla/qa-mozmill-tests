@@ -58,3 +58,6 @@ function testRestartlessExtensionWorksAfterRestart() {
   assert.equal(locationBar.getNode().value, EXPECTED_URL,
                "Current URL should match expected URL");
 }
+
+setupModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";
+teardownModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";

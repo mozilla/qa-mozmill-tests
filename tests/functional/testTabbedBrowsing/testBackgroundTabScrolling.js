@@ -11,8 +11,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
 
 const TIMEOUT_ARROWS = 10000;
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   tabBrowser = new tabs.tabBrowser(controller);
@@ -24,16 +23,14 @@ var setupModule = function(module)
   allTabsPopup = tabBrowser.getElement({type: "tabs_allTabsPopup"});
 }
 
-var teardownModule = function()
-{
+var teardownModule = function() {
   tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
   allTabsPopup.getNode().hidePopup();
 }
 
-var testScrollBackgroundTabIntoView = function()
-{
+var testScrollBackgroundTabIntoView = function() {
   // Open the testcase
   controller.open(LOCAL_TEST_PAGE);
   controller.waitForPageLoad();

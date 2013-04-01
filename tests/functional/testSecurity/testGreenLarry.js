@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-Components.utils.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 var TIMEOUT = 5000;
+
+const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -21,7 +23,7 @@ var setupModule = function(module) {
  */
 var testLarryGreen = function() {
   // Go to a "green" website
-  controller.open("https://addons.mozilla.org/licenses/5.txt");
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison

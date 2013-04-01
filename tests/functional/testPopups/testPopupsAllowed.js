@@ -13,8 +13,7 @@ const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "popups/popup_trigger.html?count=2";
 
 const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   tabBrowser = new tabs.tabBrowser(controller);
   tabBrowser.closeAllTabs();
@@ -22,8 +21,7 @@ var setupModule = function(module)
   prefs.preferences.setPref(PREF_POPUP_BLOCK, false);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   // Reset the pop-up blocking pref
   prefs.preferences.clearUserPref(PREF_POPUP_BLOCK);
 
@@ -37,8 +35,7 @@ var teardownModule = function(module)
  * Test to make sure pop-ups are not blocked
  *
  */
-var testPopUpAllowed = function()
-{
+var testPopUpAllowed = function() {
   var windowCount = mozmill.utils.getWindows().length;
 
   // Open the Pop-up test site

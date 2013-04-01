@@ -2,11 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-Components.utils.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
+
+const TEST_PAGE = "https://ssl-dv.mozqa.com";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -19,7 +21,7 @@ var setupModule = function(module) {
  */
 var testLarryBlue = function() {
   // Go to a "blue" website
-  controller.open("https://ssl-dv.mozqa.com");
+  controller.open(TEST_PAGE);
   controller.waitForPageLoad();
 
   // Get the information from the certificate
