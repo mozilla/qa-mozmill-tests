@@ -86,6 +86,8 @@ function prefPaneInit(controller, prefDialog) {
         { getBy : GET_BY_ID,
           id : "historyMode",
           target : WINDOW_CURRENT,
+          preHook : disableResetDialogCall,
+          postHook : restoreResetDialogCall,
           value : "custom",
           subContent : [
             { getBy : GET_BY_ID,
@@ -210,36 +212,38 @@ function testPrefWindowAccessKeys() {
  * Disables the Reset Dialog by overwriting the oncommand attribute
  * and saving the original value in a temporary location
  */
-function disableResetDialogCall(){
+function disableResetDialogCall() {
   var aCommand = this.getAttribute("oncommand");
   this.setAttribute("data-command-backup", aCommand);
-  this.setAttribute("oncommand", "gPrivacyPane.updateHistoryModePane();");
+  this.setAttribute("oncommand", "gPrivacyPane.updateHistoryModePane(); \
+                                  gPrivacyPane.updateHistoryModePrefs(); \
+                                  gPrivacyPane.updatePrivacyMicroControls();");
 }
 
 /**
  * Restore the oncommand attribute from the temporary location
  */
-function restoreResetDialogCall(){
+function restoreResetDialogCall() {
   var aCommand = this.getAttribute("data-command-backup");
   this.setAttribute("oncommand", aCommand);
   this.removeAttribute("data-command-backup");
 }
 
 /**
- * Disables the Reset Dialog by overwriting the preference attribute
+ * Disables the Reset Dialog by overwriting the oncommand attribute
  * and saving the original value in a temporary location
  */
-function disablePrivateBrowsingAutoStartPreference(){
-  var aPreference = this.getAttribute("preference");
-  this.setAttribute("data-preference-backup", aPreference);
-  this.removeAttribute("preference");
+function disablePrivateBrowsingAutoStartPreference() {
+  var aCommand = this.getAttribute("oncommand");
+  this.setAttribute("data-command-backup", aCommand);
+  this.removeAttribute("oncommand");
 }
 
 /**
  * Restore the preference attribute
  */
-function restorePrivateBrowsingAutoStartPreference(){
-  var aPreference = this.getAttribute("data-preference-backup");
-  this.setAttribute("preference", aPreference);
-  this.removeAttribute("data-preference-backup");
+function restorePrivateBrowsingAutoStartPreference() {
+  var aCommand = this.getAttribute("data-command-backup");
+  this.setAttribute("oncommand", aCommand);
+  this.removeAttribute("data-command-backup");
 }
