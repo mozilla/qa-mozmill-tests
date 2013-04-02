@@ -78,6 +78,7 @@ function testInstallTheme() {
   // Restart the browser using restart prompt
   var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: plainTheme});
+  controller.waitForElement(restartLink);
 
   controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
   controller.click(restartLink);
