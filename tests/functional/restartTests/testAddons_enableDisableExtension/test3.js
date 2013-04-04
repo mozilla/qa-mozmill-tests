@@ -36,9 +36,9 @@ function testEnableExtension() {
   // Click on the list view restart link
   var restartLink = addonsManager.getElement({type: "listView_restartLink",
                                               parent: addon});
-  controller.waitForElement(restartLink);
 
   // User initiated restart
   controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
+
   controller.click(restartLink);
 }
