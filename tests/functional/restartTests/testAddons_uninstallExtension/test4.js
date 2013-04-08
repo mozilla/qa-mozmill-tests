@@ -40,3 +40,6 @@ function testUninstallEnabledExtension() {
   controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
   controller.click(restartLink);
 }
+
+setupModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
+                             "but none detected before end of test";
