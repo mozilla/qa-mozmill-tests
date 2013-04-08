@@ -63,3 +63,8 @@ var testBackAndForward = function() {
     controller.waitForElement(element, TIMEOUT);
   }
 }
+
+if (mozmill.isMac) {
+  setupModule.__force_skip__ = "Bug 840022 - Test failure The forward button has been made" +
+                               " visible for the 1 page";
+}
