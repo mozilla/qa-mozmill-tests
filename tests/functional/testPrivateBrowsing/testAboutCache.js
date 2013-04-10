@@ -23,7 +23,7 @@ function setupModule() {
 }
 
 function teardownModule() {
-  pbWindow.close();
+  pbWindow.close(true);
 }
 
 /**
