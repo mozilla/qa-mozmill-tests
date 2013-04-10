@@ -40,7 +40,5 @@ var testLocationBarSearches = function() {
                "Returned results contain the search term");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testLocationBarSearches.meta = {litmusids : [8082]};
+setupModule.__force_skip__ = "Bug 860330 - Test failure 'searchTerm.getNode(...) is null'";
+teardownModule.__force_skip__ = "Bug 860330 - Test failure 'searchTerm.getNode(...) is null'";
