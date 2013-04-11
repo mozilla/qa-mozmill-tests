@@ -16,7 +16,9 @@ function setupModule(module) {
 
   // Prepare persisted object for update results
   // If an update fails the post build has to be the same as the pre build.
+  persisted.updateStagingPath = update.stagingDirectory.path;
   persisted.updateIndex = 0;
+
   persisted.updates = [{
     build_pre : update.buildInfo,
     build_post : update.buildInfo,
