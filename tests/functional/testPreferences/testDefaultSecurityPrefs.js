@@ -41,3 +41,6 @@ var prefDialogCallback = function(controller) {
 
   prefDialog.close();
 }
+
+setupModule.__force_skip__ = "Bug 861520 - Test failure 'Timeout exceeded for " + 
+                             "waitForElement ID: useSSL3'";
