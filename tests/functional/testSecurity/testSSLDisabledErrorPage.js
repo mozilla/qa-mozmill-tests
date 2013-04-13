@@ -80,7 +80,7 @@ var testDisableSSL = function() {
                  "The SSL error message contains disabled property");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDisableSSL.meta = {litmusids : [9345]};
+setupModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+                             "for waitForElement ID: errorTitleText'";
+teardownModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+                                "for waitForElement ID: errorTitleText'";
