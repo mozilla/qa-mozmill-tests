@@ -11,8 +11,6 @@ var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-var DELAY = 0;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html'},
@@ -39,8 +37,6 @@ var testIdentityPopupOpenClose = function() {
   assert.waitFor(function () {
     return popup.getNode().state === 'open';
   }, "Identity popup has been opened");
-
-  controller.sleep(DELAY);
 
   var button = new elementslib.ID(controller.window.document,
                                   "identity-popup-more-info-button");
