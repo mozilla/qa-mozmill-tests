@@ -6,8 +6,6 @@
 var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
@@ -57,7 +55,7 @@ function testClearFormHistory() {
   controller.waitForPageLoad();
 
   // Begin typing into the name fields
-  controller.waitForElement(firstName, TIMEOUT);
+  controller.waitForElement(firstName);
   controller.type(firstName, FNAME.substring(0,2));
   controller.sleep(500);
   expect.ok(!popDownAutoCompList.getNode().popupOpen, "Auto-complete popup is not visible");
@@ -77,7 +75,7 @@ function clearHistoryHandler(controller) {
                                        "/*[name()='prefpane'][1]" +
                                        "/*[name()='listbox'][1]" +
                                        "/*[name()='listitem'][2]");
-  controller.waitForElement(checkBox, TIMEOUT);
+  controller.waitForElement(checkBox);
   assert.ok(checkBox.getNode().checked, "The checkbox to clear form data is checked");
 
   var clearButton = new elementslib.Lookup(controller.window.document,

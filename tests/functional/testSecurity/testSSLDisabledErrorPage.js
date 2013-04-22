@@ -12,8 +12,6 @@ const PREF_KEEP_ALIVE = "network.http.keep-alive";
 const PREF_SSL_3 = "security.enable_ssl3";
 const PREF_TLS = "security.enable_tls";
 
-const TIMEOUT = 5000;
-
 const TEST_URL = "https://mail.mozilla.org";
 
 // TODO: move the dtds to a SecurityAPI, if one will be created
@@ -55,7 +53,7 @@ var testDisableSSL = function() {
 
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
-  controller.waitForElement(title, TIMEOUT);
+  controller.waitForElement(title);
 
   var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title")
   expect.equal(title.getNode().textContent, nssFailure2title,
@@ -67,7 +65,7 @@ var testDisableSSL = function() {
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
-  controller.waitForElement(text, TIMEOUT);
+  controller.waitForElement(text);
 
   expect.contain(text.getNode().textContent, 'ssl_error_ssl_disabled',
                  "The SSL error message contains disabled information");

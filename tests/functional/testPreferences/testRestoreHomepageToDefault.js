@@ -8,8 +8,6 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
@@ -77,7 +75,7 @@ var prefDialogDefHomePageCallback = function(controller) {
 
   // Reset home page to the default page
   var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
-  controller.waitForElement(useDefault, TIMEOUT);
+  controller.waitForElement(useDefault);
   controller.click(useDefault);
 
   // Check that the homepage field has the default placeholder text

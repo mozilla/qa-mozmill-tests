@@ -5,8 +5,6 @@
 // Include the required modules
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
@@ -48,7 +46,7 @@ function checkPageInfoWindow(controller) {
 
     // Check if the panel has been shown
     var node = new elementslib.ID(controller.window.document, pane.panel);
-    controller.waitForElement(node, TIMEOUT);
+    controller.waitForElement(node);
   }
 
   // Close the Page Info window by pressing Escape

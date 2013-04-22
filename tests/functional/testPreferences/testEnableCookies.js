@@ -9,8 +9,6 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
 
@@ -99,7 +97,7 @@ var prefCheckEnableDialogCallback = function(controller) {
  */
 function checkSavedCookies(controller) {
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
-  controller.waitForElement(removeCookieButton, TIMEOUT);
+  controller.waitForElement(removeCookieButton);
   expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");
 
   var cookieExists = Services.cookies.cookieExists({host: persisted.hostName,

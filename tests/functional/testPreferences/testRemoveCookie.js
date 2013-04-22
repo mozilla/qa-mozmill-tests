@@ -9,8 +9,6 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
 
@@ -73,7 +71,7 @@ var prefDialogCallback = function(controller) {
 function deleteCookie(controller) {
   // Check for a cookie and delete it
   var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, TIMEOUT);
+  controller.waitForElement(filterField);
   controller.type(filterField, "litmus_1");
 
   // Get the number of cookies in the file manager before removing a single cookie

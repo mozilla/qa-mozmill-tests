@@ -6,8 +6,6 @@
 var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
@@ -44,7 +42,7 @@ function testSaveFormInformation() {
   controller.waitForPageLoad();
 
   firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
-  controller.waitForElement(firstName, TIMEOUT);
+  controller.waitForElement(firstName);
   controller.type(firstName, FNAME.substring(0,2));
 
   // Verify form completion in each inputted field

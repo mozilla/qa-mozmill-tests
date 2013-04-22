@@ -5,8 +5,6 @@
 // Include necessary modules
 var { assert } = require("../../../lib/assertions");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
   {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'community'},
@@ -48,7 +46,7 @@ var testBackAndForward = function() {
     controller.click(backButton);
 
     var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[i].id);
-    controller.waitForElement(element, TIMEOUT);
+    controller.waitForElement(element);
   }
 
   // Click on the Forward button for the number of websites visited
@@ -60,6 +58,6 @@ var testBackAndForward = function() {
     controller.click(forwardButton);
 
     var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[j].id);
-    controller.waitForElement(element, TIMEOUT);
+    controller.waitForElement(element);
   }
 }

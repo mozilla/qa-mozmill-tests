@@ -9,8 +9,6 @@ var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
@@ -36,7 +34,7 @@ var testPasswordNotSaved = function() {
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   expect.equal(userField.getNode().value, "", "Username has not been saved");
   expect.equal(passField.getNode().value, "", "Password has not been saved");
 
@@ -55,7 +53,7 @@ var prefDialogCallback = function(controller) {
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, TIMEOUT);
+  controller.waitThenClick(showPasswords);
 
   utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
@@ -69,7 +67,7 @@ var prefDialogCallback = function(controller) {
  */
 function checkPasswordsNotSaved(controller) {
   var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, TIMEOUT);
+  controller.waitForElement(filterField);
 
   var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
   expect.ok(removeLogin.getNode().disabled, "Remove Passwords Button is disabled");

@@ -7,8 +7,6 @@ var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
 

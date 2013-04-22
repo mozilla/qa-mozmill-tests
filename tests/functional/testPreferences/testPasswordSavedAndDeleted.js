@@ -11,8 +11,6 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
@@ -37,7 +35,7 @@ function testSaveAndDeletePassword() {
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
@@ -64,7 +62,7 @@ function testSaveAndDeletePassword() {
   userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   expect.equal(userField.getNode().value, "bar", "Username has been saved");
   expect.equal(passField.getNode().value, "foo", "Password has been saved");
 
@@ -82,7 +80,7 @@ function prefDialogCallback(controller) {
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, TIMEOUT);
+  controller.waitThenClick(showPasswords);
 
   utils.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
@@ -127,5 +125,5 @@ function confirmHandler(controller) {
                                             '/anon({"anonid":"buttons"})' +
                                             '/{"dlgtype":"accept"}');
 
-  controller.waitThenClick(dialogButton, TIMEOUT);
+  controller.waitThenClick(dialogButton);
 }

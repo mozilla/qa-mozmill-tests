@@ -7,7 +7,6 @@ var { expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
 const DELAY = 0;
-const TIMEOUT = 5000;
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -29,13 +28,13 @@ var prefDialogCallback = function(controller) {
 
   // Get the Encryption tab
   var encryption = new elementslib.ID(controller.window.document, "encryptionTab");
-  controller.waitThenClick(encryption, TIMEOUT);
+  controller.waitThenClick(encryption);
   controller.sleep(DELAY);
 
   // Make sure the prefs are checked
   var sslPref = new elementslib.ID(controller.window.document, "useSSL3");
   var tlsPref = new elementslib.ID(controller.window.document, "useTLS1");
-  controller.waitForElement(sslPref, TIMEOUT);
+  controller.waitForElement(sslPref);
   expect.ok(sslPref.getNode().checked, "SSL3 Preferences checkbox is checked");
   expect.ok(tlsPref.getNode().checked, "TLS1 Preferences checkbox is checked");
 

@@ -5,8 +5,6 @@
 // Include required modules
 var prefs = require("../../lib/prefs");
 
-const TIMEOUT = 5000;
-
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 }

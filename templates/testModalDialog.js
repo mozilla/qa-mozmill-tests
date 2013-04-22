@@ -6,8 +6,6 @@
 const RELATIVE_ROOT = '../../lib';
 const MODULE_REQUIRES = ['ModalDialogAPI'];
 
-const TIMEOUT = 5000;
-
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 }

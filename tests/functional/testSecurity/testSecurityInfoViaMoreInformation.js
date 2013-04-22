@@ -6,8 +6,6 @@
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function() {

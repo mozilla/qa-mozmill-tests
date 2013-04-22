@@ -11,8 +11,6 @@ var utils = require("../../../lib/utils");
 
 const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html';
 

@@ -5,8 +5,6 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const TIMEOUT = 5000;
-
 const TEST_URL = "https://mur.at";
 
 var setupModule = function(module) {
@@ -23,7 +21,7 @@ var testUnknownIssuer = function() {
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link, TIMEOUT);
+  controller.waitForElement(link);
   expect.equal(link.getNode().textContent, "secure.mur.at", "Domain name is visible");
 
   // Verify "Get Me Out Of Here!" button appears
@@ -36,7 +34,7 @@ var testUnknownIssuer = function() {
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text, TIMEOUT);
+  controller.waitForElement(text);
   expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
                  "The error code is an unknown issuer error");
 }

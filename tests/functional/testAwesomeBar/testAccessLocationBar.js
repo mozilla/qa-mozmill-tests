@@ -7,8 +7,6 @@ var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGES = [
   LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
@@ -68,7 +66,7 @@ function testAccessLocationBarHistory() {
   // Finally - Check that the mozilla page was loaded by verifying the
   // Mozilla logo exists
   var mozillaLogo = new elementslib.ID(controller.tabs.activeTab, "mozilla_logo");
-  controller.waitForElement(mozillaLogo, TIMEOUT, 100);
+  controller.waitForElement(mozillaLogo);
 
   // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
   locationBar.contains(LOCAL_TEST_PAGES[2]);

@@ -8,8 +8,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-var TIMEOUT = 5000;
-
 const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function(module) {

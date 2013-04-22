@@ -8,8 +8,6 @@ var prefs = require("../../../lib/prefs");
 
 const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
 
@@ -48,9 +46,8 @@ var testToggleFormManager = function() {
   controller.waitForPageLoad();
 
   firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
-  controller.waitForElement(firstName, TIMEOUT);
+  controller.waitForElement(firstName);
   controller.type(firstName, FNAME.substring(0,2));
-  controller.sleep(TIMEOUT);
 
   // Verify no form completion in each submitted form field
   var popDownAutoCompList = new elementslib.Lookup(
@@ -69,7 +66,6 @@ var testToggleFormManager = function() {
 
   lastName = new elementslib.ID(controller.tabs.activeTab, "ship_lname");
   controller.type(lastName, LNAME.substring(0,2));
-  controller.sleep(TIMEOUT);
   assert.ok(!popDownAutoCompList.exists(),
             "Form completion element has not been found");
   expect.notEqual(lastName.getNode().value, LNAME,

@@ -8,8 +8,6 @@ var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 
 var setupModule = function(module) {

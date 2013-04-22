@@ -6,8 +6,6 @@
 var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
@@ -63,7 +61,7 @@ var testFindInPage = function() {
   controller.keypress(null, cmdKey, {accelKey: true});
 
   // Check that the find bar is visible
-  controller.waitForElement(findBar, TIMEOUT);
+  controller.waitForElement(findBar);
 
   // Type "community" into the find bar text field and press return to start the search
   controller.type(findBarTextField, searchTerm);

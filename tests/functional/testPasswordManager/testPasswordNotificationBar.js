@@ -10,8 +10,6 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
 
@@ -38,7 +36,7 @@ var testPasswordNotification = function() {
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
