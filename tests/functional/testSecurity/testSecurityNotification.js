@@ -54,3 +54,5 @@ var testSecNotification = function() {
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
                  "The error code is a SEC Expired certificate error");
 }
+
+setupModule.__force_skip__ = "Bug 864300 - Massive security tests failures";

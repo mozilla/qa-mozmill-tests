@@ -155,3 +155,5 @@ function checkSecurityTab(controller) {
  * Map test functions to litmus tests
  */
 // testLarryGreen.meta = {litmusids : [8805]};
+
+setupModule.__force_skip__ = "Bug 864300 - Massive security tests failures";
