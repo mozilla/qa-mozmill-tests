@@ -65,6 +65,3 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark has been removed");
   });
 }
-
-setupModule.__force_skip__ = "Bug 865211 - PlacesStarButton was removed"
-teardownModule.__force_skip__ = "Bug 865211 - PlacesStarButton was removed"
