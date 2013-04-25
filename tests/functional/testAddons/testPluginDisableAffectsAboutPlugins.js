@@ -114,3 +114,8 @@ function pluginStateInAboutPlugins(aPluginName) {
 
   return exists;
 }
+
+setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                             " disabled - 'true' should equal 'false'";
+teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                                " disabled - 'true' should equal 'false'";
