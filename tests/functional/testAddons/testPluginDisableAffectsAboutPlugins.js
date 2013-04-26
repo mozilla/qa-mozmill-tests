@@ -9,6 +9,7 @@ var addons = require("../../../lib/addons");
 var {assert, expect} = require("../../../lib/assertions");
 var domUtils = require("../../../lib/dom-utils");
 var tabs = require("../../../lib/tabs");
+var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -109,15 +110,12 @@ function pluginStateInAboutPlugins(aPluginName) {
 
   for (var i = 0; i < pluginNames.length; i++) {
     if (pluginNames[i].textContent === aPluginName) {
-      exists = pluginState[i].parentNode.textContent.contains("Enabled");
+      var enabledState = utils.getProperty("chrome://global/locale/plugins.properties",
+                                           "state_enabled");
+      exists = pluginState[i].parentNode.textContent.contains(enabledState);
       break;
     }
   }
 
   return exists;
 }
-
-setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
-                             " disabled - 'true' should equal 'false'";
-teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
-                                " disabled - 'true' should equal 'false'";
