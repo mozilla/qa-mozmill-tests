@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const TEST_URL = "ftp://ftp.mozilla.org/pub/";
+const TEST_DATA = "ftp://ftp.mozilla.org/pub/";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -10,7 +10,7 @@ var setupModule = function(module) {
 
 var testNavigateFTP = function () {
   // opens the mozilla.org ftp page then navigates through a couple levels.
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var firefox = new elementslib.Link(controller.tabs.activeTab, 'firefox');

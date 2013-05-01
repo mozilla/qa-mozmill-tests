@@ -6,8 +6,8 @@
 var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "form_manager/form.html";
 
 const FNAME = "John";
 const LNAME = "Smith";
@@ -28,7 +28,7 @@ function setupModule() {
  */
 function testClearFormHistory() {
   // Go to the sample page and submit form data
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
@@ -51,7 +51,7 @@ function testClearFormHistory() {
   // Verify forms are cleared
   var popDownAutoCompList = new elementslib.ID(controller.window.document, "PopupAutoComplete");
 
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Begin typing into the name fields

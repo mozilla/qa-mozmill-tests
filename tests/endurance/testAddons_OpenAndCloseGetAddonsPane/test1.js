@@ -7,8 +7,8 @@ var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -16,7 +16,7 @@ function setupModule() {
   enduranceManager = new endurance.EnduranceManager(controller);
 
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  addons.setDiscoveryPaneURL(TEST_DATA);
 
   tabBrowser = new tabs.tabBrowser(controller);
 

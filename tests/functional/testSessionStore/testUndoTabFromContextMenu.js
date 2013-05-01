@@ -9,9 +9,8 @@ var sessionStore = require("../../../lib/sessionstore");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER +
-                        "tabbedbrowsing/openinnewtab_target.html?id=";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab_target.html?id=";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -42,7 +41,7 @@ var testUndoTabFromContextMenu = function() {
 
   // Open 3 tabs with pages in the local test folder
   for (var i = 0; i < 3; i++) {
-   controller.open(LOCAL_TEST_PAGE + i);
+   controller.open(TEST_DATA + i);
    controller.waitForPageLoad();
    tabBrowser.openTab();
   }

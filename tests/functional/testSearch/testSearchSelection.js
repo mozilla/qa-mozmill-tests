@@ -9,10 +9,10 @@ var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla_mission.html";
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html';
+const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -39,7 +39,7 @@ var testSearchSelectionViaContextMenu = function() {
   // Use the last engine for the search
   searchBar.selectedEngine = engineName;
 
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get text element from web page, which will be used for the search

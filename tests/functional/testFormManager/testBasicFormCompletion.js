@@ -5,8 +5,8 @@
 // Include the required modules
 var { assert } = require("../../../lib/assertions");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "form_manager/form.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -24,7 +24,7 @@ var testFormCompletion = function() {
   var inputText = 'John';
 
   // Open the local site and verify it's the correct page
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var inputField = new elementslib.ID(controller.tabs.activeTab, "ship_fname");
@@ -42,7 +42,7 @@ var testFormCompletion = function() {
   controller.waitForPageLoad();
 
   // Go back to the starting local page
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Verify name field element, and type in a portion of the field

@@ -5,7 +5,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const TEST_URL = "https://mur.at";
+const TEST_DATA = "https://mur.at";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -17,7 +17,7 @@ var setupModule = function(module) {
  */
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");

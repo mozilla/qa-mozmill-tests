@@ -8,10 +8,10 @@ var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = {
-  url: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
-  string: 'grants'
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = {
+  url: BASE_URL + "layout/mozilla_grants.html",
+  string: "grants"
 };
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
@@ -37,7 +37,7 @@ var teardownModule = function() {
  */
 var testSuggestHistoryAndBookmarks = function() {
   // Open the test page
-  locationBar.loadURL(LOCAL_TEST_PAGE.url);
+  locationBar.loadURL(TEST_DATA.url);
   controller.waitForPageLoad();
 
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
@@ -46,10 +46,10 @@ var testSuggestHistoryAndBookmarks = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  locationBar.type(LOCAL_TEST_PAGE.string);
+  locationBar.type(TEST_DATA.string);
   assert.waitFor(function () {
-    return locationBar.value === LOCAL_TEST_PAGE.string;
-  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
+    return locationBar.value === TEST_DATA.string;
+  }, "Location bar contains the typed data - expected '" + TEST_DATA.string + "'");
 
   assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
@@ -68,7 +68,7 @@ var testSuggestHistoryAndBookmarks = function() {
     expect.waitFor(function () {
       aElement = locationBar.autoCompleteResults.
                  getUnderlinedText(richlistItem, "title")[aIndex];
-      return aElement.toString().toLowerCase() === LOCAL_TEST_PAGE.string;
+      return aElement.toString().toLowerCase() === TEST_DATA.string;
     }, "The page title matches the underlined text");
   });
 

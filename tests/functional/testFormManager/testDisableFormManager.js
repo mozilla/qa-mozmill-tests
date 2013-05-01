@@ -6,10 +6,10 @@
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 
-const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "form_manager/form.html";
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/form.html';
+const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
 
 const FNAME = "John";
 const LNAME = "Smith";
@@ -32,7 +32,7 @@ var teardownModule = function() {
 
 var testToggleFormManager = function() {
   // Go to the sample form page and submit form data
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var firstName = new elementslib.ID(controller.tabs.activeTab, "ship_fname");

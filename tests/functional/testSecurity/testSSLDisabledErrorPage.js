@@ -8,11 +8,11 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
+const TEST_DATA = "https://mail.mozilla.org";
+
 const PREF_KEEP_ALIVE = "network.http.keep-alive";
 const PREF_SSL_3 = "security.enable_ssl3";
 const PREF_TLS = "security.enable_tls";
-
-const TEST_URL = "https://mail.mozilla.org";
 
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
@@ -48,7 +48,7 @@ var teardownModule = function(module) {
  */
 var testDisableSSL = function() {
   // Open the test page
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Verify "Secure Connection Failed" error page title

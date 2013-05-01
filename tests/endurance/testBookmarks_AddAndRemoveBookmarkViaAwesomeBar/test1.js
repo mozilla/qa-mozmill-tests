@@ -10,8 +10,8 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
+const BASE_URL = collector.addHttpResource('../../../data/');
+const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -21,7 +21,7 @@ function setupModule() {
   tabBrowser = new tabs.tabBrowser(controller);
 
   // Open test page and wait until it has been finished loading
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 }
 
@@ -37,7 +37,7 @@ function testAddRemoveBookmarkViaAwesomeBar() {
   enduranceManager.run(function () {
     // Bookmark the page via the awesome bar star button
     var starButton = locationBar.getElement({type: "starButton"});
-    var URI = utils.createURI(LOCAL_TEST_PAGE);
+    var URI = utils.createURI(TEST_DATA);
 
     assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);

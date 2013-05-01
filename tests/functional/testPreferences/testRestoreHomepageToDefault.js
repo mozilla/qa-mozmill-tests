@@ -8,8 +8,8 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -26,7 +26,7 @@ var teardownModule = function(module) {
  */
 var testRestoreHomeToDefault = function() {
   // Open a web page for the temporary home page
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var link = new elementslib.Link(controller.tabs.activeTab, "Organization");

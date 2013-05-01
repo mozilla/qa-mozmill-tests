@@ -8,10 +8,10 @@ var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html'
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  BASE_URL + "layout/mozilla.html",
+  BASE_URL + "layout/mozilla_community.html"
 ];
 
 const TEST_STRING = "mozilla";
@@ -33,7 +33,7 @@ var teardownModule = function() {
  */
 var testEscape = function() {
   // Open some local pages to set up the test environment
-  LOCAL_TEST_PAGES.forEach(function (aPage) {
+  TEST_DATA.forEach(function (aPage) {
     locationBar.loadURL(aPage);
     controller.waitForPageLoad();
   });
@@ -63,7 +63,7 @@ var testEscape = function() {
 
   // After the second Escape press, confirm the locationbar returns to the current page url
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
+  utils.assertLoadedUrlEqual(controller, TEST_DATA[1]);
 }
 
 /**

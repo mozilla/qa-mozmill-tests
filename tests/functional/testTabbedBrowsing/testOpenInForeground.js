@@ -8,8 +8,8 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab.html";
 
 const PREF_TAB_LOAD_IN_BACKGROUND = "browser.tabs.loadInBackground";
 
@@ -36,7 +36,7 @@ var teardownModule = function() {
 
 var testOpenInForegroundTab = function() {
   // Open the HTML testcase:
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   for(var i = 0; i < 3; i++) {

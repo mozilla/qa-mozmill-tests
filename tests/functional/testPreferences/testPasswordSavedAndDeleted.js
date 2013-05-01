@@ -11,8 +11,8 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -29,7 +29,7 @@ function teardownModule() {
 /* Test if Password is saved and deleted */
 function testSaveAndDeletePassword() {
   // Go to the sample login page and log-in with inputted fields
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
@@ -56,7 +56,7 @@ function testSaveAndDeletePassword() {
                "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   userField = new elementslib.ID(controller.tabs.activeTab, "uname");

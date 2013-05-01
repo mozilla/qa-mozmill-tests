@@ -7,8 +7,8 @@ var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "tabbedbrowsing/openinnewtab.html";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab.html";
 
 const TAB_ORDER = [
   {index: 1, linkid: 2},
@@ -30,7 +30,7 @@ var teardownModule = function() {
 
 var testOpenInBackgroundTab = function() {
   // Open the HTML testcase:
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   for (var i = 0; i < TAB_ORDER.length; i++) {

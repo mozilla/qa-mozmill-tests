@@ -7,10 +7,10 @@ var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 var tabView = require("../../../lib/tabview");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html'
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  BASE_URL + "layout/mozilla.html",
+  BASE_URL + "layout/mozilla_community.html"
 ];
 
 function setupModule() {
@@ -32,12 +32,12 @@ function teardownModule() {
  **/
 function testSwitchTabs() {
   // Load two pages in separate tabs before iterating
-  controller.open(LOCAL_TEST_PAGES[0]);
+  controller.open(TEST_DATA[0]);
   controller.waitForPageLoad();
 
   tabBrowser.openTab();
 
-  controller.open(LOCAL_TEST_PAGES[1]);
+  controller.open(TEST_DATA[1]);
   controller.waitForPageLoad();
 
   enduranceManager.run(function () {

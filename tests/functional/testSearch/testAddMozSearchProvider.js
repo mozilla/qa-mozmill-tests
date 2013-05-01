@@ -8,12 +8,11 @@ var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const BASE_URL = collector.addHttpResource("../../../data/");
+const SEARCH_ENGINE = {name: "mozqa.com",
+                       url : BASE_URL + "search/mozsearch.html"};
 
 const TIMEOUT_INSTALL_DIALOG = 30000;
-
-const SEARCH_ENGINE = {name: "mozqa.com",
-                       url : LOCAL_TEST_FOLDER + "search/mozsearch.html"};
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
