@@ -8,10 +8,12 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-
-const DOMAIN_NAME = "www.mozilla.org";
-const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
-                            'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
+const TEST_DATA = [
+  // Phishing url
+  "http://www.mozilla.org/firefox/its-a-trap.html",
+  // Malware url
+  "http://www.mozilla.org/firefox/its-an-attack.html"
+];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -21,31 +23,31 @@ var setupModule = function(module) {
 
 function teardownModule(module) {
   // Clear the Safe Browsing permission
-  utils.removePermission(DOMAIN_NAME, "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 var testWarningPages = function() {
-  for (var i = 0; i < WARNING_PAGES_URLS.length; i++ ) {
-    // Open one of the mozilla phishing protection test pages
-    controller.open(WARNING_PAGES_URLS[i]);
+  for (var i = 0; i < TEST_DATA.length; i++ ) {
+    // Load one of the safe browsing test pages
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the getMeOutButton
     checkGetMeOutOfHereButton();
 
     // Go back to the warning page
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the reportButton
-    checkReportButton(i, WARNING_PAGES_URLS[i]);
+    checkReportButton(i, TEST_DATA[i]);
 
     // Go back to the warning page
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the ignoreWarning button
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(TEST_DATA[i]);
   }
 }
 
@@ -118,7 +120,7 @@ var checkIgnoreWarningButton = function(url) {
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
-  utils.removePermission(DOMAIN_NAME, "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 /**

@@ -6,7 +6,7 @@
 var { assert, expect } = require("../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 
-const TEST_PAGE = "http://www.mozilla.org/en-US/about/contact";
+const TEST_DATA = "http://www.mozilla.org/en-US/about/contact";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -34,7 +34,7 @@ var testStopAndReload = function() {
   contentWindow.addEventListener("unload", onUnload, false);
 
   // Go to the URL and start loading for some milliseconds
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   expect.waitFor(function () {
     return pageUnloaded;
   }, "about:blank page has been unloaded.", 2000, 10);

@@ -7,9 +7,12 @@ var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const DOMAIN_NAME = "www.mozilla.org";
-const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
-                            'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
+const TEST_DATA = [
+  // Phishing url
+  "http://www.mozilla.org/firefox/its-a-trap.html",
+  // Malware url
+  "http://www.mozilla.org/firefox/its-an-attack.html"
+];
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -24,31 +27,31 @@ function teardownModule(module) {
 }
 
 var testNotificationBar = function() {
-  for (var i = 0; i < WARNING_PAGES_URLS.length; i++ ) {
-    // Go to one of mozilla's phishing protection test pages
-    controller.open(WARNING_PAGES_URLS[i]);
+  TEST_DATA.forEach(function(data) {
+    // Load one of the safe browsing test pages
+    controller.open(data);
     controller.waitForPageLoad();
 
-    // Wait for the ignoreWarning button to be loaded onto the page and then click on the button
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
-    checkNoPhishingButton(WARNING_PAGES_URLS[i]);
+    // After waiting for the page click on the ignoreWarning button
+    checkIgnoreWarningButton(data);
+    checkNoPhishingButton(data);
 
     // Go back to the notification bar
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(data);
     controller.waitForPageLoad();
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(data);
 
     // Test the get me out of here button
     checkGetMeOutOfHereButton();
 
     // Go back to the notification bar
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(data);
     controller.waitForPageLoad();
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(data);
 
     // Test the x button on the drop down bar
     checkXButton();
-  }
+  });
 }
 
 /**
@@ -80,7 +83,7 @@ var checkIgnoreWarningButton = function(badUrl) {
  * @param badUrl {string} URL of testing page
  */
 var checkNoPhishingButton = function(badUrl) {
-  if (badUrl == 'http://www.mozilla.org/firefox/its-a-trap.html' ) {
+  if (badUrl == TEST_DATA[0] ) {
     // Click on the web forgery report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAForgeryButton.label");
@@ -93,10 +96,10 @@ var checkNoPhishingButton = function(badUrl) {
 
     var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
     controller.waitForElement(urlField);
-    expect.equal(urlField.getNode().value, 'http://www.mozilla.org/firefox/its-a-trap.html',
+    expect.equal(urlField.getNode().value, TEST_DATA[0],
                  "not-a-web-forgery report page is loaded");
 
-  } else if (badUrl == 'http://www.mozilla.org/firefox/its-an-attack.html' ) {
+  } else if (badUrl == TEST_DATA[1] ) {
     // Click on the attack site report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAnAttackButton.label");

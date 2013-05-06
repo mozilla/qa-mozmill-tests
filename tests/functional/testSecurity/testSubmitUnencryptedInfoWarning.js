@@ -9,10 +9,10 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT_MODAL_DIALOG = 30000;
+const TEST_DATA = "https://ssl-dv.mozqa.com/data/firefox/security/" +
+                  "unencryptedsearch.html";
 
-const TEST_SITE = "https://ssl-dv.mozqa.com/"
-const TEST_PAGE = TEST_SITE + "data/firefox/security/unencryptedsearch.html";
+const TIMEOUT_MODAL_DIALOG = 30000;
 
 var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_entering_weak",
@@ -39,7 +39,7 @@ function testSubmitUnencryptedInfoWarning() {
     prefs.preferences.setPref(gPreferences[i], (i == 3));
 
   // Load an unencrypted page
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the web page's search box

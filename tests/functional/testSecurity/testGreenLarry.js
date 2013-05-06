@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
+const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -21,7 +21,7 @@ var setupModule = function(module) {
  */
 var testLarryGreen = function() {
   // Go to a "green" website
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
