@@ -63,9 +63,3 @@ function testSwitchTabs() {
     enduranceManager.addCheckpoint("Selected tab is now displayed");
   });
 }
-
-// Bug 684801 - Timeout failure in /testTabView_SwitchTabs/test1.js | TabView is still open.
-setupModule.__force_skip__ = "Bug 684801: Timeout failure in /testTabView_SwitchTabs/test1.js " +
-                             "| TabView is still open.";
-teardownModule.__force_skip__ = "Bug 684801: Timeout failure in /testTabView_SwitchTabs/test1.js " +
-                                "| TabView is still open.";
