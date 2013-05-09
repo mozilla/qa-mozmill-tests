@@ -7,7 +7,7 @@ var { assert, expect } = require("../../../lib/assertions");
 
 const TIMEOUT = 5000;
 
-const TEST_URL = "https://mur.at";
+const TEST_URL = "https://ssl-unknownissuer.mozqa.com";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -24,7 +24,8 @@ var testUnknownIssuer = function() {
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
   controller.waitForElement(link, TIMEOUT);
-  expect.equal(link.getNode().textContent, "secure.mur.at", "Domain name is visible");
+  expect.equal(link.getNode().textContent, "ssl-selfsigned-unknownissuer.mozqa.com",
+               "Domain name is visible");
 
   // Verify "Get Me Out Of Here!" button appears
   var  getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton");
@@ -40,12 +41,3 @@ var testUnknownIssuer = function() {
   expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
                  "The error code is an unknown issuer error");
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testUnknownIssuer.meta = {litmusids : [8900]};
-
-// Bug 705182 - Timeout failure in testSafeBrowsingWarningPages.js
-setupModule.__force_skip__ = "Bug 763159 - Test failure 'secure.mur.at == erle.mur.at'" +
-                             " in testSecurity/testUnknownIssuer.js";
