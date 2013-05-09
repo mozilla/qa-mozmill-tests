@@ -85,16 +85,9 @@ var checkReportButton = function(type, badUrl) {
   if (type == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
     url = utils.formatUrlPref("browser.safebrowsing.warning.infoURL");
-
-    var phishingElement = new elementslib.ID(controller.tabs.activeTab, "phishing-protection")
-    assert.ok(phishingElement.exists(), "'Phishing protection' element has been found");
-
   } else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
     url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
-
-    var malwareElement = new elementslib.ID(controller.tabs.activeTab, "date");
-    assert.ok(malwareElement.exists(), "'Malware element' has been found");
   }
 
   utils.assertLoadedUrlEqual(controller, url);
