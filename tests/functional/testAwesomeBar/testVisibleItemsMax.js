@@ -8,16 +8,16 @@ var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_community.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_governance.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_organizations.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  BASE_URL + "layout/mozilla.html",
+  BASE_URL + "layout/mozilla_community.html",
+  BASE_URL + "layout/mozilla_contribute.html",
+  BASE_URL + "layout/mozilla_governance.html",
+  BASE_URL + "layout/mozilla_grants.html",
+  BASE_URL + "layout/mozilla_mission.html",
+  BASE_URL + "layout/mozilla_organizations.html",
+  BASE_URL + "layout/mozilla_projects.html"
 ];
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
@@ -43,7 +43,7 @@ var teardownModule = function() {
  */
 var testVisibleItemsMax = function() {
   // Open some local pages to set up the test environment
-  LOCAL_PAGES.forEach(function (aPage) {
+  TEST_DATA.forEach(function (aPage) {
     locationBar.loadURL(aPage);
     controller.waitForPageLoad();
   });

@@ -8,8 +8,8 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const BROWSER_HOMEPAGE = "browser.startup.homepage";
 
@@ -28,7 +28,7 @@ function teardownModule(module) {
  */
 function testSetHomePage() {
   // Go to the local page and verify the correct page has loaded
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var link = new elementslib.Link(controller.tabs.activeTab, "Community");
@@ -45,7 +45,7 @@ function testSetHomePage() {
   controller.waitForPageLoad();
 
   // Verify location bar with the saved home page
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGE);
+  utils.assertLoadedUrlEqual(controller, TEST_DATA);
 }
 
 /**

@@ -7,8 +7,8 @@ var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const TEST_URL = "http://www.mozqa.com/data/firefox/plugins/flash/" +
-                 "sample-swf-video-10s-nosound.swf";
+const TEST_DATA = "http://www.mozqa.com/data/firefox/plugins/flash/" +
+                  "sample-swf-video-10s-nosound.swf";
 
 const TIMEOUT_PAGE = 50000;
 
@@ -49,7 +49,7 @@ function testFlashURL() {
 
       // Load the test page in the currently opened tab
       enduranceManager.addCheckpoint("Load a web page with .swf flash content");
-      controller.open(TEST_URL);
+      controller.open(TEST_DATA);
       controller.waitForPageLoad(TIMEOUT_PAGE);
       enduranceManager.addCheckpoint("Web page has been loaded");
     });

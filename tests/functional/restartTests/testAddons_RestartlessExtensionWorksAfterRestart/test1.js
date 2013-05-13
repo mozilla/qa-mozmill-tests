@@ -9,13 +9,12 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_INSTALL_FILE = "install.html?addon=";
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/addons/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../../data/");
+const TEST_DATA = BASE_URL + "addons/layout/mozilla.html";
 
 const ADDON = {
   id: "restartless-addon@quality.mozilla.org",
-  url: LOCAL_TEST_FOLDER + LOCAL_INSTALL_FILE + "extensions/restartless.xpi"
+  url: BASE_URL + "addons/install.html?addon=extensions/restartless.xpi"
 };
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -27,7 +26,7 @@ const TIMEOUT_DOWNLOAD = 25000;
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  addons.setDiscoveryPaneURL(TEST_DATA);
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
@@ -35,7 +34,7 @@ function setupModule() {
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist localhost
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(BASE_URL + "addons/");
 
   tabs.closeAllTabs(controller);
 }

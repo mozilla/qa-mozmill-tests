@@ -6,7 +6,7 @@
 var { assert } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TEST_PAGE = "https://ssl-selfsigned.mozqa.com";
+const TEST_DATA = "https://ssl-selfsigned.mozqa.com";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -17,7 +17,7 @@ var setupModule = function(module) {
  */
 var testUntrustedPageGetMeOutOfHereButton = function() {
   // Go to an untrusted website
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get a reference to the Get Me Out Of Here button

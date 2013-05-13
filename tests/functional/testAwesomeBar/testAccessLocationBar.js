@@ -7,13 +7,11 @@ var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla_projects.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html',
+const BASE_URL = collector.addHttpResource('../../../data/');
+const TEST_DATA = [
+  BASE_URL + 'layout/mozilla_projects.html',
+  BASE_URL + 'layout/mozilla.html',
+  BASE_URL + 'layout/mozilla_mission.html',
   'about:blank'
 ];
 
@@ -37,7 +35,7 @@ function testAccessLocationBarHistory() {
   // Open a few different sites to create a small history
   // NOTE: about:blank doesn't appear in history and clears the page
   //       for clean test arena
-  LOCAL_TEST_PAGES.forEach(function (aPage) {
+  TEST_DATA.forEach(function (aPage) {
     locationBar.loadURL(aPage);
     controller.waitForPageLoad();
   });
@@ -68,8 +66,8 @@ function testAccessLocationBarHistory() {
   // Finally - Check that the mozilla page was loaded by verifying the
   // Mozilla logo exists
   var mozillaLogo = new elementslib.ID(controller.tabs.activeTab, "mozilla_logo");
-  controller.waitForElement(mozillaLogo, TIMEOUT, 100);
+  controller.waitForElement(mozillaLogo);
 
-  // Check that the URL in the awesomebar matches the last LOCAL_TEST_PAGE
-  locationBar.contains(LOCAL_TEST_PAGES[2]);
+  // Check that the URL in the awesomebar matches the last TEST_DATA URL
+  locationBar.contains(TEST_DATA[2]);
 }

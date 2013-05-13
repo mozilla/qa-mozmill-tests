@@ -6,8 +6,8 @@
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -18,7 +18,7 @@ var setupModule = function(module) {
  */
 var testLarryGrey = function() {
   // Go to a "grey" website
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
@@ -60,7 +60,7 @@ function checkSecurityTab(controller) {
   // Check the Web Site label for "localhost:port#"
   var webIDDomainLabel = new elementslib.ID(controller.window.document,
                                             "security-identity-domain-value");
-  expect.match(webIDDomainLabel.getNode().value, /\/\/(.*[^\/])/.exec(LOCAL_TEST_FOLDER)[1],
+  expect.match(webIDDomainLabel.getNode().value, /\/\/(.*[^\/])/.exec(BASE_URL)[1],
                "The domain label should equal the domain");
 
   // Check the Owner label for "This web site does not supply ownership information."

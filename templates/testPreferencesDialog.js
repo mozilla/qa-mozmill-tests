@@ -5,12 +5,12 @@
 // Include required modules
 var prefs = require("../../lib/prefs");
 
-const TIMEOUT = 5000;
-
+// Setup for the test
 var setupModule = function() {
   controller = mozmill.getBrowserController();
 }
 
+// Run the preferences dialog test
 var testSampleTestcase = function() {
   prefs.openPreferencesDialog(controller, callbackHandler);
 }

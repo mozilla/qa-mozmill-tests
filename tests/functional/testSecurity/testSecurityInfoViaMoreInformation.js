@@ -6,9 +6,7 @@
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const TEST_PAGE = "https://addons.mozilla.org/licenses/5.txt";
+const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -21,7 +19,7 @@ var setupModule = function() {
  */
 var testSecurityInfoViaMoreInformation = function() {
   // Go to a secure website
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison

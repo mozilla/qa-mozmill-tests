@@ -9,10 +9,8 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -30,7 +28,7 @@ var teardownModule = function() {
  */
 var testRemoveCookie = function() {
   // Go to a test page to build a list of cookies
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the test page hostname
@@ -73,7 +71,7 @@ var prefDialogCallback = function(controller) {
 function deleteCookie(controller) {
   // Check for a cookie and delete it
   var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField, TIMEOUT);
+  controller.waitForElement(filterField);
   controller.type(filterField, "litmus_1");
 
   // Get the number of cookies in the file manager before removing a single cookie

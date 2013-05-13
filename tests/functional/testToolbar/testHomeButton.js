@@ -7,15 +7,15 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_BROWSER_HOMEPAGE = "browser.startup.homepage";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, LOCAL_TEST_PAGE);
+  prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, TEST_DATA);
 
   tabs.closeAllTabs(controller);
 }
@@ -34,5 +34,5 @@ function testHomeButton() {
   controller.waitForPageLoad();
 
   // Verify location bar with the saved home page
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGE);
+  utils.assertLoadedUrlEqual(controller, TEST_DATA);
 }

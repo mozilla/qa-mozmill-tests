@@ -11,10 +11,8 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -31,13 +29,13 @@ function teardownModule() {
 /* Test if Password is saved and deleted */
 function testSaveAndDeletePassword() {
   // Go to the sample login page and log-in with inputted fields
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
@@ -58,13 +56,13 @@ function testSaveAndDeletePassword() {
                "Password notification should be closed");
 
   // Go back to the login page and verify the password has been saved
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   expect.equal(userField.getNode().value, "bar", "Username has been saved");
   expect.equal(passField.getNode().value, "foo", "Password has been saved");
 
@@ -82,7 +80,7 @@ function prefDialogCallback(controller) {
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords, TIMEOUT);
+  controller.waitThenClick(showPasswords);
 
   utils.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
@@ -127,5 +125,5 @@ function confirmHandler(controller) {
                                             '/anon({"anonid":"buttons"})' +
                                             '/{"dlgtype":"accept"}');
 
-  controller.waitThenClick(dialogButton, TIMEOUT);
+  controller.waitThenClick(dialogButton);
 }

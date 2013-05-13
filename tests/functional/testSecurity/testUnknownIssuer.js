@@ -5,11 +5,10 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const TIMEOUT = 5000;
-const TEST_URL = "https://mur.at";
+const TEST_DATA = "https://ssl-unknownissuer.mozqa.com";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**
@@ -18,33 +17,29 @@ var setupModule = function(module) {
  */
 var testUnknownIssuer = function() {
   // Go to a website with an unknown cert issuer
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link, TIMEOUT);
-  expect.equal(link.getNode().textContent, "secure.mur.at", "Domain name is visible");
+  controller.waitForElement(link);
+  expect.equal(link.getNode().textContent, "ssl-selfsigned-unknownissuer.mozqa.com",
+               "Domain name is visible");
 
   // Verify "Get Me Out Of Here!" button appears
-  var  getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutOfHereButton");
-  assert.ok(getMeOutOfHereButton.exists(), "'Get me out of here' button has been found");
+  var  getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab,
+                                                 "getMeOutOfHereButton");
+  assert.ok(getMeOutOfHereButton.exists(),
+            "'Get me out of here' button has been found");
 
   // Verify "Add Exception" button appears
-  var exceptionDialogButton = new elementslib.ID(controller.tabs.activeTab, "exceptionDialogButton");
-  assert.ok(exceptionDialogButton.exists(), "'Exception dialog' button has been found");
+  var exceptionDialogButton = new elementslib.ID(controller.tabs.activeTab,
+                                                 "exceptionDialogButton");
+  assert.ok(exceptionDialogButton.exists(),
+            "'Exception dialog' button has been found");
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text, TIMEOUT);
+  controller.waitForElement(text);
   expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
                  "The error code is an unknown issuer error");
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testUnknownIssuer.meta = {litmusids : [8900]};
-
-// Bug 705182 - Timeout failure in testSafeBrowsingWarningPages.js
-setupModule.__force_skip__ = "Bug 763159 - Test failure 'secure.mur.at == erle.mur.at'" +
-                             " in testSecurity/testUnknownIssuer.js";

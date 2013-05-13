@@ -8,7 +8,7 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TEST_PAGE = "https://mozqa.com/data/firefox/security/mixedcontent.html";
+const TEST_DATA = "https://mozqa.com/data/firefox/security/mixedcontent.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -21,7 +21,7 @@ function setupModule() {
  * Test warning about viewing a mixed content page
  */
 function testMixedContentPage() {
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var favicon = locationBar.getElement({type:"favicon"});

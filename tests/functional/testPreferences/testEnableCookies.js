@@ -9,10 +9,8 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -33,7 +31,7 @@ var testEnableCookies = function() {
   prefs.openPreferencesDialog(controller, prefEnableCookieDialogCallback);
 
   // Go to a test page to build a cookie
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the test page hostname
@@ -99,7 +97,7 @@ var prefCheckEnableDialogCallback = function(controller) {
  */
 function checkSavedCookies(controller) {
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
-  controller.waitForElement(removeCookieButton, TIMEOUT);
+  controller.waitForElement(removeCookieButton);
   expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");
 
   var cookieExists = Services.cookies.cookieExists({host: persisted.hostName,

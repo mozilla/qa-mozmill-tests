@@ -6,10 +6,8 @@
 var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -54,7 +52,7 @@ var testFindInPage = function() {
   var tabContent = controller.tabs.activeTabWindow;
 
   // Open a local page
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Press Ctrl/Cmd + F to open the find bar
@@ -63,7 +61,7 @@ var testFindInPage = function() {
   controller.keypress(null, cmdKey, {accelKey: true});
 
   // Check that the find bar is visible
-  controller.waitForElement(findBar, TIMEOUT);
+  controller.waitForElement(findBar);
 
   // Type "community" into the find bar text field and press return to start the search
   controller.type(findBarTextField, searchTerm);

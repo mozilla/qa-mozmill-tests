@@ -8,10 +8,8 @@ var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_contribute.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -23,7 +21,7 @@ var teardownModule = function() {
 }
 
 var testAddBookmarkToBookmarksMenu = function() {
-  var uri = utils.createURI(LOCAL_TEST_PAGE);
+  var uri = utils.createURI(TEST_DATA);
 
   // Open URI and wait until it has been finished loading
   controller.open(uri.spec);

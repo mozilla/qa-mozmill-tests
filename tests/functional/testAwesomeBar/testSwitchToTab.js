@@ -7,14 +7,14 @@ var {assert, expect} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 
-const PLACES_DB_TIMEOUT = 4000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/layout/');
-const LOCAL_TEST_PAGES = [
-  {url: LOCAL_TEST_FOLDER + 'mozilla_contribute.html', string: "contribute"},
-  {url: LOCAL_TEST_FOLDER + 'mozilla_governance.html', string: "governance"},
-  {url: LOCAL_TEST_FOLDER + 'mozilla_grants.html', string: "grants"}
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  {url: BASE_URL + "layout/mozilla_contribute.html", string: "contribute"},
+  {url: BASE_URL + "layout/mozilla_governance.html", string: "governance"},
+  {url: BASE_URL + "layout/mozilla_grants.html", string: "grants"}
 ];
+
+const PLACES_DB_TIMEOUT = 4000;
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -32,7 +32,7 @@ function teardownModule() {
  * Test Switch to Tab feature
  */
 function testSwitchToTab() {
-  LOCAL_TEST_PAGES.forEach(function (aPage) {
+  TEST_DATA.forEach(function (aPage) {
     controller.open(aPage.url);
     controller.waitForPageLoad();
     tabBrowser.openTab();
@@ -41,7 +41,7 @@ function testSwitchToTab() {
   // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
   controller.sleep(PLACES_DB_TIMEOUT);
 
-  LOCAL_TEST_PAGES.forEach(function (aPage) {
+  TEST_DATA.forEach(function (aPage) {
     locationBar.focus({type: "shortcut"});
     locationBar.type(aPage.string);
     assert.waitFor(function () {

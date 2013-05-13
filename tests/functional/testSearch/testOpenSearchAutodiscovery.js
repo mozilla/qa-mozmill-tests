@@ -6,14 +6,13 @@
 var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-const TIMEOUT_INSTALLATION = 30000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-
+const BASE_URL = collector.addHttpResource("../../../data/");
 const SEARCH_ENGINE = {
   name: "OpenSearch Test",
-  url : LOCAL_TEST_FOLDER + 'search/opensearch.html'
+  url : BASE_URL + "search/opensearch.html"
 };
+
+const TIMEOUT_INSTALLATION = 30000;
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();

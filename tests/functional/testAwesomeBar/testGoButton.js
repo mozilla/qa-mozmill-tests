@@ -8,10 +8,10 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  LOCAL_TEST_FOLDER + 'layout/mozilla.html',
-  LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html'
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  BASE_URL + "layout/mozilla.html",
+  BASE_URL + "layout/mozilla_mission.html"
 ];
 
 var setupModule = function () {
@@ -28,17 +28,17 @@ var testAddressFieldAndGoButton = function () {
   var goButton = locationBar.getElement({type: "goButton"});
 
   // Start from a local page
-  controller.open(LOCAL_TEST_PAGES[0]);
+  controller.open(TEST_DATA[0]);
   controller.waitForPageLoad();
 
   expect.ok(!utils.isDisplayed(controller, goButton), "Go button is hidden");
 
   // Focus and type a URL; a second local page into the location bar
   locationBar.focus({type: "shortcut"});
-  locationBar.type(LOCAL_TEST_PAGES[1]);
+  locationBar.type(TEST_DATA[1]);
   assert.waitFor(function () {
-    return locationBar.value === LOCAL_TEST_PAGES[1];
-  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGES[1] + "'");
+    return locationBar.value === TEST_DATA[1];
+  }, "Location bar contains the typed data - expected '" + TEST_DATA[1] + "'");
 
   assert.ok(utils.isDisplayed(controller, goButton), "Go button is visible");
 
@@ -54,5 +54,5 @@ var testAddressFieldAndGoButton = function () {
   assert.ok(pageElement.exists(), "'Organization' element has been found");
 
   // Check if the URL bar matches the expected domain name
-  utils.assertLoadedUrlEqual(controller, LOCAL_TEST_PAGES[1]);
+  utils.assertLoadedUrlEqual(controller, TEST_DATA[1]);
 }

@@ -8,14 +8,13 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
-const BLOCKLIST_URL = LOCAL_TEST_FOLDER + "addons/blocklist/" +
-                      "hardblock_extension/blocklist.xml";
+const BASE_URL = collector.addHttpResource("../../../../data/");
+const TEST_DATA = BASE_URL + "addons/blocklist/hardblock_extension/blocklist.xml";
 
 const ADDON = {
   name: "Test Extension (icons)",
   id: "test-icons@quality.mozilla.org",
-  url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi"
+  url: BASE_URL + "addons/extensions/icons.xpi"
 };
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
@@ -34,7 +33,7 @@ function setupModule() {
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Update extensions.blocklist.url pref to our blocklist
-  prefs.preferences.setPref(PREF_BLOCKLIST, BLOCKLIST_URL);
+  prefs.preferences.setPref(PREF_BLOCKLIST, TEST_DATA);
 
   // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
