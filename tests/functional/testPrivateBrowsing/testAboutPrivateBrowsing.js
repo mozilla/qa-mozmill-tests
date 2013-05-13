@@ -19,6 +19,7 @@ function setupModule() {
 
   prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, LOCAL_TEST_PAGE);
 }
+
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
   pbWindow.close();

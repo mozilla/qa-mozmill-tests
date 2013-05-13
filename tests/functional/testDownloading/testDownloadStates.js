@@ -7,8 +7,7 @@ var downloads = require("../../../lib/downloads");
 
 var URL = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
   module.dm = new downloads.downloadManager();
 
@@ -16,8 +15,7 @@ var setupModule = function(module)
   dm.cleanAll();
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   dm.cleanAll();
   dm.close();
 }
@@ -26,8 +24,7 @@ var teardownModule = function(module)
  * This tests all four download states:
  *   Pause, Resume, Cancel, and Retry
  */
-var testDownloadStates = function()
-{
+var testDownloadStates = function() {
   // Download a file
   downloads.downloadFileOfUnknownType(controller, URL);
 

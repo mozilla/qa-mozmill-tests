@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const TIMEOUT = 5000;
+const TEST_URL = "ftp://ftp.mozilla.org/pub/";
 
 const TEST_URL = "ftp://ftp.mozilla.org/pub/";
 

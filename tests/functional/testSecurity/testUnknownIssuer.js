@@ -6,6 +6,7 @@
 var { assert, expect } = require("../../../lib/assertions");
 
 const TIMEOUT = 5000;
+const TEST_URL = "https://mur.at";
 
 const TEST_URL = "https://mur.at";
 

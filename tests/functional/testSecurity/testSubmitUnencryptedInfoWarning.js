@@ -25,8 +25,7 @@ function setupModule(module) {
   tabs.closeAllTabs(controller);
 }
 
-function teardownModule(module)
-{
+function teardownModule(module) {
   for each (p in gPreferences)
     prefs.preferences.clearUserPref(p);
 }
