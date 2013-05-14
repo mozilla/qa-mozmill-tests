@@ -13,14 +13,26 @@ const PROXY_TYPE = 'network.proxy.type';
  * Sets browser start up page, home page, and proxy settings
  */
 var setupModule = function() {
- // Set browser home page to about:blank
- prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
+  controller = mozmill.getBrowserController();
 
- // Set browser start up to display current home page
- prefs.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
+  // Set browser home page to about:blank
+  prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
 
- // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
- prefs.preferences.setPref(PROXY_TYPE, 4);
+  // Set browser start up to display current home page
+  prefs.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
+
+  // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
+  prefs.preferences.setPref(PROXY_TYPE, 4);
+}
+
+function teardownModule() {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in controller) {
+    controller.restartApplication();
+  }
 }
 
 setupModule.__force_skip__ = "Bug 827276 - Test failure 'Check for updates has been completed' in proxy environment";
+teardownModule.__force_skip__ = "Bug 827276 - Test failure 'Check for updates has been completed' in proxy environment";

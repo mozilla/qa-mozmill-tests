@@ -42,6 +42,15 @@ function setupModule() {
   tabs.closeAllTabs(controller);
 }
 
+function teardownModule() {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in controller) {
+    controller.restartApplication();
+  }
+}
+
 /*
  * Install the extension to be blocklisted
  */
