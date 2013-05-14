@@ -45,7 +45,6 @@ function testCheckAboutPrivateBrowsing() {
     var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
     controller.click(button);
   });
-  pbWindow.controller.waitForPageLoad();
 
   var moreInfo = new elementslib.ID(pbWindow.controller.tabs.activeTab, "moreInfoLink");
   pbWindow.controller.click(moreInfo);
