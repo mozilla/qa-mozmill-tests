@@ -50,12 +50,10 @@ function testSaveAndDeletePassword() {
                  "password-save-notification",
                  {type: "anonid", value: "button"}
                );
-  var notification = locationBar.getNotification();
   controller.waitThenClick(button);
 
-  // After clicking the 'Remember Password' button, check notification state
-  expect.equal(notification.getNode().state, "closed",
-               "Password notification should be closed");
+  // Wait for the notification to unload
+  locationBar.waitForNotification("notification_popup", false);
 
   // Go back to the login page and verify the password has been saved
   controller.open(TEST_DATA);

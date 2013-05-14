@@ -72,15 +72,12 @@ function testInstallMultipleExtensions() {
     controller.click(installLink);
     md.waitForDialog(TIMEOUT_DOWNLOAD);
 
-    var notification = locationBar.getNotification();
-    assert.waitFor(function () {
-      return notification.getNode().state === "open";
-    }, "Notification pop-up has been opened");
+    // Wait for the notification to load
+    locationBar.waitForNotification("notification_popup", true);
 
     controller.keypress(null , 'VK_ESCAPE', {});
 
-    assert.waitFor(function () {
-      return notification.getNode().state === "closed";
-    }, "Notification pop-up has been closed");
+    // Wait for the notification to unload
+    locationBar.waitForNotification("notification_popup", false);
   });
 }

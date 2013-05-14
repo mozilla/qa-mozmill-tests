@@ -63,12 +63,8 @@ var testSetMasterPassword = function() {
   // Click the Remember Password button
   controller.waitThenClick(button);
 
-  // After clicking the 'Remember Password' button, check notification state
-  var notification = locationBar.getNotification();
-
-  expect.waitFor(function() {
-    return notification.getNode().state == 'closed';
-  }, "Password notification should be closed");
+  // Wait for the notification to unload
+  locationBar.waitForNotification("notification_popup", false);
 
   // Call preferences dialog and invoke master password functionality
   prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
