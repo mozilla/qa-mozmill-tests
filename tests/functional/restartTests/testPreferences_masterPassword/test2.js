@@ -13,6 +13,15 @@ var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
 
+var teardownModule = function() {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in controller) {
+    controller.restartApplication();
+  }
+}
+
 /**
  * Test invoking master password dialog when opening password manager
  */

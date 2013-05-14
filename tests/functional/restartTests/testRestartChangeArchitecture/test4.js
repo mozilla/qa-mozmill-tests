@@ -30,5 +30,7 @@ function teardownTest() {
 }
 
 
-if (persisted.skipTests)
+if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  teardownTest.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+}
