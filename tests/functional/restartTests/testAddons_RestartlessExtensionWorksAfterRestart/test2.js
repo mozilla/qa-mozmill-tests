@@ -23,7 +23,7 @@ function setupModule(aModule) {
   prefs.preferences.setPref(PREF_TRIM_URL, false);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_TRIM_URL);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
@@ -31,6 +31,13 @@ function teardownModule() {
   addons.resetDiscoveryPaneURL();
 
   delete persisted.addon;
+
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication(null, true);
+  }
 }
 
 /**

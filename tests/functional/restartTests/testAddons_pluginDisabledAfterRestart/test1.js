@@ -33,6 +33,15 @@ function setupModule(aModule) {
   tabs.closeAllTabs(aModule.controller);
 }
 
+function teardownModule(aModule) {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
+}
+
 /**
  * Test disabling a plugin
  */
@@ -61,4 +70,6 @@ function testDisablePlugin() {
 }
 
 setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                             " disabled - 'true' should equal 'false'";
+teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
                              " disabled - 'true' should equal 'false'";

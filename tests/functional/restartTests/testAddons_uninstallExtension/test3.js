@@ -18,6 +18,18 @@ function setupModule(aModule) {
   tabs.closeAllTabs(aModule.controller);
 }
 
+function teardownModule(aModule) {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    // Bug 783484
+    // Since the last 2 tests of this suite are skipped we reset the profile here
+    // Remove these once test3 and test4 are reenabled
+    aModule.controller.restartApplication(null, true);
+  }
+}
+
 /**
  * Test for uninstalling a disabled add-on
  */

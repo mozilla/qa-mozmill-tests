@@ -13,6 +13,15 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 }
 
+function teardownModule(aModule) {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication(null, true);
+  }
+}
+
 /**
  * Verify that we're in 64 bit mode
  */
@@ -23,4 +32,5 @@ function testRestarted64bit() {
 
 if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
 }
