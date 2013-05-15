@@ -7,13 +7,15 @@
 // Include required modules
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
+var localization = require("../../../../lib/localization");
 var modalDialog = require("../../../../lib/modal-dialog");
 var places = require("../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
-const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale +
-                            "/firefox/central/";
+const TEST_DATA = "https://www.mozilla.org/" +
+                  localization.normalizeLocale() +
+                  "/firefox/central/";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -75,8 +77,8 @@ function testVerifyDefaultBookmarks() {
                "The label of the Getting Started bookmark has been set correctly");
 
   // Check for the correct link of the bookmark which also includes the locale
-  expect.ok(places.isBookmarkInFolder(utils.createURI(GETTING_STARTED_URL), bs.toolbarFolder),
-            GETTING_STARTED_URL + " is in the Toolbar Folder");
+  expect.ok(places.isBookmarkInFolder(utils.createURI(TEST_DATA), bs.toolbarFolder),
+            TEST_DATA + " is in the Toolbar Folder");
 
   // Close the container
   toolbarNodes.containerOpen = false;
@@ -94,8 +96,3 @@ function getBookmarkToolbarItems() {
 
   return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
-
-setupModule.__force_skip__ = "Bug 840487 - Test failure due to url " +
-                             "'http://www.mozilla.com/locale/firefox/central' being changed";
-teardownModule.__force_skip__ = "Bug 840487 -  Test failure due to url " +
-                                "'http://www.mozilla.com/locale/firefox/central' being changed";
