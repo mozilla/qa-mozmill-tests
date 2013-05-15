@@ -15,8 +15,6 @@ const PREF_TLS = "security.enable_tls";
 const TIMEOUT = 5000;
 const TEST_URL = "https://mail.mozilla.org";
 
-const TEST_URL = "https://mail.mozilla.org";
-
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
 const PROPERTY = "chrome://pipnss/locale/pipnss.properties";

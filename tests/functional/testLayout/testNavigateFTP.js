@@ -5,8 +5,6 @@
 const TIMEOUT = 5000;
 const TEST_URL = "ftp://ftp.mozilla.org/pub/";
 
-const TEST_URL = "ftp://ftp.mozilla.org/pub/";
-
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 }
