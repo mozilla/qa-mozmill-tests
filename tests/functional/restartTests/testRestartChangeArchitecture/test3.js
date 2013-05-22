@@ -30,6 +30,7 @@ function teardownModule(aModule) {
   Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
 }
 
-
-if (persisted.skipTests)
+if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+}

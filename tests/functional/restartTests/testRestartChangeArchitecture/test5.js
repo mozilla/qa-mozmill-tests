@@ -21,6 +21,6 @@ function testRestarted64bit() {
                "Successfully restarted in 64bit mode after requesting it");
 }
 
-
-if (persisted.skipTests)
+if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+}

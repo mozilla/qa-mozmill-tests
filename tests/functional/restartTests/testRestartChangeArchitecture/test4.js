@@ -31,6 +31,7 @@ function teardownModule(aModule) {
                         Ci.nsIAppStartup.eRestartx86_64);
 }
 
-
-if (persisted.skipTests)
+if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+}

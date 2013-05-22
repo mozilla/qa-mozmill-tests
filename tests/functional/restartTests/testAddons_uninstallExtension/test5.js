@@ -19,7 +19,7 @@ function setupModule(aModule) {
   tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule(aModule) {
+function teardownModule() {
   addons.resetDiscoveryPaneURL();
   delete persisted.addons;
 
