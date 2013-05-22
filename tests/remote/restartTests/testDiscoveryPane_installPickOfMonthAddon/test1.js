@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert, expect} = require("../../../../lib/assertions");
@@ -14,16 +16,16 @@ const TIMEOUT_SWITCH = 100;
 const CLICK_COUNT = 3;
 const INSTALL_SOURCE = "discovery-promo";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  am = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.am = new addons.AddonsManager(aModule.controller);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   delete persisted.currentAddon;
-  am.close();
+  aModule.am.close();
 }
 
 /**
