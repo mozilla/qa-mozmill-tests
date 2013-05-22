@@ -24,7 +24,7 @@ function testRestarted32bit() {
 /**
  * Restart normally
  */
-function teardownTest(aTest) {
+function teardownModule(aModule) {
   aModule.controller.startUserShutdown(4000, true);
 
   Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);

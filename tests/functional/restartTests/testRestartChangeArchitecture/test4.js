@@ -24,8 +24,8 @@ function testArchitecture32bit() {
 /**
  * Restart in 64 bit mode
  */
-function teardownTest(aTest) {
-  aTest.controller.startUserShutdown(4000, true);
+function teardownModule(aModule) {
+  aModule.controller.startUserShutdown(4000, true);
 
   Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart |
                         Ci.nsIAppStartup.eRestartx86_64);
