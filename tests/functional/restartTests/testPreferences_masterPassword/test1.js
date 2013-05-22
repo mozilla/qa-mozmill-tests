@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { expect } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
@@ -14,12 +16,12 @@ var utils = require("../../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  locationBar = new toolbars.locationBar(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**

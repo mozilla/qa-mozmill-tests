@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
@@ -9,13 +11,13 @@ var search = require("../../../lib/search");
 // Global variable to share engine names
 var gSharedData = { preEngines: [ ] };
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  searchBar = new search.searchBar(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.searchBar = new search.searchBar(aModule.controller);
 }
 
-function teardownModule(module) {
-  searchBar.restoreDefaultEngines();
+function teardownModule(aModule) {
+  aModule.searchBar.restoreDefaultEngines();
 }
 
 /**

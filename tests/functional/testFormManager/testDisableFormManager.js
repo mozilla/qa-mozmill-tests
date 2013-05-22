@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -14,8 +16,8 @@ const PREF_SAVE_FORM_SEARCH_HISTORY = "browser.formfill.enable"
 const FNAME = "John";
 const LNAME = "Smith";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   // Clear complete form history so we don't interfer with already added entries
   var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
@@ -26,7 +28,7 @@ var setupModule = function() {
   prefs.preferences.setPref(PREF_SAVE_FORM_SEARCH_HISTORY, false);
 }
 
-var teardownModule = function() {
+var teardownModule = function(aModule) {
   prefs.preferences.clearUserPref(PREF_SAVE_FORM_SEARCH_HISTORY);
 }
 

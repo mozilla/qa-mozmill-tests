@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
@@ -14,8 +16,8 @@ const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_TRIM_URL = "browser.urlbar.trimURLs";
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   // Change pref to show the full url in the location bar
   prefs.preferences.setPref(PREF_TRIM_URL, false);

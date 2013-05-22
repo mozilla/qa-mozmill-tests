@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
@@ -21,12 +23,12 @@ const THEME = {
   url: BASE_URL + "addons/install.html?addon=/themes/plain.jar"
 };
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
-  addonsManager = new addons.AddonsManager(controller);
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL(TEST_DATA);
 
   // Whitelist add the AMO preview site
@@ -35,7 +37,7 @@ function setupModule() {
   // Store the theme in the persisted object
   persisted.theme = THEME;
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
 /**

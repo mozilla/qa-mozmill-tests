@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
@@ -12,18 +14,18 @@ var tabs = require("../../../lib/tabs");
 const TEST_DOMAINS = ["http://domain1.mozqa.com",
                       "http://domain2.mozqa.com"];
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
   // Clear cache
   Services.cache.evictEntries(Ci.nsICache.STORE_ANYWHERE);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule() {
-  pbWindow.close(true);
+function teardownModule(aModule) {
+  aModule.pbWindow.close(true);
 }
 
 /**

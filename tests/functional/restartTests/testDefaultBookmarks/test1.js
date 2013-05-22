@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
@@ -13,17 +15,17 @@ var utils = require("../../../../lib/utils");
 const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale +
                             "/firefox/central/";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  locationbar = new toolbars.locationBar(controller);
-  nodeCollector = new domUtils.nodeCollector(controller.window.document);
+  aModule.locationbar = new toolbars.locationBar(aModule.controller);
+  aModule.nodeCollector = new domUtils.nodeCollector(aModule.controller.window.document);
 
-  bs = places.bookmarksService;
-  hs = places.historyService;
+  aModule.bs = places.bookmarksService;
+  aModule.hs = places.historyService;
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   delete persisted.toolbarNodes;
 }
 

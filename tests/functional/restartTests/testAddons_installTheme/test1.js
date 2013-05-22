@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
@@ -20,9 +22,9 @@ const THEME = {
 
 const TIMEOUT_DOWNLOAD = 25000;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add the local test folder
@@ -31,7 +33,7 @@ function setupModule() {
   // Store the theme in the persisted object
   persisted.theme = THEME;
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
 /**

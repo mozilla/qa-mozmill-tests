@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var { assert } = require("../../../../lib/assertions");
@@ -10,10 +12,10 @@ var { BlocklistWindow } = require("../../../../lib/ui/addons_blocklist");
 // XXX: Bug 727842 - Need to restart httpd after Firefox restarts
 collector.addHttpResource("../../../../data/");
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
-  blocklistWindow = new BlocklistWindow(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  aModule.blocklistWindow = new BlocklistWindow(aModule.controller);
 }
 
 /*

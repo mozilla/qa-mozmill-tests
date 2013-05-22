@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
@@ -23,9 +25,9 @@ const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL(TEST_DATA);
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
@@ -36,7 +38,7 @@ function setupModule() {
   // Whitelist localhost
   addons.addToWhiteList(BASE_URL + "addons/");
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
 /**

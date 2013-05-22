@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert, expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
@@ -18,9 +20,9 @@ const PLACES_DB_TIMEOUT = 4000;
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
-  locationBar =  new toolbars.locationBar(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
@@ -29,8 +31,8 @@ var setupModule = function() {
   prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
-var teardownModule = function() {
-  locationBar.autoCompleteResults.close(true);
+var teardownModule = function(aModule) {
+  aModule.locationBar.autoCompleteResults.close(true);
   prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 

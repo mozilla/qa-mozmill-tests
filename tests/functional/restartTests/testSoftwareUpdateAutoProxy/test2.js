@@ -2,15 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
 var softwareUpdate = require("../../../../lib/software-update");
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.update = new softwareUpdate.softwareUpdate();
 
-  if (!update.allowed)
+  if (!aModule.update.allowed)
     testSoftwareUpdateAutoProxy.__force_skip__ = "No permission to update Firefox.";
 }
 

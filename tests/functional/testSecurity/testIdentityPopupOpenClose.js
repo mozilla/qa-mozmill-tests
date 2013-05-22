@@ -6,6 +6,8 @@
  * Litmus Test 8579: Display and close Larry
  */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -14,9 +16,9 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  tabs.closeAllTabs(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  tabs.closeAllTabs(aModule.controller);
 }
 
 /**

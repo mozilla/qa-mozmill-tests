@@ -2,18 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
+  aModule.searchBar = new search.searchBar(controller);
 }
 
-var teardownModule = function(module) {
-  searchBar.restoreDefaultEngines();
+var teardownModule = function(aModule) {
+  aModule.searchBar.restoreDefaultEngines();
 }
 
 /**

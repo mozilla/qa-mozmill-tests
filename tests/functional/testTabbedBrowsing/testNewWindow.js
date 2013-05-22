@@ -2,18 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  controller2 = null;
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.controller2 = null;
 }
 
-var teardownModule = function(module) {
-  if (controller2 && controller2.window)
-    controller2.window.close();
+var teardownModule = function(aModule) {
+  if (aModule.controller2 && aModule.controller2.window)
+    aModule.controller2.window.close();
 }
 
 /**

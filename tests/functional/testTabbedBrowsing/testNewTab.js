@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
@@ -15,18 +17,18 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_NEWTAB_URL = "browser.newtab.url";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 
   // Save old state
-  oldTabsOnTop = tabBrowser.hasTabsOnTop;
+  aModule.oldTabsOnTop = aModule.tabBrowser.hasTabsOnTop;
 }
 
-function teardownModule(module) {
-  tabBrowser.hasTabsOnTop = oldTabsOnTop;
+function teardownModule(aModule) {
+  aModule.tabBrowser.hasTabsOnTop = aModule.oldTabsOnTop;
 }
 
 function testNewTab() {

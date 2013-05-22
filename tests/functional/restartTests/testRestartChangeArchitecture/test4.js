@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**
@@ -22,8 +24,8 @@ function testArchitecture32bit() {
 /**
  * Restart in 64 bit mode
  */
-function teardownTest() {
-  controller.startUserShutdown(4000, true);
+function teardownTest(aTest) {
+  aTest.controller.startUserShutdown(4000, true);
 
   Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart |
                         Ci.nsIAppStartup.eRestartx86_64);

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -19,19 +21,19 @@ var gTabOrder = [
   {index: 3, linkid: 1}
 ];
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 
   prefs.preferences.setPref(PREF_TAB_LOAD_IN_BACKGROUND, false);
 }
 
-var teardownModule = function() {
+var teardownModule = function(aModule) {
   prefs.preferences.clearUserPref(PREF_TAB_LOAD_IN_BACKGROUND);
-  utils.closeContentAreaContextMenu(controller);
-  tabBrowser.closeAllTabs();
+  utils.closeContentAreaContextMenu(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 }
 
 var testOpenInForegroundTab = function() {
@@ -67,7 +69,7 @@ var testOpenInForegroundTab = function() {
     }, "The first opened tab has been selected");
   }
 
-  for each(tab in gTabOrder) {
+  for each (var tab in gTabOrder) {
     var linkId = new elementslib.ID(controller.tabs.getTab(tab.index), "id");
     controller.waitForElement(linkId);
     assert.equal(linkId.getNode().textContent, tab.linkid.toString(),

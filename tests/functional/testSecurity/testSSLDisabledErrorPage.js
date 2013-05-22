@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -18,10 +20,10 @@ const PREF_TLS = "security.enable_tls";
 const DTDS = ["chrome://browser/locale/netError.dtd"];
 const PROPERTY = "chrome://pipnss/locale/pipnss.properties";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 
   // XXX: Bug 513129
   //      Disable Keep-alive connections
@@ -32,7 +34,7 @@ var setupModule = function(module) {
   prefs.preferences.setPref(PREF_TLS, false);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   // Reset the SSL and TLS pref
   prefs.preferences.clearUserPref(PREF_SSL_3);
   prefs.preferences.clearUserPref(PREF_TLS);
