@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
@@ -12,23 +14,23 @@ const TEST_DATA = [
   {url: BASE_URL + "layout/mozilla_mission.html", id: "mission_statement"}
 ];
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  enduranceManager = new endurance.EnduranceManager(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 
   // Open the test pages
   TEST_DATA.forEach(function (page) {
-    controller.open(page.url);
-    controller.waitForPageLoad();
+    aModule.controller.open(page.url);
+    aModule.controller.waitForPageLoad();
   });
 }
 
-function teardownModule() {
- tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
 }
 
 function testNavigateBackForward() {

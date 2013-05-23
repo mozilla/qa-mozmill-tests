@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 var endurance = require("../../../../lib/endurance");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
@@ -27,19 +29,19 @@ const TAB_MODAL = "prompts.tab_modal.enabled";
 
 const NUM_TABS =  30;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  enduranceManager = new endurance.EnduranceManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
 
   // XXX: Bug 673399
   //      Tab modal dialogs are not yet supported so we switch back to browser modal dialogs
   prefs.preferences.setPref(TAB_MODAL, false);
 
-  md = new modalDialog.modalDialog(controller.window);
-  md.start(closeModalDialog);
+  aModule.md = new modalDialog.modalDialog(aModule.controller.window);
+  aModule.md.start(closeModalDialog);
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**
@@ -75,7 +77,7 @@ function closeModalDialog(controller) {
   md.start(closeModalDialog);
 }
 
-function teardownModule() {
-  md.stop();
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.md.stop();
+  aModule.tabBrowser.closeAllTabs();
 }
