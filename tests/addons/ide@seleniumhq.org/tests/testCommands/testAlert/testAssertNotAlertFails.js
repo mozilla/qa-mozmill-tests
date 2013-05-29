@@ -2,24 +2,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 var {assert} = require("../../../../../../lib/assertions");
 var checks = require("../../../lib/checks");
 var selenium = require("../../../lib/selenium");
 var tabs = require("../../../../../../lib/tabs");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  sm = new selenium.SeleniumManager();
-  sm.open(controller);
+  aModule.sm = new selenium.SeleniumManager();
+  aModule.sm.open(aModule.controller);
 
-  tabs.closeAllTabs(controller);
-  controller.open("chrome://selenium-ide/content/tests/functional/aut/alert.html");
-  controller.waitForPageLoad();
+  tabs.closeAllTabs(aModule.controller);
+  aModule.controller.open("chrome://selenium-ide/content/tests/functional/aut/alert.html");
+  aModule.controller.waitForPageLoad();
 }
 
-function teardownModule(module) {
-  sm.close();
+function teardownModule(aModule) {
+  aModule.sm.close();
 }
 
 function testAssertNotAlertCommandFails() {
