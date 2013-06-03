@@ -88,7 +88,7 @@ function getBookmarkToolbarItems() {
   return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testVerifyDefaultBookmarks.meta = {litmusids : [8751]};
+setupModule.__force_skip__ = "Bug 840487 - Test failure due to url " +
+                             "'http://www.mozilla.com/locale/firefox/central' being changed";
+teardownModule.__force_skip__ = "Bug 840487 -  Test failure due to url " +
+                                "'http://www.mozilla.com/locale/firefox/central' being changed";
