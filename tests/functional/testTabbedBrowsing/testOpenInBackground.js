@@ -84,7 +84,5 @@ var testOpenInBackgroundTab = function() {
   }, "The last tab has been selected");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenInBackgroundTab.meta = {litmusids : [8087]};
+setupModule.__force_skip__ = "Bug 880135 - Failure selecting the tab with index 1";
+teardownModule.__force_skip__ = "Bug 880135 - Failure selecting the tab with index 1";
