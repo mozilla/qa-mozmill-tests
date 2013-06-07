@@ -4,7 +4,7 @@
 
 "use strict";
 
-const TEST_DATA = "ftp://ftp.mozqa.com/";
+const TEST_DATA = "ftp://ftp.mozilla.org/pub/";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -15,13 +15,19 @@ var testNavigateFTP = function () {
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  var dataLink = new elementslib.Link(controller.tabs.activeTab, 'data');
-  controller.click(dataLink);
+  var firefox = new elementslib.Link(controller.tabs.activeTab, 'firefox');
+  controller.waitThenClick(firefox);
   controller.waitForPageLoad();
 
-  var up = new elementslib.Selector(controller.tabs.activeTab, '.up');
-  controller.click(up);
+  var nightly = new elementslib.Link(controller.tabs.activeTab, 'nightly');
+  controller.waitThenClick(nightly);
   controller.waitForPageLoad();
 
-  controller.waitForElement(dataLink);
+  var latestLink = new elementslib.Link(controller.tabs.activeTab, 'latest-trunk');
+  controller.waitForElement(latestLink);
 }
+
+/**
+ * Map test functions to litmus tests
+ */
+// testNavigateFTP.meta = {litmusids : [7962]};
