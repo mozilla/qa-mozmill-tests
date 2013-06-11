@@ -36,9 +36,9 @@ function teardownModule(aModule) {
 function testNavigateBackForward() {
   enduranceManager.run(function () {
     enduranceManager.loop(function () {
-      // XXX: The forward button disappears when there is no page to forward to
-      //      so we will use goBack() and goForward() methods because we don't
-      //      have a method to wait for the forward button to appear, in the API.
+      // TODO: The forward button disappears when there is no page to forward to
+      // so we will use goBack() and goForward() methods because we don't
+      // have a method to wait for the forward button to appear, in the API.
 
       // Go back one page
       controller.goBack();

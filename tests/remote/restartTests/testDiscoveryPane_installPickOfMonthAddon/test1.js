@@ -40,10 +40,10 @@ function testInstallPickOfTheMonthAddon() {
   discovery.waitForPageLoad();
 
   // Go to Mozilla's pick of the Month panel
-  // XXX: Bug 666530
-  //      Add a property or attribute on "main-feature" which changes when clicking
-  //      next/prev buttons - currently we are clicking the third subsection without
-  //      checking if it is the right one
+  // Bug 666530
+  // Add a property or attribute on "main-feature" which changes when clicking
+  // next/prev buttons - currently we are clicking the third subsection without
+  // checking if it is the right one
   var section = discovery.getSection("main-feature");
   var nextLink = discovery.getElement({type: "mainFeature_nextLink", parent: section});
 
@@ -75,9 +75,9 @@ function testInstallPickOfTheMonthAddon() {
   assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
 
-// XXX: Bug 657492
-//      Skip because the Mozilla's pick of the month add-on is not compatible with
-//      Nightly builds
+// Bug 657492
+// Skip because the Mozilla's pick of the month add-on is not compatible with
+// Nightly builds
 setupModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " +
                              "are only compatible with Release and Beta builds";
 teardownModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " +

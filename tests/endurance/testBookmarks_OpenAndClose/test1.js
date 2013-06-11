@@ -57,8 +57,8 @@ function testOpenAndCloseAllBookmarks() {
       controller.click(bookmark);
       controller.waitForPageLoad();
 
-      // XXX: Bug 780107
-      //      Mozmill does not dismiss dropdown menus after click
+      // Bug 780107
+      // Mozmill does not dismiss dropdown menus after click
       controller.keypress(null , 'VK_ESCAPE', {});
       enduranceManager.addCheckpoint("Bookmark was opened");
     });

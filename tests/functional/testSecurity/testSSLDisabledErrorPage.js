@@ -25,8 +25,8 @@ var setupModule = function(aModule) {
 
   tabs.closeAllTabs(aModule.controller);
 
-  // XXX: Bug 513129
-  //      Disable Keep-alive connections
+  // Bug 513129
+  // Disable Keep-alive connections
   prefs.preferences.setPref(PREF_KEEP_ALIVE, false);
 
   // Disable SSL 3.0 and TLS for secure connections
@@ -39,8 +39,8 @@ var teardownModule = function(aModule) {
   prefs.preferences.clearUserPref(PREF_SSL_3);
   prefs.preferences.clearUserPref(PREF_TLS);
 
-  // XXX: Bug 513129
-  //      Re-enable Keep-alive connections
+  // Bug 513129
+  // Re-enable Keep-alive connections
   prefs.preferences.clearUserPref(PREF_KEEP_ALIVE);
 }
 
@@ -80,7 +80,7 @@ var testDisableSSL = function() {
                  "The SSL error message contains disabled property");
 }
 
-setupModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+setupModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " +
                              "for waitForElement ID: errorTitleText'";
-teardownModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+teardownModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " +
                                 "for waitForElement ID: errorTitleText'";

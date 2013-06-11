@@ -35,9 +35,9 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
 
-  // XXX: Bug 839996
-  //      This is a workaround for moment since there is no event
-  //      to wait for before restoring bookmarks
+  // Bug 839996
+  // This is a workaround for moment since there is no event to wait for before
+  // restoring bookmarks
   aModule.controller.sleep(500);
   places.restoreDefaultBookmarks();
 }

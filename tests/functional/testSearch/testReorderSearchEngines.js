@@ -45,7 +45,7 @@ var testReorderEngines = function() {
                gSharedData.postEngines[length - 2].name,
                "The previous last search engine is now second last");
 
-  // XXX: For now sleep 0ms to get the correct sorting order returned
+  // TODO: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
 
   // Check the ordering in the drop down menu

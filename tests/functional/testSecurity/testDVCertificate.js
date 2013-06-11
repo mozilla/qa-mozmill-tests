@@ -59,8 +59,9 @@ var testLarryBlue = function() {
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
-  // XXX: Larry strips the 'www.' from the CName using the eTLDService
-  //      This is expected behaviour for the time being (Bug 443116)
+  // Bug 443116
+  // Larry strips the 'www.' from the CName using the eTLDService
+  // This is expected behaviour for the time being
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
   expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the cert host");

@@ -9,7 +9,8 @@ var addons = require("../../../../lib/addons");
 var { assert } = require("../../../../lib/assertions");
 var { BlocklistWindow } = require("../../../../lib/ui/addons_blocklist");
 
-// XXX: Bug 727842 - Need to restart httpd after Firefox restarts
+// Bug 727842
+// Need to restart httpd after Firefox restarts
 collector.addHttpResource("../../../../data/");
 
 function setupModule(aModule) {

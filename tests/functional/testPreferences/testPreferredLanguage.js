@@ -86,8 +86,8 @@ var langHandler = function (aController) {
   contentLocale = filteredLanguageList.nodes[randomPosition].getAttribute("id");
 
   // Select the language in the dropdown
-  // XXX: Once bug 852116 lands we should change this code to use
-  //      controller.select();
+  // Bug 852116
+  // TODO: replace this code with controller.select() once 852116 lands
   aController.click(langDropDown);
   assert.waitFor(function () {
     return langDropDown.getNode().open;

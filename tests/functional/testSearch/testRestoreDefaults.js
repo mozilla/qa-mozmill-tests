@@ -30,7 +30,7 @@ function testRestoreDefaultEngines() {
   // Reopen the dialog to restore the defaults
   searchBar.openEngineManager(restoreEngines);
 
-  // XXX: For now sleep 0ms to get the correct sorting order returned
+  // TODO: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
 
   // Check the ordering in the drop down menu

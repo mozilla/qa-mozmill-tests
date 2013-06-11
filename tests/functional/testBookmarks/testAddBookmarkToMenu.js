@@ -42,7 +42,8 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.type(nameField, "Mozilla");
   controller.click(doneButton);
 
-  // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
+  // Bug 474486
+  // Until we can't check via a menu click, call the Places API function for now
   var bookmarkFolder = places.bookmarksService.bookmarksMenuFolder;
   var bookmarkExists = places.isBookmarkInFolder(uri, bookmarkFolder);
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");

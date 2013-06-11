@@ -92,8 +92,8 @@ function handleInstallAddonDialog(controller) {
   controller.click(installButton);
 }
 
-// Bug 732353 - Disable all Discovery Pane tests
-//              due to unpredictable web dependencies
+// Bug 732353
+// Disable all Discovery Pane tests due to unpredictable web dependencies
 setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                              "due to unpredictable web dependencies";
 teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +

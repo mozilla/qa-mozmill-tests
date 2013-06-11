@@ -33,8 +33,8 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
 
-  // XXX: Bug 673399
-  //      Tab modal dialogs are not yet supported so we switch back to browser modal dialogs
+  // Bug 673399
+  // Tab modal dialogs are not yet supported so we switch back to browser modal dialogs
   prefs.preferences.setPref(TAB_MODAL, false);
 
   aModule.md = new modalDialog.modalDialog(aModule.controller.window);

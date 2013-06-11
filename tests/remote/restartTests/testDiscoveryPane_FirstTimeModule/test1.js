@@ -88,7 +88,8 @@ function handleInstallAddonDialog(controller) {
   controller.click(installButton);
 }
 
-// XXX: "Bug 664018 - 'First Time' add-ons are incompatible with this version of Firefox"
+// Bug 664018
+// 'First Time' add-ons are incompatible with this version of Firefox
 setupModule.__force_skip__ = "Bug 664018 - 'First Time' add-ons are incompatible " +
                              "with this version of Firefox";
 teardownModule.__force_skip__ = "Bug 664018 - 'First Time' add-ons are incompatible " +

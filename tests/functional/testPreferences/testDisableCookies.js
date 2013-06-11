@@ -90,7 +90,8 @@ var prefCheckDisableDialogCallback = function(controller) {
  *        MozMillController of the window to operate on
  */
 function checkCookieNotSaved(controller) {
-  // XXX: Bug 513820 - Remove Cookies button is not cleared when cookie list is cleared
+  // Bug 513820
+  // Remove Cookies button is not cleared when cookie list is cleared
   var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
   //expect.ok(removeCookieButton.getNode().disabled, "Remove Cookie Button is disabled");
 

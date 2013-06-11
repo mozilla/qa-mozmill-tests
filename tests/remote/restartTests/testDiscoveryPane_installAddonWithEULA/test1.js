@@ -29,21 +29,21 @@ function teardownModule(aModule) {
   aModule.addonsManager.close();
 }
 
-/*
+/**
  * Tests installation of EULA add-on
  *
- * XXX: Bug 678478
- *      Retrieving the add-on by direct access of its detailed page because
- *      at the moment we can't predict that any of the sections will provide
- *      an add-on with EULA
+ * Bug 678478
+ * Retrieving the add-on by direct access of its detailed page because
+ * at the moment we can't predict that any of the sections will provide
+ * an add-on with EULA
  */
 function testInstallAddonWithEULA() {
   // Retrieve add-on via production page
   controller.open(ADDON.page);
   controller.waitForPageLoad();
 
-  // XXX: Bug 680045
-  //      Add elements to UI map for add-ons with EULA
+  // Bug 680045
+  // Add elements to UI map for add-ons with EULA
   var continueToDownloadLink = new elementslib.Selector(controller.window.document,
 					                 ".install-action");
 

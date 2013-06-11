@@ -52,7 +52,7 @@ var testScrollBackgroundTabIntoView = function() {
     return down_visible && up_visible;
   }, "Scroll arrows are visible after a couple tabs have been opened", TIMEOUT_ARROWS);
 
-  // XXX: Bug 624027
+  // Bug 624027
   // Not sure for which state we have to wait here, but without the sleep
   // call or smaller numbers the test always fails on Windows. Lets see
   // if the fix for bug 578162 will solve it.
