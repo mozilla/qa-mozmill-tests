@@ -32,6 +32,6 @@ function teardownModule(aModule) {
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
   if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication(null, true);
+    aModule.controller.restartApplication();
   }
 }
