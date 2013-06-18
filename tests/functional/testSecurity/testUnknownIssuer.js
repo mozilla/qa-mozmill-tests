@@ -5,7 +5,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const TEST_DATA = "https://ssl-unknownissuer.mozqa.com";
+const TEST_URL = "https://ssl-unknownissuer.mozqa.com";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -21,7 +21,7 @@ var testUnknownIssuer = function() {
   controller.waitForPageLoad();
 
   var link = new elementslib.ID(controller.tabs.activeTab, "cert_domain_link");
-  controller.waitForElement(link, TIMEOUT);
+  controller.waitForElement(link);
   expect.equal(link.getNode().textContent, "ssl-selfsigned-unknownissuer.mozqa.com",
                "Domain name is visible");
 
@@ -35,7 +35,7 @@ var testUnknownIssuer = function() {
 
   // Verify the error code is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
-  controller.waitForElement(text, TIMEOUT);
+  controller.waitForElement(text);
   expect.contain(text.getNode().textContent, "sec_error_unknown_issuer",
                  "The error code is an unknown issuer error");
 }
