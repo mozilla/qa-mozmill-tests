@@ -13,7 +13,6 @@ const PREF_SSL_3 = "security.enable_ssl3";
 const PREF_TLS = "security.enable_tls";
 
 const TIMEOUT = 5000;
-
 const TEST_URL = "https://mail.mozilla.org";
 
 // TODO: move the dtds to a SecurityAPI, if one will be created

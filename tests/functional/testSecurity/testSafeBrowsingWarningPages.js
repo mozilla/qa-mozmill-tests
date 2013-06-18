@@ -54,8 +54,7 @@ var testWarningPages = function() {
 /**
  * Check that the getMeOutButton sends the user to the firefox's default home page
  */
-var checkGetMeOutOfHereButton = function()
-{
+var checkGetMeOutOfHereButton = function() {
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutButton");
 
   // Wait for the getMeOutOfHereButton to be safely loaded on the warning page and click it

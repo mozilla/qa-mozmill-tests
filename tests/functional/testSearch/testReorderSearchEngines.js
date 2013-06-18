@@ -11,23 +11,20 @@ const DELAY = 0;
 // Global variable to share engine names
 var gSharedData = {preEngines: [ ], postEngines: [ ]};
 
-var setupModule = function(module)
-{
+var setupModule = function(module) {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
 }
 
-var teardownModule = function(module)
-{
+var teardownModule = function(module) {
   searchBar.restoreDefaultEngines();
 }
 
 /**
  * Manage search engine (Reordering)
  */
-var testReorderEngines = function()
-{
+var testReorderEngines = function() {
   // Reorder the search engines a bit
   searchBar.openEngineManager(reorderEngines);
 

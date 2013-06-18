@@ -5,12 +5,10 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const TIMEOUT = 5000;
+const TEST_DATA = "https://ssl-unknownissuer.mozqa.com";
 
-const TEST_URL = "https://ssl-unknownissuer.mozqa.com";
-
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**
