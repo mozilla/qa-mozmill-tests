@@ -71,8 +71,7 @@ function checkOpenTab(aEventType) {
   // Open a new tab and check that 'about:newtab' has been opened
   tabBrowser.openTab(aEventType);
 
-  // Bug 716108
-  // Remove once 716108 lands
+  // Bug 716108 has landed but we still require this for a clean test
   controller.waitForPageLoad();
 
   var newTabURL = prefs.preferences.getPref(PREF_NEWTAB_URL, '');
