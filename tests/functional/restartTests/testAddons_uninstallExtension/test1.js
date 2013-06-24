@@ -8,13 +8,13 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+const BASE_URL = collector.addHttpResource("../../../../data/");
 
 const ADDONS = [
   {id: "test-icons@quality.mozilla.org",
-   url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi"},
+   url: BASE_URL + "addons/extensions/icons.xpi"},
   {id: "test-long-name@quality.mozilla.org",
-   url: LOCAL_TEST_FOLDER + "addons/extensions/long-name.xpi"},
+   url: BASE_URL + "addons/extensions/long-name.xpi"},
 ];
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -32,7 +32,7 @@ function setupModule() {
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add the local test folder
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(BASE_URL);
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = ADDONS;

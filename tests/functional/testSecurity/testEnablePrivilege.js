@@ -6,8 +6,8 @@
 var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "security/enable_privilege.html";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "security/enable_privilege.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -16,7 +16,7 @@ function setupModule() {
 }
 
 function testEnablePrivilege() {
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var result = new elementslib.ID(controller.tabs.activeTab, "result");

@@ -8,8 +8,8 @@ var {assert, expect} = require("../../../lib/assertions");
 var domUtils = require("../../../lib/dom-utils");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 function setupModule(aModule) {
   controller = mozmill.getBrowserController();
@@ -17,7 +17,7 @@ function setupModule(aModule) {
   tabBrowser = new tabs.tabBrowser(controller);
 
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  addons.setDiscoveryPaneURL(TEST_DATA);
 
   tabs.closeAllTabs(controller);
 
@@ -114,3 +114,8 @@ function pluginStateInAboutPlugins(aPluginName) {
 
   return exists;
 }
+
+setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                             " disabled - 'true' should equal 'false'";
+teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                                " disabled - 'true' should equal 'false'";

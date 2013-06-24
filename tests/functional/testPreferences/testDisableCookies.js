@@ -9,10 +9,8 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'cookies/cookie_single.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -35,7 +33,7 @@ var testDisableCookies = function() {
   prefs.openPreferencesDialog(controller, prefDisableCookieDialogCallback);
 
   // Go to a test page to build a cookie
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the test page hostname
@@ -56,7 +54,7 @@ var prefDisableCookieDialogCallback = function(controller) {
 
   // Go to custom history settings and click on the show cookies button
   var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode, TIMEOUT);
+  controller.waitForElement(historyMode);
   controller.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";

@@ -10,7 +10,8 @@ var downloads = require("../../../lib/downloads");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/downloading/");
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "downloading/";
 
 const DOWNLOAD_LOCATION = utils.getProfileDownloadLocation();
 const DOWNLOADS = {
@@ -56,12 +57,12 @@ var testPrivateDownloadPanel = function () {
   // Download files of unknown type
   // Normal Browsing
   DOWNLOADS.normal.forEach(function (aFile) {
-    downloads.downloadFileOfUnknownType(controller, LOCAL_TEST_FOLDER + aFile);
+    downloads.downloadFileOfUnknownType(controller, TEST_DATA + aFile);
   });
 
   // Private Browsing
   DOWNLOADS.pb.forEach(function (aFile) {
-    downloads.downloadFileOfUnknownType(pb.controller, LOCAL_TEST_FOLDER + aFile);
+    downloads.downloadFileOfUnknownType(pb.controller, TEST_DATA + aFile);
   });
 
   // Wait until all downloads have been finished

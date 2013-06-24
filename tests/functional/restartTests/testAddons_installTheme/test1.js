@@ -8,15 +8,14 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_INSTALL_SCRIPT = "addons/install.html?addon=";
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+const BASE_URL = collector.addHttpResource("../../../../data/");
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const THEME = {
   name: "Theme (Plain)",
   id: "plain.theme@quality.mozilla.org",
-  url: LOCAL_TEST_FOLDER + LOCAL_INSTALL_SCRIPT + "themes/plain.jar"
+  url: BASE_URL + "addons/install.html?addon=themes/plain.jar"
 };
 
 const TIMEOUT_DOWNLOAD = 25000;
@@ -27,7 +26,7 @@ function setupModule() {
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add the local test folder
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(BASE_URL);
 
   // Store the theme in the persisted object
   persisted.theme = THEME;

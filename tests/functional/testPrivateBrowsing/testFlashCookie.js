@@ -9,8 +9,8 @@ var places = require("../../../lib/places");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
 var tabs = require("../../../lib/tabs");
 
-const TEST_URL = "http://mozqa.com/data/firefox/plugins/flash/cookies/" +
-                 "flash_cookie.html";
+const TEST_DATA = "http://mozqa.com/data/firefox/plugins/flash/cookies/" +
+                  "flash_cookie.html";
 
 const COOKIE_VALUE = "cookieValue";
 
@@ -45,7 +45,7 @@ function teardownModule(aModule) {
 function testCheckFlashCookie() {
   pbWindow.open(controller);
 
-  pbWindow.controller.open(TEST_URL);
+  pbWindow.controller.open(TEST_DATA);
   pbWindow.controller.waitForPageLoad();
 
   // Enter an unique value for the cookie
@@ -62,7 +62,7 @@ function testCheckFlashCookie() {
                "Cookie value is displayed in private mode");
 
   // Open page in normal mode
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the cookie value

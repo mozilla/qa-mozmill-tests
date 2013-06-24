@@ -8,12 +8,11 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
+const TEST_DATA = "https://mail.mozilla.org";
+
 const PREF_KEEP_ALIVE = "network.http.keep-alive";
 const PREF_SSL_3 = "security.enable_ssl3";
 const PREF_TLS = "security.enable_tls";
-
-const TIMEOUT = 5000;
-const TEST_URL = "https://mail.mozilla.org";
 
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
@@ -49,12 +48,12 @@ var teardownModule = function(module) {
  */
 var testDisableSSL = function() {
   // Open the test page
-  controller.open(TEST_URL);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Verify "Secure Connection Failed" error page title
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
-  controller.waitForElement(title, TIMEOUT);
+  controller.waitForElement(title);
 
   var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title")
   expect.equal(title.getNode().textContent, nssFailure2title,
@@ -66,7 +65,7 @@ var testDisableSSL = function() {
 
   // Verify the error message is correct
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
-  controller.waitForElement(text, TIMEOUT);
+  controller.waitForElement(text);
 
   expect.contain(text.getNode().textContent, 'ssl_error_ssl_disabled',
                  "The SSL error message contains disabled information");
@@ -79,7 +78,7 @@ var testDisableSSL = function() {
                  "The SSL error message contains disabled property");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDisableSSL.meta = {litmusids : [9345]};
+setupModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+                             "for waitForElement ID: errorTitleText'";
+teardownModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
+                                "for waitForElement ID: errorTitleText'";

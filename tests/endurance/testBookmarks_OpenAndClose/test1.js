@@ -10,8 +10,8 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html?entity=';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
 
 const BOOKMARK_FOLDER_NAME = "testFolder";
 
@@ -79,7 +79,7 @@ function setupBookmarks(aController) {
                                                           defaultIndex);
 
   for (var i = 1; i <= enduranceManager.entities; i++) {
-    var URI = utils.createURI(LOCAL_TEST_PAGE + i);
+    var URI = utils.createURI(TEST_DATA + i);
 
     // Bookmark page and save in a custom folder
     places.bookmarksService.insertBookmark(customFolder, URI, defaultIndex,

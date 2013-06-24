@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
-const TEST_PAGE = "https://ssl-dv.mozqa.com";
+const TEST_DATA = "https://ssl-dv.mozqa.com";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -21,7 +21,7 @@ var setupModule = function(module) {
  */
 var testLarryBlue = function() {
   // Go to a "blue" website
-  controller.open(TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the information from the certificate

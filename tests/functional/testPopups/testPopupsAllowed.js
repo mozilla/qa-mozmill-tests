@@ -8,8 +8,8 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "popups/popup_trigger.html?count=2";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "popups/popup_trigger.html?count=2";
 
 const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
 
@@ -39,7 +39,7 @@ var testPopUpAllowed = function() {
   var windowCount = mozmill.utils.getWindows().length;
 
   // Open the Pop-up test site
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // A notification bar always exists in the DOM so check the visibility of the X button

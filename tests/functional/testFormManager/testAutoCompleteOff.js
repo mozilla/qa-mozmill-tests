@@ -4,8 +4,8 @@
 
 var { expect } = require("../../../lib/assertions");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'form_manager/autocomplete.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "form_manager/autocomplete.html";
 
 const SEARCH_TERM = "mozillazine";
 
@@ -17,7 +17,7 @@ var setupModule = function(module) {
  * Tests that no auto-complete entries are shown if turned off
  */
 var testAutoCompleteOff = function() {
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var searchField = new elementslib.ID(controller.tabs.activeTab, "search");
@@ -34,7 +34,7 @@ var testAutoCompleteOff = function() {
                "Search for the given search term happened.");
 
   // Go back to the search page
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Enter a part of the search term only
