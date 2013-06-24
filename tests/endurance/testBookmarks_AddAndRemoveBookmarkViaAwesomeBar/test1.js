@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
@@ -13,21 +15,21 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource('../../../data/');
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  enduranceManager = new endurance.EnduranceManager(controller);
-  locationBar = new toolbars.locationBar(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Open test page and wait until it has been finished loading
-  controller.open(TEST_DATA);
-  controller.waitForPageLoad();
+  aModule.controller.open(TEST_DATA);
+  aModule.controller.waitForPageLoad();
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   places.restoreDefaultBookmarks();
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**

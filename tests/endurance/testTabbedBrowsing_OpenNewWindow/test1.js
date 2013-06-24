@@ -2,20 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var {assert} = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  enduranceManager = new endurance.EnduranceManager(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 }
 
-function teardownModule() {
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**

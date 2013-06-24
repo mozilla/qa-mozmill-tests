@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -13,19 +15,19 @@ const TEST_DATA = BASE_URL + "popups/popup_trigger.html?count=2";
 
 const PREF_POPUP_BLOCK = "dom.disable_open_during_load";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 
   prefs.preferences.setPref(PREF_POPUP_BLOCK, false);
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   // Reset the pop-up blocking pref
   prefs.preferences.clearUserPref(PREF_POPUP_BLOCK);
 
-  for each (window in mozmill.utils.getWindows("navigator:browser")) {
+  for each (var window in mozmill.utils.getWindows("navigator:browser")) {
     if (!window.toolbar.visible)
       window.close();
   }

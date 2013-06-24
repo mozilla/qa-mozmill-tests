@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
@@ -12,13 +14,13 @@ const TEST_DATA = "http://www.mozqa.com/data/firefox/plugins/flash/" +
 
 const TIMEOUT_PAGE = 50000;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  enduranceManager = new endurance.EnduranceManager(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 
   // Skip test if we don't have Flash plugin enabled
   var isFlashActive = addons.getInstalledAddons(function (aAddon) {

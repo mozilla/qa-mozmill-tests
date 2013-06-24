@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../lib/addons");
 var {assert, expect} = require("../../../lib/assertions");
@@ -12,11 +14,11 @@ const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 function setupModule(aModule) {
-  controller = mozmill.getBrowserController();
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.tabBrowser = new tabs.tabBrowser(controller);
 
-  addonsManager = new addons.AddonsManager(controller);
+  aModule.addonsManager = new addons.AddonsManager(controller);
   addons.setDiscoveryPaneURL(TEST_DATA);
 
   tabs.closeAllTabs(controller);
@@ -38,12 +40,12 @@ function setupModule(aModule) {
   }
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   addons.resetDiscoveryPaneURL();
 
   // Enable the plugin that was disabled
   addons.enableAddon(plugin.id);
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
 /**

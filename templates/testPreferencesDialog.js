@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
-var prefs = require("../../lib/prefs");
+var prefs = require("../lib/prefs");
 
 // Setup for the test
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 // Run the preferences dialog test
@@ -16,7 +18,7 @@ var testSampleTestcase = function() {
 }
 
 var callbackHandler = function(controller) {
-  var prefDialog = new PrefsAPI.preferencesDialog(controller);
+  var prefDialog = new prefs.preferencesDialog(controller);
   prefDialog.paneId = 'paneMain';
 
   // Code to be executed in the preferences dialog

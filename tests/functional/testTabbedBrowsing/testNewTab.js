@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
@@ -15,18 +17,18 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_NEWTAB_URL = "browser.newtab.url";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 
   // Save old state
-  oldTabsOnTop = tabBrowser.hasTabsOnTop;
+  aModule.oldTabsOnTop = aModule.tabBrowser.hasTabsOnTop;
 }
 
-function teardownModule(module) {
-  tabBrowser.hasTabsOnTop = oldTabsOnTop;
+function teardownModule(aModule) {
+  aModule.tabBrowser.hasTabsOnTop = aModule.oldTabsOnTop;
 }
 
 function testNewTab() {
@@ -69,7 +71,7 @@ function checkOpenTab(aEventType) {
   // Open a new tab and check that 'about:newtab' has been opened
   tabBrowser.openTab(aEventType);
 
-  // XXX: Remove this line when Bug 716108 lands
+  // Bug 716108 has landed but we still require this for a clean test
   controller.waitForPageLoad();
 
   var newTabURL = prefs.preferences.getPref(PREF_NEWTAB_URL, '');
@@ -88,7 +90,5 @@ function checkOpenTab(aEventType) {
   tabBrowser.closeTab();
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testNewTab.meta = {litmusids : [8086]};
+setupModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";
+teardownModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";

@@ -7,6 +7,8 @@
  * elements.
  */
 
+"use strict";
+
 // Include the required modules
 var domUtils = require("../../../lib/dom-utils");
 var localization = require("../../../lib/localization");
@@ -18,8 +20,8 @@ const WINDOW_CURRENT = domUtils.DOMWalker.WINDOW_CURRENT;
 const WINDOW_MODAL= domUtils.DOMWalker.WINDOW_MODAL;
 const WINDOW_NEW = domUtils.DOMWalker.WINDOW_NEW;
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 function prefPaneInit(controller, prefDialog) {
@@ -248,5 +250,4 @@ function restorePrivateBrowsingAutoStartPreference() {
   this.removeAttribute("data-command-backup");
 }
 
-// Bug 614579 - Crop test sometimes shows single line for cropped elements
-setupModule.__force_skip__ = "Bug 614579 - Crop test sometimes shows single line for cropped elements";
+setupModule.__force_skip__ = "Bug 741301 - Disable broken l10n crop tests until false positives have been resolved";

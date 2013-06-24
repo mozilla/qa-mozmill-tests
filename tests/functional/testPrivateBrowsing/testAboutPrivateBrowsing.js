@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -13,16 +15,16 @@ const TEST_DATA = BASE_URL + "private_browsing/about.html?";
 
 const PREF_PRIVATE_BROWSING_SUPPORT = "app.support.baseURL";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
   prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, TEST_DATA);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
-  pbWindow.close();
+  aModule.pbWindow.close();
 }
 
 /**

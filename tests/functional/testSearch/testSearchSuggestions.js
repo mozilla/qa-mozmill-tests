@@ -2,26 +2,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
 
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
-  searchEngines = searchBar.visibleEngines;
+  aModule.searchBar = new search.searchBar(aModule.controller);
+  aModule.searchEngines = aModule.searchBar.visibleEngines;
 
   // Get search engines that support suggestions
-  enginesWithSuggestions = [ ];
-  for (var i = 0; i < searchEngines.length; i++) {
-    if(searchBar.hasSuggestions(searchEngines[i].name))
-      enginesWithSuggestions.push(searchEngines[i]);
+  aModule.enginesWithSuggestions = [ ];
+  for (var i = 0; i < aModule.searchEngines.length; i++) {
+    if (aModule.searchBar.hasSuggestions(aModule.searchEngines[i].name))
+      aModule.enginesWithSuggestions.push(aModule.searchEngines[i]);
   }
 
   // Skip test if we have less than 2 search engines with suggestions
-  if (enginesWithSuggestions.length < 2)
+  if (aModule.enginesWithSuggestions.length < 2)
     testMultipleEngines.__force_skip__ = "At least two search engines with " +
                                          "suggestions are necessary for " +
                                          "comparison";
@@ -60,7 +62,7 @@ function testMultipleEngines() {
   // Check that at least one suggestion is different
   var different = false;
   var maxIndex = Math.max(allSuggestions[0].length, allSuggestions[1].length);
-  for (i = 0; i < maxIndex; i++) {
+  for (var i = 0; i < maxIndex; i++) {
     if (allSuggestions[0][i] !== allSuggestions[1][i]) {
       different = true;
       break;

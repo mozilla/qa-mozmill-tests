@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { expect } = require("../../../lib/assertions");
 var search = require("../../../lib/search");
@@ -11,14 +13,14 @@ const DELAY = 0;
 // Global variable to share engine names
 var gSharedData = {preEngines: [ ], postEngines: [ ]};
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
+  aModule.searchBar = new search.searchBar(aModule.controller);
 }
 
-var teardownModule = function(module) {
-  searchBar.restoreDefaultEngines();
+var teardownModule = function(aModule) {
+  aModule.searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -43,7 +45,7 @@ var testReorderEngines = function() {
                gSharedData.postEngines[length - 2].name,
                "The previous last search engine is now second last");
 
-  // XXX: For now sleep 0ms to get the correct sorting order returned
+  // TODO: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
 
   // Check the ordering in the drop down menu

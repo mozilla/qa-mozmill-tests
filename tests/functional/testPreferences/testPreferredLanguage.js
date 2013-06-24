@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var { assert, expect } = require("../../../lib/assertions");
 var { nodeCollector } = require("../../../lib/dom-utils");
@@ -84,8 +86,8 @@ var langHandler = function (aController) {
   contentLocale = filteredLanguageList.nodes[randomPosition].getAttribute("id");
 
   // Select the language in the dropdown
-  // XXX: Once bug 852116 lands we should change this code to use
-  //      controller.select();
+  // Bug 852116
+  // TODO: replace this code with controller.select() once 852116 lands
   aController.click(langDropDown);
   assert.waitFor(function () {
     return langDropDown.getNode().open;

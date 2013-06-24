@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
@@ -15,21 +17,21 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
 
 const BOOKMARK_FOLDER_NAME = "testFolder";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  enduranceManager = new endurance.EnduranceManager(controller);
-  locationBar = new toolbars.locationBar(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 
   // Bookmark some pages in a custom folder
-  setupBookmarks(controller);
+  setupBookmarks(aModule.controller);
 }
 
-function teardownModule() {
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
   places.restoreDefaultBookmarks();
 }
 
@@ -55,8 +57,8 @@ function testOpenAndCloseAllBookmarks() {
       controller.click(bookmark);
       controller.waitForPageLoad();
 
-      // XXX: Bug 780107
-      //      Mozmill does not dismiss dropdown menus after click
+      // Bug 780107
+      // Mozmill does not dismiss dropdown menus after click
       controller.keypress(null , 'VK_ESCAPE', {});
       enduranceManager.addCheckpoint("Bookmark was opened");
     });

@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var tabs = require("../../../../lib/tabs");
 
 function setupModule(aModule) {
-  controller = mozmill.getBrowserController();
+  aModule.controller = mozmill.getBrowserController();
 
   // Skip test if we don't have enabled plugins
   var activePlugins = addons.getInstalledAddons(function (aAddon) {
@@ -27,8 +29,17 @@ function setupModule(aModule) {
   // If a plugin is disabled the total number of plugins will decrease
   persisted.enabledPlugins = controller.window.navigator.plugins.length;
 
-  addonsManager = new addons.AddonsManager(controller);
-  tabs.closeAllTabs(controller);
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  tabs.closeAllTabs(aModule.controller);
+}
+
+function teardownModule(aModule) {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
 }
 
 /**
@@ -59,4 +70,6 @@ function testDisablePlugin() {
 }
 
 setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                             " disabled - 'true' should equal 'false'";
+teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
                              " disabled - 'true' should equal 'false'";

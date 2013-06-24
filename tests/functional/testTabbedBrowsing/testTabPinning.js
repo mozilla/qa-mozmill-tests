@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert} = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -9,13 +11,13 @@ var tabs = require("../../../lib/tabs");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  tabBrowser = new tabs.tabBrowser(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 }
 
-function teardownModule(module) {
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
 }
 
 /**

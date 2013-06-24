@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -11,20 +13,20 @@ const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab.html";
 
 const TIMEOUT_ARROWS = 10000;
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 
-  scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
-  scrollButtonUp = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "up"});
-  allTabsButton = tabBrowser.getElement({type: "tabs_allTabsButton"});
-  allTabsPopup = tabBrowser.getElement({type: "tabs_allTabsPopup"});
+  aModule.scrollButtonDown = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
+  aModule.scrollButtonUp = tabBrowser.getElement({type: "tabs_scrollButton", subtype: "up"});
+  aModule.allTabsButton = tabBrowser.getElement({type: "tabs_allTabsButton"});
+  aModule.allTabsPopup = tabBrowser.getElement({type: "tabs_allTabsPopup"});
 }
 
-var teardownModule = function() {
-  tabBrowser.closeAllTabs();
+var teardownModule = function(aModule) {
+  aModule.tabBrowser.closeAllTabs();
 
   // Just in case the popup hasn't been closed yet
   allTabsPopup.getNode().hidePopup();
@@ -49,12 +51,6 @@ var testScrollBackgroundTabIntoView = function() {
     var up_visible = !scrollButtonUp.getNode().hasAttribute("collapsed");
     return down_visible && up_visible;
   }, "Scroll arrows are visible after a couple tabs have been opened", TIMEOUT_ARROWS);
-
-  // XXX: Bug 624027
-  // Not sure for which state we have to wait here, but without the sleep
-  // call or smaller numbers the test always fails on Windows. Lets see
-  // if the fix for bug 578162 will solve it.
-  controller.sleep(100);
 
   // Check that the right scroll button flashes
   var highlighted = false;

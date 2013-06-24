@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
@@ -12,13 +14,13 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   Services.logins.removeAllLogins();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   // Just in case the test fails remove all passwords
   Services.logins.removeAllLogins();
 }

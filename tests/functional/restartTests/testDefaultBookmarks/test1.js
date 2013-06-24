@@ -2,29 +2,40 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
+var localization = require("../../../../lib/localization");
 var modalDialog = require("../../../../lib/modal-dialog");
 var places = require("../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
-const GETTING_STARTED_URL = "http://www.mozilla.com/" + utils.appInfo.locale +
-                            "/firefox/central/";
+const TEST_DATA = "https://www.mozilla.org/" +
+                  localization.normalizeLocale() +
+                  "/firefox/central/";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  locationbar = new toolbars.locationBar(controller);
-  nodeCollector = new domUtils.nodeCollector(controller.window.document);
+  aModule.locationbar = new toolbars.locationBar(aModule.controller);
+  aModule.nodeCollector = new domUtils.nodeCollector(aModule.controller.window.document);
 
-  bs = places.bookmarksService;
-  hs = places.historyService;
+  aModule.bs = places.bookmarksService;
+  aModule.hs = places.historyService;
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   delete persisted.toolbarNodes;
+
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication(null, true);
+  }
 }
 
 function testVerifyDefaultBookmarks() {
@@ -66,8 +77,8 @@ function testVerifyDefaultBookmarks() {
                "The label of the Getting Started bookmark has been set correctly");
 
   // Check for the correct link of the bookmark which also includes the locale
-  expect.ok(places.isBookmarkInFolder(utils.createURI(GETTING_STARTED_URL), bs.toolbarFolder),
-            GETTING_STARTED_URL + " is in the Toolbar Folder");
+  expect.ok(places.isBookmarkInFolder(utils.createURI(TEST_DATA), bs.toolbarFolder),
+            TEST_DATA + " is in the Toolbar Folder");
 
   // Close the container
   toolbarNodes.containerOpen = false;
@@ -85,8 +96,3 @@ function getBookmarkToolbarItems() {
 
   return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testVerifyDefaultBookmarks.meta = {litmusids : [8751]};
