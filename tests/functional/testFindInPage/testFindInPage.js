@@ -45,7 +45,8 @@ var teardownModule = function(aModule) {
 
     // Make sure the find bar is closed by click the X button
     aModule.controller.click(aModule.findBarCloseButton);
-  } catch(e) {
+  }
+  catch(e) {
   }
 }
 

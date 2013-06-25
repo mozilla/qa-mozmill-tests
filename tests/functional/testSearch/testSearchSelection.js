@@ -97,7 +97,8 @@ var startSearch = function(element, engineName, loadInBackground) {
       return tabs.selectedIndex === tabIndex;
     }, "A new tab has been opened in the background");
     tabs.selectedIndex = tabs.selectedIndex + 1;
-  } else {
+  }
+  else {
     assert.waitFor(function () {
       return tabs.selectedIndex === tabIndex + 1;
     }, "A new tab has been opened in the foreground");

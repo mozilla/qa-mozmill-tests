@@ -101,7 +101,8 @@ var checkNoPhishingButton = function(badUrl) {
     expect.equal(urlField.getNode().value, TEST_DATA[0],
                  "not-a-web-forgery report page is loaded");
 
-  } else if (badUrl == TEST_DATA[1] ) {
+  }
+  else if (badUrl == TEST_DATA[1] ) {
     // Click on the attack site report button
     var label = utils.getProperty("chrome://browser/locale/browser.properties",
                                   "safebrowsing.notAnAttackButton.label");

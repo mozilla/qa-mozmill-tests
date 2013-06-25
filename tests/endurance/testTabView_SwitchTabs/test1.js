@@ -56,7 +56,8 @@ function testSwitchTabs() {
     // Select the tab which is NOT active
     if (activeTab.getNode() === allTabs[0].getNode()) {
         activeTabView.controller.click(allTabs[1]);
-    } else {
+    }
+    else {
         activeTabView.controller.click(allTabs[0]);
     }
 
