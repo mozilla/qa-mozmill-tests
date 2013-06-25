@@ -90,5 +90,7 @@ function checkOpenTab(aEventType) {
   tabBrowser.closeTab();
 }
 
-setupModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";
-teardownModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";
+/**
+ * Map test functions to litmus tests
+ */
+// testNewTab.meta = {litmusids : [8086]};
