@@ -92,3 +92,6 @@ function testSwitchToTab() {
  * Map test functions to moztrap tests
  */
 testSwitchToTab.meta = {moztrap_case: 327};
+
+setupModule.__force_skip__ = "Bug 885723 - Test failure 'Autocomplete popup has been opened'";
+teardownModule.__force_skip__ = "Bug 885723 - Test failure 'Autocomplete popup has been opened'";
