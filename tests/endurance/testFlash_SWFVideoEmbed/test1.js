@@ -33,6 +33,10 @@ function setupModule(aModule) {
   }
 }
 
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
+}
+
 /*
  * Test opening embeded flash content
  */
