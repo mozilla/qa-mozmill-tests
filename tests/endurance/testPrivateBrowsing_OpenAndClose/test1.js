@@ -12,14 +12,19 @@ var Tabs = require("../../../lib/tabs");
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.enduranceManager = new Endurance.EnduranceManager(aModule.controller);
+  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
   aModule.tabBrowser = new Tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 }
 
+function teardownModule(aModule) {
+  aModule.pbWindow.close(true);
+  aModule.tabBrowser.closeAllTabs();
+}
+
 function testOpenAndClosePrivateBrowsingWindow() {
   enduranceManager.run(function () {
-    var pbWindow = new privateBrowsing.PrivateBrowsingWindow();
     pbWindow.open(controller);
     enduranceManager.addCheckpoint("Opened a private browsing window");
     pbWindow.close();
