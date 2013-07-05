@@ -79,7 +79,7 @@ var testLarryBlue = function() {
                "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
-                                              "identity.encrypted");
+                                              "identity.encrypted2");
   var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
   expect.equal(encryptionLabel.getNode().textContent, l10nEncryptionLabel,
                "The Encryption Label text is set");
@@ -125,5 +125,3 @@ function checkSecurityTab(controller) {
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
-
-setupModule.__force_skip__ = "Bug 880135 - Failure due to encrypted label name change";
