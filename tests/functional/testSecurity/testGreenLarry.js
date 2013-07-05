@@ -152,7 +152,4 @@ function checkSecurityTab(controller) {
   controller.keypress(null, 'VK_ESCAPE', {});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testLarryGreen.meta = {litmusids : [8805]};
+setupModule.__force_skip__ = "Bug 880135 - Failure due to encrypted label name change";

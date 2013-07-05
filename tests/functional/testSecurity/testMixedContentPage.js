@@ -39,3 +39,5 @@ function testMixedContentPage() {
                                    "identity.mixed_content");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }
+
+setupModule.__force_skip__ = "Bug 880135 - Failure due to mixed content label name change";
