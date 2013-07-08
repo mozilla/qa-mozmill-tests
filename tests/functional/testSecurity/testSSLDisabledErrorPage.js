@@ -10,40 +10,32 @@ var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://mail.mozilla.org";
 
-const PREF_KEEP_ALIVE = "network.http.keep-alive";
-const PREF_SSL_3 = "security.enable_ssl3";
-const PREF_TLS = "security.enable_tls";
+const PREF_TLS_MIN = "security.tls.version.min";
+const PREF_TLS_MAX = "security.tls.version.max";
 
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
-const PROPERTY = "chrome://pipnss/locale/pipnss.properties";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
 
   tabs.closeAllTabs(controller);
 
-  // XXX: Bug 513129
-  //      Disable Keep-alive connections
-  prefs.preferences.setPref(PREF_KEEP_ALIVE, false);
-
-  // Disable SSL 3.0 and TLS for secure connections
-  prefs.preferences.setPref(PREF_SSL_3, false);
-  prefs.preferences.setPref(PREF_TLS, false);
+  // Disable SSL 3.0, TLS 1.0 and TLS 1.1 for secure connections
+  // by forcing the use of TLS 1.2
+  // see: http://kb.mozillazine.org/Security.tls.version.*#Possible_values_and_their_effects
+  prefs.preferences.setPref(PREF_TLS_MIN, 2);
+  prefs.preferences.setPref(PREF_TLS_MAX, 2);
 }
 
 var teardownModule = function(module) {
   // Reset the SSL and TLS pref
-  prefs.preferences.clearUserPref(PREF_SSL_3);
-  prefs.preferences.clearUserPref(PREF_TLS);
-
-  // XXX: Bug 513129
-  //      Re-enable Keep-alive connections
-  prefs.preferences.clearUserPref(PREF_KEEP_ALIVE);
+  prefs.preferences.clearUserPref(PREF_TLS_MIN);
+  prefs.preferences.clearUserPref(PREF_TLS_MAX);
 }
 
 /**
- * Test that SSL and TLS are checked by default
+ * Test that setting an unsupported security protocol version returns an error page
  *
  */
 var testDisableSSL = function() {
@@ -67,18 +59,9 @@ var testDisableSSL = function() {
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text);
 
-  expect.contain(text.getNode().textContent, 'ssl_error_ssl_disabled',
+  expect.contain(text.getNode().textContent, 'ssl_error_no_cypher_overlap',
                  "The SSL error message contains disabled information");
 
   expect.contain(text.getNode().textContent, 'mail.mozilla.org',
                  "The SSL error message contains domain name");
-
-  var PSMERR_SSL_Disabled = utils.getProperty(PROPERTY, 'PSMERR_SSL_Disabled');
-  expect.contain(text.getNode().textContent, PSMERR_SSL_Disabled,
-                 "The SSL error message contains disabled property");
 }
-
-setupModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
-                             "for waitForElement ID: errorTitleText'";
-teardownModule.__force_skip__ = "Bug 861521 - Test failure 'Timeout exceeded " + 
-                                "for waitForElement ID: errorTitleText'";
