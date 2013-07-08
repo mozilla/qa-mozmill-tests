@@ -6,6 +6,7 @@
 
 // Include required modules
 var { expect } = require("../../../lib/assertions");
+var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
@@ -13,10 +14,16 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabElement = aModule.tabBrowser.getTab(aModule.tabBrowser.selectedIndex);
+  aModule.expression = aModule.tabBrowser.
+                       getElement({type: "tabs_tabPanel", value: aModule.tabElement}).
+                       expression;
 
-  aModule.containerString = '/id("main-window")/id("tab-view-deck")/[0]' +
-                            '/id("browser-bottombox")/id("FindToolbar")' +
+  aModule.containerString = expression + '/anon({"class":"browserSidebarContainer"})' +
+                            '/anon({"class":"browserContainer"})/[1]' +
                             '/anon({"anonid":"findbar-container"})';
+
   aModule.findBar = new elementslib.Lookup(aModule.controller.window.document,
                                            aModule.containerString);
   aModule.findBarTextField = new elementslib.Lookup(aModule.controller.window.document,
@@ -105,6 +112,3 @@ var testFindInPage = function() {
   resultPosition = selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range);
   expect.equal(resultPosition, 0, "The first result has been selected again");
 }
-
-setupModule.__force_skip__ = "Bug 890883 - Timeout failure getting the Find Bar element";
-teardownModule.__force_skip__ = "Bug 890883 - Timeout failure getting the Find Bar element";
