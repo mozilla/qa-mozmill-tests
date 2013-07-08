@@ -106,7 +106,5 @@ var testFindInPage = function() {
   expect.equal(resultPosition, 0, "The first result has been selected again");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testFindInPage.meta = {litmusids : [7970]};
+setupModule.__force_skip__ = "Bug 890883 - Timeout failure getting the Find Bar element";
+teardownModule.__force_skip__ = "Bug 890883 - Timeout failure getting the Find Bar element";
