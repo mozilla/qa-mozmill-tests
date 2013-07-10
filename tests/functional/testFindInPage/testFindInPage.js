@@ -24,7 +24,7 @@ var setupModule = function(aModule) {
                             '/anon({"class":"browserContainer"})/[1]' +
                             '/anon({"anonid":"findbar-container"})' +
                             '/anon({"anonid":"findbar-textbox-wrapper"})';
-  
+
   aModule.findBar = new elementslib.Lookup(aModule.controller.window.document,
                                            aModule.containerString);
   aModule.findBarTextField = new elementslib.Lookup(aModule.controller.window.document,
