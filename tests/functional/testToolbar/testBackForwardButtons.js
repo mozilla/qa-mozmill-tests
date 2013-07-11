@@ -36,7 +36,7 @@ var testBackAndForward = function() {
 
   function onTransitionEnd() {
     transitionFinished = true;
-    forwardButton.removeEventListener("transitionend", onTransitionEnd, false);
+    forwardButton.getNode().removeEventListener("transitionend", onTransitionEnd, false);
   }
 
   forwardButton.getNode().addEventListener("transitionend", onTransitionEnd, false);
