@@ -21,7 +21,7 @@ var setupModule = function(aModule) {
                        expression;
 
   aModule.containerString = expression + '/anon({"class":"browserSidebarContainer"})' +
-                            '/anon({"class":"browserContainer"})/[1]' +
+                            '/anon({"class":"browserContainer"})/[0]' +
                             '/anon({"anonid":"findbar-container"})' +
                             '/anon({"anonid":"findbar-textbox-wrapper"})';
 
