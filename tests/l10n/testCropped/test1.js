@@ -249,3 +249,5 @@ function restorePrivateBrowsingAutoStartPreference() {
   this.setAttribute("oncommand", aCommand);
   this.removeAttribute("data-command-backup");
 }
+
+setupModule.__force_skip__ = "Bug 741301 - Disable broken l10n crop tests until false positives have been resolved";
