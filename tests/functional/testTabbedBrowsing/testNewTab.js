@@ -81,8 +81,7 @@ function checkOpenTab(aEventType) {
                "Opened new tab");
 
   // The tabs title should be 'New Tab'
-  var title = utils.getProperty("chrome://browser/locale/tabbrowser.properties",
-                                "tabs.emptyTabTitle");
+  var title = utils.getEntity(tabBrowser.getDtds(), "newtab.pageTitle");
 
   expect.equal(tabBrowser.getTab().getNode().label, title, "Correct tab title");
 
