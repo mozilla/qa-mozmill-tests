@@ -18,10 +18,11 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
-  // Clear cache
-  Services.cache.evictEntries(Ci.nsICache.STORE_ANYWHERE);
-
   tabs.closeAllTabs(aModule.controller);
+
+  // Clear cache after closing all tabs in order to avoid
+  // having about:newtab as a disk entry
+  Services.cache.evictEntries(Ci.nsICache.STORE_ANYWHERE);
 }
 
 function teardownModule(aModule) {
