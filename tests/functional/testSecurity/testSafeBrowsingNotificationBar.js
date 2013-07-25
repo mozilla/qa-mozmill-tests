@@ -149,7 +149,7 @@ var checkXButton = function() {
   // Click on the x button and verify the notification bar dissapears
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +
-                                             '/{"class":"messageCloseButton tabbable"}');
+                                             utils.australis.getElement("close-button"));
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
   controller.waitThenClick(button);
