@@ -8,13 +8,13 @@ var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const PLACES_DB_TIMEOUT = 4000;
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = {
+  url: BASE_URL + "layout/mozilla_grants.html",
+  name: "grants"
+};
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  {URL: LOCAL_TEST_FOLDER + 'layout/mozilla_grants.html',
-   name: "grants"}
-];
+const PLACES_DB_TIMEOUT = 4000;
 
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
@@ -39,7 +39,7 @@ var teardownModule = function() {
  */
 var testCheckItemHighlight = function() {
   // Open the test page then about:blank to set up the test test environment
-  controller.open(LOCAL_TEST_PAGES[0].URL);
+  controller.open(TEST_DATA.url);
   controller.waitForPageLoad();
   controller.open("about:blank");
   controller.waitForPageLoad();
@@ -51,13 +51,13 @@ var testCheckItemHighlight = function() {
   locationBar.clear();
 
   // Type the page name into the location bar
-  locationBar.type(LOCAL_TEST_PAGES[0].name);
+  locationBar.type(TEST_DATA.name);
 
   // Wait for the location bar to contain the entire test string
   assert.waitFor(function () {
-    return locationBar.value === LOCAL_TEST_PAGES[0].name;
+    return locationBar.value === TEST_DATA.name;
   }, "Location bar contains the entered string - got '" +
-    locationBar.value + "', expected '" + LOCAL_TEST_PAGES[0].name + "'");
+    locationBar.value + "', expected '" + TEST_DATA.name + "'");
 
   // Check the autocomplete list is open
   assert.waitFor(function () {
@@ -96,7 +96,7 @@ function checkAwesomebarResults(aResult, aType) {
     expect.waitFor(function () {
       aElement = locationBar.autoCompleteResults.
                  getUnderlinedText(aResult, aType)[aIndex];
-      return aElement.toString().toLowerCase() === LOCAL_TEST_PAGES[0].name;
+      return aElement.toString().toLowerCase() === TEST_DATA.name;
     }, "The page " + aType + " matches the underlined text");
   });
 }

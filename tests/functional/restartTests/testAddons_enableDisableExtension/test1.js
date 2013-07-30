@@ -8,13 +8,13 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/");
+const BASE_URL = collector.addHttpResource("../../../../data/");
 const TIMEOUT_DOWNLOAD = 25000;
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const ADDON = {
-  url: LOCAL_TEST_FOLDER + "addons/extensions/icons.xpi",
+  url: BASE_URL + "addons/extensions/icons.xpi",
   id: "test-icons@quality.mozilla.org"
 };
 

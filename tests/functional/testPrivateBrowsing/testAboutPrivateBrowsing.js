@@ -8,8 +8,8 @@ var prefs = require("../../../lib/prefs");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../lib/utils");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../data/");
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + "private_browsing/about.html?";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "private_browsing/about.html?";
 
 const PREF_PRIVATE_BROWSING_SUPPORT = "app.support.baseURL";
 
@@ -17,7 +17,7 @@ function setupModule() {
   controller = mozmill.getBrowserController();
   pbWindow = new privateBrowsing.PrivateBrowsingWindow();
 
-  prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, LOCAL_TEST_PAGE);
+  prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, TEST_DATA);
 }
 
 function teardownModule() {
@@ -50,7 +50,7 @@ function testCheckAboutPrivateBrowsing() {
   pbWindow.controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
-  var targetUrl = LOCAL_TEST_PAGE + "private-browsing";
+  var targetUrl = TEST_DATA + "private-browsing";
 
   assert.waitFor(function () {
     return pbWindow.controller.tabs.length === 2;

@@ -10,10 +10,8 @@ var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'password_manager/login_form.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
 var setupModule = function() {
   controller = mozmill.getBrowserController();
@@ -32,13 +30,13 @@ var teardownModule = function(module) {
  */
 var testPasswordNotification = function() {
   // Go to the sample login page and perform a test log-in with input fields
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   var userField = new elementslib.ID(controller.tabs.activeTab, "uname");
   var passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
-  controller.waitForElement(userField, TIMEOUT);
+  controller.waitForElement(userField);
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 

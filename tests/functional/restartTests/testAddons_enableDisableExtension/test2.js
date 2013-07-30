@@ -6,8 +6,8 @@
 var addons = require("../../../../lib/addons");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const TIMEOUT_USERSHUTDOWN = 2000;
 
@@ -15,7 +15,7 @@ function setupModule() {
   controller = mozmill.getBrowserController();
 
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  addons.setDiscoveryPaneURL(TEST_DATA);
 
   tabs.closeAllTabs(controller);
 }

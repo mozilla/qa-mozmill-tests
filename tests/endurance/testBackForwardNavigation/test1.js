@@ -6,10 +6,10 @@
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGES = [
-  {url: LOCAL_TEST_FOLDER + 'layout/mozilla.html', id: 'community'},
-  {url: LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html', id: 'mission_statement'}
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = [
+  {url: BASE_URL + "layout/mozilla.html", id: "community"},
+  {url: BASE_URL + "layout/mozilla_mission.html", id: "mission_statement"}
 ];
 
 function setupModule() {
@@ -21,7 +21,7 @@ function setupModule() {
   tabBrowser.closeAllTabs();
 
   // Open the test pages
-  LOCAL_TEST_PAGES.forEach(function (page) {
+  TEST_DATA.forEach(function (page) {
     controller.open(page.url);
     controller.waitForPageLoad();
   });
@@ -40,13 +40,13 @@ function testNavigateBackForward() {
 
       // Go back one page
       controller.goBack();
-      var element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[0].id);
+      var element = new elementslib.ID(controller.tabs.activeTab, TEST_DATA[0].id);
       controller.waitForElement(element);
       enduranceManager.addCheckpoint("Navigated back one page");
 
       // Go forward one page
       controller.goForward();
-      element = new elementslib.ID(controller.tabs.activeTab, LOCAL_TEST_PAGES[1].id);
+      element = new elementslib.ID(controller.tabs.activeTab, TEST_DATA[1].id);
       controller.waitForElement(element);
       enduranceManager.addCheckpoint("Navigated forward one page");
     });

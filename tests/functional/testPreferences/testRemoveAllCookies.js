@@ -9,9 +9,10 @@ var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
-const TEST_DOMAINS = ["http://domain1.mozqa.com",
-                      "http://domain2.mozqa.com"];
-const TEST_PAGE = "/data/firefox/cookies/cookie_single.html";
+const TEST_DATA = [
+  "http://domain1.mozqa.com/data/firefox/cookies/cookie_single.html",
+  "http://domain2.mozqa.com/data/firefox/cookies/cookie_single.html"
+];
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -24,8 +25,8 @@ var setupModule = function(module) {
  */
 var testRemoveAllCookies = function() {
   // Open cookie test page from different domains to build a list of cookies
-  TEST_DOMAINS.forEach(function(domain) {
-    controller.open(domain + TEST_PAGE);
+  TEST_DATA.forEach(function(data) {
+    controller.open(data);
     controller.waitForPageLoad();
   });
 

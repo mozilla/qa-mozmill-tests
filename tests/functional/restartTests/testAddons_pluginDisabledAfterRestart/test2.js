@@ -56,3 +56,8 @@ function testPluginDisabled() {
   assert.equal(plugin.getNode().getAttribute("active"), "true",
                persisted.plugin.name + " is enabled");
 }
+
+setupModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                             " disabled - 'true' should equal 'false'";
+teardownModule.__force_skip__ = "Bug 865640 - Shockwave Flash and Java Plug-in are" +
+                                " disabled - 'true' should equal 'false'";

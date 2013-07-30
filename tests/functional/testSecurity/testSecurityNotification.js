@@ -5,9 +5,14 @@
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 
-const INVALID_CERT_PAGE = "https://summitbook.mozilla.org";
-const SECURE_PAGE = "https://addons.mozilla.org/licenses/5.txt";
-const UNSECURE_PAGE = "http://www.mozilla.org";
+const TEST_DATA = [
+  // Invalid cert page
+  "https://summitbook.mozilla.org",
+  // Secure page
+  "https://addons.mozilla.org/licenses/5.txt",
+  // Unsecure page
+  "http://www.mozilla.org"
+];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -18,26 +23,26 @@ var setupModule = function(module) {
  */
 var testSecNotification = function() {
   // Go to a secure HTTPS site
-  controller.open(SECURE_PAGE);
+  controller.open(TEST_DATA[1]);
   controller.waitForPageLoad();
 
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
   expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
 
   // Go to an unsecure (HTTP) site
-  controller.open(UNSECURE_PAGE);
+  controller.open(TEST_DATA[2]);
   controller.waitForPageLoad();
 
   expect.equal(identityBox.getNode().className, "unknownIdentity", "Identity is unknown");
 
   // Go to a website which does not have a valid cert
-  controller.open(INVALID_CERT_PAGE);
+  controller.open(TEST_DATA[0]);
   controller.waitForPageLoad();
 
   // Verify the info in Technical Details contains the invalid cert page
   var text = new elementslib.ID(controller.tabs.activeTab, "technicalContentText");
   controller.waitForElement(text);
-  expect.contain(text.getNode().textContent, INVALID_CERT_PAGE.substring(8),
+  expect.contain(text.getNode().textContent, TEST_DATA[0].substring(8),
                  "Details contain the invalid cert page");
 
   // Verify "Get Me Out Of Here!" button appears

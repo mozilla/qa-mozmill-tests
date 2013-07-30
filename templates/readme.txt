@@ -6,4 +6,5 @@ block, needed test functions, shared modules, and the coding style to use when
 writing tests.
 
 For more assistance writing new tests visit:
-https://wiki.mozilla.org/QA/Mozmill_Test_Automation/Test_Writing
+https://developer.mozilla.org/en-US/docs/Mozmill_Tests
+https://developer.mozilla.org/en-US/docs/Mozmill_Tests/Mozmill_Style_Guide

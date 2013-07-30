@@ -8,7 +8,7 @@ var {assert} = require("../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 
-var EXPECTED_URL = "http://mozqa.com/data/firefox/layout/mozilla.html";
+const TEST_DATA = "http://mozqa.com/data/firefox/layout/mozilla.html";
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_TRIM_URL = "browser.urlbar.trimURLs";
@@ -62,8 +62,8 @@ function testRestartlessExtensionWorksAfterRestart() {
   controller.waitForPageLoad();
 
   // Verify that the loaded url matches http://mozqa.com/data/firefox/layout/mozilla.html
-  assert.equal(locationBar.getNode().value, EXPECTED_URL,
-               "Current URL should match expected URL");
+  assert.equal(locationBar.getNode().value, TEST_DATA,
+               "Current URL matches expected URL");
 }
 
 setupModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";

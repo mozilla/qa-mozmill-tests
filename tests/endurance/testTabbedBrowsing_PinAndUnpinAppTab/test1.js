@@ -8,8 +8,8 @@ var endurance = require("../../../lib/endurance");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const SCROLL_DELAY = "toolkit.scrollbox.clickToScroll.scrollDelay";
 const SCROLL_SMOOTH = "toolkit.scrollbox.smoothScroll";
@@ -45,7 +45,7 @@ function testPinAndUnpinAppTab() {
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
       }
-      controller.open(LOCAL_TEST_PAGE);
+      controller.open(TEST_DATA);
       controller.waitForPageLoad();
     });
 

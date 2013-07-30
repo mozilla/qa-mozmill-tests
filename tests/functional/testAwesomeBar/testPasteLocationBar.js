@@ -8,9 +8,8 @@ var places = require("../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "awesomebar/copypaste.html";
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -33,7 +32,7 @@ var teardownModule = function() {
  */
 var testPasteLocationBar = function() {
   // Open the test page
-  controller.open(LOCAL_TEST_FOLDER + "awesomebar/copypaste.html");
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Focus on page, select text and copy to clipboard

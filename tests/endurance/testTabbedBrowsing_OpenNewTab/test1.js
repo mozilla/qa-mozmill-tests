@@ -6,8 +6,8 @@
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -29,7 +29,7 @@ function testOpenNewTab() {
     enduranceManager.loop(function () {
       // Load a web page
       enduranceManager.addCheckpoint("Loading a web page");
-      controller.open(LOCAL_TEST_PAGE);
+      controller.open(TEST_DATA);
       controller.waitForPageLoad();
       enduranceManager.addCheckpoint("Web page has been loaded");
 

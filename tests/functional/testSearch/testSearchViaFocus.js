@@ -5,16 +5,14 @@
 // Include necessary modules
 var search = require("../../../lib/search");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER +
-                        'search/searchresults.html?q={searchTerms}';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "search/searchresults.html?q={searchTerms}";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
   searchBar = new search.searchBar(controller);
 
-  searchBar.installEngine("Test Search Engine", LOCAL_TEST_PAGE,
-                          {selected: true});
+  searchBar.installEngine("Test Search Engine", TEST_DATA, {selected: true});
 }
 
 function teardownModule() {

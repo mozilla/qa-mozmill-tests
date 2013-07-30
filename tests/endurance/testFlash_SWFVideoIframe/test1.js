@@ -7,8 +7,8 @@ var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const TEST_URL = "http://www.mozqa.com/data/firefox/plugins/flash/" +
-                 "test_swf_iframes_nosound.html";
+const TEST_DATA = "http://www.mozqa.com/data/firefox/plugins/flash/" +
+                  "test_swf_iframes_nosound.html";
 
 const TIMEOUT_PAGE = 50000;
 
@@ -49,7 +49,7 @@ function testFlashIframe() {
 
       // Load the test page in the currently opened tab
       enduranceManager.addCheckpoint("Load a web page with flash content in an iframe");
-      controller.open(TEST_URL);
+      controller.open(TEST_DATA);
       controller.waitForPageLoad(TIMEOUT_PAGE);
       enduranceManager.addCheckpoint("Web page has been loaded");
     });

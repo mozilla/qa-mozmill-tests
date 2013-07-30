@@ -8,9 +8,9 @@ var places = require("../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = {
-  url: LOCAL_TEST_FOLDER + 'layout/mozilla.html',
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = {
+  url: BASE_URL + "layout/mozilla.html",
   string: "mozilla"
 };
 
@@ -38,7 +38,7 @@ var teardownModule = function() {
  */
 var testFaviconInAutoComplete = function() {
   // Open the local test page
-  locationBar.loadURL(LOCAL_TEST_PAGE.url);
+  locationBar.loadURL(TEST_DATA.url);
   controller.waitForPageLoad();
 
   // Get the location bar Favicon element URL
@@ -50,10 +50,10 @@ var testFaviconInAutoComplete = function() {
   // Focus the locationbar, delete any contents there
   locationBar.clear();
 
-  locationBar.type(LOCAL_TEST_PAGE.string);
+  locationBar.type(TEST_DATA.string);
   assert.waitFor(function () {
-    return locationBar.value === LOCAL_TEST_PAGE.string;
-  }, "Location bar contains the typed data - expected '" + LOCAL_TEST_PAGE.string + "'");
+    return locationBar.value === TEST_DATA.string;
+  }, "Location bar contains the typed data - expected '" + TEST_DATA.string + "'");
 
   // Ensure the autocomplete list is open
   assert.waitFor(function () {

@@ -8,17 +8,17 @@ var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var utils = require("../../../lib/utils");
 
-const PREF_SEARCH_ENGINES_URL = "browser.search.searchEnginesURL";
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "search/mozsearch.html";
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const SEARCH_ENGINE_URL = LOCAL_TEST_FOLDER + "search/mozsearch.html";
+const PREF_SEARCH_ENGINES_URL = "browser.search.searchEnginesURL";
 
 function setupModule () {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
 
-  prefs.preferences.setPref(PREF_SEARCH_ENGINES_URL, SEARCH_ENGINE_URL);
+  prefs.preferences.setPref(PREF_SEARCH_ENGINES_URL, TEST_DATA);
 }
 
 function teardownModule () {
@@ -39,7 +39,7 @@ function testGetMoreEngines () {
   }, "The 'Get More Engines' link has been opened in a new tab");
   controller.waitForPageLoad();
 
-  utils.assertLoadedUrlEqual(controller, SEARCH_ENGINE_URL);
+  utils.assertLoadedUrlEqual(controller, TEST_DATA);
 }
 
 /**

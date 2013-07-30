@@ -7,8 +7,8 @@ var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 var tabView = require("../../../lib/tabview");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html?tab=';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html?tab=";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -23,7 +23,7 @@ function setupModule() {
     if (i > 0) {
       tabBrowser.openTab();
     }
-    controller.open(LOCAL_TEST_PAGE + i);
+    controller.open(TEST_DATA + i);
     controller.waitForPageLoad();
   }
 }

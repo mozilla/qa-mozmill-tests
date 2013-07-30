@@ -8,18 +8,17 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const TIMEOUT_DOWNLOAD = 25000;
+const BASE_URL = collector.addHttpResource("../../../../data/");
 
-const LOCAL_INSTALL_FILE = "install.html?addon="
-const LOCAL_TEST_FOLDER = collector.addHttpResource("../../../../data/addons/");
+const TIMEOUT_DOWNLOAD = 25000;
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 const ADDONS = [
   {id: "test-empty@quality.mozilla.org",
-   url: LOCAL_TEST_FOLDER + LOCAL_INSTALL_FILE + "extensions/empty.xpi"},
+   url: BASE_URL + "addons/install.html?addon=extensions/empty.xpi"},
   {id: "test-icons@quality.mozilla.org",
-   url: LOCAL_TEST_FOLDER + LOCAL_INSTALL_FILE + "extensions/icons.xpi"}
+   url: BASE_URL + "addons/install.html?addon=extensions/icons.xpi"}
 ];
 
 
@@ -29,7 +28,7 @@ function setupModule() {
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add localhost
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(BASE_URL + "addons/");
 
   // Store the addons object in 'persisted.addons'
   persisted.addons = ADDONS;

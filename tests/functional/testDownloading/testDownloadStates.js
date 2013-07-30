@@ -5,7 +5,8 @@
 // Include required modules
 var downloads = require("../../../lib/downloads");
 
-var URL = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/firefox-3.6.source.tar.bz2";
+const TEST_DATA = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/" +
+                  "firefox-3.6.source.tar.bz2";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -26,7 +27,7 @@ var teardownModule = function(module) {
  */
 var testDownloadStates = function() {
   // Download a file
-  downloads.downloadFileOfUnknownType(controller, URL);
+  downloads.downloadFileOfUnknownType(controller, TEST_DATA);
 
   // Wait for the Download Manager to open
   dm.waitForOpened(controller);

@@ -5,10 +5,8 @@
 // Include the required modules
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
-
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -20,7 +18,7 @@ var teardownModule = function(module) {
 
 var testAccessPageInfo = function () {
   // Load web page with RSS feed
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Open context menu on the html element and select Page Info entry
@@ -48,7 +46,7 @@ function checkPageInfoWindow(controller) {
 
     // Check if the panel has been shown
     var node = new elementslib.ID(controller.window.document, pane.panel);
-    controller.waitForElement(node, TIMEOUT);
+    controller.waitForElement(node);
   }
 
   // Close the Page Info window by pressing Escape

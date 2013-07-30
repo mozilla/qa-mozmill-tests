@@ -8,8 +8,8 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const BASE_URL = collector.addHttpResource("../../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
@@ -18,7 +18,7 @@ const TIMEOUT_DOWNLOAD = 25000;
 const THEME = {
   name: "Theme (Plain)",
   id: "plain.theme@quality.mozilla.org",
-  url: LOCAL_TEST_FOLDER + "addons/install.html?addon=/themes/plain.jar"
+  url: BASE_URL + "addons/install.html?addon=/themes/plain.jar"
 };
 
 function setupModule() {
@@ -27,10 +27,10 @@ function setupModule() {
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(LOCAL_TEST_PAGE);
+  addons.setDiscoveryPaneURL(TEST_DATA);
 
   // Whitelist add the AMO preview site
-  addons.addToWhiteList(LOCAL_TEST_FOLDER);
+  addons.addToWhiteList(BASE_URL);
 
   // Store the theme in the persisted object
   persisted.theme = THEME;

@@ -8,12 +8,12 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-
-const TIMEOUT = 5000;
-
-const DOMAIN_NAME = "www.mozilla.org";
-const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
-                            'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
+const TEST_DATA = [
+  // Phishing url
+  "http://www.mozilla.org/firefox/its-a-trap.html",
+  // Malware url
+  "http://www.mozilla.org/firefox/its-an-attack.html"
+];
 
 var setupModule = function(module) {
   module.controller = mozmill.getBrowserController();
@@ -23,31 +23,31 @@ var setupModule = function(module) {
 
 function teardownModule(module) {
   // Clear the Safe Browsing permission
-  utils.removePermission(DOMAIN_NAME, "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 var testWarningPages = function() {
-  for (var i = 0; i < WARNING_PAGES_URLS.length; i++ ) {
-    // Open one of the mozilla phishing protection test pages
-    controller.open(WARNING_PAGES_URLS[i]);
+  for (var i = 0; i < TEST_DATA.length; i++ ) {
+    // Load one of the safe browsing test pages
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the getMeOutButton
     checkGetMeOutOfHereButton();
 
     // Go back to the warning page
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the reportButton
-    checkReportButton(i, WARNING_PAGES_URLS[i]);
+    checkReportButton(i, TEST_DATA[i]);
 
     // Go back to the warning page
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(TEST_DATA[i]);
     controller.waitForPageLoad();
 
     // Test the ignoreWarning button
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(TEST_DATA[i]);
   }
 }
 
@@ -58,7 +58,7 @@ var checkGetMeOutOfHereButton = function() {
   var getMeOutOfHereButton = new elementslib.ID(controller.tabs.activeTab, "getMeOutButton");
 
   // Wait for the getMeOutOfHereButton to be safely loaded on the warning page and click it
-  controller.waitThenClick(getMeOutOfHereButton, TIMEOUT);
+  controller.waitThenClick(getMeOutOfHereButton);
   controller.waitForPageLoad();
 
   // Check that the default home page has been opened
@@ -76,7 +76,7 @@ var checkGetMeOutOfHereButton = function() {
 var checkReportButton = function(type, badUrl) {
   // Wait for the reportButton to be safely loaded onto the warning page
   var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
-  controller.waitThenClick(reportButton, TIMEOUT);
+  controller.waitThenClick(reportButton);
   controller.waitForPageLoad();
 
   var locale = prefs.preferences.getPref("general.useragent.locale", "");
@@ -104,7 +104,7 @@ var checkIgnoreWarningButton = function(url) {
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
 
   // Wait for the ignoreButton to be safely loaded on the warning page
-  controller.waitThenClick(ignoreWarningButton, TIMEOUT);
+  controller.waitThenClick(ignoreWarningButton);
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
@@ -113,7 +113,7 @@ var checkIgnoreWarningButton = function(url) {
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
-  utils.removePermission(DOMAIN_NAME, "safe-browsing");
+  utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 /**
