@@ -17,6 +17,8 @@ function setupModule() {
 }
 
 function teardownModule() {
+  addonsManager.close();
+
   // Bug 867217
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
