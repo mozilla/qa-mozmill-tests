@@ -4,9 +4,11 @@
 
 // Include required modules
 var addons = require("../../../../lib/addons");
+var { assert } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+var toolbars = require("../../../../lib/toolbars");
 
 const TIMEOUT_DOWNLOAD = 25000;
 
@@ -26,6 +28,7 @@ const ADDONS = [
 function setupModule() {
   controller = mozmill.getBrowserController();
   addonsManager = new addons.AddonsManager(controller);
+  locationBar = new toolbars.locationBar(controller);
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Whitelist add localhost
@@ -62,6 +65,16 @@ function testInstallMultipleExtensions() {
     md.start(addons.handleInstallAddonDialog);
     controller.click(installLink);
     md.waitForDialog(TIMEOUT_DOWNLOAD);
+
+    var notification = locationBar.getNotification();
+    assert.waitFor(function () {
+      return notification.getNode().state === "open";
+    }, "Notification pop-up has been opened");
+
     controller.keypress(null , 'VK_ESCAPE', {});
+
+    assert.waitFor(function () {
+      return notification.getNode().state === "closed";
+    }, "Notification pop-up has been closed");
   });
 }
