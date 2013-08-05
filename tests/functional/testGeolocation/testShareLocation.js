@@ -39,15 +39,14 @@ function testVerifyDisplayGeolocationNotification() {
 
   // Check the icon inside the popup notification exists
   var icon = locationBar.getNotificationElement("geolocation-notification",
-                                                '/anon({"popupid":"geolocation"})');
+                                                {type: "popupid", value: "geolocation"});
   expect.ok(icon, "The geolocation icon appears in the notification popup");
 
   // Check if a Share Location button is visible
   var locationLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                         "geolocation.shareLocation");
   var button = locationBar.getNotificationElement("geolocation-notification",
-                                                  '/anon({"label": "' +
-                                                  locationLabel + '"})');
+                                                  {type: "label", value: locationLabel});
   expect.ok(button, "'Share location' button appears in the notification popup");
 
   controller.click(button);
