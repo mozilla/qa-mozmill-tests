@@ -52,7 +52,8 @@ var testOpenInForegroundTab = function() {
     if(i == 2) {
       // Open another tab by middle-clicking on the link
       tabBrowser.openInNewTab(currentLink);
-    } else {
+    }
+    else {
       // Open the context menu and open a new tab
       controller.rightClick(currentLink);
       controller.click(contextMenuItem);

@@ -5,20 +5,17 @@
 "use strict";
 
 // Include necessary modules
-var { assert, expect } = require("../../../lib/assertions");
-var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../../../lib/search");
-var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
-const SEARCH_ENGINE = {name: "mozqa.com",
-                       url : BASE_URL + "search/mozsearch.html"};
-
-const TIMEOUT_INSTALL_DIALOG = 30000;
+const SEARCH_ENGINE = {
+  name : "mozqa.com",
+  url : BASE_URL + "search/mozsearch.html"
+};
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
-
+  aModule.engineManager = new search.engineManager(aModule.controller);
   aModule.searchBar = new search.searchBar(aModule.controller);
 }
 
@@ -31,64 +28,9 @@ var teardownModule = function(aModule) {
  * Add a MozSearch Search plugin
  */
 var testAddMozSearchPlugin = function() {
-  // Open the web page with the test MozSearch plugin
-  controller.open(SEARCH_ENGINE.url);
-  controller.waitForPageLoad();
-
-  // Create a modal dialog instance to handle the installation dialog
-  var md = new modalDialog.modalDialog(controller.window);
-  md.start(handleSearchInstall);
-
-  // Add the search engine
-  var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
-  controller.click(addButton);
-  md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
-
-  assert.waitFor(function () {
-    return searchBar.isEngineInstalled(SEARCH_ENGINE.name);
-  }, "Search engine '" + SEARCH_ENGINE.name + "' has been installed");
-
-  // The engine should not be selected by default
-  expect.notEqual(searchBar.selectedEngine, SEARCH_ENGINE.name,
-                  "New search engine is not selected");
+  engineManager.installLocalEngine(SEARCH_ENGINE.url, SEARCH_ENGINE.name);
 
   // Select search engine and start a search
   searchBar.selectedEngine = SEARCH_ENGINE.name;
   searchBar.search({text: "Firefox", action: "goButton"});
 }
-
-/**
- * Handle the modal security dialog when installing a new search engine
- *
- * @param {MozMillController} controller
- *        MozMillController of the browser window to operate on
- */
-var handleSearchInstall = function(controller) {
-  // Installation successful?
-  var confirmTitle = utils.getProperty("chrome://global/locale/search/search.properties",
-                                       "addEngineConfirmTitle");
-
-  if (mozmill.isMac)
-    var title = controller.window.document.getElementById("info.title").textContent;
-  else
-    var title = controller.window.document.title;
-
-  expect.equal(title.windowTitle, confirmTitle.addEngineTitle,
-               "Window contains search engine title");
-
-  // Check that the correct domain is shown
-  var infoBody = controller.window.document.getElementById("info.body");
-  assert.waitFor(function () {
-    return infoBody.textContent.indexOf('localhost') !== -1;
-  }, "Search Engine URL contains correct domain - got '" + infoBody.textContent +
-    "', expected 'localhost'");
-
-  var addButton = new elementslib.Lookup(controller.window.document,
-                                         '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.click(addButton);
-}
-
-/**
- * Map test functions to litmus tests
- */
-// testAddMozSearchPlugin.meta = {litmusids : [8235]};

@@ -47,7 +47,7 @@ var testPopUpBlocked = function() {
   // Check for the close button in the notification bar
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
-                                             '/{"class":"messageCloseButton tabbable"}');
+                                             utils.australis.getElement("close-button"));
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
   controller.waitForElement(button);

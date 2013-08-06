@@ -6,6 +6,7 @@
 
 // Include required modules
 var { expect } = require("../../../lib/assertions");
+var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
@@ -13,10 +14,17 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabElement = aModule.tabBrowser.getTab(aModule.tabBrowser.selectedIndex);
+  aModule.expression = aModule.tabBrowser.
+                       getElement({type: "tabs_tabPanel", value: aModule.tabElement}).
+                       expression;
 
-  aModule.containerString = '/id("main-window")/id("tab-view-deck")/[0]' +
-                            '/id("browser-bottombox")/id("FindToolbar")' +
-                            '/anon({"anonid":"findbar-container"})';
+  aModule.containerString = expression + '/anon({"class":"browserSidebarContainer"})' +
+                            '/anon({"class":"browserContainer"})/[0]' +
+                            '/anon({"anonid":"findbar-container"})' +
+                            '/anon({"anonid":"findbar-textbox-wrapper"})';
+
   aModule.findBar = new elementslib.Lookup(aModule.controller.window.document,
                                            aModule.containerString);
   aModule.findBarTextField = new elementslib.Lookup(aModule.controller.window.document,
@@ -45,7 +53,8 @@ var teardownModule = function(aModule) {
 
     // Make sure the find bar is closed by click the X button
     aModule.controller.click(aModule.findBarCloseButton);
-  } catch(e) {
+  }
+  catch(e) {
   }
 }
 
@@ -104,8 +113,3 @@ var testFindInPage = function() {
   resultPosition = selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range);
   expect.equal(resultPosition, 0, "The first result has been selected again");
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testFindInPage.meta = {litmusids : [7970]};

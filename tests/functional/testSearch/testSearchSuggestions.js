@@ -29,6 +29,10 @@ function setupModule(aModule) {
                                          "comparison";
 }
 
+function teardownModule(aModule) {
+  aModule.searchBar.clear();
+}
+
 /**
  * Check suggestions for multiple search providers
  */

@@ -9,8 +9,6 @@ var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var tabs = require("../../../../lib/tabs");
 
-const TIMEOUT_USER_SHUTDOWN = 2000;
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);

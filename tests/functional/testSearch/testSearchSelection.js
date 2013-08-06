@@ -16,11 +16,17 @@ const TEST_DATA = BASE_URL + "layout/mozilla_mission.html";
 
 const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
+const SEARCH_ENGINE = {
+  name : "mozqa.com",
+  url : BASE_URL + "search/mozsearch.html"
+};
+
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
-
+  aModule.engineManager = new search.engineManager(aModule.controller);
   aModule.searchBar = new search.searchBar(aModule.controller);
   aModule.tabs = new tabs.tabBrowser(aModule.controller);
+
   aModule.tabs.closeAllTabs();
 }
 
@@ -35,11 +41,10 @@ var teardownModule = function(aModule) {
  * Use a search engine to search for the currently selected text.
  */
 var testSearchSelectionViaContextMenu = function() {
-  var engines = searchBar.visibleEngines;
-  var engineName = engines[engines.length - 1].name;
+  engineManager.installLocalEngine(SEARCH_ENGINE.url, SEARCH_ENGINE.name);
 
   // Use the last engine for the search
-  searchBar.selectedEngine = engineName;
+  searchBar.selectedEngine = SEARCH_ENGINE.name;
 
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
@@ -48,10 +53,10 @@ var testSearchSelectionViaContextMenu = function() {
   var textElem = new elementslib.ID(controller.tabs.activeTab, "goal");
 
   // Start search which opens a new tab in the background
-  startSearch(textElem, engineName, true);
+  startSearch(textElem, SEARCH_ENGINE.name, true);
 
   // Start search which opens a new tab in the foreground
-  startSearch(textElem, engineName, false);
+  startSearch(textElem, SEARCH_ENGINE.name, false);
 }
 
 /**
@@ -97,7 +102,8 @@ var startSearch = function(element, engineName, loadInBackground) {
       return tabs.selectedIndex === tabIndex;
     }, "A new tab has been opened in the background");
     tabs.selectedIndex = tabs.selectedIndex + 1;
-  } else {
+  }
+  else {
     assert.waitFor(function () {
       return tabs.selectedIndex === tabIndex + 1;
     }, "A new tab has been opened in the foreground");

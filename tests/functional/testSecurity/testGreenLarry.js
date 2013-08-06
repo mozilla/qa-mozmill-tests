@@ -111,7 +111,7 @@ var testLarryGreen = function() {
                "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
-                                              "identity.encrypted");
+                                              "identity.encrypted2");
   var label = new elementslib.ID(controller.window.document,
                                  "identity-popup-encryption-label");
   expect.equal(label.getNode().textContent, l10nEncryptionLabel, "Encryption Label text is set");
@@ -151,8 +151,3 @@ function checkSecurityTab(controller) {
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testLarryGreen.meta = {litmusids : [8805]};
