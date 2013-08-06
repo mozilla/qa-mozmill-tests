@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 /**
  * @fileoverview Helper module containing assertions for Selenium IDE
  */
@@ -15,7 +17,8 @@ var {assert, expect} = require("../../../../lib/assertions");
  * @param {SeleniumManager} seleniumManager Selenium manager instance
  */
 function commandPassed(seleniumManager) {
- // XXX: Bug 621214 - Find a way to check properties of treeView rows
+ // Bug 621214
+ // Find a way to check properties of treeView rows
 
  //check suite progress indicator
  var isSuiteProgressIndicatorGreen = seleniumManager.isSuiteProgressIndicatorGreen;
@@ -37,7 +40,8 @@ function commandPassed(seleniumManager) {
  * @param {String} message Expected error message
  */
 function commandFailed(seleniumManager, message) {
-  // XXX: Bug 621214 - Find a way to check properties of treeView rows
+  // Bug 621214
+  // Find a way to check properties of treeView rows
 
   //check suite progress indicator
   var isSuiteProgressIndicatorRed = seleniumManager.isSuiteProgressIndicatorRed;

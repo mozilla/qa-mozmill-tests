@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
  // Include required modules
 var { assert } = require("../../../lib/assertions");
 var addons = require("../../../lib/addons");
@@ -12,21 +14,21 @@ var toolbars = require("../../../lib/toolbars");
 const NUMBER_OF_MAX_RESULTS = 2;
 const PREF_MAX_RESULTS = "extensions.getAddons.maxResults";
 
-var setupModule = function () {
-  controller = mozmill.getBrowserController();
-  am = new addons.AddonsManager(controller);
-  locationBar = new toolbars.locationBar(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+var setupModule = function (aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.am = new addons.AddonsManager(aModule.controller);
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   addons.useAmoPreviewUrls();
   prefs.preferences.setPref(PREF_MAX_RESULTS, NUMBER_OF_MAX_RESULTS);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
-var teardownModule = function () {
+var teardownModule = function (aModule) {
   prefs.preferences.clearUserPref(PREF_MAX_RESULTS);
   addons.resetAmoPreviewUrls();
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
  /**

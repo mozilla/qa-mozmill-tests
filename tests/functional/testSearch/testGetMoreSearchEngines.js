@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -13,22 +15,22 @@ const TEST_DATA = BASE_URL + "search/mozsearch.html";
 
 const PREF_SEARCH_ENGINES_URL = "browser.search.searchEnginesURL";
 
-function setupModule () {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
+  aModule.searchBar = new search.searchBar(aModule.controller);
 
   prefs.preferences.setPref(PREF_SEARCH_ENGINES_URL, TEST_DATA);
 }
 
-function teardownModule () {
+function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_SEARCH_ENGINES_URL);
 }
 
 /**
  * Get more search engines
  */
-function testGetMoreEngines () {
+function testGetMoreEngines() {
   var tabCount = controller.tabs.length;
 
   // Open the engine manager and click "Get more search engines..."

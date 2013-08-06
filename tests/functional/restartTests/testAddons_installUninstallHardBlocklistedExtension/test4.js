@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
@@ -11,24 +13,24 @@ const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   delete persisted.addon;
-  addonsManager.close();
+  aModule.addonsManager.close();
 
   // Bug 867217
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("restartApplication" in controller) {
-    controller.restartApplication(null, true);
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication(null, true);
   }
 }
 

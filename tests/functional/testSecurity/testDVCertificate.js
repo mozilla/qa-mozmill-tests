@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
@@ -10,10 +12,10 @@ var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://ssl-dv.mozqa.com";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  cert = null;
+  aModule.cert = null;
 }
 
 /**
@@ -57,8 +59,9 @@ var testLarryBlue = function() {
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
-  // XXX: Larry strips the 'www.' from the CName using the eTLDService
-  //      This is expected behaviour for the time being (Bug 443116)
+  // Bug 443116
+  // Larry strips the 'www.' from the CName using the eTLDService
+  // This is expected behaviour for the time being
   var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
   expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the cert host");

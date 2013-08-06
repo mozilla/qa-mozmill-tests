@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
@@ -9,35 +11,40 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  containerString = '/id("main-window")/id("tab-view-deck")/[0]' +
-                    '/id("browser-bottombox")/id("FindToolbar")' +
-                    '/anon({"anonid":"findbar-container"})';
-  findBar = new elementslib.Lookup(controller.window.document, containerString);
-  findBarTextField = new elementslib.Lookup(controller.window.document,
-                                            containerString + '/anon({"anonid":"findbar-textbox"})');
-  findBarNextButton = new elementslib.Lookup(controller.window.document,
-                                             containerString + '/anon({"anonid":"find-next"})');
-  findBarPrevButton = new elementslib.Lookup(controller.window.document,
-                                             containerString + '/anon({"anonid":"find-previous"})');
-  findBarCloseButton = new elementslib.Lookup(controller.window.document,
-                                              containerString + '/anon({"anonid":"find-closebutton"})');
+  aModule.containerString = '/id("main-window")/id("tab-view-deck")/[0]' +
+                            '/id("browser-bottombox")/id("FindToolbar")' +
+                            '/anon({"anonid":"findbar-container"})';
+  aModule.findBar = new elementslib.Lookup(aModule.controller.window.document,
+                                           aModule.containerString);
+  aModule.findBarTextField = new elementslib.Lookup(aModule.controller.window.document,
+                                                    aModule.containerString +
+                                                    '/anon({"anonid":"findbar-textbox"})');
+  aModule.findBarNextButton = new elementslib.Lookup(aModule.controller.window.document,
+                                                     aModule.containerString +
+                                                     '/anon({"anonid":"find-next"})');
+  aModule.findBarPrevButton = new elementslib.Lookup(aModule.controller.window.document,
+                                                     aModule.containerString +
+                                                     '/anon({"anonid":"find-previous"})');
+  aModule.findBarCloseButton = new elementslib.Lookup(aModule.controller.window.document,
+                                                      aModule.containerString +
+                                                      '/anon({"anonid":"find-closebutton"})');
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   try {
      // Just press Ctrl/Cmd + F to select the whole search string
     var dtds = ["chrome://browser/locale/browser.dtd"];
     var cmdKey = utils.getEntity(dtds, "findOnCmd.commandkey");
-    controller.keypress(null, cmdKey, {accelKey: true});
+    aModule.controller.keypress(null, cmdKey, {accelKey: true});
 
     // Clear search text from the text field
-    controller.keypress(findBarTextField, 'VK_DELETE', {});
+    aModule.controller.keypress(aModule.findBarTextField, 'VK_DELETE', {});
 
     // Make sure the find bar is closed by click the X button
-    controller.click(findBarCloseButton);
+    aModule.controller.click(aModule.findBarCloseButton);
   } catch(e) {
   }
 }

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -9,10 +11,10 @@ var tabs = require("../../../lib/tabs");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "security/enable_privilege.html";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
 function testEnablePrivilege() {

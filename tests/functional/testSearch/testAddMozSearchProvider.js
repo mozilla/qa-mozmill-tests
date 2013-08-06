@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
@@ -14,15 +16,15 @@ const SEARCH_ENGINE = {name: "mozqa.com",
 
 const TIMEOUT_INSTALL_DIALOG = 30000;
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
+  aModule.searchBar = new search.searchBar(aModule.controller);
 }
 
-var teardownModule = function(module) {
-  searchBar.removeEngine(SEARCH_ENGINE.name);
-  searchBar.restoreDefaultEngines();
+var teardownModule = function(aModule) {
+  aModule.searchBar.removeEngine(SEARCH_ENGINE.name);
+  aModule.searchBar.restoreDefaultEngines();
 }
 
 /**

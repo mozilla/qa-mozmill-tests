@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var prefs = require("../../../../lib/prefs");
 
@@ -12,9 +14,7 @@ const PROXY_TYPE = 'network.proxy.type';
 /**
  * Sets browser start up page, home page, and proxy settings
  */
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
-
+var setupModule = function(aModule) {
   // Set browser home page to about:blank
   prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
 
@@ -23,13 +23,15 @@ var setupModule = function() {
 
   // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
   prefs.preferences.setPref(PROXY_TYPE, 4);
+
+  aModule.controller = mozmill.getBrowserController();
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   // Bug 867217
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("restartApplication" in controller) {
-    controller.restartApplication();
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
   }
 }

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var {expect} = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
@@ -20,13 +22,13 @@ var gPreferences = new Array("security.warn_entering_secure",
                              "security.warn_submit_insecure",
                              "security.warn_viewing_mixed");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  tabs.closeAllTabs(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule(module) {
-  for each (p in gPreferences)
+function teardownModule(aModule) {
+  for each (var p in gPreferences)
     prefs.preferences.clearUserPref(p);
 }
 

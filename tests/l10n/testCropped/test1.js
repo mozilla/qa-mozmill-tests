@@ -7,6 +7,8 @@
  * elements.
  */
 
+"use strict";
+
 // Include the required modules
 var domUtils = require("../../../lib/dom-utils");
 var localization = require("../../../lib/localization");
@@ -18,8 +20,8 @@ const WINDOW_CURRENT = domUtils.DOMWalker.WINDOW_CURRENT;
 const WINDOW_MODAL= domUtils.DOMWalker.WINDOW_MODAL;
 const WINDOW_NEW = domUtils.DOMWalker.WINDOW_NEW;
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 function prefPaneInit(controller, prefDialog) {

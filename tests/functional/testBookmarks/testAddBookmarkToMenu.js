@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { expect } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
@@ -11,12 +13,12 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
-  locationBar =  new toolbars.locationBar(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
 }
 
-var teardownModule = function() {
+var teardownModule = function(aModule) {
   places.restoreDefaultBookmarks();
 }
 
@@ -40,7 +42,8 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.type(nameField, "Mozilla");
   controller.click(doneButton);
 
-  // XXX: Until we can't check via a menu click, call the Places API function for now (bug 474486)
+  // Bug 474486
+  // Until we can't check via a menu click, call the Places API function for now
   var bookmarkFolder = places.bookmarksService.bookmarksMenuFolder;
   var bookmarkExists = places.isBookmarkInFolder(uri, bookmarkFolder);
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");

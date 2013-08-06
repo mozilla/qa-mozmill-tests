@@ -2,20 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert, expect} = require("../../../lib/assertions");
 var tabView = require("../../../lib/tabview");
 
 const TABGROUP_TITLE = "Mozilla";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  activeTabView = new tabView.tabView(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.activeTabView = new tabView.tabView(aModule.controller);
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   // Reset Tab Groups View settings
-  activeTabView.reset();
+  aModule.activeTabView.reset();
 }
 
 /**

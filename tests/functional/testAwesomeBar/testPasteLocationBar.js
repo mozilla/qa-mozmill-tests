@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var places = require("../../../lib/places");
@@ -11,9 +13,9 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "awesomebar/copypaste.html";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  locationBar =  new toolbars.locationBar(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
 
   // Clear complete history so we don't get interference from previous entries
   places.removeAllHistory();
@@ -22,8 +24,8 @@ var setupModule = function(module) {
   utils.emptyClipboard();
 }
 
-var teardownModule = function() {
-  locationBar.closeContextMenu();
+var teardownModule = function(aModule) {
+  aModule.locationBar.closeContextMenu();
 }
 
 /**
@@ -36,7 +38,7 @@ var testPasteLocationBar = function() {
   controller.waitForPageLoad();
 
   // Focus on page, select text and copy to clipboard
-  ipsumLocation = new elementslib.ID(controller.window.document, 'ipsum');
+  var ipsumLocation = new elementslib.ID(controller.window.document, 'ipsum');
   controller.doubleClick(ipsumLocation);
   var docSelection = controller.tabs.activeTabWindow.getSelection().toString();
 
