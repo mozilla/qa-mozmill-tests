@@ -27,6 +27,10 @@ function setupModule() {
                                          "comparison";
 }
 
+function teardownModule() {
+  searchBar.clear();
+}
+
 /**
  * Check suggestions for multiple search providers
  */

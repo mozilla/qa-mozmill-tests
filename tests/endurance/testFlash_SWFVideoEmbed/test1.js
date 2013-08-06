@@ -31,6 +31,10 @@ function setupModule() {
   }
 }
 
+function teardownModule() {
+  tabBrowser.closeAllTabs();
+}
+
 /*
  * Test opening embeded flash content
  */

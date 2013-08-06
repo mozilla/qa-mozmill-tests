@@ -14,6 +14,11 @@ var setupModule = function(module)
   tabBrowser.closeAllTabs();
 }
 
+var teardownModule = function(module) {
+  tabBrowser.closeAllTabs();
+}
+
+
 var testCloseTab = function()
 {
   // Let's have 5 tabs open

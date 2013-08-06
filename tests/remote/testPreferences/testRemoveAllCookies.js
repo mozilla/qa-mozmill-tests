@@ -19,6 +19,10 @@ var setupModule = function(module) {
   Services.cookies.removeAll();
 }
 
+var teardownModule = function(module) {
+  Services.cookies.removeAll();
+}
+
 /**
  * Test removing all cookies via the cookie manager
  */
