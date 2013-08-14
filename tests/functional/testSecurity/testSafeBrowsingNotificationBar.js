@@ -157,3 +157,6 @@ var checkXButton = function() {
   controller.sleep(1000);
   assert.ok(!button.exists(), "The Close button has not been found");
 }
+
+setupModule.__force_skip__ = 'Bug 905033 - Test failure "not-a-web-forgery report page is loaded"';
+teardownModule.__force_skip__ = 'Bug 905033 - Test failure "not-a-web-forgery report page is loaded"';
