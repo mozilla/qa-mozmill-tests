@@ -29,7 +29,7 @@ var testLarryGreen = function() {
   cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
   var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
-                                           cert.subjectName.indexOf(",serialNumber="));
+                                           cert.subjectName.indexOf(",postalCode="));
 
   // Check the label displays
   // Format: Organization (CountryCode)
@@ -86,7 +86,7 @@ var testLarryGreen = function() {
   var state = cert.subjectName.substring(cert.subjectName.indexOf("ST=") + 3,
                                          cert.subjectName.indexOf(",C="));
   var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
-                                           cert.subjectName.indexOf(",serialNumber="));
+                                           cert.subjectName.indexOf(",postalCode="));
   // Arabic locales have it's own comma: http://www.w3.org/International/Spread/raw.txt
   var commaList = {'ar': '\u060c', 'fa': '\u060c'};
   if (utils.appInfo.locale in commaList)
