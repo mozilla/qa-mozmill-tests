@@ -87,13 +87,10 @@ var testLarryGreen = function() {
                                          cert.subjectName.indexOf(",C="));
   var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
                                            cert.subjectName.indexOf(",postalCode="));
-  // Arabic locales have it's own comma: http://www.w3.org/International/Spread/raw.txt
-  var commaList = {'ar': '\u060c', 'fa': '\u060c'};
-  if (utils.appInfo.locale in commaList)
-    var comma = commaList[utils.appInfo.locale];
-  else
-    var comma = ',';
-  var location = city + '\n' + state + comma + ' ' + country;
+  var locationLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                        "identity.identified.state_and_country");
+  var updateLocationLabel = locationLabel.replace("%S", state).replace("%S", country);
+  var location = city + '\n' + updateLocationLabel;
   var ownerLocation = new elementslib.ID(controller.window.document,
                                          "identity-popup-content-supplemental");
   expect.equal(ownerLocation.getNode().textContent, location,
