@@ -35,15 +35,12 @@ var testReorderEngines = function() {
 
   // Check the if the engines were sorted correctly in the manager
   var length = gSharedData.preEngines.length;
-  expect.equal(gSharedData.preEngines[0].name, gSharedData.postEngines[2].name,
-               "The previous first search engine is now the third one");
-  expect.equal(gSharedData.preEngines[1].name, gSharedData.postEngines[1].name,
-               "The previous second search engine is still the second one");
+  expect.equal(gSharedData.preEngines[0].name, gSharedData.postEngines[1].name,
+               "The previous first search engine is now the second one");
+  expect.equal(gSharedData.preEngines[1].name, gSharedData.postEngines[2].name,
+               "The previous second search engine is now the third one");
   expect.equal(gSharedData.preEngines[2].name, gSharedData.postEngines[0].name,
                "The previous third search engine is now the first one");
-  expect.equal(gSharedData.preEngines[length - 1].name,
-               gSharedData.postEngines[length - 2].name,
-               "The previous last search engine is now second last");
 
   // TODO: For now sleep 0ms to get the correct sorting order returned
   controller.sleep(0);
@@ -76,7 +73,7 @@ var reorderEngines = function(controller)
   manager.controller.sleep(DELAY);
 
   // Move one engine up
-  manager.moveUpEngine(engines[engines.length - 1].name);
+  manager.moveUpEngine(engines[0].name); // [3-1-2]
   manager.controller.sleep(DELAY);
 
   // Save initial state
