@@ -29,13 +29,13 @@ function testMixedContentPage() {
   var favicon = locationBar.getElement({type:"favicon"});
   assert.waitFor(function () {
     var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
-    return faviconImage.indexOf("identity-icons-generic.png") !== -1;
-  }, "There is a globe image");
+    return faviconImage.indexOf("identity-icons-https-mixed-display.png") !== -1;
+  }, "There is a warning image");
 
   controller.click(favicon);
 
   var encryptionPopup = locationBar.getElement({type:"identityPopup"});
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
-                                   "identity.mixed_display_loaded");
+                                   "identity.mixed_display_loaded_active_blocked");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }
