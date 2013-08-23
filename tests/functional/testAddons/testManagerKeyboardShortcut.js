@@ -32,6 +32,6 @@ function teardownModule(aModule) {
 function testKeyboardShortcut() {
   addonsManager.open({type: "shortcut"});
 
-  expect.equal(controller.tabs.activeTab.URL, "about:addons",
+  expect.equal(controller.tabs.activeTab.location.toString(), "about:addons",
                "The Add-ons Manager has been opened");
 }
