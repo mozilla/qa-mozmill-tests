@@ -30,7 +30,6 @@ function teardownModule() {
 function testKeyboardShortcut() {
   addonsManager.open({type: "shortcut"});
 
-  // Check that there are two opened tabs
-  expect.equal(controller.tabs.length, 2,
-               "The Add-ons Manager has been opened in a second tab");
+  expect.equal(controller.tabs.activeTab.location.toString(), "about:addons",
+               "The Add-ons Manager has been opened");
 }
