@@ -14,11 +14,11 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Bug 886811
+  // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication(null, true);
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
   }
 }
 
@@ -31,6 +31,6 @@ function testRestarted64bit() {
 }
 
 if (persisted.skipTests) {
-  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
-  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
 }

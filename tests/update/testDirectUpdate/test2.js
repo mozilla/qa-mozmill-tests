@@ -17,6 +17,13 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   // Store the patch info from a possibly found update
   persisted.updates[persisted.updateIndex].patch = aModule.update.patchInfo;
+
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
 }
 
 /**
