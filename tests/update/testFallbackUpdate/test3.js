@@ -14,9 +14,16 @@ function setupModule(module) {
   persisted.updates[persisted.updateIndex].fallback = true;
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   // Store information for fallback patch
   persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
 }
 
 /**

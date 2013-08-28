@@ -12,6 +12,7 @@ const PREF_UPDATE_LOG = "app.update.log";
 
 
 function setupModule(module) {
+  module.controller = mozmill.getBrowserController();
   update = new softwareUpdate.softwareUpdate();
 
   // Prepare persisted object for update results
@@ -29,4 +30,13 @@ function setupModule(module) {
 
   // Turn on software update logging
   prefs.preferences.setPref(PREF_UPDATE_LOG, true);
+}
+
+function teardownModule(aModule) {
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
 }

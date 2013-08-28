@@ -14,6 +14,25 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
 
   tabs.closeAllTabs(controller);
+
+  installedAddon = null;
+}
+
+function teardownModule(aModule) {
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
+  else {
+    // Restart the browser using restart prompt
+    var restartLink = aModule.addonsManager.getElement({type: "listView_restartLink",
+                                                        parent: aModule.installedAddon});
+
+    aModule.controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
+    aModule.controller.click(restartLink);
+  }
 }
 
 /**
@@ -33,13 +52,11 @@ function testUninstallEnabledExtension() {
                "Extension '" + persisted.addons[0].id +
                "' was marked for uninstall");
 
-  // Restart the browser using restart prompt
-  var restartLink = addonsManager.getElement({type: "listView_restartLink",
-                                              parent: enabledExtension});
-
-  controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-  controller.click(restartLink);
+  // We need access to this addon in teardownModule
+  installedAddon = enabledExtension;
 }
 
 setupModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
                              "but none detected before end of test";
+teardownModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
+                                "but none detected before end of test";

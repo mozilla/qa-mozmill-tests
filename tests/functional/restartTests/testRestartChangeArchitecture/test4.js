@@ -7,8 +7,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**
@@ -22,15 +22,23 @@ function testArchitecture32bit() {
 /**
  * Restart in 64 bit mode
  */
-function teardownTest() {
-  controller.startUserShutdown(4000, true);
-
-  Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart |
-                        Ci.nsIAppStartup.eRestartx86_64);
+function teardownModule(aModule) {
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication(null, Ci.nsIAppStartup.eRestartx86_64);
+  }
+  else {
+    aModule.controller.startUserShutdown(4000, true);
+    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit |
+                          Ci.nsIAppStartup.eRestart |
+                          Ci.nsIAppStartup.eRestartx86_64);
+  }
 }
 
 
 if (persisted.skipTests) {
-  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
-  teardownTest.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
 }
