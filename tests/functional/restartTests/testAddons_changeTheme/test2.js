@@ -16,6 +16,24 @@ function setupModule(aModule) {
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
 
   tabs.closeAllTabs(aModule.controller);
+
+  aModule.installedAddon = null;
+}
+
+function teardownModule(aModule) {
+  // Bug 886811
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // startUserShutdown is broken in mozmill-2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
+  else {
+    // Restart the browser using restart prompt
+    var restartLink = aModule.addonsManager.getElement({type: "listView_restartLink",
+                                                        parent: aModule.installedAddon});
+    aModule.controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
+    aModule.controller.click(restartLink);
+  }
 }
 
 /**
@@ -44,10 +62,6 @@ function testThemeIsInstalled() {
   // Verify that default theme is marked to be enabled
   assert.equal(defaultTheme.getNode().getAttribute("pending"), "enable");
 
-  // Restart the browser using restart prompt
-  var restartLink = addonsManager.getElement({type: "listView_restartLink",
-                                              parent: defaultTheme});
-
-  controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-  controller.click(restartLink);
+  // We need access to this addon in teardownModule
+  installedAddon = defaultTheme;
 }

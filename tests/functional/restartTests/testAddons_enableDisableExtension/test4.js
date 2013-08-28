@@ -29,11 +29,11 @@ function teardownModule(aModule) {
 
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Bug 886811
+  // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication(null, true);
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
   }
 }
 

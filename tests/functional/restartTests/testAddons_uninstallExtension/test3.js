@@ -19,26 +19,13 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 867217
+  // Bug 886811
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
+  if ("stopApplication" in aModule.controller) {
     // Bug 783484
-    // Since the last 2 tests of this suite are skipped we reset the profile here
-    // Remove these once test3 and test4 are reenabled
-    aModule.controller.restartApplication(null, true);
-  }
-}
-
-function teardownModule() {
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("restartApplication" in controller) {
-    // Bug 783484
-    // Since the last 2 tests of this suite are skipped we reset the profile here
-    // Remove these once test3 and test4 are reenabled
-    controller.restartApplication(null, true);
+    // Revert to restartApplication once test3 and test4 are reenabled
+    aModule.controller.stopApplication(true);
   }
 }
 
