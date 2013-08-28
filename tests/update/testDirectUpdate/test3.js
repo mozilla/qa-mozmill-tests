@@ -17,7 +17,7 @@ function setupModule(aModule) {
   persisted.updates[persisted.updateIndex].build_post = aModule.update.buildInfo;
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   // Prepare persisted object for the next update
   persisted.updateIndex++;
 
