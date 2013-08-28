@@ -17,9 +17,16 @@ function setupModule(aModule) {
   persisted.updates[persisted.updateIndex].build_post = aModule.update.buildInfo;
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   // Prepare persisted object for the next update
   persisted.updateIndex++;
+
+  // Bug 886811
+  // Mozmill 1.5 does not have the stopApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
+  }
 }
 
 /**
