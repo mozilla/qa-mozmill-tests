@@ -88,6 +88,3 @@ function checkOpenTab(aEventType) {
   // Close the tab again
   tabBrowser.closeTab();
 }
-
-setupModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";
-teardownModule.__force_skip__ = "Bug 879752 - New tab page preloading is enabled by default";
