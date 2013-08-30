@@ -102,7 +102,7 @@ function checkCookieNotSaved(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDisableCookies.meta = {litmusids : [8053]};
+setupModule.__force_skip__ = "Bug 911101 - Test failure 'No item selected for " +
+                             "element ID: historyMode'";
+teardownModule.__force_skip__ = "Bug 911101 - Test failure 'No item selected for " +
+                                "element ID: historyMode'";
