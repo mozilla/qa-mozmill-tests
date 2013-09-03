@@ -55,3 +55,6 @@ var testPopUpBlocked = function() {
   expect.equal(windowCount, mozmill.utils.getWindows().length,
                "The window count has not changed");
 }
+
+setupModule.__force_skip__ = "Bug 911976 - Disabled test due to Disconnect Error failures";
+teardownModule.__force_skip__ = "Bug 911976 - Disabled test due to Disconnect Error failures";
