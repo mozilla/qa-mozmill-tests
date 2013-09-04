@@ -10,14 +10,6 @@ const TEST_DATA = "ftp://ftp.mozilla.org/pub/";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
-
-  var version = Services.sysinfo.getProperty("version");
-  var architecture = Services.sysinfo.getProperty("arch");
-  if (mozmill.isLinux && version.indexOf("3.2.0") !== -1 &&
-      architecture == "x86") {
-    testNavigateFTP.__force_skip__ = "Bug 898194 - Disabled test due to crash " +
-                                     "on Ubuntu 12.04 2bit";
-  }
 }
 
 var testNavigateFTP = function () {
@@ -41,3 +33,5 @@ var testNavigateFTP = function () {
  * Map test functions to litmus tests
  */
 // testNavigateFTP.meta = {litmusids : [7962]};
+
+setupModule.__force_skip__ = "Bug 898194 - Disabled test due to crash"
