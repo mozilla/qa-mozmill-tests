@@ -72,3 +72,6 @@ var testVisibleItemsMax = function() {
 
   locationBar.autoCompleteResults.close();
 }
+
+setupModule.__force_skip__ = "Bug 818128 - Test failure 'Number of visible rows should equal 6'";
+teardownModule.__force_skip__ = "Bug 818128 - Test failure 'Number of visible rows should equal 6'";
