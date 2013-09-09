@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
@@ -19,7 +21,7 @@ const DOWNLOADS = {
     "unknown_type.mtdl",
     "unknown_type.fmtd"
   ],
-  pb: [
+  pbWindow: [
     "unknown_type_pb.stbf"
   ]
 };
@@ -27,8 +29,8 @@ const DOWNLOADS = {
 var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  aModule.pb = new privateBrowsing.PrivateBrowsingWindow();
-  aModule.pb.open(aModule.controller);
+  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+  aModule.pbWindow.open(aModule.controller);
 
   aModule.dm = new downloads.downloadManager();
 
@@ -46,11 +48,11 @@ var teardownModule = function (aModule) {
   aModule.dm.resetDownloadDir();
 
   aModule.dm.close();
-  aModule.pb.close();
+  aModule.pbWindow.close();
 }
 
 /**
- * Test that normal and pb downloads are kept separate
+ * Test that normal and pbWindow downloads are kept separate
  */
 var testPrivateDownloadPanel = function () {
 
@@ -61,8 +63,8 @@ var testPrivateDownloadPanel = function () {
   });
 
   // Private Browsing
-  DOWNLOADS.pb.forEach(function (aFile) {
-    downloads.downloadFileOfUnknownType(pb.controller, TEST_DATA + aFile);
+  DOWNLOADS.pbWindow.forEach(function (aFile) {
+    downloads.downloadFileOfUnknownType(pbWindow.controller, TEST_DATA + aFile);
   });
 
   // Wait until all downloads have been finished
@@ -78,9 +80,9 @@ var testPrivateDownloadPanel = function () {
                     "Normal Downloads are correctly shown in the Downloads Panel");
 
   // Open the Private Download Indicator and read the downloaded item list
-  var downloadedPBFiles = dm.getPanelDownloads(pb.controller);
+  var downloadedPBFiles = dm.getPanelDownloads(pbWindow.controller);
 
-  // Check that number of pb downloaded files is identical to the original pb download list
-  assert._deepEqual(downloadedPBFiles, DOWNLOADS.pb,
+  // Check that number of pbWindow downloaded files is identical to the original pbWindow download list
+  assert._deepEqual(downloadedPBFiles, DOWNLOADS.pbWindow,
                     "Private Downloads are correctly shown in the Private Downloads Panel");
 }

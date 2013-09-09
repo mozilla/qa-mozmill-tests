@@ -2,16 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 var {assert} = require("../../../../../lib/assertions");
 var selenium = require("../../lib/selenium");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  sm = new selenium.SeleniumManager();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.sm = new selenium.SeleniumManager();
 }
 
-function teardownModule(module) {
-  sm.close();
+function teardownModule(aModule) {
+  aModule.sm.close();
 }
 
 function testOpenInWindowViaMenu() {

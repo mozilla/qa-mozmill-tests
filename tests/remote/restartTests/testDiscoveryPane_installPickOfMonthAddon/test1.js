@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert, expect} = require("../../../../lib/assertions");
@@ -14,16 +16,16 @@ const TIMEOUT_SWITCH = 100;
 const CLICK_COUNT = 3;
 const INSTALL_SOURCE = "discovery-promo";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  am = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.am = new addons.AddonsManager(aModule.controller);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   delete persisted.currentAddon;
-  am.close();
+  aModule.am.close();
 }
 
 /**
@@ -38,10 +40,10 @@ function testInstallPickOfTheMonthAddon() {
   discovery.waitForPageLoad();
 
   // Go to Mozilla's pick of the Month panel
-  // XXX: Bug 666530
-  //      Add a property or attribute on "main-feature" which changes when clicking
-  //      next/prev buttons - currently we are clicking the third subsection without
-  //      checking if it is the right one
+  // Bug 666530
+  // Add a property or attribute on "main-feature" which changes when clicking
+  // next/prev buttons - currently we are clicking the third subsection without
+  // checking if it is the right one
   var section = discovery.getSection("main-feature");
   var nextLink = discovery.getElement({type: "mainFeature_nextLink", parent: section});
 

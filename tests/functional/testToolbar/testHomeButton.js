@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include the required modules
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
@@ -12,15 +14,15 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_BROWSER_HOMEPAGE = "browser.startup.homepage";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, TEST_DATA);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule(module) {
+function teardownModule() {
   prefs.preferences.clearUserPref(PREF_BROWSER_HOMEPAGE);
 }
 

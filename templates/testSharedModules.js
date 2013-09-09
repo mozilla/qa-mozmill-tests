@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-const RELATIVE_ROOT   = '../../lib';
+const RELATIVE_ROOT   = '../lib';
 const MODULE_REQUIRES = ['UtilsAPI'];
 
 // Setup for the test
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 // Run the shared module test

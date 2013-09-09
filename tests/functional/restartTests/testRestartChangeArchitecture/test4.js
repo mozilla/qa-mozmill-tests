@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
@@ -36,7 +38,6 @@ function teardownModule(aModule) {
                           Ci.nsIAppStartup.eRestartx86_64);
   }
 }
-
 
 if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";

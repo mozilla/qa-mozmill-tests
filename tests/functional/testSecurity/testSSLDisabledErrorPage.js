@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -16,27 +18,26 @@ const PREF_TLS_MAX = "security.tls.version.max";
 // TODO: move the dtds to a SecurityAPI, if one will be created
 const DTDS = ["chrome://browser/locale/netError.dtd"];
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 
   // Disable SSL 3.0, TLS 1.0 and TLS 1.1 for secure connections
   // by forcing the use of TLS 1.2
   // see: http://kb.mozillazine.org/Security.tls.version.*#Possible_values_and_their_effects
-  prefs.preferences.setPref(PREF_TLS_MIN, 2);
-  prefs.preferences.setPref(PREF_TLS_MAX, 2);
+  prefs.preferences.setPref(PREF_TLS_MIN, 3);
+  prefs.preferences.setPref(PREF_TLS_MAX, 3);
 }
 
-var teardownModule = function(module) {
-  // Reset the SSL and TLS pref
+var teardownModule = function(aModule) {
+  // Reset the security preferences
   prefs.preferences.clearUserPref(PREF_TLS_MIN);
   prefs.preferences.clearUserPref(PREF_TLS_MAX);
 }
 
 /**
  * Test that setting an unsupported security protocol version returns an error page
- *
  */
 var testDisableSSL = function() {
   // Open the test page

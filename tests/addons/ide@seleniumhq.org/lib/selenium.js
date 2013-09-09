@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 /**
  * @fileoverview Shared module for Selenium IDE
  * @supported Firefox 3.5 and above, Selenium IDE 1.0.10 and above

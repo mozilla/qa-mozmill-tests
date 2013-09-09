@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -16,16 +18,16 @@ const TAB_ORDER = [
   {index: 3, linkid: 1}
 ];
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 }
 
-var teardownModule = function() {
-  utils.closeContentAreaContextMenu(controller);
-  tabBrowser.closeAllTabs();
+var teardownModule = function(aModule) {
+  utils.closeContentAreaContextMenu(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 }
 
 var testOpenInBackgroundTab = function() {
@@ -82,7 +84,5 @@ var testOpenInBackgroundTab = function() {
   }, "The last tab has been selected");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenInBackgroundTab.meta = {litmusids : [8087]};
+setupModule.__force_skip__ = "Bug 880135 - Failure selecting the tab with index 1";
+teardownModule.__force_skip__ = "Bug 880135 - Failure selecting the tab with index 1";

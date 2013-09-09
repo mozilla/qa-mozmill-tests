@@ -2,14 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://ssl-selfsigned.mozqa.com";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**

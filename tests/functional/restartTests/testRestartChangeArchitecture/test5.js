@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
@@ -27,7 +29,6 @@ function testRestarted64bit() {
   expect.equal(Services.appinfo.XPCOMABI, "x86_64-gcc3",
                "Successfully restarted in 64bit mode after requesting it");
 }
-
 
 if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
@@ -9,8 +11,8 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**

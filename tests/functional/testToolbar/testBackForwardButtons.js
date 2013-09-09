@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert } = require("../../../lib/assertions");
 
@@ -12,8 +14,8 @@ const TEST_DATA = [
   {url: BASE_URL + "layout/mozilla_grants.html", id: "accessibility"}
 ];
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 /**
@@ -60,4 +62,9 @@ var testBackAndForward = function() {
     var element = new elementslib.ID(controller.tabs.activeTab, TEST_DATA[j].id);
     controller.waitForElement(element);
   }
+}
+
+if (mozmill.isMac) {
+  setupModule.__force_skip__ = "Bug 840022 - Test failure The forward button has " +
+                               "been made visible for the 1 page";
 }

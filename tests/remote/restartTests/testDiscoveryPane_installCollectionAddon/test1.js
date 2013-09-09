@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert} = require("../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
@@ -11,15 +13,15 @@ var tabs = require("../../../../lib/tabs");
 const TIMEOUT_DOWNLOAD = 25000;
 const INSTALL_SOURCE = "discovery-promo";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  am = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.am = new addons.AddonsManager(aModule.controller);
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule() {
-  am.close();
+function teardownModule(aModule) {
+  aModule.am.close();
 }
 
 /**
@@ -90,8 +92,8 @@ function handleInstallAddonDialog(controller) {
   controller.click(installButton);
 }
 
-// Bug 732353 - Disable all Discovery Pane tests
-//              due to unpredictable web dependencies
+// Bug 732353
+// Disable all Discovery Pane tests due to unpredictable web dependencies
 setupModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +
                              "due to unpredictable web dependencies";
 teardownModule.__force_skip__ = "Bug 732353 - Disable all Discovery Pane tests " +

@@ -2,21 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert} = require("../../../lib/assertions");
 var softwareUpdate = require("../../../lib/software-update");
 var utils = require("../../../lib/utils");
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
-  update = new softwareUpdate.softwareUpdate();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.update = new softwareUpdate.softwareUpdate();
 
   persisted.updates[persisted.updateIndex].fallback = true;
 }
 
 function teardownModule(aModule) {
   // Store information for fallback patch
-  persisted.updates[persisted.updateIndex].patch_fallback = update.patchInfo;
+  persisted.updates[persisted.updateIndex].patch_fallback = aModule.update.patchInfo;
 
   // Bug 886811
   // Mozmill 1.5 does not have the restartApplication method on the controller.

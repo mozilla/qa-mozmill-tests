@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var endurance = require("../../../lib/endurance");
@@ -15,28 +17,28 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
 
 const PREF_TAB_NUMBER_WARNING = "browser.tabs.maxOpenBeforeWarn";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  enduranceManager = new endurance.EnduranceManager(controller);
-  tabBrowser = new tabs.tabBrowser(controller);
+  aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Do not warn about max opened tab number
   prefs.preferences.setPref(PREF_TAB_NUMBER_WARNING,
-                            enduranceManager.entities + 1);
+                            aModule.enduranceManager.entities + 1);
 
   // Bookmark some pages in a custom folder
   setupBookmarks();
 
 }
 
-function teardownModule() {
-  tabBrowser.closeAllTabs();
+function teardownModule(aModule) {
+  aModule.tabBrowser.closeAllTabs();
 
-  // XXX: Bug 839996
-  //      This is a workaround for moment since there is no event
-  //      to wait for before restoring bookmarks
-  controller.sleep(500);
+  // Bug 839996
+  // This is a workaround for moment since there is no event to wait for before
+  // restoring bookmarks
+  aModule.controller.sleep(500);
   places.restoreDefaultBookmarks();
 }
 

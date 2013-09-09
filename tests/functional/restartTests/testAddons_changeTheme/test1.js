@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
@@ -26,10 +28,10 @@ const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 const TIMEOUT_USER_SHUTDOWN = 2000;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  addonsManager = new addons.AddonsManager(controller);
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL(TEST_DATA);
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
@@ -43,7 +45,7 @@ function setupModule() {
   // Store the theme in the persisted object
   persisted.theme = THEME;
 
-  installedAddon = null;
+  aModule.installedAddon = null;
 
   tabs.closeAllTabs(controller);
 }

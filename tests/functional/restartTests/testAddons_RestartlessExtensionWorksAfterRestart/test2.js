@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
@@ -14,14 +16,14 @@ const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_TRIM_URL = "browser.urlbar.trimURLs";
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
   // Change pref to show the full url in the location bar
   prefs.preferences.setPref(PREF_TRIM_URL, false);
 }
 
-function teardownModule() {
+function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_TRIM_URL);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
@@ -30,11 +32,11 @@ function teardownModule() {
 
   delete persisted.addon;
 
-  // Bug 867217
+  // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("stopApplication" in controller) {
-    controller.stopApplication(true);
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
   }
 }
 

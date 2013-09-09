@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
 
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
@@ -12,18 +13,18 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab_target.html?id=";
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
-  tabBrowser = new tabs.tabBrowser(controller);
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
   sessionStore.resetRecentlyClosedTabs();
 }
 
-var teardownModule = function(module) {
-  utils.closeContentAreaContextMenu(controller);
+var teardownModule = function(aModule) {
+  utils.closeContentAreaContextMenu(aModule.controller);
   sessionStore.resetRecentlyClosedTabs();
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
 var testUndoTabFromContextMenu = function() {

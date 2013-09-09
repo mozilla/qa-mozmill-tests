@@ -8,6 +8,8 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
+"use strict";
+
 const BASE_URL = collector.addHttpResource("../../../../data/");
 
 const ADDONS = [
@@ -22,9 +24,9 @@ const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
-function setupModule() {
-  controller = mozmill.getBrowserController();
-  addonsManager = new addons.AddonsManager(controller);
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
@@ -37,7 +39,16 @@ function setupModule() {
   // Store the addons object in 'persisted.addons'
   persisted.addons = ADDONS;
 
-  tabs.closeAllTabs(controller);
+  tabs.closeAllTabs(aModule.controller);
+}
+
+function teardownModule(aModule) {
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
+  }
 }
 
 function teardownModule() {

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
@@ -14,14 +16,14 @@ const TEST_DATA = [
   "http://www.mozilla.org/firefox/its-an-attack.html"
 ];
 
-var setupModule = function(module) {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
+  aModule.tabBrowser.closeAllTabs();
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   // Clear the Safe Browsing permission
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }

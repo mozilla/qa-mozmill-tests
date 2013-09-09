@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -14,17 +16,17 @@ const TEST_DATA = BASE_URL + "layout/mozilla_mission.html";
 
 const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  searchBar = new search.searchBar(controller);
-  tabs = new tabs.tabBrowser(controller);
-  tabs.closeAllTabs();
+  aModule.searchBar = new search.searchBar(aModule.controller);
+  aModule.tabs = new tabs.tabBrowser(aModule.controller);
+  aModule.tabs.closeAllTabs();
 }
 
-var teardownModule = function() {
-  searchBar.clear();
-  searchBar.restoreDefaultEngines();
+var teardownModule = function(aModule) {
+  aModule.searchBar.clear();
+  aModule.searchBar.restoreDefaultEngines();
 
   prefs.preferences.clearUserPref(PREF_LOAD_IN_BACKGROUND);
 }

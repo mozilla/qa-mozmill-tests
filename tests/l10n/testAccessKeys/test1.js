@@ -7,6 +7,8 @@
  * access keys.
  */
 
+"use strict";
+
 // Include the required modules
 var domUtils = require("../../../lib/dom-utils");
 var localization = require("../../../lib/localization");
@@ -18,8 +20,17 @@ const WINDOW_CURRENT = domUtils.DOMWalker.WINDOW_CURRENT;
 const WINDOW_MODAL= domUtils.DOMWalker.WINDOW_MODAL;
 const WINDOW_NEW = domUtils.DOMWalker.WINDOW_NEW;
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+}
+
+function teardownModule(aModule) {
+  // Bug 886811
+  // Mozmill 1.5 does not have the stopApplication method on the controller.
+  // Remove condition when transitioned to 2.0
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
+  }
 }
 
 function teardownModule(aModule) {

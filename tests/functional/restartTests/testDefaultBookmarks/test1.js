@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include required modules
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
@@ -11,27 +13,28 @@ var places = require("../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
-const TEST_DATA = "http://www.mozilla.com/" + localization.normalizeLocale() +
-                            "/firefox/central/";
+const TEST_DATA = "https://www.mozilla.org/" +
+                  localization.normalizeLocale() +
+                  "/firefox/central/";
 
-function setupModule(module) {
-  controller = mozmill.getBrowserController();
+function setupModule(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  locationbar = new toolbars.locationBar(controller);
-  nodeCollector = new domUtils.nodeCollector(controller.window.document);
+  aModule.locationbar = new toolbars.locationBar(aModule.controller);
+  aModule.nodeCollector = new domUtils.nodeCollector(aModule.controller.window.document);
 
-  bs = places.bookmarksService;
-  hs = places.historyService;
+  aModule.bs = places.bookmarksService;
+  aModule.hs = places.historyService;
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   delete persisted.toolbarNodes;
 
   // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("stopApplication" in controller) {
-    controller.stopApplication(true);
+  if ("stopApplication" in aModule.controller) {
+    aModule.controller.stopApplication(true);
   }
 }
 
@@ -93,8 +96,3 @@ function getBookmarkToolbarItems() {
 
   return root.QueryInterface(Ci.nsINavHistoryContainerResultNode);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testVerifyDefaultBookmarks.meta = {litmusids : [8751]};
