@@ -28,7 +28,10 @@ var teardownModule = function(aModule) {
  * Add a MozSearch Search plugin
  */
 var testAddMozSearchPlugin = function() {
-  engineManager.installLocalEngine(SEARCH_ENGINE.url, SEARCH_ENGINE.name);
+  engineManager.installFromUrl(SEARCH_ENGINE.name, SEARCH_ENGINE.url, function () {
+    var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
+    controller.click(addButton);
+  });
 
   // Select search engine and start a search
   searchBar.selectedEngine = SEARCH_ENGINE.name;
