@@ -41,7 +41,10 @@ var teardownModule = function(aModule) {
  * Use a search engine to search for the currently selected text.
  */
 var testSearchSelectionViaContextMenu = function() {
-  engineManager.installLocalEngine(SEARCH_ENGINE.url, SEARCH_ENGINE.name);
+  engineManager.installFromUrl(SEARCH_ENGINE.name, SEARCH_ENGINE.url, function () {
+    var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
+    controller.click(addButton);
+  });
 
   // Use the last engine for the search
   searchBar.selectedEngine = SEARCH_ENGINE.name;
