@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
 var { assert, expect } = require("../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
@@ -9,24 +11,28 @@ var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla_mission.html";
+
 const PREF_LOAD_IN_BACKGROUND = "browser.search.context.loadInBackground";
 
-const TIMEOUT = 5000;
+const SEARCH_ENGINE = {
+  name : "mozqa.com",
+  url : BASE_URL + "search/mozsearch.html"
+};
 
-const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
-const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla_mission.html';
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.engineManager = new search.engineManager(aModule.controller);
+  aModule.searchBar = new search.searchBar(aModule.controller);
+  aModule.tabs = new tabs.tabBrowser(aModule.controller);
 
-var setupModule = function() {
-  controller = mozmill.getBrowserController();
-
-  searchBar = new search.searchBar(controller);
-  tabs = new tabs.tabBrowser(controller);
-  tabs.closeAllTabs();
+  aModule.tabs.closeAllTabs();
 }
 
-var teardownModule = function() {
-  searchBar.clear();
-  searchBar.restoreDefaultEngines();
+var teardownModule = function(aModule) {
+  aModule.searchBar.clear();
+  aModule.searchBar.restoreDefaultEngines();
 
   prefs.preferences.clearUserPref(PREF_LOAD_IN_BACKGROUND);
 }
@@ -35,23 +41,25 @@ var teardownModule = function() {
  * Use a search engine to search for the currently selected text.
  */
 var testSearchSelectionViaContextMenu = function() {
-  var engines = searchBar.visibleEngines;
-  var engineName = engines[engines.length - 1].name;
+  engineManager.installFromUrl(SEARCH_ENGINE.name, SEARCH_ENGINE.url, function () {
+    var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
+    controller.click(addButton);
+  });
 
   // Use the last engine for the search
-  searchBar.selectedEngine = engineName;
+  searchBar.selectedEngine = SEARCH_ENGINE.name;
 
-  controller.open(LOCAL_TEST_PAGE);
+  controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get text element from web page, which will be used for the search
   var textElem = new elementslib.ID(controller.tabs.activeTab, "goal");
 
   // Start search which opens a new tab in the background
-  startSearch(textElem, engineName, true);
+  startSearch(textElem, SEARCH_ENGINE.name, true);
 
   // Start search which opens a new tab in the foreground
-  startSearch(textElem, engineName, false);
+  startSearch(textElem, SEARCH_ENGINE.name, false);
 }
 
 /**
