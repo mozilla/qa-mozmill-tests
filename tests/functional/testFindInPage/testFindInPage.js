@@ -105,6 +105,9 @@ var testFindInPage = function() {
   expect.equal(resultPosition, 0, "The first result has been selected again");
 }
 
+setupModule.__force_skip__ = "Bug 909227 - Disable test due to localized failures";
+teardownModule.__force_skip__ = "Bug 909227 - Disable test due to localized failures";
+
 /**
  * Map test functions to litmus tests
  */
