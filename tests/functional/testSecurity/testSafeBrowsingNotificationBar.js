@@ -2,74 +2,92 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 // Include necessary modules
-var { assert, expect } = require("../../../lib/assertions");
+var { assert } = require("../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
+var toolbar = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
-const TIMEOUT = 5000;
+const TEST_DATA = [
+  // Phishing URL object
+  {
+    buttonLabel : "safebrowsing.notAForgeryButton.label",
+    reportPage : "www.google.com/safebrowsing/report_error",
+    unsafePage : "http://www.mozilla.org/firefox/its-a-trap.html"
+  },
+  // Malware URL object
+  {
+    buttonLabel : "safebrowsing.notAnAttackButton.label",
+    reportPage : "www.stopbadware.org",
+    unsafePage : "http://www.mozilla.org/firefox/its-an-attack.html"
+  }
+];
 
-const DOMAIN_NAME = "www.mozilla.org";
-const WARNING_PAGES_URLS = ['http://' + DOMAIN_NAME + '/firefox/its-a-trap.html',
-                            'http://' + DOMAIN_NAME + '/firefox/its-an-attack.html'];
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbar.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-var setupModule = function(module)
-{
-  controller = mozmill.getBrowserController();
-
-  tabBrowser = new tabs.tabBrowser(controller);
-  tabBrowser.closeAllTabs();
+  aModule.tabBrowser.closeAllTabs();
 }
 
-function teardownModule(module) {
+function teardownModule(aModule) {
   // Clear the Safe Browsing permission
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
 var testNotificationBar = function() {
-  for (var i = 0; i < WARNING_PAGES_URLS.length; i++ ) {
-    // Go to one of mozilla's phishing protection test pages
-    controller.open(WARNING_PAGES_URLS[i]);
+  TEST_DATA.forEach(function(aData) {
+    // Load one of the safe browsing test pages
+    controller.open(aData.unsafePage);
     controller.waitForPageLoad();
 
-    // Wait for the ignoreWarning button to be loaded onto the page and then click on the button
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
-    checkNoPhishingButton(WARNING_PAGES_URLS[i]);
+    // After waiting for the page click on the ignoreWarning button
+    checkIgnoreWarningButton(aData);
+    checkNoPhishingButton(aData);
 
     // Go back to the notification bar
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(aData.unsafePage);
     controller.waitForPageLoad();
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(aData);
 
     // Test the get me out of here button
     checkGetMeOutOfHereButton();
 
     // Go back to the notification bar
-    controller.open(WARNING_PAGES_URLS[i]);
+    controller.open(aData.unsafePage);
     controller.waitForPageLoad();
-    checkIgnoreWarningButton(WARNING_PAGES_URLS[i]);
+    checkIgnoreWarningButton(aData);
 
     // Test the x button on the drop down bar
     checkXButton();
-  }
+  });
 }
 
 /**
- * Check the ignoreWarningButton goes to proper page associated to the url provided
+ * Check the ignoreWarningButton goes to proper page associated to the URL provided
  *
- * @param badUrl {string} URL of testing page
+ * @param {object} aData
+ *        Object containing elements of testing page
+ * @param {String} aData.buttonLabel
+ *        Report button label
+ * @param {String} aData.unsafePage
+ *        URL of the harmful page
+ * @param {String} aData.reportPage
+ *        URL of the report page
  */
-var checkIgnoreWarningButton = function(badUrl) {
+var checkIgnoreWarningButton = function(aData) {
   // Verify the element is loaded onto the page and go to the phishing site
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
-  controller.waitThenClick(ignoreWarningButton, TIMEOUT);
+  controller.waitThenClick(ignoreWarningButton);
   controller.waitForPageLoad();
 
-  // Verify the warning button is not visible and the location bar displays the correct url
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
+  // Verify the warning button is not visible and the location bar displays the correct URL
+  utils.assertLoadedUrlEqual(controller, aData.unsafePage);
 
-  utils.assertLoadedUrlEqual(controller, badUrl);
   assert.ok(!ignoreWarningButton.exists(), "'Ignore warning' button has not been found");
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
@@ -80,41 +98,28 @@ var checkIgnoreWarningButton = function(badUrl) {
 /**
  * Check the not a forgery or attack button in the notification bar
  *
- * @param badUrl {string} URL of testing page
+ * @param {object} aData
+ *        Object containing elements of testing page
+ * @param {String} aData.buttonLabel
+ *        Report button label
+ * @param {String} aData.unsafePage
+ *        URL of the harmful page
+ * @param {String} aData.reportPage
+ *        URL of the report page
  */
-var checkNoPhishingButton = function(badUrl) {
-  if (badUrl == 'http://www.mozilla.org/firefox/its-a-trap.html' ) {
-    // Click on the web forgery report button
-    var label = utils.getProperty("chrome://browser/locale/browser.properties",
-                                  "safebrowsing.notAForgeryButton.label");
-    var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                               '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
+var checkNoPhishingButton = function(aData) {
+  // Click on the web forgery report button
+  var label = utils.getProperty("chrome://browser/locale/browser.properties", aData.buttonLabel);
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"blocked-badware-page"}' +
+                                             '/{"label":"' + label + '"}');
 
-    tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-    controller.waitThenClick(button, TIMEOUT);
-    controller.waitForPageLoad(controller.tabs.getTab(1));
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
+  controller.waitThenClick(button);
+  controller.waitForPageLoad(controller.tabs.getTab(1));
 
-    var urlField = new elementslib.ID(controller.tabs.activeTab, "url");
-    controller.waitForElement(urlField, TIMEOUT);
-    expect.equal(urlField.getNode().value, 'http://www.mozilla.org/firefox/its-a-trap.html',
-                 "not-a-web-forgery report page is loaded");
-
-  } else if (badUrl == 'http://www.mozilla.org/firefox/its-an-attack.html' ) {
-    // Click on the attack site report button
-    var label = utils.getProperty("chrome://browser/locale/browser.properties",
-                                  "safebrowsing.notAnAttackButton.label");
-    var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                               '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-
-    tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-    controller.waitThenClick(button, TIMEOUT);
-    controller.waitForPageLoad(controller.tabs.getTab(1));
-
-    // Verify the not-an-attack-site report page is loaded
-    var locationBar = new elementslib.ID(controller.window.document, "urlbar");
-    var currentURL = locationBar.getNode().value;
-    expect.contain(currentURL, 'www.stopbadware.org/', "Loaded URL is the report page");
-  }
+  // Verify that the correct not a forgery or attack report page is loaded
+  locationBar.contains(aData.reportPage);
 
   tabs.closeAllTabs(controller);
 }
@@ -130,7 +135,7 @@ var checkGetMeOutOfHereButton = function() {
                                              '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button, TIMEOUT);
+  controller.waitThenClick(button);
 
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
@@ -149,11 +154,8 @@ var checkXButton = function() {
                                              '/{"class":"messageCloseButton tabbable"}');
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button, TIMEOUT);
+  controller.waitThenClick(button);
 
   controller.sleep(1000);
   assert.ok(!button.exists(), "The Close button has not been found");
 }
-
-setupModule.__force_skip__ = 'Bug 905033 - Test failure "not-a-web-forgery report page is loaded"';
-teardownModule.__force_skip__ = 'Bug 905033 - Test failure "not-a-web-forgery report page is loaded"';
