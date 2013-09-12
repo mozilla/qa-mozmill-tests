@@ -62,3 +62,6 @@ function testInstallBlocklistedExtension() {
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
+
+setupModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";
+teardownModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";

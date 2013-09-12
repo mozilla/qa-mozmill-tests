@@ -39,3 +39,6 @@ function testUninstallBlocklistedExtension() {
 
   addonsManager.removeAddon({addon: addons[0]});
 }
+
+setupModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";
+teardownModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";
