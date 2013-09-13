@@ -36,8 +36,7 @@ function testMixedContentPage() {
 
   var encryptionPopup = locationBar.getElement({type:"identityPopup"});
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
-                                   "identity.mixed_display_loaded_active_blocked");
+                                   "identity.mixed_display_loaded");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }
 
-setupModule.__force_skip__ = "Bug 915139 - Test failure 'The page has mixed content'"
