@@ -31,6 +31,6 @@ function testRestarted64bit() {
 }
 
 if (persisted.skipTests) {
-  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
-  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6";
+  setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
+  teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
 }

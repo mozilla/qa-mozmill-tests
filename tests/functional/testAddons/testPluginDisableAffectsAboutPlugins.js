@@ -34,7 +34,8 @@ function setupModule(aModule) {
 
   if (activePlugins.length !== 0) {
     aModule.plugin = activePlugins[0];
-  } else {
+  }
+  else {
     testDisableEnablePlugin.__force_skip__ = "No enabled plugins detected";
     teardownModule.__force_skip__ = "No enabled plugins detected";
   }

@@ -36,6 +36,6 @@ function testMixedContentPage() {
 
   var encryptionPopup = locationBar.getElement({type:"identityPopup"});
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
-                                   "identity.mixed_content");
+                                   "identity.mixed_display_loaded");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }

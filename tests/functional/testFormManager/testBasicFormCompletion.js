@@ -18,7 +18,8 @@ var setupModule = function(aModule) {
     var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
                         getService(Ci.nsIFormHistory2);
     formHistory.removeAllEntries();
-  } catch (ex) {
+  }
+  catch (ex) {
   }
 }
 

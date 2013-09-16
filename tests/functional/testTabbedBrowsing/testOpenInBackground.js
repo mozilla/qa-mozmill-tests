@@ -42,7 +42,8 @@ var testOpenInBackgroundTab = function() {
     if (i == 2) {
       // Open another tab by middle-clicking on the link
       tabBrowser.openInNewTab(currentLink);
-    } else {
+    }
+    else {
       // Open the first link via context menu in a new tab:
       tabBrowser.openInNewTab(currentLink, "contextMenu");
     }
