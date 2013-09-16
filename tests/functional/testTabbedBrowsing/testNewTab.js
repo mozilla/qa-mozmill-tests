@@ -17,18 +17,26 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_NEWTAB_URL = "browser.newtab.url";
 
+// Bug 874344
+// We need to handle Australis builds as exceptions and we should
+// remove unaplicable code after Australis lands as Nightly
+const IS_AUSTRALIS_BUILD = utils.australis.isAustralis();
+
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 
-  // Save old state
-  aModule.oldTabsOnTop = aModule.tabBrowser.hasTabsOnTop;
+  if (!IS_AUSTRALIS_BUILD) {
+    // Save old state
+    aModule.oldTabsOnTop = aModule.tabBrowser.hasTabsOnTop;
+  }
 }
 
 function teardownModule(aModule) {
-  aModule.tabBrowser.hasTabsOnTop = aModule.oldTabsOnTop;
+  if (!IS_AUSTRALIS_BUILD)
+    aModule.tabBrowser.hasTabsOnTop = aModule.oldTabsOnTop;
 }
 
 function testNewTab() {
@@ -39,27 +47,30 @@ function testNewTab() {
   var section = new elementslib.ID(controller.tabs.activeTab, "organization");
   controller.waitForElement(section);
 
-  // First, perform all tests with tabs on bottom
-  tabBrowser.hasTabsOnTop = false;
-  checkOpenTab("menu");
-  checkOpenTab("shortcut");
-  checkOpenTab("newTabButton");
-  checkOpenTab("tabStrip");
+  if (!IS_AUSTRALIS_BUILD) {
+    // First, perform all tests with tabs on bottom
+    tabBrowser.hasTabsOnTop = false;
+    checkOpenTab("menu");
+    checkOpenTab("shortcut");
+    checkOpenTab("newTabButton");
+    checkOpenTab("tabStrip");
 
-  // Second, perform all tests with tabs on top
-  tabBrowser.hasTabsOnTop = true;
-  checkOpenTab("menu");
-  checkOpenTab("shortcut");
-  checkOpenTab("newTabButton");
+    // Second, perform all tests with tabs on top
+    tabBrowser.hasTabsOnTop = true;
 
-  // NOTE: On Linux and beginning with Windows Vista a double click onto the
-  //       tabstrip maximizes the window instead. So don't execute this test
-  //       on those os versions.
-  var version = Services.sysinfo.getProperty("version");
+    // NOTE: On Linux and beginning with Windows Vista a double click onto the
+    //       tabstrip maximizes the window instead. So don't execute this test
+    //       on those os versions.
+    var version = Services.sysinfo.getProperty("version");
 
-  if (mozmill.isMac || (mozmill.isWindows && (version < "6.0"))) {
-   checkOpenTab("tabStrip");
+    if (mozmill.isMac || (mozmill.isWindows && (version < "6.0"))) {
+     checkOpenTab("tabStrip");
+    }
   }
+
+  checkOpenTab("menu");
+  checkOpenTab("shortcut");
+  checkOpenTab("newTabButton");
 }
 
 /**
