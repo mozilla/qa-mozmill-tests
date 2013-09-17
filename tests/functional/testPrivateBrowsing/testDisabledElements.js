@@ -48,7 +48,9 @@ function checkImportMenu(controller) {
   controller.click(maintenanceButton);
 
   var importEntry = new elementslib.ID(controller.window.document, "browserImport");
-  expect.ok(importEntry.getNode().disabled, "Import Menu entry is disabled");
+  expect.waitFor(function(){
+    return importEntry.getNode().disabled;
+  }, "Import Menu entry is disabled");
 
   var cmdKey = utils.getEntity(tabBrowser.getDtds(), "closeCmd.key");
   controller.keypress(null, cmdKey, {accelKey: true});
