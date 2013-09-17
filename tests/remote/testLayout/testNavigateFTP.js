@@ -34,4 +34,3 @@ var testNavigateFTP = function () {
  */
 // testNavigateFTP.meta = {litmusids : [7962]};
 
-setupModule.__force_skip__ = "Bug 898194 - Disabled test due to crash"
