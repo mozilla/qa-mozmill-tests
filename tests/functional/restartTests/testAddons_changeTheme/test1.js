@@ -98,8 +98,3 @@ function testInstallTheme() {
   // We need access to this addon in teardownModule
   installedAddon = plainTheme;
 }
-
-setupModule.__force_skip__ = "Bug 905170 - The theme 'plain.theme@quality.mozilla.org' " +
-                             "is enabled - got 'false'";
-teardownModule.__force_skip__ = "Bug 905170 - The theme 'plain.theme@quality.mozilla.org' " +
-                                "is enabled - got 'false'";

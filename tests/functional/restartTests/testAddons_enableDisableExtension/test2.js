@@ -63,6 +63,3 @@ function testDisableExtension() {
   // We need access to this addon in teardownModule
   installedAddon = addon;
 }
-
-setupModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";
-teardownModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";

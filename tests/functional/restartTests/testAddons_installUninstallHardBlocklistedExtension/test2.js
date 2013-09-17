@@ -53,6 +53,3 @@ function testBlocklistsExtension() {
   assert.equal(hardBlockedAddon.getNode().getAttribute("name"),
                persisted.addon.name, "The addon appears in the blocklist");
 }
-
-setupModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";
-teardownModule.__force_skip__ = "Bug 909237 - The addon is disabled - got 'false'";

@@ -67,7 +67,3 @@ function testInstallExtensions() {
     controller.keypress(null , 'VK_ESCAPE', {});
   });
 }
-setupModule.__force_skip__ = "Bug 905193 - Test failure 'Extension 'test-long-name@quality.mozilla.org'" +
-                             " is disabled - got 'false'";
-teardownModule.__force_skip__ = "Bug 905193 - Test failure 'Extension 'test-long-name@quality.mozilla.org'" +
-                                " is disabled - got 'false'";

@@ -51,6 +51,3 @@ function testInstallAddon() {
   controller.open(persisted.addon.url);
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
-
-setupModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";
-teardownModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";

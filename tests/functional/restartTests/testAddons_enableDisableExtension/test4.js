@@ -48,6 +48,3 @@ function testEnabledAddon() {
   // Check if the addon is enabled
   assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
 }
-
-setupModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";
-teardownModule.__force_skip__ = "Bug 915193 - Test disabled due to failures";

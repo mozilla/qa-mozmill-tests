@@ -57,8 +57,3 @@ function testUninstallEnabledExtension() {
   // We need access to this addon in teardownModule
   installedAddon = enabledExtension;
 }
-
-setupModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                             "but none detected before end of test";
-teardownModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                                "but none detected before end of test";

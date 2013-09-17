@@ -63,7 +63,3 @@ function testUninstallDisabledExtension() {
                "Extension '" + persisted.addons[1].id +
                "' has been uninstalled");
 }
-setupModule.__force_skip__ = "Bug 905193 - Test failure 'Extension 'test-long-name@quality.mozilla.org'" +
-                             " is disabled - got 'false'";
-teardownModule.__force_skip__ = "Bug 905193 - Test failure 'Extension 'test-long-name@quality.mozilla.org'" +
-                                " is disabled - got 'false'";
