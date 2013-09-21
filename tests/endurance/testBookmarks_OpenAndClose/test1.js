@@ -54,7 +54,7 @@ function testOpenAndCloseAllBookmarks() {
                                               "*[label='Test Bookmark " +
                                               enduranceManager.currentEntity + "']");
 
-      controller.click(bookmark);
+      controller.waitThenClick(bookmark);
       controller.waitForPageLoad();
 
       // Bug 780107
