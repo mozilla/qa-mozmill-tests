@@ -33,15 +33,6 @@ function teardownModule(aModule) {
   }
 }
 
-function teardownModule(aModule) {
-  // Bug 886811
-  // Mozmill 1.5 does not have the stopApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("stopApplication" in aModule.controller) {
-    aModule.controller.stopApplication(true);
-  }
-}
-
 function prefPaneInit(controller, prefDialog) {
   var ids = [
     { getBy : GET_BY_ID,
