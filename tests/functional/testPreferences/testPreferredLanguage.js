@@ -84,16 +84,7 @@ var langHandler = function (aController) {
   var randomPosition = Math.floor(Math.random() * filteredLanguageList.nodes.length);
   var languageName = filteredLanguageList.nodes[randomPosition].getAttribute("label");
   contentLocale = filteredLanguageList.nodes[randomPosition].getAttribute("id");
-
-  // Select the language in the dropdown
-  // Bug 852116
-  // TODO: replace this code with controller.select() once 852116 lands
-  aController.click(langDropDown);
-  assert.waitFor(function () {
-    return langDropDown.getNode().open;
-  }, "Language Drop Down has been opened");
-  aController.click(filteredLanguageList.elements[randomPosition]);
-  aController.click(langDropDown);
+  aController.select(langDropDown, null, languageName);
 
   // Wait until the add button has been enabled
   var addButton = new elementslib.ID(aController.window.document, "addButton");
