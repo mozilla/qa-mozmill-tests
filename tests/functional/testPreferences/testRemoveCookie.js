@@ -93,8 +93,3 @@ function deleteCookie(controller) {
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
   controller.keypress(null, cmdKey, {accelKey: true});
 }
-
-setupModule.__force_skip__ = "Bug 911101 - Test failure 'No item selected for " +
-                             "element ID: historyMode'";
-teardownModule.__force_skip__ = "Bug 911101 - Test failure 'No item selected for " +
-                                "element ID: historyMode'";
