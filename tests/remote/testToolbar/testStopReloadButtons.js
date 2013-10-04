@@ -58,7 +58,3 @@ var testStopAndReload = function() {
   assert.ok(footer.exists(), "'Footer' element has been found");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testStopAndReload.meta = {litmusids : [8030]};

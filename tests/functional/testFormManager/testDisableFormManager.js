@@ -74,7 +74,3 @@ var testToggleFormManager = function() {
                   "Last name has not been autocompleted");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testToggleFormManager.meta = {litmusids : [8050]};

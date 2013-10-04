@@ -67,8 +67,3 @@ var testEscape = function() {
   controller.keypress(locationBar.urlbar, 'VK_ESCAPE', {});
   utils.assertLoadedUrlEqual(controller, TEST_DATA[1]);
 }
-
-/**
- * Map test function to litmus test
- */
-// testEscape.meta = {litmusids : [8693]};

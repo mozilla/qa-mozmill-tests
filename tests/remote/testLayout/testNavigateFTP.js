@@ -29,8 +29,4 @@ var testNavigateFTP = function () {
   controller.waitForElement(latestLink);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testNavigateFTP.meta = {litmusids : [7962]};
 

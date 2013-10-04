@@ -48,8 +48,3 @@ var handleEngines = function(controller) {
 
   manager.close(true);
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testRemoveEngine.meta = {litmusids : [8240]};

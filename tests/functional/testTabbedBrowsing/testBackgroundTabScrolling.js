@@ -112,7 +112,3 @@ var testScrollBackgroundTabIntoView = function() {
   }, "The all tabs popup should have been closed");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenInBackgroundTab.meta = {litmusids : [8259]};

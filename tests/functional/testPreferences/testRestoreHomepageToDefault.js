@@ -91,7 +91,3 @@ var prefDialogDefHomePageCallback = function(controller) {
   prefDialog.close(true);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testRestoreHomeToDefault.meta = {litmusids : [8327]};

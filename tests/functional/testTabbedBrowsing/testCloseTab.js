@@ -54,7 +54,3 @@ var testCloseTab = function() {
   }, "One tab has been closed using the close button");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenInBackgroundTab.meta = {litmusids : [8094]};

@@ -66,7 +66,3 @@ var testFormCompletion = function() {
                "Input field has the correct text in it");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testFormCompletion.meta = {litmusids : [7965]};

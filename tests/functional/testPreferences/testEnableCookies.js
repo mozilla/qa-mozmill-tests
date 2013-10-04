@@ -112,7 +112,3 @@ function checkSavedCookies(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testEnableCookies.meta = {litmusids : [8058]};

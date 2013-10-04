@@ -103,7 +103,3 @@ function checkCookieNotSaved(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testDisableCookies.meta = {litmusids : [8053]};

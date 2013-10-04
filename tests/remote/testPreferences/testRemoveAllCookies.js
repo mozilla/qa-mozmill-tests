@@ -85,7 +85,3 @@ function deleteAllCookies(controller) {
   controller.keypress(null, cmdKey, {accelKey: true});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testRemoveAllCookies.meta = {litmusids : [8054]};

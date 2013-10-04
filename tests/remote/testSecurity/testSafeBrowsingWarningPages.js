@@ -119,7 +119,3 @@ var checkIgnoreWarningButton = function(url) {
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testWarningPages.meta = {litmusids : [9014]};

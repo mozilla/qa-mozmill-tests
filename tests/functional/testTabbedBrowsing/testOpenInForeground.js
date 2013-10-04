@@ -91,7 +91,3 @@ var testOpenInForegroundTab = function() {
   }, "The first tab has been selected");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenInForegroundTab.meta = {litmusids : [8088]};
