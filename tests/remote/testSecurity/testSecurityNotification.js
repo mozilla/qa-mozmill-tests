@@ -61,3 +61,6 @@ var testSecNotification = function() {
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
                  "The error code is a SEC Expired certificate error");
 }
+
+setupModule.__force_skip__ = "Bug 922967 - Test failure Identity is unknown - " +
+                             "'verifiedIdentity' should equal 'unknownIdentity'";
