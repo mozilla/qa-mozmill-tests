@@ -112,7 +112,7 @@ function pluginStateInAboutPlugins(aPluginName) {
     if (pluginNames[i].textContent === aPluginName) {
       var enabledState = utils.getProperty("chrome://global/locale/plugins.properties",
                                            "state_enabled");
-      exists = pluginState[i].parentNode.textContent.contains(enabledState);
+      exists = pluginState[i].nextSibling.nodeValue === enabledState;
       break;
     }
   }
