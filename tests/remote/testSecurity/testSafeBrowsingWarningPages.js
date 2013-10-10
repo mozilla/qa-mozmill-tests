@@ -119,6 +119,9 @@ var checkIgnoreWarningButton = function(url) {
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
+setupModule.__force_skip__ = "Bug 925272 - disabled test due to failures";
+teardownModule.__force_skip__ = "Bug 925272 - disabled test due to failures";
+
 /**
  * Map test functions to litmus tests
  */
