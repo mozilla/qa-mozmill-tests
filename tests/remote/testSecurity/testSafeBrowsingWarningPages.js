@@ -86,7 +86,7 @@ var checkReportButton = function(type, badUrl) {
 
   if (type == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
-    url = utils.formatUrlPref("browser.safebrowsing.warning.infoURL");
+    url = utils.formatUrlPref("app.support.baseURL") + "phishing-malware";
   }
   else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
@@ -118,9 +118,6 @@ var checkIgnoreWarningButton = function(url) {
   // Clear the Safe Browsing permission
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }
-
-setupModule.__force_skip__ = "Bug 925272 - disabled test due to failures";
-teardownModule.__force_skip__ = "Bug 925272 - disabled test due to failures";
 
 /**
  * Map test functions to litmus tests
