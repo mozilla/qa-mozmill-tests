@@ -11,6 +11,7 @@ var utils = require("../../../lib/utils");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.lastSelectedPaneId = undefined;
 }
 
 function teardownModule(aModule) {
@@ -39,6 +40,9 @@ function prefPaneSetCallback(controller) {
 
   prefDialog.paneId = 'paneAdvanced';
   prefDialog.paneId = 'panePrivacy';
+
+  // Store actual paneId
+  lastSelectedPaneId = prefDialog.paneId;
   prefDialog.close();
 }
 
@@ -51,8 +55,9 @@ function prefPaneSetCallback(controller) {
 function prefPaneCheckCallback(controller) {
   var prefDialog = new prefs.preferencesDialog(controller);
 
-  expect.equal(prefDialog.paneId, "panePrivacy",
-               "The privacy pane has been selected");
+  expect.waitFor(function () {
+    return prefDialog.paneId === lastSelectedPaneId;
+  }, "The privacy pane has been selected");
   prefDialog.close();
 }
 
