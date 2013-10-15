@@ -37,8 +37,3 @@ function testOpenClosePBKeyboardShortcut() {
   pbWindow.controller.assertText(moreInfoElem, learnMore);
   pbWindow.close();
 }
-
-setupModule.__force_skip__ = "Bug 905963 - Disabled test due to failure " +
-                             "'A new window has been opened' on ga-IE";
-teardownModule.__force_skip__ = "Bug 905963 - Disabled test due to failure " +
-                                "'A new window has been opened' on ga-IE";
