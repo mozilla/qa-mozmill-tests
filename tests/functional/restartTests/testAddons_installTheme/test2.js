@@ -10,16 +10,11 @@ var {expect} = require("../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
-
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
 }
 
 function teardownModule(aModule) {
