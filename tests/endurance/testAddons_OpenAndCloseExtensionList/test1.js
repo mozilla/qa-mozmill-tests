@@ -17,7 +17,10 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
+
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.tabBrowser.closeAllTabs();
@@ -26,6 +29,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule() {
+  addons.resetDiscoveryPaneURL();
+
   // Make Add-ons Manager forget last visited category
   prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 }

@@ -26,7 +26,9 @@ const TIMEOUT_DOWNLOAD = 25000;
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 

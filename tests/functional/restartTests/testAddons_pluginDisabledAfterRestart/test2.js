@@ -25,6 +25,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   // Enable the plugin that was disabled
   addons.enableAddon(persisted.plugin.id);
+  addons.resetDiscoveryPaneURL();
 
   delete persisted.enabledPlugins;
   delete persisted.plugin;
