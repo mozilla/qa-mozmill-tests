@@ -11,7 +11,6 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
@@ -29,7 +28,7 @@ function setupModule(aModule) {
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
+  addons.setDiscoveryPaneURL("about:home");
 
   // Whitelist add the AMO preview site
   addons.addToWhiteList(BASE_URL);

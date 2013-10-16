@@ -31,6 +31,8 @@ function setupModule(aModule) {
   persisted.enabledPlugins = controller.window.navigator.plugins.length;
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
+
   tabs.closeAllTabs(aModule.controller);
 }
 

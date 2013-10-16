@@ -22,7 +22,10 @@ const ADDON = {
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
+
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
   // Store the addon in the persisted object

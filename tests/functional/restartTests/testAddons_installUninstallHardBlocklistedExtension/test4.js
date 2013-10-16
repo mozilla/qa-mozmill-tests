@@ -19,6 +19,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  addons.resetDiscoveryPaneURL();
+
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);

@@ -9,16 +9,13 @@ var addons = require("../../../lib/addons");
 var endurance = require("../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
-const BASE_URL = collector.addHttpResource("../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
+  addons.setDiscoveryPaneURL("about:home");
 
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
