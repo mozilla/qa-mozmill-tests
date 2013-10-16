@@ -11,16 +11,13 @@ var domUtils = require("../../../lib/dom-utils");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const BASE_URL = collector.addHttpResource("../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.tabBrowser = new tabs.tabBrowser(controller);
 
   aModule.addonsManager = new addons.AddonsManager(controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
+  addons.setDiscoveryPaneURL("about:home");
 
   tabs.closeAllTabs(controller);
 

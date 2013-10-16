@@ -28,7 +28,10 @@ const ADDONS = [
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
+
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 

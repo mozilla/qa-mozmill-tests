@@ -8,16 +8,12 @@
 var addons = require("../../../../lib/addons");
 var tabs = require("../../../../lib/tabs");
 
-const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
-
 const TIMEOUT_USERSHUTDOWN = 2000;
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
 
   tabs.closeAllTabs(aModule.controller);
 
