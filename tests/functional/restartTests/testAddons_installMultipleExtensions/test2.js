@@ -20,11 +20,12 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  aModule.addonsManager.close();
+  addons.resetDiscoveryPaneURL();
 
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   delete persisted.addons;
+  aModule.addonsManager.close();
 
   // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.

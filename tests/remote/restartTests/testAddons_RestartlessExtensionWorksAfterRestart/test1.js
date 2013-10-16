@@ -12,7 +12,6 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "addons/layout/mozilla.html";
 
 const ADDON = {
   id: "restartless-addon@quality.mozilla.org",
@@ -27,8 +26,9 @@ const TIMEOUT_DOWNLOAD = 25000;
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
+  addons.setDiscoveryPaneURL("about:home");
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 

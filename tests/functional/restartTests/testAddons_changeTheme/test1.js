@@ -12,7 +12,6 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const THEME = [
   {name: "Theme (Plain)",
@@ -32,7 +31,7 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  addons.setDiscoveryPaneURL(TEST_DATA);
+  addons.setDiscoveryPaneURL("about:home");
 
   prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
 
