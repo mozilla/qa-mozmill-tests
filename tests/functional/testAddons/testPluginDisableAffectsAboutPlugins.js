@@ -113,3 +113,7 @@ function pluginExistsInAboutPlugins(pluginName) {
   return exists;
 }
 
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 927361 - Test disabled on ESR17 due to failures";
+  teardownModule.__force_skip__ = "Bug 927361 - Test disabled on ESR17 due to failures";
+}
