@@ -87,7 +87,6 @@ var checkIgnoreWarningButton = function(aData) {
 
   // Verify the warning button is not visible and the location bar displays the correct URL
   utils.assertLoadedUrlEqual(controller, aData.unsafePage);
-
   assert.ok(!ignoreWarningButton.exists(), "'Ignore warning' button has not been found");
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
@@ -152,7 +151,7 @@ var checkXButton = function() {
   // Click on the x button and verify the notification bar dissapears
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +
-                                             '/{"class":"messageCloseButton tabbable"}');
+                                             utils.australis.getElement("close-button"));
 
   tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
   controller.waitThenClick(button);

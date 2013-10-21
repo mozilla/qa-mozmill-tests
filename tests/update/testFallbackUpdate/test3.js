@@ -51,7 +51,8 @@ function testFallbackUpdate_ErrorPatching() {
     }, "An update has been found.");
 
     update.download(persisted.channel);
-  } else {
+  }
+  else {
     update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
 
     // Start downloading the fallback update

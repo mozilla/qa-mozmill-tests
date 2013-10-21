@@ -44,7 +44,7 @@ function testSwitchToTab() {
   controller.sleep(PLACES_DB_TIMEOUT);
 
   TEST_DATA.forEach(function (aPage) {
-    locationBar.focus({type: "shortcut"});
+    locationBar.clear();
     locationBar.type(aPage.string);
     assert.waitFor(function () {
       return locationBar.value === aPage.string;

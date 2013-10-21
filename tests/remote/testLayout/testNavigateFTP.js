@@ -4,6 +4,8 @@
 
 "use strict";
 
+Cu.import("resource://gre/modules/Services.jsm");
+
 const TEST_DATA = "ftp://ftp.mozilla.org/pub/";
 
 var setupModule = function(aModule) {
@@ -31,3 +33,4 @@ var testNavigateFTP = function () {
  * Map test functions to litmus tests
  */
 // testNavigateFTP.meta = {litmusids : [7962]};
+

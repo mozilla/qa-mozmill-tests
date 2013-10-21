@@ -40,7 +40,7 @@ function teardownModule(aModule) {
     aModule.controller.startUserShutdown(TIMEOUT_USERSHUTDOWN, true);
     aModule.controller.click(restartLink);
   }
- }
+}
 
 /**
 * Test disable an extension
