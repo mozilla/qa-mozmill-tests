@@ -76,3 +76,6 @@ var testCloseDownloadManager = function() {
  * Map test functions to litmus tests
  */
 // testCloseDownloadManager.meta = {litmusids : [7980]};
+
+setupModule.__force_skip__ = "Bug 930509 - Window has been found.";
+teardownModule.__force_skip__ = "Bug 930509 - Window has been found.";
