@@ -13,7 +13,7 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "geolocation/position.html";
 
-const TIMEOUT_POSITION = 15000;
+const TIMEOUT_POSITION = 30000;
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -59,7 +59,12 @@ function testVerifyDisplayGeolocationNotification() {
   // The position updates lazily so additional timeout is needed
   var result = new elementslib.ID(controller.tabs.activeTab, "result");
   var regExp = /\d+(\.\d*)?\.\d+/;
-  assert.waitFor(function () {
-    return regExp.test(result.getNode().textContent);
-  }, "Geolocation position has been found", TIMEOUT_POSITION);
+  try {
+    assert.waitFor(function () {
+      return regExp.test(result.getNode().textContent);
+    }, "", TIMEOUT_POSITION);
+  }
+  catch (e) {
+    assert.fail("Geolocation position is: " + result.getNode().textContent);
+  }
 }
