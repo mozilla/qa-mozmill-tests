@@ -86,7 +86,7 @@ var checkReportButton = function(type, badUrl) {
 
   if (type == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
-    url = utils.formatUrlPref("browser.safebrowsing.warning.infoURL");
+    url = utils.formatUrlPref("app.support.baseURL") + "phishing-malware";
   }
   else if (type == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
