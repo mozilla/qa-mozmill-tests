@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../lib/prefs");
+var prefs = require("../firefox/lib/prefs");
 
 // Setup for the test
 var setupModule = function(aModule) {
