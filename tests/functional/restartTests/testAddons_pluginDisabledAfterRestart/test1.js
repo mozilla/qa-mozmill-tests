@@ -12,7 +12,7 @@ function setupModule(aModule) {
 
   // Skip test if we don't have enabled plugins
   var activePlugins = addons.getInstalledAddons(function (aAddon) {
-    if (aAddon.isActive && aAddon.type === "plugin")
+    if (aAddon.isActive && aAddon.type === "plugin" && !aAddon.blocklistState)
       return {
         id: aAddon.id
       }
