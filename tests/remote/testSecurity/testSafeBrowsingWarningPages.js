@@ -119,3 +119,8 @@ var checkIgnoreWarningButton = function(url) {
   utils.removePermission("www.mozilla.org", "safe-browsing");
 }
 
+setupModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageLoad(): " +
+                             "Timeout waiting for page loaded'";
+teardownModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageLoad(): " +
+                                "Timeout waiting for page loaded'";
+
