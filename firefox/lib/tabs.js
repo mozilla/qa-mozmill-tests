@@ -11,12 +11,35 @@
 
 Cu.import("resource://gre/modules/Services.jsm");
 
+/**
+ * Initialisation of tabs observer, which will set "isAnimated" flag when
+ * scroll-button collapses
+ */
+var animationObserver = {
+  isAnimated: true,
+
+  /**
+   * @param {MozElement} aElement
+   *        Element to observe
+   */
+  init: function (aElement) {
+    var win = aElement.getNode().ownerDocument.defaultView;
+    var self = this;
+    this.mutationObserver = new win.MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        self.isAnimated = mutation.target.hasAttribute("collapsed");
+      });
+    });
+    this.mutationObserver.observe(aElement.getNode(), {attributes: true,
+                                                       attributeFilter: ["collapsed"]});
+  }
+}
+
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var utils = require("utils");
 var prefs = require("prefs");
 
-const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -85,6 +108,9 @@ function getTabsWithURL(aUrl) {
 function tabBrowser(controller) {
   this._controller = controller;
   this._tabs = this.getElement({type: "tabs"});
+  let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
+                                          subtype: "down"});
+  animationObserver.init(tabsScrollButton);
 }
 
 /**
@@ -192,13 +218,7 @@ tabBrowser.prototype = {
     var type = aEventType || "menu";
     var index = (typeof aIndex === undefined) ? this.selectedIndex : aIndex;
 
-    // Disable tab closing animation for default behavior
-    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
-
-    // Add event listener to wait until the tab has been closed
-    var self = { closed: false };
-    function checkTabClosed() { self.closed = true; }
-    this._controller.window.addEventListener("TabClose", checkTabClosed, false);
+    var length = this.length;
 
     switch (type) {
       case "closeButton":
@@ -221,15 +241,12 @@ tabBrowser.prototype = {
         throw new Error(arguments.callee.name + ": Unknown event type - " + type);
     }
 
-    try {
-      assert.waitFor(function () {
-        return self.closed;
-      }, "Tab has been closed");
-    }
-    finally {
-      this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
-      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
-    }
+    // When removing a tab it animates outside of visible space and only after that
+    // it's being removed, so the length property gets updated last
+    var self = this;
+    assert.waitFor(function () {
+      return self.length === length - 1;
+    }, "Tab has been closed");
   },
 
   /**
@@ -408,14 +425,22 @@ tabBrowser.prototype = {
    */
   openInNewTab : function tabBrowser_openInNewTab(aTarget, aEventType) {
     var type = aEventType || "middleClick";
+    var self = {
+      opened: false,
+      transitioned: false
+    };
 
-    // Disable tab closing animation for default behavior
-    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
+    function checkTabOpened() { self.opened = true; }
+    function checkTabTransitioned() { self.transitioned = true; }
 
     // Add event listener to wait until the tab has been opened
-    var self = { opened: false };
-    function checkTabOpened() { self.opened = true; }
-    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
+    this._controller.window.addEventListener("TabOpen", checkTabOpened);
+    if (animationObserver.isAnimated) {
+      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
+    }
+    else {
+      self.transitioned = true;
+    }
 
     switch (type) {
       case "contextMenu":
@@ -434,12 +459,14 @@ tabBrowser.prototype = {
 
     try {
       assert.waitFor(function () {
-        return self.opened;
+        return self.opened && self.transitioned;
       }, "Link has been opened in a new tab");
     }
     finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
-      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
+      if (animationObserver.isAnimated) {
+        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
+      }
     }
   },
 
@@ -460,14 +487,22 @@ tabBrowser.prototype = {
    */
   openTab : function tabBrowser_openTab(aEventType) {
     var type = aEventType || "menu";
+    var self = {
+      opened: false,
+      transitioned: false
+    };
 
-    // Disable tab closing animation for default behavior
-    prefs.preferences.setPref(PREF_TABS_ANIMATE, false);
+    function checkTabOpened() { self.opened = true; }
+    function checkTabTransitioned() { self.transitioned = true; }
 
     // Add event listener to wait until the tab has been opened
-    var self = { opened: false };
-    function checkTabOpened() { self.opened = true; }
-    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
+    this._controller.window.addEventListener("TabOpen", checkTabOpened);
+    if (animationObserver.isAnimated) {
+     this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
+    }
+    else {
+     self.transitioned = true;
+    }
 
     switch (type) {
       case "menu":
@@ -500,12 +535,14 @@ tabBrowser.prototype = {
 
     try {
       assert.waitFor(function () {
-        return self.opened;
+        return self.opened && self.transitioned;
       }, "New tab has been opened");
     }
     finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
-      prefs.preferences.clearUserPref(PREF_TABS_ANIMATE);
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
+      if (animationObserver.isAnimated) {
+        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
+      }
     }
   },
 
