@@ -29,11 +29,11 @@ var testCloseTab = function() {
     return tabBrowser.length === 5;
   }, "5 tabs have been opened");
 
-  // Close a tab by pressing the keyboard shortcut:
-  tabBrowser.closeTab("shortcut");
+  // Closing the tab via close button first makes bug 890181 reproducible in testrun
+  tabBrowser.closeTab("closeButton");
   assert.waitFor(function () {
     return tabBrowser.length === 4;
-  }, "One tab has been closed via keyboard shortcut");
+  }, "One tab has been closed via the close button");
 
   // Close a tab via File > Close tab:
   tabBrowser.closeTab("menu");
@@ -47,10 +47,9 @@ var testCloseTab = function() {
     return tabBrowser.length === 2;
   }, "One tab has been closed via middle click");
 
-  // Close a tab via the close button on the tab itself:
-  tabBrowser.closeTab("closeButton");
+  tabBrowser.closeTab("shortcut");
   assert.waitFor(function () {
     return tabBrowser.length === 1;
-  }, "One tab has been closed using the close button");
+  }, "One tab has been closed via keyboard shortcut");
 }
 
