@@ -8,6 +8,7 @@
 var addons = require("../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
+var utils = require("../../../../lib/utils");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -24,6 +25,9 @@ function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
+
+  // Reset the blocklist
+  utils.updateBlocklist();
 
   delete persisted.addon;
   aModule.addonsManager.close();
