@@ -8,6 +8,7 @@
 var { assert } = require("../../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
 var prefs = require("../../../../lib/prefs");
+var utils = require("../../../../lib/utils");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -22,6 +23,8 @@ function teardownModule(aModule) {
   addons.resetDiscoveryPaneURL();
 
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
+  utils.updateBlocklist();
+
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
