@@ -13,7 +13,7 @@
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
-var { assert } = require("../../lib/assertions");
+var { assert, expect } = require("../../lib/assertions");
 var prefs = require("prefs");
 
 /**
@@ -446,11 +446,32 @@ function getElementStyle(aElement, aProperty) {
 
 /**
  * Helper function to ping the blocklist Service so Firefox updates the blocklist
+ *
+ * @param {Boolean} [aWait=true]
+ *        If true, wait for the 'blocklist-updated' observer topic
  */
-function updateBlocklist() {
-  var blocklistService = Cc["@mozilla.org/extensions/blocklist;1"].
-                         getService(Ci.nsIBlocklistService);
-  blocklistService.QueryInterface(Ci.nsITimerCallback).notify(null);
+function updateBlocklist(aWait) {
+  var wait = (aWait === undefined || aWait === null) ? true
+                                                     : aWait;
+  var done = false;
+
+  function updated() { done = true; }
+  Services.obs.addObserver(updated, "blocklist-updated", false);
+
+  try {
+    var blocklistService = Cc["@mozilla.org/extensions/blocklist;1"].
+                           getService(Ci.nsIBlocklistService);
+    blocklistService.QueryInterface(Ci.nsITimerCallback).notify(null);
+
+    if (wait) {
+      expect.waitFor(function () {
+        return done;
+      }, "Blocklist has been updated.")
+    }
+  }
+  finally {
+    Services.obs.removeObserver(updated, "blocklist-updated");
+  }
 }
 
 // Export of variables

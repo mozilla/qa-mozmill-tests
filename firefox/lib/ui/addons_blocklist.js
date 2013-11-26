@@ -27,7 +27,7 @@ BlocklistWindow.prototype = {
    * Open the Blocklist Window
    */
   open : function BlocklistWindow_open() {
-    utils.updateBlocklist();
+    utils.updateBlocklist(false);
 
     this._controller = utils.handleWindow("type", "Addons:Blocklist", undefined, false);
   },
