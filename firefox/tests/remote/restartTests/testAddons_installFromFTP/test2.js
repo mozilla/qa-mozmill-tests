@@ -7,7 +7,10 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -17,6 +20,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+
   addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();
 

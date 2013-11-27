@@ -8,7 +8,13 @@
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
   name: "Echofon",
@@ -16,16 +22,18 @@ const ADDON = {
         "discovery/addon/echofon-for-twitter/?src=discovery-featured"
 };
 
-const TIMEOUT_DOWNLOAD = 25000;
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
   aModule.addonsManager.close();
 }
 
@@ -45,14 +53,14 @@ function testInstallAddonWithEULA() {
   // Bug 680045
   // Add elements to UI map for add-ons with EULA
   var continueToDownloadLink = new elementslib.Selector(controller.window.document,
-					                 ".install-action");
+                                                        ".install-action");
 
   // Click on continue to download link
   controller.click(continueToDownloadLink);
   controller.waitForPageLoad();
 
   var acceptAndInstallButton = new elementslib.Selector(controller.window.document,
-				                         ".install-button");
+                                                        ".install-button");
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
   // Install the add-on

@@ -12,7 +12,6 @@ var utils = require("../../../../lib/utils");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -20,15 +19,15 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  addons.resetDiscoveryPaneURL();
-
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
+  // Reset the blocklist
   utils.updateBlocklist();
 
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
-
   delete persisted.addon;
+
+  addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();
 
   // Bug 886811

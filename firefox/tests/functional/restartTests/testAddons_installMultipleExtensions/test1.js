@@ -14,9 +14,10 @@ var toolbars = require("../../../../lib/toolbars");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
 
-const TIMEOUT_DOWNLOAD = 25000;
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDONS = [
   {id: "test-empty@quality.mozilla.org",
@@ -33,7 +34,8 @@ function setupModule(aModule) {
   addons.setDiscoveryPaneURL("about:home");
 
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
-  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
+
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add localhost
   addons.addToWhiteList(BASE_URL + "addons/");
