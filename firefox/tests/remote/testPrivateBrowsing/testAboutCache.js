@@ -7,7 +7,7 @@
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
-var { assert, expect } = require("../../../lib/assertions");
+var { assert, expect } = require("../../../../lib/assertions");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
 var tabs = require("../../../lib/tabs");
 
