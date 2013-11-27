@@ -7,7 +7,10 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -23,6 +26,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   // Enable the plugin that was disabled
   addons.enableAddon(persisted.plugin.id);
   addons.resetDiscoveryPaneURL();
