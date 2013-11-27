@@ -10,7 +10,7 @@ var {expect} = require("../../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -18,8 +18,9 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
   delete persisted.theme;
-  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();

@@ -14,7 +14,6 @@ const TEST_DATA = "http://mozqa.com/data/firefox/layout/mozilla.html";
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_TRIM_URL = "browser.urlbar.trimURLs";
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -24,13 +23,12 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  addons.resetDiscoveryPaneURL();
-
   prefs.preferences.clearUserPref(PREF_TRIM_URL);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   delete persisted.addon;
+
+  addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();
 
   // Bug 886811

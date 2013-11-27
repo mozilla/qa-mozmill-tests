@@ -12,8 +12,9 @@ var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
 
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
+const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const THEME = {
@@ -25,10 +26,10 @@ const THEME = {
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
-
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
+
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add the AMO preview site
   addons.addToWhiteList(BASE_URL);
