@@ -9,6 +9,7 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -24,6 +25,7 @@ function teardownModule() {
   addons.resetDiscoveryPaneURL();
 
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 
   // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.

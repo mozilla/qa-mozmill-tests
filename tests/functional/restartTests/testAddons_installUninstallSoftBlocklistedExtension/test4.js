@@ -12,6 +12,7 @@ var utils = require("../../../../lib/utils");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
 function setupModule(aModule) {
@@ -22,6 +23,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   // Reset the blocklist

@@ -11,6 +11,7 @@ var utils = require("../../../../lib/utils");
 var EXPECTED_URL = "http://mozqa.com/data/firefox/layout/mozilla.html";
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 const PREF_TRIM_URL = "browser.urlbar.trimURLs";
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
 
@@ -24,6 +25,7 @@ function setupModule() {
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_TRIM_URL);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
 
   addons.resetDiscoveryPaneURL();

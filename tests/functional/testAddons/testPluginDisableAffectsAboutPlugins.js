@@ -6,10 +6,12 @@
 var addons = require("../../../lib/addons");
 var {assert, expect} = require("../../../lib/assertions");
 var domUtils = require("../../../lib/dom-utils");
+var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule(aModule) {
   controller = mozmill.getBrowserController();
@@ -39,6 +41,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule() {
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   addons.resetDiscoveryPaneURL();
 
   // Enable the plugin that was disabled

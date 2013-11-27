@@ -12,6 +12,7 @@ const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -23,6 +24,7 @@ function setupModule() {
 function teardownModule() {
   delete persisted.theme;
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 
   addons.resetDiscoveryPaneURL();
   addonsManager.close();

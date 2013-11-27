@@ -12,6 +12,7 @@ var prefs = require("../../../../lib/prefs");
 const TIMEOUT_DOWNLOAD = 25000;
 
 const PREF_ADDONS_CACHE_ENABLED = "extensions.getAddons.cache.enabled";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 const INSTALL_SOURCE = "discovery-promo";
 
 function setupModule() {
@@ -24,6 +25,8 @@ function setupModule() {
 
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_ADDONS_CACHE_ENABLED);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   am.close();
 }
 

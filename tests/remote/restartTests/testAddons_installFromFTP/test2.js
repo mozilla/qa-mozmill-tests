@@ -5,10 +5,12 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const LOCAL_TEST_FOLDER = collector.addHttpResource('../../../../data/');
 const LOCAL_TEST_PAGE = LOCAL_TEST_FOLDER + 'layout/mozilla.html';
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -20,6 +22,8 @@ function setupModule() {
 }
 
 function teardownModule() {
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   addons.resetDiscoveryPaneURL();
   addonsManager.close();
 

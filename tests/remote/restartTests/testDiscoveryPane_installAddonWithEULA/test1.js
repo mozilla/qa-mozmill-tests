@@ -6,6 +6,7 @@
 var addons = require("../../../../lib/addons");
 var {assert} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const ADDON = {
@@ -13,6 +14,8 @@ const ADDON = {
   page: "https://services.addons.mozilla.org/en-US/firefox/" +
         "discovery/addon/echofon-for-twitter/?src=discovery-featured"
 };
+
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const TIMEOUT_DOWNLOAD = 25000;
 
@@ -24,6 +27,8 @@ function setupModule() {
 }
 
 function teardownModule() {
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   addonsManager.close();
 }
 

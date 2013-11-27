@@ -6,11 +6,14 @@
 var addons = require("../../../../lib/addons");
 var {assert, expect} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const TIMEOUT_DOWNLOAD = 25000;
 
 const INSTALL_SOURCE = "discovery-upandcoming";
+
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -20,6 +23,8 @@ function setupModule() {
 }
 
 function teardownModule() {
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+
   addonsManager.close();
 }
 

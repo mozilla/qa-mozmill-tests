@@ -9,6 +9,7 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -21,7 +22,7 @@ function teardownModule() {
   addonsManager.close();
 
   prefs.preferences.clearUserPref(PREF_UPDATE_EXTENSION);
-
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
   delete persisted.addons;
 
   // Bug 886811
