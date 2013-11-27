@@ -7,7 +7,10 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -17,8 +20,12 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
+  delete persisted.addon;
+
+  addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();
-  tabs.closeAllTabs(aModule.controller);
 
   // Bug 867217
   // Mozmill 1.5 does not have the restartApplication method on the controller.
@@ -29,13 +36,12 @@ function teardownModule(aModule) {
 }
 
 function testInstallAddonWithEULA() {
-  // Open the Add-ons Manager
   addonsManager.open();
+
   addonsManager.setCategory({
     category: addonsManager.getCategoryById({id: "extension"})
   });
 
-  // Verify the add-on is installed
   var addon = addonsManager.getAddons({attribute: "name",
                                        value: persisted.addon.name})[0];
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),

@@ -12,6 +12,11 @@ var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
 
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
+
 const ADDONS = [
   {id: "test-icons@quality.mozilla.org",
    url: BASE_URL + "addons/extensions/icons.xpi"},
@@ -19,20 +24,12 @@ const ADDONS = [
    url: BASE_URL + "addons/extensions/long-name.xpi"},
 ];
 
-const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
-const INSTALL_DIALOG_DELAY = 1000;
-const TIMEOUT_DOWNLOAD = 25000;
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
 
-  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
-
-  // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add the local test folder

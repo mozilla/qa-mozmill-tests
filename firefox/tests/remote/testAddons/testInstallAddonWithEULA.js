@@ -12,36 +12,34 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
+
 const ADDON = {
   name: "Restartless Addon with EULA",
   url: "https://addons.mozilla.org/en-US/firefox/addon/restartless-addon-with-eula/"
 };
 
-const TIMEOUT_DOWNLOAD = 25000;
-const INSTALL_DIALOG_DELAY = 250;
-
-const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   aModule.addons.setDiscoveryPaneURL("about:home");
 
-  // Set pref for add-on installation dialog timer
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
-  aModule.addonsManager.close();
-  tabs.closeAllTabs(aModule.controller);
-
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
   aModule.addons.resetDiscoveryPaneURL();
+  aModule.addonsManager.close();
 }
 
 /**
