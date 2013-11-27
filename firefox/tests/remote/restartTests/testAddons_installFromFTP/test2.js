@@ -11,6 +11,7 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -20,6 +21,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 
   addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();

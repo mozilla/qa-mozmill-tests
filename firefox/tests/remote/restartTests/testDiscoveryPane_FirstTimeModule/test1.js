@@ -13,6 +13,7 @@ var prefs = require("../../../../lib/prefs");
 
 const PREF_ADDONS_CACHE_ENABLED = "extensions.getAddons.cache.enabled";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
@@ -32,6 +33,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_ADDONS_CACHE_ENABLED);
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 
   aModule.am.close();
 }
