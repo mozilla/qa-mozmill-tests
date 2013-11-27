@@ -8,8 +8,12 @@
 var {assert} = require("../../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const INSTALL_SOURCE = "discovery-featured";
@@ -18,10 +22,14 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.am = new addons.AddonsManager(aModule.controller);
 
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+
   aModule.am.close();
 }
 

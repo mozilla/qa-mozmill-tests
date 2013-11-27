@@ -16,12 +16,11 @@ const PREF_MAX_RESULTS = "extensions.getAddons.maxResults";
 
 var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.am = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
-
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
-  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   addons.useAmoPreviewUrls();
   prefs.preferences.setPref(PREF_MAX_RESULTS, NUMBER_OF_MAX_RESULTS);
@@ -29,9 +28,11 @@ var setupModule = function (aModule) {
 }
 
 var teardownModule = function (aModule) {
-  addons.resetDiscoveryPaneURL();
   prefs.preferences.clearUserPref(PREF_MAX_RESULTS);
+
+  addons.resetDiscoveryPaneURL();
   addons.resetAmoPreviewUrls();
+
   aModule.tabBrowser.closeAllTabs();
 }
 
