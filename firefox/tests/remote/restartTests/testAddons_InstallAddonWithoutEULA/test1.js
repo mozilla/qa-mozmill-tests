@@ -8,22 +8,30 @@
 var addons = require("../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
   name: "Nightly Tester Tools",
   url: "https://addons.mozilla.org/en-US/firefox/addon/nightly-tester-tools/"
 };
 
-const TIMEOUT_DOWNLOAD = 25000;
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
 
-  tabs.closeAllTabs(aModule.controller);
+  aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  addons.setDiscoveryPaneURL("about:home");
+
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   persisted.addon = ADDON;
+
+  tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {

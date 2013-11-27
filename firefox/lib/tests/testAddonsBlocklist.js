@@ -22,6 +22,9 @@ const ADDONS = [
 ];
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
 
 function setupModule() {
   controller = mozmill.getBrowserController();
@@ -29,6 +32,8 @@ function setupModule() {
   blocklistWindow = new blocklist.BlocklistWindow();
 
   prefs.preferences.setPref(PREF_BLOCKLIST, TEST_DATA);
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+
   tabs.closeAllTabs(controller);
 }
 
@@ -74,4 +79,5 @@ function testBlocklistAPI() {
 
 function teardownModule() {
   prefs.preferences.clearUserPref(PREF_BLOCKLIST);
+  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
 }

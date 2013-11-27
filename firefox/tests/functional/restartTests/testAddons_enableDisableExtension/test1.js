@@ -11,9 +11,11 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
-const TIMEOUT_DOWNLOAD = 25000;
 
-const PREF_UPDATE_EXTENSION = "extensions.update.enabled";
+const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+
+const INSTALL_DIALOG_DELAY = 250;
+const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
   url: BASE_URL + "addons/extensions/icons.xpi",
@@ -26,7 +28,7 @@ function setupModule(aModule) {
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
 
-  prefs.preferences.setPref(PREF_UPDATE_EXTENSION, false);
+  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Store the addon in the persisted object
   persisted.addon = ADDON;
