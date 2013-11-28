@@ -10,6 +10,7 @@ var { assert } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
+var toolbars = require("../../../../lib/toolbars");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
@@ -25,6 +26,8 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+
   addons.setDiscoveryPaneURL("about:home");
 
   prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
@@ -60,4 +63,6 @@ function testInstallAddonWithEULA() {
   md.start(addons.handleInstallAddonDialog);
   controller.click(addButton);
   md.waitForDialog(TIMEOUT_DOWNLOAD);
+
+  locationBar.waitForNotification("notification_popup", true);
 }
