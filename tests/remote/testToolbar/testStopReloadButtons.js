@@ -44,16 +44,16 @@ var testStopAndReload = function() {
 
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
-  var footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
-  assert.ok(!footer.exists(), "'Footer' element has not been found");
+  var masthead = new elementslib.ID(controller.tabs.activeTab, "masthead");
+  assert.ok(!masthead.exists(), "'masthead' element has not been found");
 
   // Reload, wait for it to completely loading and test again
   var reloadButton = locationBar.getElement({type: "reloadButton"});
   controller.click(reloadButton);
   controller.waitForPageLoad();
 
-  footer = new elementslib.ID(controller.tabs.activeTab, "footer-right");
-  assert.ok(footer.exists(), "'Footer' element has been found");
+  masthead = new elementslib.ID(controller.tabs.activeTab, "masthead");
+  assert.ok(masthead.exists(), "'masthead' element has been found");
 }
 
 /**
