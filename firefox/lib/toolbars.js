@@ -124,7 +124,7 @@ autoCompleteResults.prototype = {
         description = result.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
         break;
       default:
-        throw new Error(arguments.callee.name + ": Type unknown - " + type);
+        assert.fail("Type unknown - " + type);
     }
 
     let values = [ ];
@@ -199,7 +199,7 @@ autoCompleteResults.prototype = {
                                         getNode().getItemAtIndex(spec.value));
         return [elem];
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;
@@ -317,7 +317,7 @@ editBookmarksPanel.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "editBMPanel_tagsSelectorExpander");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -436,7 +436,7 @@ locationBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unkown event type - " + event.type);
+        assert.fail("Unkown event type - " + event.type);
     }
 
     // Wait until the location bar has been focused
@@ -551,7 +551,7 @@ locationBar.prototype = {
         nodeCollector.queryAnonymousNode("anonid", "input");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;

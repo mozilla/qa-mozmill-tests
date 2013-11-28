@@ -297,7 +297,7 @@ engineManager.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "enableSuggest");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -610,7 +610,7 @@ searchBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + event.type);
+        assert.fail("Unknown element type - " + event.type);
     }
 
     // Check if the search bar has the focus
@@ -685,7 +685,7 @@ searchBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
