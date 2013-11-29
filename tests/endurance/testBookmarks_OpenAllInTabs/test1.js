@@ -44,17 +44,16 @@ function teardownModule() {
  * Test open all bookmarks in tabs
  */
 function testOpenAllBookmarksInTabs() {
+  var testFolder = new elementslib.Selector(controller.window.document,
+                                            ".bookmark-item[label='Test Folder']");
+  controller.waitForElement(testFolder);
+  var openAllInTabs = new elementslib.ID(controller.window.document,
+                                         "placesContext_openContainer:tabs");
+
   enduranceManager.run(function () {
     tabBrowser.closeAllTabs();
 
-    var testFolder = new elementslib.Selector(controller.window.document,
-                                              ".bookmark-item[label='Test Folder']");
-    controller.waitForElement(testFolder);
     controller.rightClick(testFolder);
-
-    var openAllInTabs = new elementslib.ID(controller.window.document,
-                                           "placesContext_openContainer:tabs");
-
     controller.click(openAllInTabs);
     controller.waitForPageLoad();
 
