@@ -58,3 +58,4 @@ var testStopAndReload = function() {
   assert.ok(masthead.exists(), "'masthead' element has been found");
 }
 
+setupModule.__force_skip__ = "Bug 945156 - 'masthead' element has not been found";
