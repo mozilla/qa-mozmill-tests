@@ -29,8 +29,8 @@ function testMixedContentPage() {
   var favicon = locationBar.getElement({type:"favicon"});
   assert.waitFor(function () {
     var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
-    return faviconImage.indexOf("identity-icons-generic.png") !== -1;
-  }, "There is a globe image");
+    return faviconImage.indexOf("identity-icons-https-mixed-display.png") !== -1;
+  }, "There is a warning image");
 
   controller.click(favicon);
 
@@ -39,3 +39,4 @@ function testMixedContentPage() {
                                    "identity.mixed_display_loaded");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");
 }
+
