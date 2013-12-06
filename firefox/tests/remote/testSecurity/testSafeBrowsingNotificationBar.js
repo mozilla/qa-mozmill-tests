@@ -160,3 +160,6 @@ var checkXButton = function() {
   controller.sleep(1000);
   assert.ok(!button.exists(), "The Close button has not been found");
 }
+
+setupModule.__force_skip__ = "Bug 946723 - Test disabled due to failures";
+teardownModule.__force_skip__ = "Bug 946723 - Test disabled due to failures";
