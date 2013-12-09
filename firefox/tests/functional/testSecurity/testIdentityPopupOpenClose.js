@@ -52,7 +52,3 @@ var testIdentityPopupOpenClose = function() {
   }, "Identity popup has been closed");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testIdentityPopupOpenClose.meta = {litmusids : [8579]};

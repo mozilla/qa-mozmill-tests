@@ -5,6 +5,7 @@
 // Include required modules
 var {expect} = require("../../../lib/assertions");
 var toolbars = require("../toolbars");
+var utils = require("../utils");
 
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
@@ -20,9 +21,30 @@ var testLocationBarAPI = function() {
   var contextMenu = locationBar.getElement({type: "contextMenu"});
   expect.equal(contextMenu.getNode().localName, "menupopup");
 
-  var contextMenuEntry = locationBar.getElement({type: "contextMenu_entry", subtype: "paste"});
+  var contextMenuEntry = locationBar.getElement({type: "contextMenu_entry",
+                                                subtype: "paste"});
   expect.equal(contextMenuEntry.getNode().getAttribute("cmd"), "cmd_paste");
 
   var reloadButton = locationBar.getElement({type: "reloadButton"});
   expect.equal(reloadButton.getNode().command, "Browser:ReloadOrDuplicate");
+
+  var urlbar = locationBar.getElement({type: "urlbar"});
+  expect.equal(urlbar.getNode().localName, "textbox",
+               "URL bar has been found");
+
+  var favicon = locationBar.getElement({type: "favicon"});
+  expect.equal(favicon.getNode().localName, "image", "Favicon has been found");
+
+  var historyDropMarker = locationBar.getElement({type: "historyDropMarker"});
+  expect.equal(historyDropMarker.getNode().localName, "dropmarker",
+               "History drop marker has been found");
+
+  var starButton = locationBar.getElement({type: "starButton"});
+  expect.equal(starButton.getNode().localName,
+               utils.australis.isAustralis() ? "toolbarbutton" : "image",
+               "Star button has been found");
+
+  var stopButton = locationBar.getElement({type: "stopButton"});
+  expect.equal(stopButton.getNode().localName, "toolbarbutton",
+               "Stop button has been found");
 }

@@ -297,7 +297,7 @@ engineManager.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "enableSuggest");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -610,7 +610,7 @@ searchBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + event.type);
+        assert.fail("Unknown element type - " + event.type);
     }
 
     // Check if the search bar has the focus
@@ -685,7 +685,7 @@ searchBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -706,20 +706,17 @@ searchBar.prototype = {
 
     // Bug 542990
     // Bug 392633
-    // Typing too fast can cause several issue like the suggestions not to appear.
-    // Lets type the letters one by one and wait for the popup or the timeout
-    for (var i = 0; i < searchTerm.length; i++) {
-      try {
-        this.type(searchTerm[i]);
-        assert.waitFor(function () {
-          return popup.getNode().state === 'open' &&
-                 autoCompleteController.searchStatus ===
-                 autoCompleteController.STATUS_COMPLETE_MATCH;
-        }, "", TIMEOUT_REQUEST_SUGGESTIONS);
-      }
-      catch (e) {
-        // We are not interested in handling the timeout for now
-      }
+    // Type search term and wait for the popup or the timeout
+    try {
+      this.type(searchTerm);
+      assert.waitFor(function () {
+        return popup.getNode().state === 'open' &&
+               autoCompleteController.searchStatus ===
+               autoCompleteController.STATUS_COMPLETE_MATCH;
+      }, "", TIMEOUT_REQUEST_SUGGESTIONS);
+    }
+    catch (e) {
+      // We are not interested in handling the timeout for now
     }
 
     // Get suggestions in an array if the popup with suggestions is opened

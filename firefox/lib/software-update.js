@@ -394,8 +394,7 @@ softwareUpdate.prototype = {
       case WIZARD_PAGES.finishedBackground:
         break;
       default:
-        throw new Error(arguments.callee.name + "No handler for wizard page: " +
-                        this.currentPage);
+        assert.fail("No handler for wizard page: " + this.currentPage);
     }
 
     // Calculate the duration in ms
@@ -463,7 +462,7 @@ softwareUpdate.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "downloadProgress");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;

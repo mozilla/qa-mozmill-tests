@@ -34,3 +34,6 @@ if (persisted.skipTests) {
   setupModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
   teardownModule.__force_skip__ = "Architecture changes only supported on OSX 10.6 or newer";
 }
+
+setupModule.__force_skip__ = "Bug 944717 - failing to restart in 32 bit mode.";
+teardownModule.__force_skip__ = "Bug 944717 - failing to restart in 32 bit mode.";
