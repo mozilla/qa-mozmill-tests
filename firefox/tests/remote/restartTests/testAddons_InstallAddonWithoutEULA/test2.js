@@ -6,7 +6,7 @@
 
 // Include required modules
 var addons = require("../../../../lib/addons");
-var {assert} = require("../../../../../lib/assertions");
+var { assert } = require("../../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
@@ -24,31 +24,28 @@ function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
   prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
 
-  delete persisted.theme;
+  delete persisted.addon;
 
-  aModule.addonsManager.close();
   addons.resetDiscoveryPaneURL();
+  aModule.addonsManager.close();
 
-  // Bug 886811
-  // Mozmill 1.5 does not have the stopApplication method on the controller.
+  // Bug 867217
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("stopApplication" in aModule.controller) {
+  if ("restartApplication" in aModule.controller) {
     aModule.controller.stopApplication(true);
   }
 }
 
-/*
- * Verify we changed to the default theme
- */
-function testChangedThemeToDefault() {
+function testInstallAddonWithoutEULA() {
   addonsManager.open();
 
-  // Verify the default theme is active
-  var defaultTheme = addonsManager.getAddons({attribute: "value",
-                                              value: persisted.theme[1].id})[0];
+  addonsManager.setCategory({
+    category: addonsManager.getCategoryById({id: "extension"})
+  });
 
-  assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
+  var addon = addonsManager.getAddons({attribute: "name",
+                                       value: persisted.addon.name})[0];
+  assert.ok(addonsManager.isAddonInstalled({addon: addon}),
+            "The add-on has been correctly installed");
 }
-
-setupModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
-teardownModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
