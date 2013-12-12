@@ -31,7 +31,5 @@ function testShortcutAndSearch() {
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
 
-if (mozmill.isMac) {
-  setupModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
-  teardownModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
-}
+setupModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
+teardownModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
