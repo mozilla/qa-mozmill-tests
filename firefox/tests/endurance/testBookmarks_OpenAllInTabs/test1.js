@@ -10,6 +10,7 @@ var endurance = require("../../../lib/endurance");
 var places = require("../../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -28,12 +29,14 @@ function setupModule(aModule) {
                             aModule.enduranceManager.entities + 1);
 
   // Bookmark some pages in a custom folder
-  setupBookmarks();
+  setupBookmarks(aModule.controller);
 
 }
 
 function teardownModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
+
+  toolbars.toggleBookmarksToolbar(aModule.controller, false);
 
   // Bug 839996
   // This is a workaround for moment since there is no event to wait for before
@@ -47,7 +50,7 @@ function teardownModule(aModule) {
  */
 function testOpenAllBookmarksInTabs() {
   var testFolder = new elementslib.Selector(controller.window.document,
-                                            ".bookmark-item[label='Test Folder']");
+                                            "toolbarbutton.bookmark-item[label='Test Folder']");
   controller.waitForElement(testFolder);
   var openAllInTabs = new elementslib.ID(controller.window.document,
                                          "placesContext_openContainer:tabs");
@@ -67,16 +70,8 @@ function testOpenAllBookmarksInTabs() {
 /*
  * Insert bookmarks in a custom folder under Bookmarks Toolbar
  */
-function setupBookmarks() {
-  // Enable bookmarks toolbar
-  var navbar = new elementslib.ID(controller.window.document, "nav-bar");
-
-  controller.rightClick(navbar, navbar.getNode().boxObject.width / 2, 2);
-
-  var toggle = new elementslib.ID(controller.window.document,
-                                  "toggle_PersonalToolbar");
-  controller.mouseDown(toggle);
-  controller.mouseUp(toggle);
+function setupBookmarks(aController) {
+  toolbars.toggleBookmarksToolbar(aController, true);
 
   // Create a custom folder in Bookmarks Toolbar
   var toolbarFolder = places.bookmarksService.toolbarFolder;
