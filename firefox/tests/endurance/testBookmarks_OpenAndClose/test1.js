@@ -31,6 +31,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  toolbars.toggleBookmarksToolbar(aModule.controller, false);
   aModule.tabBrowser.closeAllTabs();
   places.restoreDefaultBookmarks();
 }
@@ -41,14 +42,17 @@ function teardownModule(aModule) {
 function testOpenAndCloseAllBookmarks() {
   enduranceManager.run(function () {
     var testFolder = new elementslib.Selector(controller.window.document,
-                                              ".bookmark-item[label='" +
+                                              "toolbarbutton.bookmark-item[label='" +
                                               BOOKMARK_FOLDER_NAME + "']");
+    assert.waitFor(function () {
+      return utils.isDisplayed(controller, testFolder);
+    }, BOOKMARK_FOLDER_NAME + " has loaded")
 
     enduranceManager.loop(function () {
       if (enduranceManager.currentEntity > 1) {
         tabBrowser.openTab();
       }
-      controller.waitThenClick(testFolder);
+      controller.click(testFolder);
 
       var bookmark = new elementslib.Selector(controller.window.document,
                                               "*[label='Test Bookmark " +
@@ -71,7 +75,7 @@ function testOpenAndCloseAllBookmarks() {
  * Insert bookmarks in a custom folder under Bookmarks Toolbar
  */
 function setupBookmarks(aController) {
-  toolbars.enableBookmarksToolbar(aController);
+  toolbars.toggleBookmarksToolbar(aController, true);
 
   // Create a custom folder in Bookmarks Toolbar
   var toolbarFolder = places.bookmarksService.toolbarFolder;
