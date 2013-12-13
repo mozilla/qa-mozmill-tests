@@ -571,12 +571,14 @@ locationBar.prototype = {
 }
 
 /**
- * Enable bookmarks toolbar
+ * Toogle bookmarks toolbar
  *
  * @param {MozmillController} aController
  *        MozMillController of the window to operate on
+ * @param {Boolean} aState
+ *        Expected state of the BookmarksToolbar
  */
-function enableBookmarksToolbar(aController) {
+function toggleBookmarksToolbar(aController, aState) {
   var navbar = new elementslib.ID(aController.window.document, "nav-bar");
 
   aController.rightClick(navbar, navbar.getNode().boxObject.width / 2, 2);
@@ -585,6 +587,14 @@ function enableBookmarksToolbar(aController) {
                                   "toggle_PersonalToolbar");
   aController.mouseDown(toggle);
   aController.mouseUp(toggle);
+
+  // Check that the Bookmark toolbar is in the correct state
+  var state = !!aState;
+  var bookmakrsToolbar = new elementslib.ID(aController.window.document,
+                                            "PersonalToolbar");
+  assert.waitFor(function () {
+    return bookmakrsToolbar.getNode().getAttribute("collapsed") === String(!state);
+  }, "Bookmarks Toolbar has " + ((state) ? "opened" : "closed"));
 }
 
 // Export of classes
@@ -593,4 +603,4 @@ exports.editBookmarksPanel = editBookmarksPanel;
 exports.autoCompleteResults = autoCompleteResults;
 
 // Export of functions
-exports.enableBookmarksToolbar = enableBookmarksToolbar;
+exports.toggleBookmarksToolbar = toggleBookmarksToolbar;
