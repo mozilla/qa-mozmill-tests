@@ -460,8 +460,14 @@ function isDisplayed(controller, elem) {
       break;
     default:
       var style = controller.window.getComputedStyle(element, '');
-      var state = style.getPropertyValue('visibility');
-      visible = (state === 'visible');
+      var visibility = style.getPropertyValue('visibility');
+      var display = style.getPropertyValue('display');
+      var width = parseInt(style.getPropertyValue('width'), 10);
+      var height = parseInt(style.getPropertyValue('height'), 10);
+
+      visible = (display !== 'none') &&
+                (visibility === 'visible') &&
+                (width > 0) && (height > 0)
   }
 
   return visible;
