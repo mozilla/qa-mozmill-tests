@@ -6,7 +6,7 @@
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-const TEST_DATA = "ftp://ftp.mozilla.org/pub/";
+const TEST_DATA = "ftp://ftp.mozqa.com/";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -17,16 +17,15 @@ var testNavigateFTP = function () {
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  var firefox = new elementslib.Link(controller.tabs.activeTab, 'firefox');
-  controller.waitThenClick(firefox);
+  var dataLink = new elementslib.Link(controller.tabs.activeTab, 'data');
+  controller.click(dataLink);
   controller.waitForPageLoad();
 
-  var nightly = new elementslib.Link(controller.tabs.activeTab, 'nightly');
-  controller.waitThenClick(nightly);
+  var up = new elementslib.Selector(controller.tabs.activeTab, '.up');
+  controller.click(up);
   controller.waitForPageLoad();
 
-  var latestLink = new elementslib.Link(controller.tabs.activeTab, 'latest-trunk');
-  controller.waitForElement(latestLink);
+  controller.waitForElement(dataLink);
 }
 
 
