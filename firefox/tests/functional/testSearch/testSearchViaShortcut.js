@@ -30,6 +30,3 @@ function testShortcutAndSearch() {
   searchBar.focus({type: "shortcut"});
   searchBar.search({text: "Mozilla", action: "goButton"});
 }
-
-setupModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
-teardownModule.__force_skip__ = "Bug 949428 - Test disabled due to constant failures";
