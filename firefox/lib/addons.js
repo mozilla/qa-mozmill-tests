@@ -131,8 +131,15 @@ AddonsManager.prototype = {
 
 
     // Add event listener to wait until the view has been loaded
-    var self = { loaded: false };
+    var self = {
+      loaded: false,
+      transitioned: false
+    };
     function onViewLoaded() { self.loaded = true; }
+    function checkTabTransitioned() { self.transitioned = true; }
+
+    this._tabBrowser._tabs.getNode().addEventListener("transitionend",
+                                                      checkTabTransitioned);
     this.controller.window.document.addEventListener("ViewChanged",
                                                      onViewLoaded, false);
 
@@ -150,6 +157,10 @@ AddonsManager.prototype = {
                           event.type);
       }
 
+      assert.waitFor(function () {
+        return self.transitioned;
+      }, "Add-ons Manager has been opened");
+
       if (waitFor) {
         tab = this.waitForOpened();
 
@@ -164,6 +175,8 @@ AddonsManager.prototype = {
     finally {
       this.controller.window.document.removeEventListener("ViewChanged",
                                                           onViewLoaded, false);
+      this._tabBrowser._tabs.getNode().removeEventListener("transitionend",
+                                                           checkTabTransitioned);
     }
 
     return tab;
