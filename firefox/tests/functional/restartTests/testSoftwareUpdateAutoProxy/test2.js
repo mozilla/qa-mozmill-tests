@@ -6,7 +6,12 @@
 
 // Include required modules
 var {expect} = require("../../../../../lib/assertions");
+var prefs = require("../../../../lib/prefs");
 var softwareUpdate = require("../../../../lib/software-update");
+
+const BROWSER_HOME_PAGE = 'browser.startup.homepage';
+const BROWSER_STARTUP_PAGE = 'browser.startup.page';
+const PROXY_TYPE = 'network.proxy.type';
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -17,6 +22,10 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(BROWSER_HOME_PAGE);
+  prefs.preferences.clearUserPref(BROWSER_STARTUP_PAGE);
+  prefs.preferences.clearUserPref(PROXY_TYPE);
+
   // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
