@@ -158,7 +158,7 @@ AddonsManager.prototype = {
 
       assert.waitFor(function () {
         return self.transitioned;
-      }, "Add-ons Manager has been opened", timeout, undefined, this);
+      }, "Add-ons Manager has been opened");
 
       if (waitFor) {
         tab = this.waitForOpened();
