@@ -13,6 +13,7 @@ var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";
 
 const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
@@ -38,6 +39,10 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  // Bug 951138
+  // Mozprofile doesn't clear this pref while it is clearing all permissions
+  prefs.preferences.clearUserPref(PREF_XPI_WHITELIST);
+
   tabs.closeAllTabs(aModule.controller);
 
   // Bug 867217
