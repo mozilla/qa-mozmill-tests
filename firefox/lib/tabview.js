@@ -65,10 +65,26 @@ tabView.prototype = {
    * Open the Tab View
    */
   open : function tabView_open() {
-    // Open via keyboard shortcut
-    var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
-    this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
-    this.waitForOpened();
+    // Add event listener to wait until the tabview has been opened
+    var self = { opened: false };
+    function checkOpened() { self.opened = true; }
+    this._controller.window.addEventListener("tabviewshown", checkOpened);
+
+    try {
+      // Open via keyboard shortcut
+      var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
+      this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
+
+      assert.waitFor(function () {
+        return self.opened;
+      }, "TabView has been opened.");
+
+      this._groupItemsObject = this._tabViewObject._window.GroupItems;
+      this._tabItemsObject = this._tabViewObject._window.TabItems;
+    }
+    finally {
+      this._controller.window.removeEventListener("tabviewshown", checkOpened);
+    }
 
     this._tabView = this.getElement({type: "tabView"});
     this._tabViewDoc = this._tabView.getNode().webNavigation.document;
@@ -96,59 +112,31 @@ tabView.prototype = {
   },
 
   /**
-   * Wait until the Tab View has been opened
-   */
-  waitForOpened : function tabView_waitForOpened() {
-    // Add event listener to wait until the tabview has been opened
-    var self = { opened: false };
-    function checkOpened() { self.opened = true; }
-    this._controller.window.addEventListener("tabviewshown", checkOpened, false);
-
-    try {
-      assert.waitFor(function () {
-        return self.opened == true;
-      }, "TabView is not open.");
-
-      this._groupItemsObject = this._tabViewObject._window.GroupItems;
-      this._tabItemsObject = this._tabViewObject._window.TabItems;
-    }
-    finally {
-      this._controller.window.removeEventListener("tabviewshown", checkOpened, false);
-    }
-  },
-
-  /**
    * Close the Tab View
    */
   close : function tabView_close() {
-    // Close via keyboard shortcut
-    var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
-    this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
-    this.waitForClosed();
-
-    this._tabView = null;
-    this._tabViewDoc = this._controller.window.document;
-  },
-
-  /**
-   * Wait until the Tab View has been closed
-   */
-  waitForClosed : function tabView_waitForClosed() {
     // Add event listener to wait until the tabview has been closed
     var self = { closed: false };
     function checkClosed() { self.closed = true; }
     this._controller.window.addEventListener("tabviewhidden", checkClosed, false);
 
     try {
+      // Close via keyboard shortcut
+      var cmdKey = utils.getEntity(this.dtds, "tabView.commandkey");
+      this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
+
       assert.waitFor(function () {
-        return self.closed == true;
-      }, "TabView is still open.");
-    } finally {
+        return self.closed;
+      }, "TabView has been closed.");
+    }
+    finally {
       this._controller.window.removeEventListener("tabviewhidden", checkClosed, false);
     }
 
     this._groupItemsObject = null;
     this._tabItemsObject = null;
+    this._tabView = null;
+    this._tabViewDoc = this._controller.window.document;
   },
 
 
@@ -397,6 +385,8 @@ tabView.prototype = {
   /**
    * Open a new tab
    *
+   * This will determine the current tab view to close
+   *
    * @param {String} [aEventType="menu"] Type of event which triggers the action
    *   <dl>
    *     <dt>menu</dt>
@@ -408,19 +398,65 @@ tabView.prototype = {
   openTab : function tabView_openTab(aEventType) {
     var type = aEventType || "menu";
 
-    switch (type) {
-      case "menu":
-        this._controller.mainMenu.click("#menu_newNavigatorTab");
-        break;
-      case "shortcut":
-        var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
-        this._controller.keypress(null, cmdKey, {accelKey: true});
-        break;
-      default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
+    // Add event listener to wait until the tabview has been closed
+    var self = { closed: false };
+    function checkClosed() { self.closed = true; }
+    this._controller.window.addEventListener("tabviewhidden", checkClosed);
+
+    try {
+      switch (type) {
+        case "menu":
+          this._controller.mainMenu.click("#menu_newNavigatorTab");
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
+          this._controller.keypress(null, cmdKey, {accelKey: true});
+          break;
+        default:
+          assert.fail("Unknown event type - " + type);
+      }
+
+      assert.waitFor(function () {
+        return self.closed;
+      }, "TabView has been closed.");
+    }
+    finally {
+      this._controller.window.removeEventListener("tabviewhidden", checkClosed);
     }
 
-    this.waitForClosed();
+    this._groupItemsObject = null;
+    this._tabItemsObject = null;
+  },
+
+  /**
+   * Select a tab view at Index
+   *
+   * @param {number} aIndex
+   *        Index of the tab we switch to
+   * @param {string} [aFilter]
+   *        Type of filter to apply
+   *        (active, group)
+   */
+  selectTabAtIndex : function tabView_selectTabAtIndex(aIndex, aFilter) {
+    var tab =  this.getTabs({filter: aFilter})[aIndex];
+    assert.ok(tab.exists(), "Tab has been found.");
+
+    // Add event listener to wait until the tabview has been changed
+    var self = { hidden: false };
+    function checkChanged() { self.hidden = true; }
+    this._controller.window.addEventListener("tabviewhidden", checkChanged, false);
+
+    try {
+      tab.click();
+
+      // Wait for the selected tab to display
+      assert.waitFor(function () {
+        return self.hidden;
+      }, "TabView has been hidden.");
+    }
+    finally {
+      this._controller.window.removeEventListener("tabviewhidden", checkChanged, false);
+    }
   },
 
   /**

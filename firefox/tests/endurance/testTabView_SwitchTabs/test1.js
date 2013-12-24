@@ -48,20 +48,19 @@ function testSwitchTabs() {
     activeTabView.open();
     enduranceManager.addCheckpoint("Tab Groups view now open");
 
-    // Switch to the tab which is not active
+    // Switch to the tab which is not active under the "active group"
     enduranceManager.addCheckpoint("Switch to the inactive tab");
     var activeTab = activeTabView.getTabs({filter: "active"})[0];
     var allTabs = activeTabView.getTabs();
 
-    // Select the tab which is NOT active
+    // Select the tab which is NOT active under the "active group"
     if (activeTab.getNode() === allTabs[0].getNode()) {
-        activeTabView.controller.click(allTabs[1]);
-    } else {
-        activeTabView.controller.click(allTabs[0]);
+      activeTabView.selectTabAtIndex(1, "active");
+    }
+    else {
+      activeTabView.selectTabAtIndex(0, "active");
     }
 
-    // Wait for the selected tab to display
-    activeTabView.waitForClosed();
     enduranceManager.addCheckpoint("Selected tab is now displayed");
   });
 }
