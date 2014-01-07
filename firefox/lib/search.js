@@ -31,7 +31,7 @@ const NAV_BAR             = '/id("main-window")/id("tab-view-deck")/[0]' +
 const NAV_BAR_TARGET      = NAV_BAR         + utils.australis.getElement("nav-bar-wrapper");
 const SEARCH_BAR          = NAV_BAR_TARGET  + '/id("search-container")/id("searchbar")';
 const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
-const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[0]/anon({"anonid":"searchbar-engine-button"})';
+const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[1]/anon({"anonid":"searchbar-engine-button"})';
 const SEARCH_POPUP        = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
 const SEARCH_INPUT        = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
                                               '/anon({"anonid":"textbox-input-box"})' +
