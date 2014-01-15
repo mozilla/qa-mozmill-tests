@@ -170,7 +170,7 @@ modalDialog.prototype = {
     this._observer = new mdObserver(this._window, aCallback);
 
     this._timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    this._timer.init(this._observer, DELAY_CHECK, Ci.nsITimer.TYPE_ONE_SHOT);
+    this._timer.init(this._observer, 0, Ci.nsITimer.TYPE_ONE_SHOT);
   },
 
   /**
