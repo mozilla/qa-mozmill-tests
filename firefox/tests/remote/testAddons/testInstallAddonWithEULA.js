@@ -87,3 +87,6 @@ function testInstallAddonWithEULA() {
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),
             "The add-on has been correctly installed");
 }
+
+setupModule.__force_skip__ = "Bug 962514 - Test fails with client process shutdown unsuccessful";
+teardownModule.__force_skip__ = "Bug 962514 - Test fails with client process shutdown unsuccessful";
