@@ -17,7 +17,7 @@
 
       if (navigator.geolocation)
         navigator.geolocation.getCurrentPosition(handlePosition, handleError,
-                                                 {enableHighAccuracy: false, timeout: 6000});
+                                                 {enableHighAccuracy: false, timeout: 30000});
       else
         result.innerHTML = "not available";
     }
