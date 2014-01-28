@@ -79,6 +79,3 @@ var testUndoTabFromContextMenu = function() {
   assert.ok(contextMenuItem.getNode().disabled, "Undo Close Tab is disabled");
   utils.closeContentAreaContextMenu(controller);
 }
-
-setupModule.__force_skip__ = "Bug 923424 - Test disabled due to failures";
-teardownModule.__force_skip__ = "Bug 923424 - Test disabled due to failures";
