@@ -56,7 +56,7 @@ var testSetMasterPassword = function() {
   // After logging in, remember the login information
   var button = locationBar.getNotificationElement(
                  "password-save-notification",
-                 '/anon({"anonid":"button"})'
+                 {type: "anonid", value: "button"}
                );
 
   expect.ok(utils.isDisplayed(controller, button),

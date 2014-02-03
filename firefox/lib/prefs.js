@@ -194,7 +194,7 @@ preferencesDialog.prototype = {
                                       '/{"pane":"' + spec.value + '"}');
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;

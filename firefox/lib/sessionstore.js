@@ -101,7 +101,7 @@ aboutSessionRestore.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "tabList");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -226,7 +226,7 @@ function undoClosedTab(controller, event)
 
   switch (event.type) {
     case "menu":
-      throw new Error("Menu gets build dynamically and cannot be accessed.");
+      assert.fail("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
       var cmdKey = utils.getEntity(dtds, "tabCmd.commandkey");
@@ -255,7 +255,7 @@ function undoClosedWindow(controller, event)
 
   switch (event.type) {
     case "menu":
-      throw new Error("Menu gets build dynamically and cannot be accessed.");
+      assert.fail("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
       var cmdKey = utils.getEntity(dtds, "newNavigatorCmd.key");

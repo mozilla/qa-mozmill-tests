@@ -418,7 +418,7 @@ tabView.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
+        assert.fail("Unknown event type - " + type);
     }
 
     this.waitForClosed();
@@ -588,8 +588,7 @@ tabView.prototype = {
         }, this);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " +
-                        aSpec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return nodeCollector.elements;

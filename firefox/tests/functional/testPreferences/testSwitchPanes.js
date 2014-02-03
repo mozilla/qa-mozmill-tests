@@ -50,7 +50,3 @@ var prefDialogCallback = function(controller) {
   prefDialog.close();
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testPreferencesPanes.meta = {litmusids : [8013]};

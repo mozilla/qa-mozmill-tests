@@ -49,7 +49,3 @@ var testAddBookmarkToBookmarksMenu = function() {
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testAddBookmarkToBookmarksMenu.meta = {litmusids : [8154]};

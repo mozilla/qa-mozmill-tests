@@ -83,7 +83,3 @@ function checkSecurityTab(controller) {
   controller.keypress(null, 'VK_ESCAPE', {});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testLarryGrey.meta = {litmusids : [8806]};

@@ -165,7 +165,7 @@ var australis = {
                                         : '/{"class":"messageCloseButton tabbable"}';
         break;
       case "nav-bar-wrapper" :
-        nodeElem = (this.isAustralis()) ? '/id("nav-bar-customizationtarget")' : "";
+        nodeElem = (this.isAustralis()) ? '/id("nav-bar-customization-target")' : "";
         break;
       case "tabs" :
         nodeElem = (this.isAustralis()) ? '/id("content-deck")' : "";
@@ -174,7 +174,7 @@ var australis = {
         nodeElem = (this.isAustralis()) ? '/id("urlbar-wrapper")' : "";
         break;
       default :
-        throw new Error(arguments.callee.name + ": Unknown element type - " + aSpec);
+        assert.fail("Unknown element type - " + aSpec);
     }
     return nodeElem;
   },
@@ -341,7 +341,7 @@ function getProperty(url, prefName) {
     return bundle.GetStringFromName(prefName);
   }
   catch (ex) {
-    throw new Error(arguments.callee.name + ": Unknown property - " + prefName);
+    assert.fail("Unknown property - " + prefName);
   }
 }
 
@@ -382,7 +382,7 @@ function handleWindow(type, text, callback, close) {
       func_ptr = mozmill.utils.getWindowByTitle;
       break;
     default:
-      throw new Error(arguments.callee.name + ": Unknown opener type - " + type);
+      assert.fail("Unknown opener type - " + type);
   }
 
   try {

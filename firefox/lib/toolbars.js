@@ -11,18 +11,8 @@
 
 // Include required modules
 var { assert } = require("../../lib/assertions");
+var domUtils = require("../../lib/dom-utils");
 var utils = require("utils");
-
-const AUTOCOMPLETE_POPUP = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
-const NOTIFICATION_POPUP = '/id("main-window")/id("mainPopupSet")/id("notification-popup")';
-const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/[0]' +
-                         '/id("navigator-toolbox")/id("nav-bar")' +
-                         utils.australis.getElement("nav-bar-wrapper") + '/id("urlbar-container")';
-const URLBAR_INPUTBOX = URLBAR_CONTAINER +
-                        utils.australis.getElement('urlbar-wrapper') +
-                        '/id("urlbar")/anon({"anonid":"textbox-container"})' +
-                        '/anon({"anonid":"textbox-input-box"})';
-const CONTEXT_MENU = URLBAR_INPUTBOX + '/anon({"anonid":"input-box-contextmenu"})';
 
 /**
  * Constructor
@@ -134,7 +124,7 @@ autoCompleteResults.prototype = {
         description = result.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
         break;
       default:
-        throw new Error(arguments.callee.name + ": Type unknown - " + type);
+        assert.fail("Type unknown - " + type);
     }
 
     let values = [ ];
@@ -161,37 +151,58 @@ autoCompleteResults.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
-   *        type: General type information
-   *        subtype: Specific element or property
-   *        value: Value of the element or property
-   * @returns Element which has been created
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Element which has been found
    * @type {ElemBase}
    */
-  getElement : function autoCompleteResults_getElement(spec) {
-    var elem = null;
+  getElement : function autoCompleteResults_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Elements which have been found
+   * @type {array of ElemBase}
+   */
+  getElements : function autoCompleteResults_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch (spec.type) {
-      /**
-       * subtype: subtype to match
-       * value: value to match
-       */
       case "popup":
-        elem = new elementslib.Lookup(this._controller.window.document, AUTOCOMPLETE_POPUP);
+        nodeCollector.queryNodes("#PopupAutoCompleteRichResult");
         break;
       case "results":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      AUTOCOMPLETE_POPUP + '/anon({"anonid":"richlistbox"})');
+        nodeCollector.root = this.getElement({type: "popup"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "richlistbox");
         break;
       case "result":
-        elem = new elementslib.Elem(this._results.getNode().getItemAtIndex(spec.value));
-        break;
+        var elem = new elementslib.Elem(this.getElement({type: "results"}).
+                                        getNode().getItemAtIndex(spec.value));
+        return [elem];
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
-    return elem;
+    return nodeCollector.elements;
   },
 
   /**
@@ -199,6 +210,7 @@ autoCompleteResults.prototype = {
    *
    * @param {number} index
    *        Index of the result to return
+   *
    * @returns Autocomplete result element
    * @type {ElemBase}
    */
@@ -305,7 +317,7 @@ editBookmarksPanel.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "editBMPanel_tagsSelectorExpander");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -424,7 +436,7 @@ locationBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unkown event type - " + event.type);
+        assert.fail("Unkown event type - " + event.type);
     }
 
     // Wait until the location bar has been focused
@@ -448,80 +460,101 @@ locationBar.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
-   *        type: General type information
-   *        subtype: Specific element or property
-   *        value: Value of the element or property
-   * @returns Element which has been created
-   * @type ElemBase
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Element which has been found
+   * @type {ElemBase}
    */
-  getElement : function locationBar_getElement(spec) {
-    var elem = null;
+  getElement : function locationBar_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Elements which have been found
+   * @type {array of ElemBase}
+   */
+  getElements : function locationBar_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch(spec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
        */
+      case "bookmarksMenuButton":
+        return [new elementslib.ID(root, "bookmarks-menu-button")];
       case "contextMenu":
-        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU);
+        nodeCollector.root = this.getElement({type: "urlbar_input"}).getNode().parentNode;
+        nodeCollector.queryAnonymousNode("anonid", "input-box-contextmenu");
         break;
       case "contextMenu_entry":
-        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU +
-                                      '/{"cmd":"cmd_' + spec.subtype + '"}');
+        nodeCollector.root = this.getElement({type: "contextMenu"}).getNode();
+        nodeCollector.queryNodes("menuitem").filterByDOMProperty("cmd",
+                                                                 "cmd_" + spec.subtype);
         break;
       case "favicon":
-        elem = new elementslib.ID(this._controller.window.document, "page-proxy-favicon");
-        break;
+        return [new elementslib.ID(root, "page-proxy-favicon")];
       case "feedButton":
-        elem = new elementslib.ID(this._controller.window.document, "feed-button");
-        break;
+        return [new elementslib.ID(root, "feed-button")];
       case "goButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-go-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-go-button")];
       case "historyDropMarker":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      URLBAR_CONTAINER + '/id("urlbar")/anon({"anonid":"historydropmarker"})');
+        nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "historydropmarker");
         break;
       case "identityBox":
-        elem = new elementslib.ID(this._controller.window.document, "identity-box");
-        break;
+        return [new elementslib.ID(root, "dentity-box")];
       case "identityPopup":
-        elem = new elementslib.ID(this._controller.window.document, "identity-popup-encryption");
-        break;
+        return [new elementslib.ID(root, "identity-popup-encryption")];
       case "notification_element":
-        elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP +
-                                      spec.subtype);
+        nodeCollector.queryNodes("#" + spec.subtype);
         break;
       case "notificationIcon":
-        elem = new elementslib.ID(this._controller.window.document,
-                                  spec.subtype + "-notification-icon");
-        break;
+        return [new elementslib.ID(root, spec.subtype + "-notification-icon")];
       case "notification_popup":
-        elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP);
-        break;
+        return [new elementslib.ID(root, "notification-popup")];
       case "reloadButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-reload-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-reload-button")];
       case "starButton":
-        elem = new elementslib.ID(this._controller.window.document, "star-button");
-        break;
+        if (utils.australis.isAustralis()) {
+          nodeCollector.root = this.getElement({type: "bookmarksMenuButton"}).getNode();
+          nodeCollector.queryAnonymousNode("anonid", "button");
+          break;
+        }
+
+        return [new elementslib.ID(root, "star-button")];
       case "stopButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-stop-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-stop-button")];
       case "urlbar":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar");
-        break;
+        return [new elementslib.ID(root, "urlbar")];
       case "urlbar_input":
-        elem = new elementslib.Lookup(this._controller.window.document, URLBAR_INPUTBOX +
-                                      '/anon({"anonid":"input"})');
+        nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "input");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
-    return elem;
+    return nodeCollector.elements;
   },
 
   /**
@@ -539,19 +572,25 @@ locationBar.prototype = {
    *
    * @param {string} aType
    *        Type of the notification bar to look for
-   * @param {string} aLookupString
-   *        Lookup string of the notification bar's child element
-   *        [optional - default: ""]
+   * @param {object} [aChildElement=""]
+   *        Configuration of child element to retrieve from notification element
+   * @config {string} [type]  Type of attribute of child we are looking for
+   * @config {string} [value] Value of attribute of child we are looking for
    *
-   * @return The created element
+   * @return The found element
    * @type {ElemBase}
    */
-  getNotificationElement : function locationBar_getNotificationElement(aType, aLookupString) {
-    var lookup = '/id("' + aType + '")';
-    lookup = aLookupString ? lookup + aLookupString : lookup;
+  getNotificationElement : function locationBar_getNotificationElement(aType, aChildElement) {
+    var notification = this.getElement({type: "notification_element",
+                                       subtype: aType,
+                                       parent: this.getNotification()});
+    if (!aChildElement)
+      return notification;
 
-    // Get the notification and fetch the child element if wanted
-    return this.getElement({type: "notification_element", subtype: lookup});
+    var nodeCollector = new domUtils.nodeCollector(notification.getNode());
+    nodeCollector.queryAnonymousNode(aChildElement.type, aChildElement.value);
+
+    return nodeCollector.elements[0];
   },
 
   /**
