@@ -20,5 +20,3 @@ function testQuitApplication() {
  * Map test functions to moztrap tests
  */
 testQuitApplication.meta = {moztrap_case: 333};
-
-setupModule.__force_skip__ = "'Profile already in use' message causes profile to remain";
