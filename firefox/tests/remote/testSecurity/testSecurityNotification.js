@@ -29,13 +29,18 @@ var testSecNotification = function() {
   controller.waitForPageLoad();
 
   var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
+
+  expect.waitFor(function () {
+    return identityBox.getNode().className === "verifiedIdentity";
+  }, "Identity is verified");
 
   // Go to an unsecure (HTTP) site
   controller.open(TEST_DATA[2]);
   controller.waitForPageLoad();
 
-  expect.equal(identityBox.getNode().className, "unknownIdentity", "Identity is unknown");
+  expect.waitFor(function () {
+    return identityBox.getNode().className === "unknownIdentity";
+  }, "Identity is unknown");
 
   // Go to a website which does not have a valid cert
   controller.open(TEST_DATA[0]);
@@ -61,6 +66,3 @@ var testSecNotification = function() {
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
                  "The error code is a SEC Expired certificate error");
 }
-
-setupModule.__force_skip__ = "Bug 922967 - Test failure Identity is unknown - " +
-                             "'verifiedIdentity' should equal 'unknownIdentity'";
