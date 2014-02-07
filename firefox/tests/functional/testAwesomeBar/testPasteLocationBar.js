@@ -53,11 +53,6 @@ var testPasteLocationBar = function() {
   // Get the urlbar input box, right click in it, and select paste from context menu
   var input = locationBar.getElement({type: "urlbar_input"});
   controller.rightClick(input);
-
-  // Bug 950254
-  // We need a sleep here until Mozmill 2.0.3 has been released
-  controller.sleep(0);
-
   var contextMenuEntry = locationBar.getElement({type: "contextMenu_entry", subtype: "paste"});
   controller.click(contextMenuEntry);
 
