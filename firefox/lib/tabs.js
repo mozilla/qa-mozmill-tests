@@ -40,7 +40,7 @@ var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
 var utils = require("utils");
 var prefs = require("prefs");
-
+var sessionStore = require("../lib/sessionstore");
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -867,6 +867,67 @@ tabBrowser.prototype = {
         this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
       }
     }
+  },
+
+  /**
+   * Method for reopening the last closed tab
+   *
+   * @param  {String} [aEventType="shortcut"]
+   *         Type of event which triggers the action
+   */
+  reopen: function tabBrowser_reopen(aEventType) {
+    var type = aEventType || "shortcut";
+    var self = {
+      opened: false,
+      transitioned: false
+    };
+
+    function checkTabOpened() { self.opened = true; }
+    function checkTabTransitioned() { self.transitioned = true; }
+
+    // Add event listener to wait until the tab has been opened
+    this._controller.window.addEventListener("TabOpen", checkTabOpened);
+    if (animationObserver.isAnimated) {
+      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
+    }
+    else {
+      self.transitioned = true;
+    }
+
+    var tabCount = sessionStore.getClosedTabCount(this._controller);
+    assert.notEqual(tabCount, 0,
+                    "'Recently Closed Tabs' sub menu has at least one entry");
+
+    try {
+      switch (type) {
+        case "contextMenu":
+          var contextMenu = this._controller.getMenu("#tabContextMenu");
+          contextMenu.select("#context_undoCloseTab", this.getTab());
+          break;
+        case "mainMenu":
+          this._controller.mainMenu.click("#historyUndoMenu .restoreallitem");
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
+          this._controller.keypress(null, cmdKey,
+                                    {accelKey: true, shiftKey: true});
+          break;
+        default:
+          assert.fail("Unknown event type - " + type);
+      }
+
+      assert.waitFor(() => {
+        return self.opened && self.transitioned;
+      }, "New tab has been opened");
+    }
+    finally {
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
+      if (animationObserver.isAnimated) {
+        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
+      }
+    }
+    assert.notEqual(tabCount, sessionStore.getClosedTabCount(this._controller),
+                    "'Recently Closed Tabs' sub menu entries have changed");
   },
 
   /**
