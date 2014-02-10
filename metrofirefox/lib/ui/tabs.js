@@ -22,6 +22,7 @@ function TabBrowser(aController) {
   }
 
   this._controller = aController;
+  this._tabsContainerNode = this.getElement({type: "tabsContainer"}).getNode();
 }
 
 /**
@@ -222,10 +223,18 @@ TabBrowser.prototype = {
   openTab : function tabBrowser_openTab(aEventType) {
     var type = aEventType || "shortcut";
 
-    // Add event listener to wait until the tab has been opened
-    var self = { opened: false };
+    // Add event listeners to wait until the tab has been opened
+    var self = {
+      opened: false,
+      animationend: false
+    };
+
     function checkTabOpened() { self.opened = true; }
-    this._controller.window.addEventListener("TabOpen", checkTabOpened, false);
+    function checkTabAnimationEnd() { self.animationend = true; }
+
+    // Add event listener to wait until the tab has been opened
+    this._controller.window.addEventListener("TabOpen", checkTabOpened);
+    this._tabsContainerNode.addEventListener("animationend", checkTabAnimationEnd);
 
     try {
       switch (type) {
@@ -252,11 +261,12 @@ TabBrowser.prototype = {
       }
 
       assert.waitFor(function () {
-        return self.opened;
+        return self.opened && self.animationend;
       }, "New tab has been opened");
     }
     finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened, false);
+      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
+      this._tabsContainerNode.removeEventListener("animationend", checkTabAnimationEnd);
     }
   },
 
@@ -283,10 +293,17 @@ TabBrowser.prototype = {
   closeTab : function tabBrowser_closeTab(aEventType, aIndex) {
     var type = aEventType || "shortcut";
 
-    // Add event listener to wait until the tab has been closed
-    var self = { closed: false };
+    // Add event listeners to wait until the tab has been closed
+    var self = {
+      closed: false,
+      animationend: false
+    };
+
     function checkTabClosed() { self.closed = true; }
+    function checkTabAnimationEnd() { self.animationend = true; }
+
     this._controller.window.addEventListener("TabClose", checkTabClosed, false);
+    this._tabsContainerNode.addEventListener("animationend", checkTabAnimationEnd);
 
     if (aIndex !== undefined) {
       this.selectedIndex = aIndex;
@@ -308,11 +325,12 @@ TabBrowser.prototype = {
       }
 
       assert.waitFor(function () {
-        return self.closed;
+        return self.closed && self.animationend;
       }, "Tab has been closed");
     }
     finally {
       this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
+      this._tabsContainerNode.removeEventListener("animationend", checkTabAnimationEnd);
     }
   }
 };
