@@ -67,3 +67,8 @@ function testVerifyDisplayGeolocationNotification() {
     assert.fail("Geolocation position is: " + result.getNode().textContent);
   }
 }
+
+setupModule.__force_skip__ = "Bug 935451 - Test failure 'Geolocation position is: " +
+                             "Position acquisition timed out'";
+teardownModule.__force_skip__ = "Bug 935451 - Test failure 'Geolocation position is: " +
+                                "Position acquisition timed out'";
