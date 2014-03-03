@@ -33,7 +33,7 @@ function testOpenAndCloseMultipleWindows() {
       assert.waitFor(function () {
         var windows = mozmill.utils.getWindows("navigator:browser");
 
-        return (windows.length === controllers.length + 2);
+        return (windows.length - 1) === enduranceManager.currentEntity;
       }, "Window number '" + enduranceManager.currentEntity + "' has been opened");
 
       controllers.push(mozmill.getBrowserController());
@@ -55,5 +55,3 @@ function testOpenAndCloseMultipleWindows() {
   });
 }
 
-setupModule.__force_skip__ = "Bug 800872 - Test failure 'Window number '1' has been opened'";
-teardownModule.__force_skip__ = "Bug 800872 - Test failure 'Window number '1' has been opened'";
