@@ -159,6 +159,10 @@ tabBrowser.prototype = {
       return !tab.getNode().hasAttribute("busy");
     }, "The tab has loaded");
 
+    // Issue a mousemove event to allow the tab activation click event to propagate
+    // Tab activation is disabled if the mouse is hovering over the close button
+    // See: http://hg.mozilla.org/mozilla-central/file/e5b09585215f/browser/base/content/tabbrowser.xml#l4802
+    tab.mouseEvent(null, null, {type: "mousemove"});
     this._controller.click(tab);
     assert.waitFor(function () {
       return this.selectedIndex === index;
