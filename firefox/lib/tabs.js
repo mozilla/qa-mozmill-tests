@@ -152,6 +152,10 @@ tabBrowser.prototype = {
    *        Index of the tab which should be selected
    */
   set selectedIndex(index) {
+    // Issue a mousemove event to allow the tab activation click event to propagate
+    // Tab activation is disabled if the mouse is hovering over the close button
+    // See: http://hg.mozilla.org/mozilla-central/file/e5b09585215f/browser/base/content/tabbrowser.xml#l4802
+    this.getTab(index).mouseEvent(null, null, {type: "mousemove"});
     this._controller.click(this.getTab(index));
     assert.waitFor(function () {
       return this.selectedIndex === index;
