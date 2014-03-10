@@ -48,8 +48,3 @@ var testAutoCompleteOff = function() {
                                              "PopupAutoComplete");
   expect.ok(!popupAutoCompList.getNode().popupOpen, "Auto-complete popup is not visible");
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testAutoCompleteOff.meta = {litmusids : [9067]};

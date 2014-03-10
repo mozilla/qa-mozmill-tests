@@ -55,7 +55,3 @@ function checkPageInfoWindow(controller) {
   controller.keypress(null, 'VK_ESCAPE', {});
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testAccessPageInfo.meta = {litmusids : [8413]};

@@ -124,7 +124,3 @@ setupModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageL
 teardownModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageLoad(): " +
                                 "Timeout waiting for page loaded'";
 
-/**
- * Map test functions to litmus tests
- */
-// testWarningPages.meta = {litmusids : [9014]};

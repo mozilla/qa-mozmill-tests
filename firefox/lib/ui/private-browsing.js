@@ -95,7 +95,7 @@ PrivateBrowsingWindow.prototype = {
         aCallback(aController);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown opening method - " + method);
+        assert.fail("Unknown opening method - " + method);
     }
 
     assert.waitFor(function () {
@@ -144,7 +144,7 @@ PrivateBrowsingWindow.prototype = {
     }
     catch (ex) {
       if (!aIgnoreFailures) {
-        throw new Error("Private Browsing Window has been closed.");
+        assert.fail("Private Browsing Window has been closed.");
       }
     }
     finally {

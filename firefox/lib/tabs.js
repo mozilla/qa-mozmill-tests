@@ -242,7 +242,7 @@ tabBrowser.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
+        assert.fail("Unknown event type - " + type);
     }
 
     // When removing a tab it animates outside of visible space and only after that
@@ -342,7 +342,7 @@ tabBrowser.prototype = {
                                       '/{"id":"' + panelId + '"}');
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -458,7 +458,7 @@ tabBrowser.prototype = {
         this._controller.middleClick(aTarget);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
+        assert.fail("Unknown event type - " + type);
     }
 
     try {
@@ -534,7 +534,7 @@ tabBrowser.prototype = {
         }
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
+        assert.fail("Unknown event type - " + type);
     }
 
     try {

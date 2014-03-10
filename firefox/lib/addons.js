@@ -153,8 +153,7 @@ AddonsManager.prototype = {
           this._controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
           break;
         default:
-          throw new Error(arguments.callee.name + ": Unknown event type - " +
-                          event.type);
+          assert.fail("Unknown event type - " + event.type);
       }
 
       assert.waitFor(function () {
@@ -239,7 +238,7 @@ AddonsManager.prototype = {
     }
     catch (ex) {
       if (!aIgnoreFailures) {
-        throw new Error("Add-ons Manager has been closed.");
+        assert.fail("Add-ons Manager has been closed.");
       }
     }
 
@@ -788,7 +787,7 @@ AddonsManager.prototype = {
     if (category)
       this.setCategory({category: category});
     else
-      throw new Error(arguments.callee.name + ": Category '" + id + " not found.");
+      assert.fail("Category '" + id + " not found.");
   },
 
   /**
@@ -1018,8 +1017,8 @@ AddonsManager.prototype = {
       case "remote":
         return this.getAddons({attribute: "remote", value: "true"});
       default:
-        throw new Error(arguments.callee.name + ": Unknown search filter '" +
-                        filterValue + "' selected");
+        assert.fail("Unknown search filter '" +
+                    filterValue + "' selected");
     }
   },
 
@@ -1276,7 +1275,7 @@ AddonsManager.prototype = {
         nodeCollector.queryNodes(".view-pane").filterByDOMProperty(subtype, value);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;
@@ -1358,7 +1357,7 @@ AMOAddonPage.prototype = {
         nodeCollector.queryNodes(".install-button");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;
@@ -1559,7 +1558,7 @@ DiscoveryPane.prototype = {
         nodeCollector.queryNodes("#learn-more");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;
