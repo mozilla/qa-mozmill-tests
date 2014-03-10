@@ -50,8 +50,3 @@ function testEnabledExtensionIsUninstalled() {
                "Extension '" + persisted.addons[0].id +
                "' has been uninstalled");
 }
-
-setupModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                             "but none detected before end of test";
-teardownModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                                "but none detected before end of test";
