@@ -18,13 +18,10 @@ function setupModule(aModule) {
 
 function teardownModule(aModule) {
   // Bug 886811
-  // Mozmill 1.5 does not have the stopApplication method on the controller.
+  // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0
-  if ("stopApplication" in aModule.controller) {
-    // Bug 783484
-    // Since the last 2 tests of this suite are skipped we reset the profile here
-    // Revert to restartApplication once test3 and test4 are reenabled
-    aModule.controller.stopApplication(true);
+  if ("restartApplication" in aModule.controller) {
+    aModule.controller.restartApplication();
   }
 }
 
