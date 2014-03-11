@@ -15,13 +15,13 @@ const TEST_DATA = [
   {
     buttonAccessKey : "safebrowsing.notAForgeryButton.accessKey",
     reportPage : "www.google.com/safebrowsing/report_error",
-    unsafePage : "http://www.mozilla.org/firefox/its-a-trap.html"
+    unsafePage : "https://www.itisatrap.org/firefox/its-a-trap.html"
   },
   // Malware URL object
   {
     buttonAccessKey : "safebrowsing.notAnAttackButton.accessKey",
     reportPage : "www.stopbadware.org",
-    unsafePage : "http://www.mozilla.org/firefox/its-an-attack.html"
+    unsafePage : "https://www.itisatrap.org/firefox/its-an-attack.html"
   }
 ];
 
@@ -35,7 +35,7 @@ var setupModule = function(aModule) {
 
 function teardownModule(aModule) {
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.org", "safe-browsing");
+  utils.removePermission("www.itisatrap.org", "safe-browsing");
 }
 
 var testNotificationBar = function() {
@@ -91,7 +91,7 @@ var checkIgnoreWarningButton = function(aData) {
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.org", "safe-browsing");
+  utils.removePermission("www.itisatrap.org", "safe-browsing");
 }
 
 /**
@@ -159,8 +159,3 @@ var checkXButton = function() {
   controller.sleep(1000);
   assert.ok(!button.exists(), "The Close button has not been found");
 }
-
-setupModule.__force_skip__ = "Bug 981517 - Test failure \"Element.waitForElement(): " +
-                             "Element 'ID: ignoreWarningButton' has been found\" ";
-teardownModule.__force_skip__ = "Bug 981517 - Test failure \"Element.waitForElement(): " +
-                                "Element 'ID: ignoreWarningButton' has been found\" ";
