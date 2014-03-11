@@ -44,7 +44,10 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);
     });
-    controller.click(starButton);
+    // Click on the bookmark button and wait for the animation
+    locationBar.bookmarkWithAnimation(() => {
+      starButton.click();
+    });
 
     // Wait for the bookmark event
     assert.waitFor(function () {
@@ -67,6 +70,3 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark has been removed");
   });
 }
-
-setupModule.__force_skip__ = "Bug 981520 - Test failure 'Edit Bookmarks Panel has been opened'";
-teardownModule.__force_skip__ = "Bug 981520 - Test failure 'Edit Bookmarks Panel has been opened'";
