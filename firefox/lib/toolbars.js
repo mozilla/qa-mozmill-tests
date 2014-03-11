@@ -616,6 +616,43 @@ locationBar.prototype = {
   },
 
   /**
+   * Bookmark a page
+   * Also waits for the animation event that occurs to finish
+   *
+   * @param {function} aCallback
+   *        Function to trigger page bookmarking event
+   */
+  bookmarkWithAnimation : function locationBar_bookmarkWithAnimation(aCallback) {
+    var self = { started: false, ended: false };
+    var bookmarksMenuButton = this.getElement({type: "bookmarksMenuButton"});
+    var window = this._controller.window.document.defaultView;
+
+    var mutationObserver = new window.MutationObserver(function (aMutations) {
+      aMutations.forEach(function (aMutation) {
+        // For changing the CSS style and enabling the button there's a different
+        // action besides animationend event
+        // We have to wait until the attribute has been added then removed
+
+        if (!self.started) {
+          self.started = (aMutation.target.getAttribute("notification") === "finish");
+        }
+        else {
+          self.ended = !aMutation.target.hasAttribute("notification");
+        }
+      });
+    });
+    try {
+      mutationObserver.observe(bookmarksMenuButton.getNode(),
+                               {attributes: true, attributeFilter: ["notification"]});
+      aCallback();
+      assert.waitFor(() => self.ended);
+    }
+    finally {
+      mutationObserver.disconnect();
+    }
+  },
+
+  /**
    * Waits for the given notification popup
    *
    * @param {String} aElement
