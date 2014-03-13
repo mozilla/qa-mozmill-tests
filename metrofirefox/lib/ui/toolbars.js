@@ -431,6 +431,73 @@ LocationBar.prototype = {
   },
 
   /**
+   * Reload page
+   *
+   * @param {Object} aSpec
+   *        Information for the reload event
+   * @param {String} [aSpec.aEventType="shortcut"]
+   *        Type of event which triggers the action
+   * @param {Boolean} [aSpec.aForce=false]
+   *        Value if the reload will be forced
+   */
+  reload: function locationBar_reload(aSpec) {
+    var spec = aSpec || {};
+    var type = spec.aEventType || "shortcut";
+    var forceReload = !!spec.aForce;
+
+    switch (type) {
+      case "button":
+        var elem = this.getElement({type: "reloadButton"});
+         // Bug 980794
+         // Extend the new mouse events to accept modifier keys
+         // Once fixed, replace this with the standard tap() event
+        elem.mouseEvent(undefined, undefined, {
+          clickCount: 1,
+          inputSource: Ci.nsIDOMMouseEvent.MOZ_SOURCE_TOUCH,
+          shiftKey: forceReload
+        });
+        break;
+      case "shortcut":
+        var toolbar = this.toolbar.getElement({type: "toolbar"});
+        var cmdKey = utils.getEntity(this.toolbar.dtds, "reload.key");
+        toolbar.keypress(cmdKey, {accelKey: true, shiftKey: forceReload});
+        break;
+      case "shortcut2":
+        var toolbar = this.toolbar.getElement({type: "toolbar"});
+        toolbar.keypress("VK_F5", {shiftKey: forceReload});
+        break;
+      default:
+        throw new Error("Unknown event type - " + type);
+    }
+  },
+
+  /**
+   * Stop loading page
+   *
+   * @param {Object} aSpec
+   *        Information for the stop event
+   * @param {String} [aSpec.aEventType="shortcut"]
+   *        Type of event which triggers the action
+   */
+  stop: function locationBar_stop(aSpec) {
+    var spec = aSpec || {};
+    var type = spec.aEventType || "shortcut";
+
+    switch (type) {
+      case "button":
+        var elem = this.getElement({type: "stopButton"});
+        elem.tap();
+        break;
+      case "shortcut":
+        var toolbar = this.toolbar.getElement({type: "toolbar"});
+        toolbar.keypress("VK_ESCAPE", {});
+        break;
+      default:
+        throw new Error("Unknown event type - " + type);
+    }
+  },
+
+  /**
    * Type the given text into the location bar
    *
    * @param {string} aText
@@ -440,7 +507,6 @@ LocationBar.prototype = {
     var location = this.getElement({type: "urlbar"});
     location.sendKeys(aText);
   }
-
 };
 
 /**
