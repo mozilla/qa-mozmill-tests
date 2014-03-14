@@ -188,18 +188,29 @@ FindBar.prototype = {
   /**
    * Close the find bar
    *
-   * @param {string} aMethod
+   * @param {Object} [aSpec]
+   *         Information of the close event
+   * @param {string} [aSpec.method="button"]
    *        Specifies a method for closing the find bar
+   * @param {boolean} [aSpec.force=false]
+   *        Force to close the find bar
    */
-  close: function FindBar_close(aMethod) {
-    var method = aMethod || "button";
-    var transitioned = false;
+  close: function FindBar_close(aSpec) {
+    var spec = aSpec || {};
+    var method = spec.method || "button";
 
+    var findBar = this.getElement({type: "findbar"});
+
+    if (spec.force) {
+      findBar.getNode().dismiss();
+      return;
+    }
+
+    var transitioned = false;
     function onTransitionEnd() {
       transitioned = true;
     }
 
-    var findBar = this.getElement({type: "findbar"});
     findBar.getNode().addEventListener("transitionend", onTransitionEnd, false);
 
     try {
@@ -223,6 +234,37 @@ FindBar.prototype = {
     finally {
       findBar.getNode().removeEventListener("transitionend", onTransitionEnd, false);
     }
+  },
+
+  /**
+   * Find next occurrence of the search term
+   *
+   * @returns {Object} Information for the selection
+   */
+  findNext: function FindBar_findNext() {
+    var nextButton = this.getElement({type: "nextButton"});
+    nextButton.tap();
+    return this.getSelection();
+  },
+
+  /**
+   * Find previous occurrence of the search term
+   *
+   * @returns {Object} Information for the selection
+   */
+  findPrevious: function FindBar_findPrevious() {
+    var previousButton = this.getElement({type: "previousButton"});
+    previousButton.tap();
+    return this.getSelection();
+  },
+
+   /**
+   * Get the current selection on the active tab window
+   *
+   * @returns {Object} Information for the selection
+   */
+  getSelection: function FindBar_getSelection() {
+    return this._controller.tabs.activeTabWindow.getSelection();
   },
 
   /**
