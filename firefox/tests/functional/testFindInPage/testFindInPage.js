@@ -15,47 +15,12 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
-  aModule.tabElement = aModule.tabBrowser.getTab(aModule.tabBrowser.selectedIndex);
-  aModule.expression = aModule.tabBrowser.
-                       getElement({type: "tabs_tabPanel", value: aModule.tabElement}).
-                       expression;
-
-  aModule.containerString = expression + '/anon({"class":"browserSidebarContainer"})' +
-                            '/anon({"class":"browserContainer"})/[0]' +
-                            '/anon({"anonid":"findbar-container"})' +
-                            '/anon({"anonid":"findbar-textbox-wrapper"})';
-
-  aModule.findBar = new elementslib.Lookup(aModule.controller.window.document,
-                                           aModule.containerString);
-  aModule.findBarTextField = new elementslib.Lookup(aModule.controller.window.document,
-                                                    aModule.containerString +
-                                                    '/anon({"anonid":"findbar-textbox"})');
-  aModule.findBarNextButton = new elementslib.Lookup(aModule.controller.window.document,
-                                                     aModule.containerString +
-                                                     '/anon({"anonid":"find-next"})');
-  aModule.findBarPrevButton = new elementslib.Lookup(aModule.controller.window.document,
-                                                     aModule.containerString +
-                                                     '/anon({"anonid":"find-previous"})');
-  aModule.findBarCloseButton = new elementslib.Lookup(aModule.controller.window.document,
-                                                      aModule.containerString +
-                                                      '/anon({"anonid":"find-closebutton"})');
+  aModule.findBar = aModule.tabBrowser.findBar;
 }
 
 var teardownModule = function(aModule) {
-  try {
-     // Just press Ctrl/Cmd + F to select the whole search string
-    var dtds = ["chrome://browser/locale/browser.dtd"];
-    var cmdKey = utils.getEntity(dtds, "findOnCmd.commandkey");
-    aModule.controller.keypress(null, cmdKey, {accelKey: true});
-
-    // Clear search text from the text field
-    aModule.controller.keypress(aModule.findBarTextField, 'VK_DELETE', {});
-
-    // Make sure the find bar is closed by click the X button
-    aModule.controller.click(aModule.findBarCloseButton);
-  }
-  catch(e) {
-  }
+  aModule.findBar.value = "";
+  aModule.findBar.close(true);
 }
 
 /**
@@ -71,17 +36,8 @@ var testFindInPage = function() {
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  // Press Ctrl/Cmd + F to open the find bar
-  var dtds = ["chrome://browser/locale/browser.dtd"];
-  var cmdKey = utils.getEntity(dtds, "findOnCmd.commandkey");
-  controller.keypress(null, cmdKey, {accelKey: true});
-
-  // Check that the find bar is visible
-  controller.waitForElement(findBar);
-
-  // Type "community" into the find bar text field and press return to start the search
-  controller.type(findBarTextField, searchTerm);
-  controller.keypress(null, "VK_RETURN", {});
+  findBar.open();
+  findBar.search(searchTerm);
 
   // Check that some text on the page has been highlighted
   // (Lower case because we aren't checking for Match Case option)
@@ -93,7 +49,7 @@ var testFindInPage = function() {
   var range = selectedText.getRangeAt(0);
 
   // Click the next button and check the strings again
-  controller.click(findBarNextButton);
+  findBar.findNext();
 
   selectedText = tabContent.getSelection();
   expect.equal(selectedText.toString().toLowerCase(), searchTerm,
@@ -104,7 +60,7 @@ var testFindInPage = function() {
   expect.notEqual(resultPosition, 0, "The next result has been selected");
 
   // Click the prev button and check the strings again
-  controller.click(findBarPrevButton);
+  findBar.findPrevious();
 
   selectedText = tabContent.getSelection();
   expect.equal(selectedText.toString().toLowerCase(), searchTerm,
@@ -113,8 +69,3 @@ var testFindInPage = function() {
   resultPosition = selectedText.getRangeAt(0).compareBoundaryPoints(comparator, range);
   expect.equal(resultPosition, 0, "The first result has been selected again");
 }
-
-setupModule.__force_skip__ = "Bug 917771 - Test failure 'The next result has been " +
-                             "selected - '0' should not equal '0''";
-teardownModule.__force_skip__ = "Bug 917771 - Test failure 'The next result has been " +
-                                "selected - '0' should not equal '0''";

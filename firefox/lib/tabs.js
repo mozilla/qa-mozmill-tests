@@ -37,6 +37,7 @@ var animationObserver = {
 
 // Include required modules
 var { assert } = require("../../lib/assertions");
+var domUtils = require("../../lib/dom-utils");
 var utils = require("utils");
 var prefs = require("prefs");
 
@@ -102,11 +103,318 @@ function getTabsWithURL(aUrl) {
 /**
  * Constructor
  *
+ * @param {Object} aTabBrowser
+ *        TabBrowser object
+ */
+function findBar(aTabBrowser) {
+  this._tabBrowser = aTabBrowser;
+  this._controller = aTabBrowser.controller;
+  this._findbar = null;
+}
+
+/**
+ * FindBar class
+ */
+findBar.prototype = {
+   /**
+   * Returns the controller of the current window
+   *
+   * @returns {MozMillController}
+   */
+  get controller() {
+    return this._controller;
+  },
+
+   /**
+   * Returns the referenced TabBrowser instance
+   *
+   * @returns {object} TabBrowser
+   */
+  get tabBrowser() {
+    return this._tabBrowser;
+  },
+
+  /**
+   * Get Case-sensitive state
+   *
+   * @return {boolean}
+   *         Return the state of the case-sensitive button
+   */
+  get caseSensitive() {
+    assert.ok(this.isOpen, "The FindBar needs to be open.")
+
+    var elem = this.getElement({type: "caseSensitiveButton"});
+    return elem.getNode().checked;
+  },
+
+  /**
+   * Set Case-sensitive state
+   *
+   * @param {boolean} [aEnabledState]
+   *        If true, search text with case sensitive
+   */
+  set caseSensitive(aEnabledState) {
+    assert.ok(this.isOpen, "The FindBar needs to be open.")
+
+    var elem = this.getElement({type: "caseSensitiveButton"});
+    elem.check(aEnabledState);
+  },
+
+ /**
+  * Gets all the needed external DTD URLs as an array
+  *
+  * @returns [{string}]
+  *          Array of external DTD URLs
+  */
+  get dtds() {
+    return ["chrome://browser/locale/browser.dtd"];
+  },
+
+  /**
+   * Get Highlight state
+   *
+   * @return {boolean}
+   *         Return the state of the highlight button
+   */
+  get highlight() {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "highlightButton"});
+    return elem.getNode().checked;
+  },
+
+  /**
+   * Set Highlight state
+   *
+   * @param {boolean} [aEnabledState]
+   *        If true highlight the result
+   */
+  set highlight(aEnabledState) {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "highlightButton"});
+    elem.check(aEnabledState);
+  },
+
+  /**
+   * Check if the FindBar is open
+   *
+   * @returns {boolean}
+   *          True if the findBar is open
+   */
+  get isOpen() {
+    return this._findbar && !this._findbar.hidden;
+  },
+
+  /**
+   * Get the text from the findBar textbox
+   *
+   * @returns {string}
+   *          Text from the textbox element
+   */
+  get value() {
+    assert.ok(this._findbar, "The Findbar object exists");
+    return this.getElement({type: "textbox"}).getNode().value;
+  },
+
+  /**
+   * Sets the value in the findBar textbox
+   *
+   * @param {string} aValue
+   *        Text value to be set in the findBar textbox
+   */
+  set value(aValue) {
+    assert.ok(this._findbar, "The Findbar object exists");
+    var textbox = this.getElement({type: "textbox"}).getNode();
+    textbox.value = aValue;
+  },
+
+  /**
+   * Clear FindBar of any input
+   */
+  clear : function findBar_clear() {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "textbox"});
+    elem.doubleClick();
+    elem.keypress("VK_DELETE");
+
+    assert.waitFor(() => {
+      return this.value === "";
+    }, "The findBar has been cleared.");
+  },
+
+  /**
+   * Close FindBar
+   *
+   * @param {boolean} [aForce=false]
+   *        If true close the findBar via an API call.
+   */
+  close : function findBar_close(aForce) {
+    assert.ok(this._findbar, "Findbar instance exists");
+    if (aForce) {
+      this._findbar.close();
+    }
+    else {
+      var elem = this.getElement({type: "closeButton"});
+      elem.click();
+    }
+
+    assert.waitFor(() => !this.isOpen, "The FindBar has been closed.");
+  },
+
+  /**
+   * Next result
+   */
+  findNext : function findBar_findNext() {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "nextButton"});
+    elem.click();
+  },
+
+  /**
+   * Previous result
+   */
+  findPrevious : function findBar_findPrevious() {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "previousButton"});
+    elem.click();
+  },
+
+  /**
+   * Retrieve an UI element based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @param {string} [aSpec.type]
+   *        Which element type to return
+   * @param {string} [aSpec.parent=this._findbar]
+   *        Parent of the element or property
+   * @returns {ElemBase}
+   *          Elements which has been found
+   */
+  getElement : function findBar_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve list of UI elements based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @param {string} [aSpec.type]
+   *        Which element type to return
+   * @param {string} [aSpec.parent=this._findbar]
+   *        Parent of the element or property
+   * @returns [{ElemBase}]
+   *          Array of Elements which has been found
+   */
+  getElements : function findBar_getElements(aSpec) {
+    var spec = aSpec || { };
+
+    var root = spec.parent ? spec.parent.getNode() : this._findbar;
+    var nodeCollector = new domUtils.nodeCollector(root);
+
+    switch(spec.type) {
+      case "findBar":
+        nodeCollector.queryNodes("findbar");
+        break;
+      case "caseSensitiveButton":
+        nodeCollector.queryAnonymousNode("anonid", "find-case-sensitive");
+        break;
+      case "closeButton":
+        nodeCollector.queryAnonymousNode("anonid", "find-closebutton");
+        break;
+      case "highlightButton":
+        nodeCollector.queryAnonymousNode("anonid", "highlight");
+        break;
+      case "nextButton":
+        nodeCollector.queryAnonymousNode("anonid", "find-next");
+        break;
+      case "previousButton":
+        nodeCollector.queryAnonymousNode("anonid", "find-previous");
+        break;
+      case "textbox":
+        nodeCollector.queryAnonymousNode("anonid", "findbar-textbox");
+        break;
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return nodeCollector.elements;
+  },
+
+  /**
+   * Open the FindBar
+   *
+   * @param {string} [aEventType="shortcut"]
+   *        Available opening methods: "menu", "shortcut"
+   */
+  open : function findBar_open(aEventType) {
+    var type = aEventType || "shortcut";
+
+    var isOpen = false;
+    function hasOpened() {
+      isOpen = true;
+    }
+
+    this.controller.window.addEventListener("findbaropen", hasOpened);
+
+    try {
+      switch (type) {
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.dtds, "findOnCmd.commandkey");
+          this.controller.keypress(null, cmdKey, {accelKey: true});
+          break;
+        case "menu":
+          this.controller.mainMenu.click("#menu_find");
+          break;
+        default:
+          assert.fail("Unknown event type - " + type);
+      }
+      assert.waitFor(() => isOpen, "FindBar has been opened.");
+    }
+    finally {
+      this.controller.window.removeEventListener("findbaropen", hasOpened);
+    }
+
+    // Cache the root node of the findBar
+    this._findbar = this.getElement({type: "findBar",
+                                     parent: this.tabBrowser.activeTabPanel}).getNode();
+  },
+
+  /**
+   * Set search text
+   *
+   * @param {string} text
+   *        Text used as search keywords.
+   */
+  search : function findBar_search(aText) {
+    assert.ok(this.isOpen, "The FindBar needs to be open.");
+
+    var elem = this.getElement({type: "textbox"});
+    this.clear();
+    elem.sendKeys(aText);
+    assert.equal(aText, this.value,
+                 "Successfully typed the text into the findbar");
+
+    elem.keypress("VK_RETURN", {});
+  }
+};
+
+/**
+ * Constructor
+ *
  * @param {MozMillController} controller
  *        MozMill controller of the window to operate on
  */
 function tabBrowser(controller) {
   this._controller = controller;
+  this.findBar = new findBar(this);
   this._tabs = this.getElement({type: "tabs"});
   let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
                                           subtype: "down"});
@@ -125,6 +433,17 @@ tabBrowser.prototype = {
    */
   get controller() {
     return this._controller;
+  },
+
+  /**
+   * This returns the activeTabPanel
+   *
+   * @returns {ElemBase}
+   *          The active tab panel
+   */
+  get activeTabPanel() {
+    return this.getElement({type: "tabs_tabPanel",
+                            value: this.getTab()});
   },
 
   /**
@@ -254,9 +573,9 @@ tabBrowser.prototype = {
   },
 
   /**
-   * Gets all the needed external DTD urls as an array
+   * Gets all the needed external DTD URLs as an array
    *
-   * @returns Array of external DTD urls
+   * @returns Array of external DTD URLs
    * @type [string]
    */
   getDtds : function tabBrowser_getDtds() {
