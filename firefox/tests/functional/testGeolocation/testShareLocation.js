@@ -6,12 +6,15 @@
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
+var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "geolocation/position.html";
+
+const PREF_WIFI_LOGGING = "geo.wifi.logging.enabled";
 
 const TIMEOUT_POSITION = 30000;
 
@@ -20,10 +23,14 @@ function setupModule(aModule) {
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
+  prefs.preferences.setPref(PREF_WIFI_LOGGING, true);
+
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_WIFI_LOGGING);
+
   aModule.tabBrowser.closeAllTabs();
 }
 
