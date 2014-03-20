@@ -87,7 +87,12 @@ function clearHistoryHandler(controller) {
   // Remove this uncheck once the flash crash has been fixed
   var version = Services.sysinfo.getProperty("version");
   if (mozmill.isWindows && (version >= "6.0")) {
-    checkBoxes[2].getNode().checked = false;
+    var itemList = new elementslib.ID(controller.window.document, "itemList");
+    var details = new elementslib.ID(controller.window.document, "detailsExpander");
+    details.click();
+    assert.waitFor(() => !itemList.getNode().collapsed,
+                   "Clear items have been collapsed");
+    checkBoxes[2].click();
   }
 
   nodeCollector.queryAnonymousNode("dlgtype", "accept");
