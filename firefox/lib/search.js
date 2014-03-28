@@ -42,6 +42,8 @@ const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-contain
                                               '/anon({"class":"search-go-button"})';
 const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")';
 
+const TOPIC_SEARCH_ENGINE_MODIFIED = "browser-search-engine-modified";
+
 /**
  * Constructor
  *
@@ -528,16 +530,24 @@ searchBar.prototype = {
       this.enginesDropDownOpen = true;
 
       var engine = this.getElement({type: "engine", subtype: "id", value: name});
-      this._controller.waitThenClick(engine);
+      var engineChanged = false;
+      var observer = {
+        observe: (aSubject, aTopic, aData) => {
+          if (aData === "engine-default") {
+            engineChanged = true;
+          }
+        }
+      }
+      Services.obs.addObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED, false);
 
-      // Wait until the drop down has been closed
-      assert.waitFor(function () {
-        return !this.enginesDropDownOpen;
-      }, "Search engines drop down has been closed", undefined, undefined, this);
-
-      assert.waitFor(function () {
-        return this.selectedEngine === name;
-      }, "Search engine has been selected. Expected '" + name + "'", undefined, undefined, this);
+      try {
+        engine.waitThenClick();
+        assert.waitFor(() =>  engineChanged,
+                       "Search engine has been selected. Expected '" + name + "'");
+      }
+      finally {
+        Services.obs.removeObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED);
+      }
     }
   },
 

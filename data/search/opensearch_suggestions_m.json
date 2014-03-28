@@ -1,0 +1,23 @@
+["m",
+  [
+    "maps",
+    "mapsquesr",
+    "Moscow",
+    "Melbourne",
+    "Montreal"
+  ],
+  [
+    "20000 results",
+    "10000 results",
+    "5000 results",
+    "1000 results",
+    "100 results"
+  ],
+  [
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=maps",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=mapsquesr",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Moscow",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Melbourne",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Montreal"
+  ]
+]
