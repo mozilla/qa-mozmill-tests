@@ -66,3 +66,6 @@ var testDisableSSL = function() {
   expect.contain(text.getNode().textContent, 'mozqa.com',
                  "The SSL error message contains domain name");
 }
+
+setupModule.__force_skip__ = "Bug 989922 - Disabled due to incorrect TLS version";
+teardownModule.__force_skip__ = "Bug 989922 - Disabled due to incorrect TLS version";
