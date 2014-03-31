@@ -118,9 +118,3 @@ var checkIgnoreWarningButton = function(url) {
   // Clear the Safe Browsing permission
   utils.removePermission("www.itisatrap.org", "safe-browsing");
 }
-
-setupModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageLoad(): " +
-                             "Timeout waiting for page loaded'";
-teardownModule.__force_skip__ = "Bug 936478 - Test failure 'controller.waitForPageLoad(): " +
-                                "Timeout waiting for page loaded'";
-
