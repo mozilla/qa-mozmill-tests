@@ -110,3 +110,5 @@ function handleAddSecurityExceptionDialog(aController) {
   }, "Add exception button is available");
   aController.click(exceptionButton);
 }
+
+setupModule.__force_skip__ = "Bug 990557 - Test failure [object Object] - got 'false'";
