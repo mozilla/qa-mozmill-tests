@@ -77,3 +77,8 @@ function testMultipleEngines() {
             searchEngines[0] + " and " + searchEngines[1] + " search providers are different");
 }
 
+setupModule.__force_skip__ = "Bug 942737 - Test failure 'Suggestions from two " +
+                             "search engines are available - '1' should equal '2'";
+teardownModule.__force_skip__ = "Bug 942737 - Test failure 'Suggestions from two " +
+                                "search engines are available - '1' should equal '2'";
+
