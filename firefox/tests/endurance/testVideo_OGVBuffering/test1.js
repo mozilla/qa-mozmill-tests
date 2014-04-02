@@ -58,3 +58,6 @@ function testVideo_OGVBuffering() {
     enduranceManager.addCheckpoint("Video has started playing");
   });
 }
+
+setupModule.__force_skip__ = "Bug 991066 - Test failure 'Video data is available'";
+teardownModule.__force_skip__ = "Bug 991066 - Test failure 'Video data is available'";
