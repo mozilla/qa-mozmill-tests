@@ -933,25 +933,32 @@ tabBrowser.prototype = {
   /**
    * Waits for a particular tab panel element to display and stop animating
    *
-   * @param {number} tabIndex
+   * @param {number} aTabIndex
    *        Index of the tab to check
-   * @param {string} elemString
+   * @param {function} aCallback
+   *        Function that triggeres the panel to open
+   * @param {string} aElemString
    *        Lookup string of the tab panel element
    */
-  waitForTabPanel: function tabBrowser_waitForTabPanel(tabIndex, elemString) {
-    // Get the specified tab panel element
-    var tabPanel = this.getTabPanelElement(tabIndex, elemString);
+  waitForTabPanel: function tabBrowser_waitForTabPanel(aTabIndex, aCallback, aElemString) {
+    assert.equal(typeof aCallback, "function", "Callback function is defined");
 
-    // Get the style information for the tab panel element
-    var style = this._controller.window.getComputedStyle(tabPanel.getNode(), null);
+    var transitionEnd = false;
+    function onTransitionEnd() { transitionEnd = true; }
+    this._controller.window.addEventListener("transitionend", onTransitionEnd);
 
-    // Wait for the top margin to be 0px - ie. has stopped animating
-    // TODO: A notification bar starts at a negative pixel margin and drops down
-    // to 0px. This creates a race condition where a test may click before the
-    // notification bar appears at it's anticipated screen location
-    assert.waitFor(function () {
-      return style.marginTop == '0px';
-    }, "Expected notification bar to be visible: '" + elemString + "' ");
+    try {
+      aCallback();
+
+      assert.waitFor(() => transitionEnd,
+                     "Notification transition finished");
+    }
+    finally {
+      this._controller.window.removeEventListener("transitionend", onTransitionEnd);
+    }
+
+    assert.ok(this.getTabPanelElement(aTabIndex, aElemString).exists(),
+              "Notification bar has been opened")
   }
 }
 

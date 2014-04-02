@@ -82,8 +82,11 @@ var checkIgnoreWarningButton = function(aData) {
   // Verify the element is loaded onto the page and go to the phishing site
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
-  controller.waitThenClick(ignoreWarningButton);
-  controller.waitForPageLoad();
+
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, () => {
+    ignoreWarningButton.waitThenClick();
+    controller.waitForPageLoad();
+  }, '/{"value":"blocked-badware-page"}');
 
   // Verify the warning button is not visible and the location bar displays the correct URL
   utils.assertLoadedUrlEqual(controller, aData.unsafePage);
@@ -108,14 +111,12 @@ var checkIgnoreWarningButton = function(aData) {
  */
 var checkNoPhishingButton = function(aData) {
   // Click on the web forgery report button
- var buttonAccessKey = utils.getProperty("chrome://browser/locale/browser.properties",
-                                         aData.buttonAccessKey);
- var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
-                                            '/{"value":"blocked-badware-page"}' +
-                                            '/{"accesskey":"' + buttonAccessKey + '"}');
-
-  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button);
+  var buttonAccessKey = utils.getProperty("chrome://browser/locale/browser.properties",
+                                          aData.buttonAccessKey);
+  var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
+                                             '/{"value":"blocked-badware-page"}' +
+                                             '/{"accesskey":"' + buttonAccessKey + '"}');
+  button.waitThenClick();
   controller.waitForPageLoad(controller.tabs.getTab(1));
 
   // Verify that the correct not a forgery or attack report page is loaded
@@ -133,9 +134,7 @@ var checkGetMeOutOfHereButton = function() {
                                 "safebrowsing.getMeOutOfHereButton.label");
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/{"label":"' + label + '"}');
-
-  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button);
+  button.waitThenClick();
 
   // Verify that the default home page is displayed in the location bar
   controller.waitForPageLoad();
@@ -152,10 +151,6 @@ var checkXButton = function() {
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}/anon({"type":"critical"})' +
                                              utils.australis.getElement("close-button"));
-
-  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"blocked-badware-page"}');
-  controller.waitThenClick(button);
-
-  controller.sleep(1000);
-  assert.ok(!button.exists(), "The Close button has not been found");
+  button.waitThenClick();
+  assert.waitFor(() => !button.exists(), "The Close button has not been found");
 }
