@@ -59,3 +59,10 @@ function testFlashURL() {
     tabBrowser.closeAllTabs();
   });
 }
+
+if (mozmill.isWindows) {
+  setupModule.__force_skip__ = "Bug 991736 - Disable flash tests for Windows " +
+                               "due to crashes";
+  teardownModule.__force_skip__ = "Bug 991736 - Disable flash tests for Windows " +
+                                  "due to crashes";
+}
