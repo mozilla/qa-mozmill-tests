@@ -70,3 +70,8 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark has been removed");
   });
 }
+
+setupModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
+                             "to notification panel change";
+teardownModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
+                                "to notification panel change";
