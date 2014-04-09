@@ -78,3 +78,5 @@ function checkSecurityTab(controller) {
   // Close the Page Info window by pressing Escape
   controller.keypress(null, 'VK_ESCAPE', {});
 }
+
+setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
