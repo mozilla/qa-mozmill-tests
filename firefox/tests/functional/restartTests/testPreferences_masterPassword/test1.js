@@ -130,3 +130,6 @@ var confirmHandler = function(controller) {
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitThenClick(button);
 }
+
+setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
+teardownModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
