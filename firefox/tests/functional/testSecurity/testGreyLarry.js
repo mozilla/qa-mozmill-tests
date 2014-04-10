@@ -6,6 +6,7 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -13,6 +14,7 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
 }
 
 /**
@@ -30,15 +32,12 @@ var testLarryGrey = function() {
                                              "identity-icon-label");
   expect.equal(identityIconLabel.getNode().value, "", "The favicon has no label");
 
-  // Click the identity button to display Larry
-  controller.click(new elementslib.ID(controller.window.document, "identity-box"));
+  locationBar.waitForNotificationPanel(() => {
+    var identityBox = locationBar.getElement({type: "identityBox"});
+    identityBox.click();
+  }, {type: "identity"});
 
-  // Make sure the doorhanger is "open" before continuing
-  var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  assert.waitFor(function () {
-    return doorhanger.getNode().state === 'open';
-  }, "Identity popup has been opened");
-
+  var doorhanger = locationBar.getElement({type: "identityPopup"});
   expect.equal(doorhanger.getNode().className, "unknownIdentity",
                "The Larry UI is unknown (aka Grey)");
 
@@ -82,5 +81,3 @@ function checkSecurityTab(controller) {
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
-
-setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
