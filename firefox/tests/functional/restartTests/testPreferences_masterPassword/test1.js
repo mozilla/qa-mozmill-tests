@@ -56,7 +56,11 @@ var testSetMasterPassword = function() {
   controller.type(passField, "foo");
 
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
-  controller.waitThenClick(loginButton);
+
+  // Wait for the notification to load
+  locationBar.waitForNotificationPanel(() => {
+    loginButton.click();
+  }, {type: "notification"});
 
   // After logging in, remember the login information
   var button = locationBar.getNotificationElement(
@@ -67,11 +71,10 @@ var testSetMasterPassword = function() {
   expect.ok(utils.isDisplayed(controller, button),
             "Remember password button is visible");
 
-  // Click the Remember Password button
-  controller.waitThenClick(button);
-
   // Wait for the notification to unload
-  locationBar.waitForNotification("notification_popup", false);
+  locationBar.waitForNotificationPanel(() => {
+    button.click();
+  }, {type: "notification", open: false});
 
   // Call preferences dialog and invoke master password functionality
   prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
@@ -136,5 +139,3 @@ var confirmHandler = function(controller) {
   controller.waitThenClick(button);
 }
 
-setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
-teardownModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";

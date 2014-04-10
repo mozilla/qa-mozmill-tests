@@ -51,19 +51,22 @@ function testSaveAndDeletePassword() {
   controller.type(userField, "bar");
   controller.type(passField, "foo");
 
-  var logInButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
-  controller.click(logInButton);
-  controller.waitForPageLoad();
-
-  // After logging in, remember the login information
-  var button = locationBar.getNotificationElement(
-                 "password-save-notification",
-                 {type: "anonid", value: "button"}
-               );
-  controller.waitThenClick(button);
+  // Wait for the notification to load
+  locationBar.waitForNotificationPanel(() => {
+    var logInButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
+    logInButton.click();
+    controller.waitForPageLoad();
+  }, {type: "notification"});
 
   // Wait for the notification to unload
-  locationBar.waitForNotification("notification_popup", false);
+  locationBar.waitForNotificationPanel(() => {
+    // After logging in, remember the login information
+    var button = locationBar.getNotificationElement(
+                   "password-save-notification",
+                   {type: "anonid", value: "button"}
+                 );
+    button.click();
+  }, {type: "notification", open: false});
 
   // Go back to the login page and verify the password has been saved
   controller.open(TEST_DATA);

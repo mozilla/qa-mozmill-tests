@@ -101,6 +101,3 @@ function handleSecurityWarningDialog(controller) {
                                         '/{"dlgtype":"accept"}');
   controller.click(okButton);
 }
-
-setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
-teardownModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";

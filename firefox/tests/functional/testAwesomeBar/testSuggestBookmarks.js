@@ -43,14 +43,14 @@ var testStarInAutocomplete = function() {
   controller.waitForPageLoad();
 
   // Bookmark the test page via bookmarks menu
-  controller.mainMenu.click("#menu_bookmarkThisPage");
+  locationBar.waitForNotificationPanel(() => {
+    controller.mainMenu.click("#menu_bookmarkThisPage");
+  }, {type: "bookmark"});
 
-  // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded, then close the dialog
-  assert.waitFor(function () {
-    return controller.window.top.StarUI._overlayLoaded;
-  }, "Edit This Bookmark doorhanger has been loaded");
-  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
-  controller.click(doneButton);
+  locationBar.waitForNotificationPanel(() => {
+    var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
+    doneButton.click();
+  }, {type: "bookmark", open: false});
 
   // We must open the blank page so the autocomplete result isn't "Swith to tab"
   controller.open("about:blank");
@@ -91,8 +91,3 @@ var testStarInAutocomplete = function() {
 
   locationBar.autoCompleteResults.close();
 }
-
-setupModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
-                             "to notification panel changes";
-teardownModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
-                                "to notification panel changes";

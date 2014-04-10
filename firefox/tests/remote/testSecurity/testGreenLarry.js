@@ -8,12 +8,14 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
 
   aModule.cert = null;
 }
@@ -50,17 +52,14 @@ var testLarryGreen = function() {
     return favicon.getNode().getAttribute("hidden") == false;
   }, "Lock icon is visible in identity box");
 
-  var identityBox = new elementslib.ID(controller.window.document, "identity-box");
+  var identityBox = locationBar.getElement({type: "identityBox"});
   expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
 
-  // Click the identity button to display Larry
-  controller.click(identityBox);
+  locationBar.waitForNotificationPanel(() => {
+    identityBox.click();
+  }, {type: "identity"});
 
-  // Make sure the doorhanger is "open" before continuing
-  var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  assert.waitFor(function () {
-    return doorhanger.getNode().state === 'open';
-  }, "Identity popup has been opened");
+  var doorhanger = locationBar.getElement({type: "identityPopup"});
 
   expect.equal(doorhanger.getNode().className, "verifiedIdentity", "Larry UI is verified aka Green");
 
@@ -148,5 +147,3 @@ function checkSecurityTab(controller) {
 
   controller.keypress(null, 'VK_ESCAPE', {});
 }
-
-setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";
