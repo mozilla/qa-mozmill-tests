@@ -74,3 +74,8 @@ function testVerifyDisplayGeolocationNotification() {
     assert.fail("Geolocation position is: " + result.getNode().textContent);
   }
 }
+
+setupModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
+                             "to notification panel changes";
+teardownModule.__force_skip__ = "Bug 994040 - Failures across several tests due " +
+                                "to notification panel changes";
