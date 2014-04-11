@@ -65,6 +65,3 @@ function testThemeIsInstalled() {
   // We need access to this addon in teardownModule
   installedAddon = defaultTheme;
 }
-
-setupModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
-teardownModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
