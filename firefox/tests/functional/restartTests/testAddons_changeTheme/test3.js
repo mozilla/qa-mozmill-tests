@@ -50,5 +50,3 @@ function testChangedThemeToDefault() {
   assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
 }
 
-setupModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
-teardownModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";

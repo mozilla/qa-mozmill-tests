@@ -95,5 +95,3 @@ function testInstallTheme() {
   installedAddon = plainTheme;
 }
 
-setupModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
-teardownModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
