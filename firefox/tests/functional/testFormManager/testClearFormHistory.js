@@ -81,20 +81,6 @@ function clearHistoryHandler(controller) {
   // Verify that the checkbox to clear form data is checked
   var checkBoxes = nodeCollector.queryNodes("listitem").elements;
   assert.ok(checkBoxes[1].getNode().checked, "The checkbox to clear form data is checked");
-
-  // Bug 980938
-  // Flash crashes for Vista & higher versions when clearing cookies
-  // Remove this uncheck once the flash crash has been fixed
-  var version = Services.sysinfo.getProperty("version");
-  if (mozmill.isWindows && (version >= "6.0")) {
-    var itemList = new elementslib.ID(controller.window.document, "itemList");
-    var details = new elementslib.ID(controller.window.document, "detailsExpander");
-    details.click();
-    assert.waitFor(() => !itemList.getNode().collapsed,
-                   "Clear items have been collapsed");
-    checkBoxes[2].click();
-  }
-
   nodeCollector.queryAnonymousNode("dlgtype", "accept");
   var clearButton = nodeCollector.elements[0];
   clearButton.click();
