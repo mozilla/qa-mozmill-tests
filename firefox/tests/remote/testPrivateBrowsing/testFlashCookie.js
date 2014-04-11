@@ -81,10 +81,3 @@ function testCheckFlashCookie() {
   pbWindow.controller.click(clearCookie);
   assert.equal(resultFieldPB.getNode().value, "undefined", "Flash cookie was cleared");
 }
-
-if (mozmill.isWindows) {
-  setupModule.__force_skip__ = "Bug 991736 - Disable flash tests for Windows " +
-                               "due to crashes";
-  teardownModule.__force_skip__ = "Bug 991736 - Disable flash tests for Windows " +
-                                  "due to crashes";
-}
