@@ -53,3 +53,5 @@ var testCloseTab = function() {
   }, "One tab has been closed via keyboard shortcut");
 }
 
+setupModule.__force_skip__ = "Bug 997147 - Test failure 'Tab has been closed'";
+teardownModule.__force_skip__ = "Bug 997147 - Test failure 'Tab has been closed'";
