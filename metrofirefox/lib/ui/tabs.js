@@ -22,7 +22,8 @@ function TabBrowser(aController) {
   }
 
   this._controller = aController;
-  this._tabsContainerNode = this.getElement({type: "tabsContainer"}).getNode();
+  this._root = this.getElement({type: "tabsContainer",
+                                parent: this._controller.window.document});
 }
 
 /**
@@ -55,9 +56,7 @@ TabBrowser.prototype = {
    * @returns {Number} Number of open tabs
    */
   get length() {
-    // Bug 968079
-    // TODO: Update the code to use UI elements
-    return this._controller.tabs.length;
+    return this.getElements({type: "tabs"}).length;
   },
 
   /**
@@ -66,20 +65,27 @@ TabBrowser.prototype = {
    * @returns {Number} Index of the active tab
    */
   get selectedIndex() {
-    // Bug 968079
-    // TODO: Update the code to use UI elements
-    return this._controller.tabs.activeTabIndex;
+    var tabs = this.getElements({type: "tabs"});
+    var index = -1;
+    tabs.forEach((aItem, aIndex) => {
+      if (aItem.getNode().getAttribute("selected") === "true") {
+        index = aIndex;
+      }
+    });
+
+    return index;
   },
 
   /**
-   * Returns the tab at the selected index
+   * Select the tab with the given index
    *
-   * @returns {ElemBase} Tab at the selected index
+   * @param {number} aIndex
+   *        Index of the tab which should be selected
    */
   set selectedIndex(aIndex) {
-    // Bug 968079
-    // TODO: Update the code to use UI elements
-    return this._controller.tabs.selectTabIndex(aIndex);
+    this.getTab(aIndex).tap();
+    assert.waitFor(() => (this.selectedIndex === aIndex),
+                   "The tab with index '" + aIndex + "' has been selected");
   },
 
   /**
@@ -107,71 +113,84 @@ TabBrowser.prototype = {
   /**
    * Retrieve list of UI elements based on the given specification
    *
-   * @param {Object} aSpec
+   * @param {object} aSpec
    *        Information of the UI elements which should be retrieved
-   * @param {Object} type
-   *        General type information
-   * @param {Object} subtype
-   *        Specific element or property
-   * @param {Object} value
-   *        Value of the element or property
+   * @param {object} type
+   *        Identifier of the element
+   * @param {object} [subtype=""]
+   *        Attribute of the element to filter
+   * @param {object} [value=""]
+   *        Value of the attribute to filter
+   * @param {object} [parent="tabs-container"]
+   *        Parent of the element to find
    *
    * @returns {Object[]} Array of elements which have been found
    */
   getElements : function tabBrowser_getElements(aSpec) {
-    var elem = null;
-    var document = this._controller.window.document;
+    var spec = aSpec || { };
+    var type = spec.type;
+    var subtype = spec.subtype;
+    var value = spec.value;
+    var parent = spec.parent;
+    var elems = null;
 
-    switch(aSpec.type) {
+    var root = parent ? parent : this._root.getNode();
+    var nodeCollector = new domUtils.nodeCollector(root);
+
+    switch(spec.type) {
       case "closeButton":
-        var node = document.getAnonymousElementByAttribute(this.getTab(),
-                                                           "anonid", "close");
-        elem = new findElement.Elem(node);
+        assert.ok(value, "Parent of the button has been specified");
+        nodeCollector.root = value.getNode();
+        nodeCollector.queryAnonymousNode("anonid", "close");
+        elems = nodeCollector.elements;
         break;
       case "newTabButton":
-        elem = new findElement.ID(document, "newtab-button");
+        elems = [new findElement.ID(this._controller.window.document, "newtab-button")];
         break;
+      // TODO: Move sidebar elements to a more specific place for them
       case "sidebar_backButton":
-        elem = new findElement.ID(document, "overlay-back");
+        elems = [new findElement.ID(this._controller.window.document, "overlay-back")];
         break;
       case "sidebar_newTabButton":
-        elem = new findElement.ID(document, "overlay-plus");
+        elems = [new findElement.ID(this._controller.window.document, "overlay-plus")];
         break;
       case "tabsContainer":
-        elem = new findElement.ID(document, "tabs-container");
+        elems = [new findElement.ID(this._controller.window.document, "tabs-container")];
         break;
       case "tabs":
-        // Bug 968079
-        // TODO: Update the code to use UI elements instead of strip
-        var tabs = new findElement.ID(document, "tabs");
-        var root = tabs.getNode().strip;
-        var nodeCollector = new domUtils.nodeCollector(root);
-        elem = nodeCollector.queryNodes("documenttab");
+        nodeCollector.root = nodeCollector.queryNodes("#tabs").nodes[0];
+        nodeCollector.queryAnonymousNode("anonid", "tabs-scrollbox");
+        nodeCollector.root = nodeCollector.nodes[0];
+        nodeCollector.queryNodes("documenttab");
+        elems = nodeCollector.elements;
         break;
       case "tray":
-        elem = new findElement.ID(document, "tray");
+        elems = [new findElement.ID(this._controller.window.document, "tray")];
         break;
       default:
-        throw new Error("Unknown element type - " + aSpec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
-    return [elem];
+    return elems;
   },
 
   /**
    * Get the tab at the specified index
    *
-   * @param {number} aIndex
+   * @param {number} [aIndex=this.selectedIndex]
    *        Index of the tab
    *
    * @returns {ElemBase} The requested tab
    */
   getTab : function tabBrowser_getTab(aIndex) {
-    if (aIndex === undefined)
+    if (aIndex === undefined) {
       aIndex = this.selectedIndex;
+    }
 
-    var tabsList = this.getElement({type: "tabs"});
-    return tabsList.nodes[aIndex];
+    var tabList = this.getElements({type: "tabs"});
+    assert.ok(tabList[aIndex] && tabList[aIndex].exists(),
+              "Tab with index '" + aIndex + "' has been found.");
+    return tabList[aIndex];
   },
 
   /**
@@ -234,7 +253,7 @@ TabBrowser.prototype = {
 
     // Add event listener to wait until the tab has been opened
     this._controller.window.addEventListener("TabOpen", checkTabOpened);
-    this._tabsContainerNode.addEventListener("animationend", checkTabAnimationEnd);
+    this._root.getNode().addEventListener("animationend", checkTabAnimationEnd);
 
     try {
       switch (type) {
@@ -266,7 +285,7 @@ TabBrowser.prototype = {
     }
     finally {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened);
-      this._tabsContainerNode.removeEventListener("animationend", checkTabAnimationEnd);
+      this._root.getNode().removeEventListener("animationend", checkTabAnimationEnd);
     }
   },
 
@@ -303,7 +322,7 @@ TabBrowser.prototype = {
     function checkTabAnimationEnd() { self.animationend = true; }
 
     this._controller.window.addEventListener("TabClose", checkTabClosed, false);
-    this._tabsContainerNode.addEventListener("animationend", checkTabAnimationEnd);
+    this._root.getNode().addEventListener("animationend", checkTabAnimationEnd);
 
     if (aIndex !== undefined) {
       this.selectedIndex = aIndex;
@@ -330,7 +349,7 @@ TabBrowser.prototype = {
     }
     finally {
       this._controller.window.removeEventListener("TabClose", checkTabClosed, false);
-      this._tabsContainerNode.removeEventListener("animationend", checkTabAnimationEnd);
+      this._root.getNode().removeEventListener("animationend", checkTabAnimationEnd);
     }
   }
 };
