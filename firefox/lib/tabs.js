@@ -547,6 +547,11 @@ tabBrowser.prototype = {
       case "closeButton":
         var button = this.getElement({type: "tabs_tabCloseButton",
                                      subtype: "tab", value: this.getTab()});
+
+        // Wait for the button to be displayed
+        assert.waitFor(() => utils.isDisplayed(this._controller, button),
+                       "Close button is visible");
+
         this._controller.click(button);
         break;
       case "menu":
