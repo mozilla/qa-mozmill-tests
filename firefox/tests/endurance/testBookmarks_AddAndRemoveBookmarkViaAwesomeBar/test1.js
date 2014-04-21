@@ -44,7 +44,10 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);
     });
-    controller.click(starButton);
+    // Click on the bookmark button and wait for the animation
+    locationBar.bookmarkWithAnimation(() => {
+      starButton.click();
+    });
 
     // Wait for the bookmark event
     assert.waitFor(function () {
