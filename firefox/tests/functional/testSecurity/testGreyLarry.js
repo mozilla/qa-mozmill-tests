@@ -83,3 +83,4 @@ function checkSecurityTab(controller) {
   controller.keypress(null, 'VK_ESCAPE', {});
 }
 
+setupModule.__force_skip__ = "Bug 994040 - Notification popup visibility state has been changed";

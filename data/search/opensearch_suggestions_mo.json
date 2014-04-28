@@ -1,0 +1,23 @@
+["mo",
+  [
+    "mozilla thunderbird",
+    "mozilla firefox 2012 free",
+    "mozilla firefox for mac",
+    "Mozilla Foundation",
+    "Mozilla Application Suite"
+  ],
+  [
+    "20000 results",
+    "10000 results",
+    "5000 results",
+    "1000 results",
+    "100 results"
+  ],
+  [
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=mozilla+thunderbird",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=mozilla+firefox+2012+free",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=mozilla+firefox+for+mac",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Mozilla+Foundation",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Mozilla+Application+Suite"
+  ]
+]

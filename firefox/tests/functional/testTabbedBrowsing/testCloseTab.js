@@ -52,4 +52,3 @@ var testCloseTab = function() {
     return tabBrowser.length === 1;
   }, "One tab has been closed via keyboard shortcut");
 }
-
