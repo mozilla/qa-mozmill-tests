@@ -12,9 +12,9 @@ var utils = require("../../../lib/utils");
 
 const TEST_DATA = [
   // Phishing url
-  "http://www.mozilla.org/firefox/its-a-trap.html",
+  "https://www.itisatrap.org/firefox/its-a-trap.html",
   // Malware url
-  "http://www.mozilla.org/firefox/its-an-attack.html"
+  "https://www.itisatrap.org/firefox/its-an-attack.html"
 ];
 
 var setupModule = function(aModule) {
@@ -25,7 +25,7 @@ var setupModule = function(aModule) {
 
 function teardownModule(aModule) {
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.org", "safe-browsing");
+  utils.removePermission("www.itisatrap.org", "safe-browsing");
 }
 
 var testWarningPages = function() {
@@ -116,5 +116,5 @@ var checkIgnoreWarningButton = function(url) {
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 
   // Clear the Safe Browsing permission
-  utils.removePermission("www.mozilla.org", "safe-browsing");
+  utils.removePermission("www.itisatrap.org", "safe-browsing");
 }
