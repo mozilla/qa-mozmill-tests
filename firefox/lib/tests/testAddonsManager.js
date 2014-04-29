@@ -7,7 +7,7 @@ var addons = require("../addons");
 var { expect } = require("../../../lib/assertions");
 
 const MOZMILL = {
-  name : "MozMill",
+  name : "Mozmill",
   id : "mozmill@mozilla.com"
 };
 
@@ -20,6 +20,25 @@ const SEARCH_ADDON = {
 function setupModule() {
   controller = mozmill.getBrowserController();
   am = new addons.AddonsManager(controller);
+}
+
+function teardownTest() {
+  // Force close the Add-ons Manager
+  am.close(true);
+}
+
+function testOpenAMO() {
+  // Open AMO with an about:newtab tab opened
+  this.controller.mainMenu.click("#menu_newNavigatorTab");
+  am.open();
+  expect.ok(am.isOpen, "Add-ons Manager is opened.");
+
+  // Open AMO while an instance it's already opened
+  am.open();
+  expect.ok(am.isOpen, "Add-ons Manager is opened.");
+
+  am.close();
+  expect.ok(!am.isOpen, "Add-ons Manager is closed.");
 }
 
 function testAddonsAPI() {
