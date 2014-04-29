@@ -55,11 +55,11 @@ var testSearchAddons = function () {
             "Number of addons are less or equal than: " + NUMBER_OF_MAX_RESULTS);
 
   // Verify that clicking the 'Show All Results' link opens a new tab on AMO
+  var amoIndex = tabBrowser.selectedIndex;
   var allResultsLink = am.getElements({type:"allResults"})[0];
   controller.click(allResultsLink);
-  assert.waitFor(function () {
-    return tabBrowser.selectedIndex === 2;
-  }, "Show all results tab has been selected");
+  assert.waitFor(() => tabBrowser.selectedIndex === amoIndex + 1,
+                 "Show all results tab has been selected");
   controller.waitForPageLoad();
 
   // Verify that the URL contains an AMO address
