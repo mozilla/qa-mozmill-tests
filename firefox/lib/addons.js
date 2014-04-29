@@ -156,9 +156,19 @@ AddonsManager.prototype = {
           assert.fail("Unknown event type - " + event.type);
       }
 
-      assert.waitFor(function () {
-        return self.transitioned;
-      }, "Add-ons Manager has been opened");
+      try {
+        assert.waitFor(() => self.transitioned && this.isOpen,
+                       "Add-ons Manager has been opened");
+      }
+      catch (e) {
+        // If Addons manager is opened but there is no transitioned flag
+        // either it was already opened or has opened in the current tab
+        if (this.isOpen && !self.transitioned) {
+          return;
+        }
+
+        throw e;
+      }
 
       if (waitFor) {
         tab = this.waitForOpened();
