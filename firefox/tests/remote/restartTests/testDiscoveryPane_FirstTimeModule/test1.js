@@ -15,7 +15,7 @@ const PREF_ADDONS_CACHE_ENABLED = "extensions.getAddons.cache.enabled";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
-const INSTALL_DIALOG_DELAY = 1000;
+const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const INSTALL_SOURCE = "discovery-promo";

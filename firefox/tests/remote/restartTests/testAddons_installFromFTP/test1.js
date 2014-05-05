@@ -12,7 +12,7 @@ var tabs = require("../../../../lib/tabs");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
-const INSTALL_DIALOG_DELAY = 1000;
+const INSTALL_DIALOG_DELAY = 250;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = [
