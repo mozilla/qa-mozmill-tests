@@ -334,9 +334,27 @@ engineManager.prototype = {
     var md = new modalDialog.modalDialog(this._controller.window);
     md.start(this._handleEngineInstall);
 
-    aAddEngineCallback();
+    var engineAdded = false;
+    var observer = {
+      observe: (aSubject, aTopic, aData) => {
+        if (aData === "engine-added") {
+          engineAdded = true;
+        }
+      }
+    };
 
-    md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
+    Services.obs.addObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED, false);
+    try {
+      aAddEngineCallback();
+
+      md.waitForDialog(TIMEOUT_INSTALL_DIALOG);
+
+      assert.waitFor(() =>  engineAdded,
+                     "Search engine '" + aName + "' has been installed");
+    }
+    finally {
+      Services.obs.removeObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED);
+    }
 
     // Check if the local engine has been installed
     var searchBarInstance = new searchBar(this._controller);
