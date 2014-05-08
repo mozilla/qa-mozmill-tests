@@ -10,12 +10,22 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
 }
 
 var teardownModule = function(aModule) {
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+
   // Bug 867217
   // Mozmill 1.5 does not have the restartApplication method on the controller.
   // Remove condition when transitioned to 2.0

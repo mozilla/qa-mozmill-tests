@@ -20,11 +20,21 @@ const WINDOW_CURRENT = domUtils.DOMWalker.WINDOW_CURRENT;
 const WINDOW_MODAL= domUtils.DOMWalker.WINDOW_MODAL;
 const WINDOW_NEW = domUtils.DOMWalker.WINDOW_NEW;
 
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
+
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
   // Bug 886811
   // Mozmill 1.5 does not have the stopApplication method on the controller.
   // Remove condition when transitioned to 2.0
