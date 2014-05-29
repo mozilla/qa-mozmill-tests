@@ -71,3 +71,6 @@ function testInstallAddonWithEULA() {
 
   locationBar.waitForNotification("notification_popup", true);
 }
+
+setupModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
+teardownModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
