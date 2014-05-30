@@ -606,6 +606,45 @@ locationBar.prototype = {
   },
 
   /**
+   * Reload the currently open web page
+   *
+   * @param {object} aSpec
+   *        Information for the reload event
+   * @param {string} [aSpec.eventType="shortcut"]
+   *        Type of event which triggers the action
+   * @param {boolean} [aSpec.aForce=false]
+   *        Value if the reload will be forced
+   */
+  reload : function locationBar_reload(aSpec) {
+    var spec = aSpec || {};
+    var type = spec.eventType || "shortcut";
+    var forceReload = !!spec.aForce;
+    var urlbar = this.getElement({type: "urlbar"});
+
+    switch (type) {
+      case "button":
+        var reloadButton = this.getElement({type: "reloadButton"});
+        // Bug 980794
+        // Extend the new mouse events to accept modifier keys
+        // Once fixed, replace this with the standard click() event
+        reloadButton.mouseEvent(undefined, undefined, {
+          clickCount: 1,
+          shiftKey: forceReload
+        });
+        break;
+      case "shortcut":
+        var cmdKey = utils.getEntity(this.getDtds(), "reloadCmd.commandkey");
+        urlbar.keypress(cmdKey, {accelKey: true, shiftKey: forceReload});
+        break;
+      case "shortcut2":
+        urlbar.keypress("VK_F5", {shiftKey: forceReload});
+        break;
+      default:
+        throw new Error("Unknown event type - " + type);
+    }
+  },
+
+  /**
    * Type the given text into the location bar
    *
    * @param {string} text
