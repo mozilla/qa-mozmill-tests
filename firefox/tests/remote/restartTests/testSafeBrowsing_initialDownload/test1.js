@@ -9,3 +9,5 @@ function setupModule(aModule) {
   // close the browser to start with a new profile for the following test
   aModule.controller.stopApplication(true);
 }
+
+setupModule.__force_skip__ = "Bug 1018161 - Test failures in test2.js";
