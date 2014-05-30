@@ -11,9 +11,9 @@ const TEST_DATA = [
   // Invalid cert page
   "https://summitbook.mozilla.org",
   // Secure page
-  "https://addons.mozilla.org/licenses/5.txt",
+  "https://addons.mozilla.org/en-US/licenses/5.txt",
   // Unsecure page
-  "http://www.mozilla.org"
+  "http://www.mozqa.com"
 ];
 
 var setupModule = function(aModule) {
