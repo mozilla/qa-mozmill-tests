@@ -26,12 +26,7 @@ function teardownModule(aModule) {
   prefs.preferences.clearUserPref(BROWSER_STARTUP_PAGE);
   prefs.preferences.clearUserPref(PROXY_TYPE);
 
-  // Bug 886811
-  // Mozmill 1.5 does not have the stopApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("stopApplication" in aModule.controller) {
-    aModule.controller.stopApplication(true);
-  }
+  aModule.controller.stopApplication(true);
 }
 
 /**
