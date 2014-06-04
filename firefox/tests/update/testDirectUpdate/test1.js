@@ -34,10 +34,5 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 886811
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // startUserShutdown is broken in mozmill-2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
+  aModule.controller.restartApplication();
 }
