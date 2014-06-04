@@ -25,18 +25,7 @@ function testArchitecture32bit() {
  * Restart in 64 bit mode
  */
 function teardownModule(aModule) {
-  // Bug 886811
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // startUserShutdown is broken in mozmill-2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication(null, Ci.nsIAppStartup.eRestartx86_64);
-  }
-  else {
-    aModule.controller.startUserShutdown(4000, true);
-    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit |
-                          Ci.nsIAppStartup.eRestart |
-                          Ci.nsIAppStartup.eRestartx86_64);
-  }
+  aModule.controller.restartApplication(null, Ci.nsIAppStartup.eRestartx86_64);
 }
 
 if (persisted.skipTests) {
