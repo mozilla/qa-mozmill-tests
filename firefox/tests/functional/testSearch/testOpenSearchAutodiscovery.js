@@ -50,8 +50,7 @@ var testOpenSearchAutodiscovery = function() {
 
   assert.waitFor(function () {
     return searchBar.selectedEngine === SEARCH_ENGINE.name;
-  }, "Search engine has been installed and selected - got '" + searchBar.selectedEngine +
-    "', expected '" + SEARCH_ENGINE.name + "'", TIMEOUT_INSTALLATION);
+  }, "Search engine has been installed and selected - expected '" + SEARCH_ENGINE.name + "'", TIMEOUT_INSTALLATION);
 
   // Check if a search redirects to the YouTube website
   searchBar.search({text: "Firefox", action: "goButton"});
