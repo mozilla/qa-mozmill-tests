@@ -53,7 +53,7 @@ function testSaveFormInformation() {
 
   assert.waitFor(function() {
     return popDownAutoCompList.getNode().popupOpen;
-  }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
+  }, "Autocomplete popup is open: expected 'true'");
 
   controller.keypress(firstName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);
@@ -64,7 +64,7 @@ function testSaveFormInformation() {
 
   assert.waitFor(function() {
   return popDownAutoCompList.getNode().popupOpen;
-  }, "Autocomplete popup is open: got '" + popDownAutoCompList.getNode().popupOpen + "', expected 'true'");
+  }, "Autocomplete popup is open: expected 'true'");
 
   controller.keypress(lastName, "VK_DOWN", {});
   controller.click(popDownAutoCompList);

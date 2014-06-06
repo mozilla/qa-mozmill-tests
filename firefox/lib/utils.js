@@ -137,8 +137,7 @@ function assertLoadedUrlEqual(controller, targetUrl) {
   // Check the same web page has been opened
   assert.waitFor(function () {
     return locationBar.getNode().value === currentURL;
-  }, "Current URL should be identical to the target URL - got " +
-     locationBar.getNode().value + ", expected " + currentURL);
+  }, "Current URL should be identical to the target URL - expected " + currentURL);
 }
 
 /**
