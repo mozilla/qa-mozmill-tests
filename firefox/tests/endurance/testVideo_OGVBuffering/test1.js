@@ -27,9 +27,9 @@ function teardownModule(aModule) {
 function testVideo_OGVBuffering() {
   enduranceManager.run(function () {
     // Clearing the cache between iterations
-    var cs = Cc["@mozilla.org/network/cache-service;1"].
-             getService(Ci.nsICacheService);
-    cs.evictEntries(Ci.nsICache.STORE_ANYWHERE);
+    var cs = Cc["@mozilla.org/netwerk/cache-storage-service;1"].
+             getService(Ci.nsICacheStorageService);
+    cs.clear();
 
     enduranceManager.addCheckpoint("Load a web page with HTML5 Video");
     controller.open(TEST_DATA);
@@ -58,10 +58,3 @@ function testVideo_OGVBuffering() {
     enduranceManager.addCheckpoint("Video has started playing");
   });
 }
-
-setupModule.__force_skip__ = "Bug 1021728 - Component returned failure code: " +
-                             "0x80004001 (NS_ERROR_NOT_IMPLEMENTED) " +
-                             "[nsICacheService.evictEntries]";
-teardownModule.__force_skip__ = "Bug 1021728 - Component returned failure code: " +
-                                "0x80004001 (NS_ERROR_NOT_IMPLEMENTED) " +
-                                "[nsICacheService.evictEntries]";
