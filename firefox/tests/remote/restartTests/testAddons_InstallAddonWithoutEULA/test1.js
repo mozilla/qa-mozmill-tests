@@ -73,3 +73,7 @@ function testInstallAddonWithEULA() {
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
+
+setupModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
+teardownModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
+

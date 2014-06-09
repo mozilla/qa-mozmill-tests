@@ -7,12 +7,26 @@ var {expect} = require("../../../lib/assertions");
 var toolbars = require("../toolbars");
 var utils = require("../utils");
 
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = BASE_URL + "layout/mozilla.html";
+
+const METHODS = ["shortcut", "shortcut2", "button"];
+
 var setupModule = function(module) {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 }
 
 var testLocationBarAPI = function() {
+  // Test reload
+  METHODS.forEach((aMethod) => {
+    locationBar.reload({type: aMethod});
+    controller.waitForPageLoad();
+
+    locationBar.reload({type: aMethod, force: true});
+    controller.waitForPageLoad();
+  });
+
   // Test access to available elements
   var input = locationBar.getElement({type: "urlbar_input"});
   expect.equal(input.getNode().localName, "input");

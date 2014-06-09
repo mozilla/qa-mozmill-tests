@@ -58,3 +58,10 @@ function testVideo_OGVBuffering() {
     enduranceManager.addCheckpoint("Video has started playing");
   });
 }
+
+setupModule.__force_skip__ = "Bug 1021728 - Component returned failure code: " +
+                             "0x80004001 (NS_ERROR_NOT_IMPLEMENTED) " +
+                             "[nsICacheService.evictEntries]";
+teardownModule.__force_skip__ = "Bug 1021728 - Component returned failure code: " +
+                                "0x80004001 (NS_ERROR_NOT_IMPLEMENTED) " +
+                                "[nsICacheService.evictEntries]";
