@@ -434,19 +434,22 @@ LocationBar.prototype = {
    *
    * @param {Object} aSpec
    *        Information of the UI elements which should be retrieved
-   * @param {Object} type
+   * @param {Object} aSpec.type
    *        General type information
-   * @param {Object} subtype
+   * @param {Object} [aSpec.subtype]
    *        Specific element or property
-   * @param {Object} value
+   * @param {Object} [aSpec.value]
    *        Value of the element or property
-   *
+   * @param {Object} [aSpec.parent=document]
+   *        Parent of the element to find
    * @returns {Object[]} Array of elements which have been found
    */
   getElements : function locationBar_getElements(aSpec) {
+    var spec = aSpec || {};
+    var parent = spec.parent;
     var elem = null;
 
-    switch(aSpec.type) {
+    switch (spec.type) {
       case "backButton":
         elem = new findElement.ID(this._controller.window.document, "back-button");
         break;
@@ -466,7 +469,7 @@ LocationBar.prototype = {
         elem = new findElement.ID(this.controller.window.document, "urlbar-edit");
         break;
       default:
-        throw new Error("Unknown element type - " + aSpec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return [elem];
@@ -552,6 +555,106 @@ LocationBar.prototype = {
 };
 
 /**
+ * Notification bar class
+ * @constructor
+ *
+ * @param {Object} aToolBar
+ *        Instance of the ToolBar class
+ */
+
+function NotificationBar(aToolBar) {
+  this.toolbar = aToolBar;
+  this._controller = aToolBar.controller;
+}
+
+NotificationBar.prototype = {
+  /**
+   * Returns the controller of the class instance
+   *
+   * @returns {MozMillController} Controller of the window
+   */
+  get controller() {
+    return this._controller;
+  },
+
+  /**
+   * Retrieve an UI element based on the given specification
+   *
+   * @param {Object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @param {Object} aSpec.type
+   *        Identifier of the element
+   *
+   * @returns {Object} Element which has been found
+   */
+  getElement : function notificationBar_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve list of UI elements based on the given specification
+   *
+   * @param {Object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @param {Object} aSpec.type
+   *        General type information
+   *
+   * @returns {Object[]} Array of elements which have been found
+   */
+  getElements : function notificationBar_getElements(aSpec) {
+    var spec = aSpec || {};
+    var elem = null;
+
+    switch (spec.type) {
+      case "notification":
+        assert.ok(spec.subtype, "Type of notification has been specified");
+        elem = new findElement.Selector(this._controller.window.document,
+                                        "notification[value='" + spec.subtype + "']");
+        break;
+      case "button":
+        assert.ok(spec.subtype, "Type of button has been specified");
+        elem = new findElement.Selector(this._controller.window.document,
+                                        "button[label='" + spec.subtype + "']");
+        break;
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return [elem];
+  },
+
+  /**
+   * Waits for the given notification popup
+   *
+   * @param {String} aType
+   *        Type of the notification bar to look for
+   * @param {Function} aCallback
+   *        Function that triggers the notification to open
+   */
+  waitForNotification : function notificationBar_waitForNotification(aType, aCallback) {
+    assert.equal(typeof aCallback, "function", "Callback is a function");
+
+    var alertActive = false;
+    function onAlertActive() { alertActive = true; }
+    this.controller.window.document.addEventListener("AlertActive", onAlertActive);
+
+    try {
+      aCallback();
+
+      assert.waitFor(() => alertActive, "Notification bar has been opened");
+    }
+    finally {
+      this.controller.window.document.removeEventListener("AlertActive", onAlertActive);
+    }
+
+    assert.ok(this.getElement({type: "notification", subtype: aType}).exists(),
+              "Correct notification is shown");
+  }
+}
+
+/**
  * Constructor
  */
 function ToolBar(aController) {
@@ -563,6 +666,7 @@ function ToolBar(aController) {
   this.downloads = new Downloads(this);
   this.findBar = new FindBar(this);
   this.locationBar = new LocationBar(this);
+  this.notificationBar = new NotificationBar(this);
 }
 
 /**

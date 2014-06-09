@@ -8,29 +8,22 @@
 var { assert } = require("../../../../lib/assertions");
 var search = require("../../../lib/search");
 
+const BASE_URL = collector.addHttpResource("../../../../data/");
+const SEARCH_ENGINES = [
+  { name: "mozqa.com", url: BASE_URL + "search/mozsearch.html" },
+  { name: "OpenSearch Test", url: BASE_URL + "search/opensearch.html" }
+];
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
+  aModule.engineManager = new search.engineManager(aModule.controller);
   aModule.searchBar = new search.searchBar(aModule.controller);
-  aModule.searchEngines = aModule.searchBar.visibleEngines;
-
-  // Get search engines that support suggestions
-  aModule.enginesWithSuggestions = [ ];
-  for (var i = 0; i < aModule.searchEngines.length; i++) {
-    if (aModule.searchBar.hasSuggestions(aModule.searchEngines[i].name))
-      aModule.enginesWithSuggestions.push(aModule.searchEngines[i]);
-  }
-
-  // Skip test if we have less than 2 search engines with suggestions
-  if (aModule.enginesWithSuggestions.length < 2)
-    testMultipleEngines.__force_skip__ = "At least two search engines with " +
-                                         "suggestions are necessary for " +
-                                         "comparison";
 }
 
 function teardownModule(aModule) {
   aModule.searchBar.clear();
+  aModule.searchBar.restoreDefaultEngines();
 }
 
 /**
@@ -41,24 +34,25 @@ function testMultipleEngines() {
   var suggestionsForEngine;
   var searchEngines = [ ];
 
-  // Get suggested auto-complete results for two engines
-  for (var i = 0; i < enginesWithSuggestions.length; i++) {
-    searchBar.clear();
+  SEARCH_ENGINES.forEach((aEngine) => {
+    engineManager.installFromUrl(aEngine.name, aEngine.url, function () {
+      var addButton = new elementslib.Name(controller.tabs.activeTab, "add");
+      addButton.click();
+    });
+  });
 
-    // Select search engine
-    searchBar.selectedEngine = enginesWithSuggestions[i].name;
+  // Get suggested auto-complete results for two engines
+  SEARCH_ENGINES.forEach((aEngine) => {
+    searchBar.clear();
+    searchBar.selectedEngine = aEngine.name;
 
     // Get suggestions
-    suggestionsForEngine = searchBar.getSuggestions("Moz");
+    suggestionsForEngine = searchBar.getSuggestions("mo");
     if (suggestionsForEngine.length !== 0) {
       allSuggestions.push(suggestionsForEngine);
       searchEngines.push(searchBar.selectedEngine);
     }
-
-    // Exit the for loop in case we have suggestions for 2 engines
-    if (allSuggestions.length === 2)
-      break;
-  }
+  });
 
   assert.equal(allSuggestions.length, 2,
                "Suggestions from two search engines are available");
@@ -76,8 +70,3 @@ function testMultipleEngines() {
   assert.ok(different, "Suggestions " + allSuggestions[0].join(", ") + " from " +
             searchEngines[0] + " and " + searchEngines[1] + " search providers are different");
 }
-
-setupModule.__force_skip__ = "Bug 942737 - Test failure 'Suggestions from two " +
-                             "search engines are available - '1' should equal '2'";
-teardownModule.__force_skip__ = "Bug 942737 - Test failure 'Suggestions from two " +
-                                "search engines are available - '1' should equal '2'";

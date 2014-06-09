@@ -60,9 +60,16 @@ function testInstallAddonWithEULA() {
   var md = new modalDialog.modalDialog(controller.window);
 
   // Install the add-on
-  md.start(addons.handleInstallAddonDialog);
-  controller.click(addButton);
-  md.waitForDialog(TIMEOUT_DOWNLOAD);
+  md.start(aController => {
+    // Wait for the 'addon-install-complete' notification to show
+    locationBar.waitForNotificationPanel(() => {
+      addons.handleInstallAddonDialog(aController);
+    }, {type: "notification"});
+  });
 
-  locationBar.waitForNotification("notification_popup", true);
+  locationBar.waitForNotificationPanel(() => {
+    addButton.click();
+  }, {type: "notification"});
+
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 }

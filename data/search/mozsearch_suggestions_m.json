@@ -1,0 +1,23 @@
+["m",
+  [
+    "Mollusca",
+    "Moth",
+    "Mexico",
+    "MidFielder",
+    "Marriage"
+  ],
+  [
+    "10000 results",
+    "5000 results",
+    "1000 results",
+    "400 results",
+    "100 results"
+  ],
+  [
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Mollusca",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Moth",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Mexico",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=MidFielder",
+    "http://mozqa.com/data/firefox/search/searchresults.html?q=Marriage"
+  ]
+]

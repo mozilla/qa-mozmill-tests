@@ -38,11 +38,16 @@ function teardownModule(aModule) {
  * Test displaying geolocation notification
  */
 function testVerifyDisplayGeolocationNotification() {
-  controller.open(TEST_DATA);
-  controller.waitForPageLoad();
+  // Wait for the notification to be opened and check its icon in the location bar
+  locationBar.waitForNotificationPanel(() => {
+    controller.open(TEST_DATA);
+    controller.waitForPageLoad();
+  }, {type: "notification"});
 
-  // Wait for the notification to be opened and check it's icon in the location bar
-  locationBar.waitForNotification("notification_popup", true, "geo");
+  // Check the geolocation icon is visible in the location bar
+  var geolocationIcon = locationBar.getElement({type: "notificationIcon",
+                                                subtype: "geo"});
+  expect.ok(geolocationIcon.getNode(), "The notification icon has been found");
 
   // Check the icon inside the popup notification exists
   var icon = locationBar.getNotificationElement("geolocation-notification",
@@ -56,10 +61,10 @@ function testVerifyDisplayGeolocationNotification() {
                                                   {type: "label", value: locationLabel});
   expect.ok(button, "'Share location' button appears in the notification popup");
 
-  controller.click(button);
-
   // Wait for the notification to unload
-  locationBar.waitForNotification("notification_popup", false);
+  locationBar.waitForNotificationPanel(() => {
+    button.click();
+  }, {type: "notification", open: false});
 
   // Check if the location is displayed
   // The position updates lazily so additional timeout is needed
