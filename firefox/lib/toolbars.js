@@ -511,6 +511,10 @@ locationBar.prototype = {
         return [new elementslib.ID(root, "identity-box")];
       case "identityPopup":
         return [new elementslib.ID(root, "identity-popup")];
+      case "notificationPopup_menuItem":
+        nodeCollector.queryNodes("menuitem").filterByDOMProperty(spec.subtype,
+                                                                 spec.value);
+        break;
       case "notification_element":
         nodeCollector.queryNodes("#" + spec.subtype);
         break;
