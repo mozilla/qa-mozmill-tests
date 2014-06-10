@@ -44,6 +44,3 @@ function testInstallAddonWithoutEULA() {
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),
             "The add-on has been correctly installed");
 }
-
-setupModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
-teardownModule.__force_skip__ = "Bug 1016988 - aWindow.QueryInterface is not a function";
