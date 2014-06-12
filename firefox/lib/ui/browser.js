@@ -14,6 +14,7 @@ var windows = require("../../../lib/windows");
 
 var baseWindow = require("../../../lib/ui/base-window");
 var pageInfo = require("page-info");
+var placesOrganizer = require("places-organizer");
 var unknownContentTypeDialog = require("unknown-content-type-dialog");
 
 /**
@@ -165,6 +166,74 @@ BrowserWindow.prototype.openPageInfoWindow = function BW_openPageInfoWindow(aSpe
   }
 
   return pageInfo.open(callback);
+}
+
+/**
++ * Open the places organizer window
++ *
++ * @param {object} [aSpec]
++ *        Information for opening the window
++ * @param {string} [aSpec.type="shortcut"]
++ *        How to open the Library Window ("menu", "shortcut")
++ * @param {string} [aSpec.location="bookmarks"]
++ *        Which pane to be selected after opening the window
++ *        ("bookmarks", "downloads", "history", "tags")
++ *
++ * @returns {PlacesOrganizerWindow} New instance of PlacesOrganizerWindow
++ */
+BrowserWindow.prototype.openPlacesOrganizer = function BW_openPlacesOrganizer(aSpec={}) {
+  var type = aSpec.type || "shortcut";
+  var location = aSpec.location || "bookmarks";
+  var shiftKey = true;
+  var cmdKey = null;
+  var menuItem = null;
+
+  switch (location) {
+    case "bookmarks":
+      if (mozmill.isLinux) {
+        cmdKey = this.getEntity("bookmarksGtkCmd.commandkey");
+      }
+      else {
+        cmdKey = this.getEntity("bookmarksCmd.commandkey");
+      }
+      menuItem = "#bookmarksShowAll";
+      break;
+    case "downloads":
+      if (mozmill.isLinux) {
+        cmdKey = this.getEntity("downloadsUnix.commandkey");
+      }
+      else {
+        cmdKey = this.getEntity("downloads.commandkey");
+        shiftKey = false;
+      }
+      menuItem = "#menu_openDownloads";
+      break;
+    case "history":
+      cmdKey = this.getEntity("showAllHistoryCmd.commandkey");
+      menuItem = "#menu_showAllHistory";
+      break;
+    case "tags":
+      assert.fail("Opening the pane 'Tags' directly is not supported yet");
+      break;
+    default:
+      assert.fail("Unknown library location - " + location);
+  }
+
+  var callback = () => {
+    switch (type) {
+      case "menu":
+        this._controller.mainMenu.click(menuItem);
+        break;
+      case "shortcut":
+        this._controller.keypress(null, cmdKey, {accelKey: true,
+                                                 shiftKey: shiftKey});
+        break;
+      default:
+        assert.fail("Unknown event type - " + type);
+    }
+  };
+
+  return placesOrganizer.open(callback);
 }
 
 /**
