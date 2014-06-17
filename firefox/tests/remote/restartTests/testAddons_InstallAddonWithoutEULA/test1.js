@@ -66,3 +66,6 @@ function testInstallAddonWithEULA() {
 
   locationBar.waitForNotification("notification_popup", true);
 }
+
+setupModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
+teardownModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";

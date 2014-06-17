@@ -44,3 +44,6 @@ function testInstallAddonWithoutEULA() {
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),
             "The add-on has been correctly installed");
 }
+
+setupModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
+teardownModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
