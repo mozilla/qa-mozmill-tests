@@ -22,8 +22,8 @@ function setupModule(aModule) {
 
   // Clear complete form history so we don't interfere with already added entries
   try {
-    var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                      getService(Ci.nsIFormHistory2);
+    var formHistory = Cc["@mozilla.org/satchel/form-history;1"]
+                      .getService(Ci.nsIFormHistory2);
     formHistory.removeAllEntries();
   }
   catch (ex) {}

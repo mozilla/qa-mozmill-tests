@@ -9,8 +9,8 @@
  * @version 2.0.0
  */
 
-var observerService = Cc["@mozilla.org/observer-service;1"].
-                      getService(Ci.nsIObserverService);
+var observerService = Cc["@mozilla.org/observer-service;1"]
+                      .getService(Ci.nsIObserverService);
 
 // Include required modules
 var { assert } = require("../../../lib/assertions");

@@ -93,7 +93,7 @@ var appInfo = {
    */
   get locale() {
     var registry = Cc["@mozilla.org/chrome/chrome-registry;1"]
-                     .getService(Ci.nsIXULChromeRegistry);
+                   .getService(Ci.nsIXULChromeRegistry);
     return registry.getSelectedLocale("global");
   },
 
@@ -247,8 +247,8 @@ function createURI(spec, originCharset, baseURI) {
  * Empty the clipboard by assigning an empty string
  */
 function emptyClipboard() {
-  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].
-                  getService(Ci.nsIClipboardHelper);
+  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"]
+                  .getService(Ci.nsIClipboardHelper);
   clipboard.copyString("");
 }
 
@@ -311,7 +311,7 @@ function getEntity(urls, entityId) {
   }
 
   var parser = Cc["@mozilla.org/xmlextras/domparser;1"]
-                  .createInstance(Ci.nsIDOMParser);
+               .createInstance(Ci.nsIDOMParser);
   var header = '<?xml version="1.0"?><!DOCTYPE elem [' + extEntities + ']>';
   var elem = '<elem id="elementID">&' + entityId + ';</elem>';
   var doc = parser.parseFromString(header + elem, 'text/xml');
@@ -597,8 +597,8 @@ function updateBlocklist(aWait) {
   Services.obs.addObserver(updated, "blocklist-updated", false);
 
   try {
-    var blocklistService = Cc["@mozilla.org/extensions/blocklist;1"].
-                           getService(Ci.nsIBlocklistService);
+    var blocklistService = Cc["@mozilla.org/extensions/blocklist;1"]
+                           .getService(Ci.nsIBlocklistService);
     blocklistService.QueryInterface(Ci.nsITimerCallback).notify(null);
 
     if (wait) {

@@ -83,10 +83,10 @@ function softwareUpdate() {
   this._wizard = null;
   this._downloadDuration = -1;
 
-  this._aus = Cc["@mozilla.org/updates/update-service;1"].
-              getService(Ci.nsIApplicationUpdateService);
-  this._ums = Cc["@mozilla.org/updates/update-manager;1"].
-              getService(Ci.nsIUpdateManager);
+  this._aus = Cc["@mozilla.org/updates/update-service;1"]
+              .getService(Ci.nsIApplicationUpdateService);
+  this._ums = Cc["@mozilla.org/updates/update-manager;1"]
+              .getService(Ci.nsIUpdateManager);
 
   addons.submitInstalledAddons();
 }
@@ -110,8 +110,8 @@ softwareUpdate.prototype = {
     }
 
     if (mozmill.isMac) {
-      let macutils = Cc["@mozilla.org/xpcom/mac-utils;1"].
-                     getService(Ci.nsIMacUtils);
+      let macutils = Cc["@mozilla.org/xpcom/mac-utils;1"]
+                     .getService(Ci.nsIMacUtils);
 
       if (macutils.isUniversalBinary)
         abi += "-u-" + macutils.architecturesInBinary;
@@ -408,8 +408,8 @@ softwareUpdate.prototype = {
     var updateStatus = this.stagingDirectory;
     updateStatus.append("update.status");
 
-    var foStream = Cc["@mozilla.org/network/file-output-stream;1"].
-                   createInstance(Ci.nsIFileOutputStream);
+    var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
+                   .createInstance(Ci.nsIFileOutputStream);
     var status = "failed: 6\n";
     foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
     foStream.write(status, status.length);
@@ -535,8 +535,8 @@ softwareUpdate.prototype = {
       // });
 
       // For now just call the old ui until we have support for the about window.
-      var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"].
-                         createInstance(Ci.nsIUpdatePrompt);
+      var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"]
+                         .createInstance(Ci.nsIUpdatePrompt);
       updatePrompt.checkForUpdates();
     }
     else {

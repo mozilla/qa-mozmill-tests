@@ -15,8 +15,8 @@ var modalDialog = require("modal-dialog");
 var utils = require("utils");
 var widgets = require("widgets");
 
-var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"].
-                             getService(Ci.nsIAutoCompleteController);
+var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"]
+                             .getService(Ci.nsIAutoCompleteController);
 
 const TIMEOUT_REQUEST_SUGGESTIONS = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;

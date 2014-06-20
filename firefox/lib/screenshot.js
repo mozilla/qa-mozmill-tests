@@ -82,8 +82,8 @@ function _saveCanvas(canvas) {
   var target = Services.io.newFileURI(file)
 
   // prepare to save the canvas data
-  var wbPersist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"].
-                  createInstance(Ci.nsIWebBrowserPersist);
+  var wbPersist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                  .createInstance(Ci.nsIWebBrowserPersist);
 
   wbPersist.persistFlags = Ci.nsIWebBrowserPersist.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
   wbPersist.persistFlags |= Ci.nsIWebBrowserPersist.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
