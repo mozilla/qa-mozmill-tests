@@ -79,3 +79,6 @@ function testVerifyDisplayGeolocationNotification() {
     assert.fail("Geolocation position is: " + result.getNode().textContent);
   }
 }
+
+setupModule.__force_skip__ = "Bug 1028818 - Google geolocation API 'Daily Limit Exceeded'";
+teardownModule.__force_skip__ = "Bug 1028818 - Google geolocation API 'Daily Limit Exceeded'";
