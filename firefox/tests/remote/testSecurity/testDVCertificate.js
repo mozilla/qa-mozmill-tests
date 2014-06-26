@@ -65,11 +65,6 @@ var testLarryBlue = function() {
   expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the cert host");
 
-  var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
-  var property = utils.getProperty("chrome://browser/locale/browser.properties",
-                                   "identity.ownerUnknown2");
-  expect.equal(owner.getNode().textContent, property, "The owner identifier string is set");
-
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
