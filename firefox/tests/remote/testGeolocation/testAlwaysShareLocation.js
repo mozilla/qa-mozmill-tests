@@ -5,12 +5,12 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../../lib/prefs");
-var tabs = require("../../../../lib/tabs");
-var toolbars = require("../../../../lib/toolbars");
-var utils = require("../../../../lib/utils");
+var prefs = require("../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
+var toolbars = require("../../../lib/toolbars");
+var utils = require("../../../lib/utils");
 
-const BASE_URL = collector.addHttpResource("../../../../../data/");
+const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
   "geoRequest_url1" : BASE_URL + "geolocation/position.html",
   "geoRequest_url2" : "http://mozqa.com/data/firefox/geolocation/position.html",
