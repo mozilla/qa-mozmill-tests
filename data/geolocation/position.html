@@ -9,7 +9,22 @@
     }
 
     function handleError(error) {
-      result.innerHTML = error.message;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          result.innerHTML = "denied";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          result.innerHTML = "unavailable";
+          break;
+        case error.TIMEOUT:
+          result.innerHTML = "timed_out";
+          break;
+        case error.UNKNOWN_ERROR:
+          result.innerHTML = "unknown_error";
+          break;
+        default:
+          result.innerHTML = "Unknown error code: " + error.code;
+      }
     }
 
     function init() {
