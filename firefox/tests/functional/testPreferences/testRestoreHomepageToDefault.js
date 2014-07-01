@@ -100,3 +100,7 @@ var prefDialogDefHomePageCallback = function(controller) {
   prefDialog.close(true);
 }
 
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+}

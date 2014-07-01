@@ -38,3 +38,8 @@ function testHomeButton() {
   // Verify location bar with the saved home page
   utils.assertLoadedUrlEqual(controller, TEST_DATA);
 }
+
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+}
