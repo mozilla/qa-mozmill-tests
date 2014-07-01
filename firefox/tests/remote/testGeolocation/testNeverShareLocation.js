@@ -5,7 +5,6 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
@@ -13,22 +12,8 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
   "geoRequest_url1" : BASE_URL + "geolocation/position.html",
-  "geoRequest_url2" : "http://mozqa.com/data/firefox/geolocation/position.html",
-  "locations" : BASE_URL + "geolocation/locations/mozilla_san_francisco.json"
+  "geoRequest_url2" : "http://mozqa.com/data/firefox/geolocation/position.html"
 };
-
-const LOCATION = {
-  lat: 37.789543,
-  lng: -122.388813
-}
-
-const PREF_GEO_WIFI_URI = "geo.wifi.uri";
-
-const TIMEOUT_GEOLOCATE = 30000;
-
-function setupModule(aModule) {
-  prefs.preferences.setPref(PREF_GEO_WIFI_URI, TEST_DATA["locations"]);
-}
 
 function setupTest(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -52,7 +37,7 @@ function teardownTest(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_GEO_WIFI_URI);
+  aModule.tabBrowser.closeAllTabs();
 
   delete persisted.nextTest;
 
@@ -60,11 +45,11 @@ function teardownModule(aModule) {
 }
 
 /**
- * Bug 1008913
- * Add test to verify geolocation sharing option "Always Share Location"
+ * Bug 1008914
+ * Add test to verify geolocation sharing option "Never Share Location"
  */
-function testAlwaysShareLocation() {
-  persisted.nextTest = "testAlwaysShareLocationPersisted";
+function testNeverShareLocation() {
+  persisted.nextTest = "testNeverShareLocationPersisted";
 
   // Wait for the geo notification to be opened
   locationBar.waitForNotificationPanel(aPanel => {
@@ -74,25 +59,26 @@ function testAlwaysShareLocation() {
     controller.waitForPageLoad();
   }, {type: "notification"});
 
-  checkGeoNotificationOpened();
+  checkGeoNotificationOpen();
 
-  // Wait for the geo notification to unload
+  // Click on the "Never Share Location" item from the menu
+  // and wait for the geo notification to unload
   locationBar.waitForNotificationPanel(aPanel => {
     targetPanel = aPanel;
 
-    var alwaysLabel = utils.getProperty("chrome://browser/locale/browser.properties",
-                                        "geolocation.alwaysShareLocation");
-    var alwaysAllowMenuItem = locationBar.getElement({parent: aPanel,
-                                                      type: "notificationPopup_menuItem",
-                                                      subtype: "label",
-                                                      value: alwaysLabel});
+    var neverLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                       "geolocation.neverShareLocation");
+    var neverAllowMenuItem = locationBar.getElement({parent: aPanel,
+                                                     type: "notificationPopup_menuItem",
+                                                     subtype: "label",
+                                                     value: neverLabel});
     assert.ok(aPanel.getNode().getAttribute("popupid"), "geolocation",
               "Correct notification is closing");
 
-    alwaysAllowMenuItem.click();
+    neverAllowMenuItem.click();
   }, {type: "notification", open: false});
 
-  waitForLocationRetrieved();
+  checkLocationDataRequestDenied();
 
   // No notification popup should appear on reloading the page
   assert.throws(() => {
@@ -111,13 +97,13 @@ function testAlwaysShareLocation() {
     controller.waitForPageLoad();
   }, {type: "notification"});
 
-  checkGeoNotificationOpened();
+  checkGeoNotificationOpen();
 }
 
 /**
- * Test if the always share property is persisted after a restart
+ * Test if the never share property is persisted after a restart
  */
-function testAlwaysShareLocationPersisted() {
+function testNeverShareLocationPersisted() {
   // No notification should appear
   assert.throws(() => {
     locationBar.waitForNotificationPanel(aPanel => {
@@ -128,30 +114,26 @@ function testAlwaysShareLocationPersisted() {
     }, {type: "notification"});
   }, errors.TimeoutError, "'Notification Popup' doesn't exist");
 
-  waitForLocationRetrieved();
+  checkLocationDataRequestDenied();
 }
 
 /**
- * Check that the geo notification is opened
+ * Check that the geo notification is open
  */
-function checkGeoNotificationOpened() {
-  // Check the icon inside the popup notification exists
+function checkGeoNotificationOpen() {
+  // Check the icon inside the popup notification exist
   var notification = locationBar.getElement({type: "notification_element",
                                              subtype: "geolocation-notification",
                                              parent: locationBar.getNotification()});
-  expect.ok(notification, "The geolocation notification is opened");
+  expect.ok(notification, "The geolocation notification is open");
 }
 
 /**
- * Check if location data is displayed
+ * Check the location is not retrieved and returns specific 'denied' error code
  */
-function waitForLocationRetrieved() {
+function checkLocationDataRequestDenied() {
+  // Check if the location is not displayed
   var result = findElement.ID(controller.tabs.activeTab, "result");
-
-  expect.waitFor(() => result.getNode().textContent !== "undefined",
-                 "Location data is avaible", TIMEOUT_GEOLOCATE);
-
-  // Test if the correct coordinates are retrieved
-  expect.equal(result.getNode().textContent, LOCATION.lat + " " + LOCATION.lng,
-               "Correct location has been retrieved");
+  expect.waitFor(() => (result.getNode().textContent === "denied"),
+                 "User denied the request for Geolocation");
 }
