@@ -11,6 +11,7 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");
+var utils = require("../../../../lib/utils");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";
@@ -68,11 +69,10 @@ function testInstallAddonWithEULA() {
   });
 
   locationBar.waitForNotificationPanel(() => {
+    expect.waitFor(() => utils.isDisplayed(controller, addButton),
+                   "Add extension to Firefox button is ready");
     addButton.click();
   }, {type: "notification"});
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
-
-setupModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
-teardownModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
