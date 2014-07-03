@@ -61,3 +61,10 @@ var testPasteLocationBar = function() {
     return locationBar.value === docSelection;
   }, "Location bar should contain pasted clipboard content - expected " + docSelection);
 }
+
+if (mozmill.isWindows) {
+  setupModule.__force_skip__ = "Bug 1034077 - Location bar should contain " +
+                               "pasted clipboard content - expected ipsum";
+  teardownModule.__force_skip__ = "Bug 1034077 - Location bar should contain " +
+                                  "pasted clipboard content - expected ipsum";
+}
