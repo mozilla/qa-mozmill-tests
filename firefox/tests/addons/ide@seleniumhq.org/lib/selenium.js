@@ -12,8 +12,8 @@
 // Include required modules
 var { assert, expect } = require("../../../../../lib/assertions");
 var DOMUtils = require("../../../../../lib/dom-utils");
-var Utils = require("../../../../lib/utils");
-var Widgets = require("../../../../lib/widgets");
+var Utils = require("../../../../../lib/utils");
+var Widgets = require("../../../../../lib/ui/widgets");
 
 /**
  * @constructor

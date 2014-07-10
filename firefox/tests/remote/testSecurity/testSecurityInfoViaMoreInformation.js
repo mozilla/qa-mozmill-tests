@@ -7,7 +7,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 

@@ -5,8 +5,8 @@
 "use strict";
 
 // Include the required modules
-var addons = require("../../../lib/addons");
-var endurance = require("../../../lib/endurance");
+var addons = require("../../../../lib/addons");
+var endurance = require("../../../../lib/endurance");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 

@@ -9,7 +9,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = [
   "http://domain1.mozqa.com/data/firefox/cookies/cookie_single.html",

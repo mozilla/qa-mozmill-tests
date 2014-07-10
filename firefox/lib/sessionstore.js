@@ -12,8 +12,8 @@
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var prefs = require("prefs");
-var utils = require("utils");
-var widgets = require("widgets");
+var utils = require("../../lib/utils");
+var widgets = require("../../lib/ui/widgets");
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]

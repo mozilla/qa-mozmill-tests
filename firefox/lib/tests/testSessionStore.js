@@ -6,7 +6,7 @@
 var {expect} = require("../../../lib/assertions");
 var sessionStore = require("../sessionstore");
 var tabs = require("../tabs");
-var utils = require("../utils");
+var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_projects.html";

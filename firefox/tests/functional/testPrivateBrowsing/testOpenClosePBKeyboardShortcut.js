@@ -7,7 +7,7 @@
 // Include the required modules
 var { expect } = require("../../../../lib/assertions");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();

@@ -11,7 +11,7 @@
 
 // Include the required modules
 var domUtils = require("../../../../lib/dom-utils");
-var localization = require("../../../lib/localization");
+var localization = require("../../../../lib/localization");
 var prefs = require("../../../lib/prefs");
 
 const GET_BY_ID = domUtils.DOMWalker.GET_BY_ID;

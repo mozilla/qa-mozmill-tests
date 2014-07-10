@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var { expect } = require("../../../../../lib/assertions");
 
 function setupModule(aModule) {

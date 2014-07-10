@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 

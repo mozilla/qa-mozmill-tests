@@ -6,9 +6,9 @@
 
 // Include required modules
 var { expect } = require("../../../../../lib/assertions");
-var modalDialog = require("../../../../lib/modal-dialog");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";

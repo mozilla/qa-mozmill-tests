@@ -14,7 +14,7 @@ var observerService = Cc["@mozilla.org/observer-service;1"]
 
 // Include required modules
 var { assert } = require("../../../lib/assertions");
-var utils = require("../utils");
+var utils = require("../../../lib/utils");
 
 // Import PrivateBrowsingUtils to gain acces to its API
 Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");

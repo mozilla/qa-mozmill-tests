@@ -5,9 +5,9 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 var { BlocklistWindow } = require("../../../../lib/ui/addons_blocklist");
 
 // Bug 727842

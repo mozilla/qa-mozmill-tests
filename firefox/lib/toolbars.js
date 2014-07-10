@@ -12,7 +12,7 @@
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
-var utils = require("utils");
+var utils = require("../../lib/utils");
 
 /**
  * Constructor
