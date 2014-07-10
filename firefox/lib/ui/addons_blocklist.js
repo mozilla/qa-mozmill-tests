@@ -4,7 +4,7 @@
 
 // Include required modules
 var domUtils = require("../../../lib/dom-utils");
-var utils = require("../utils");
+var utils = require("../../../lib/utils");
 
 /**
  * @class Class to handle the Blocklist Window

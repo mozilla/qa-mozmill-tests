@@ -7,9 +7,9 @@
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var { nodeCollector } = require("../../../../lib/dom-utils");
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const PREF_ACCEPT_LANG = "intl.accept_languages";
 

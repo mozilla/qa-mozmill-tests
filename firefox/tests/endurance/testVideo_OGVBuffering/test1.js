@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
 const TEST_DATA = "http://www.mozqa.com/data/firefox/video/" +

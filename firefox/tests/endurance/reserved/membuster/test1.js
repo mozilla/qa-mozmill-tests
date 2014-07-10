@@ -4,8 +4,8 @@
 
 "use strict";
 
-var endurance = require("../../../../lib/endurance");
-var modalDialog = require("../../../../lib/modal-dialog");
+var endurance = require("../../../../../lib/endurance");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 

@@ -5,7 +5,7 @@
 // Include required modules
 var {expect} = require("../../../lib/assertions");
 var toolbars = require("../toolbars");
-var utils = require("../utils");
+var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";

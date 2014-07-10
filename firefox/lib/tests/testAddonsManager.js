@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var addons = require("../addons");
+var addons = require("../../../../addons");
 var { expect } = require("../../../lib/assertions");
 
 const MOZMILL = {

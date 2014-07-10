@@ -7,11 +7,11 @@
 // Include required modules
 var {assert, expect} = require("../../../../../lib/assertions");
 var domUtils = require("../../../../../lib/dom-utils");
-var localization = require("../../../../lib/localization");
-var modalDialog = require("../../../../lib/modal-dialog");
+var localization = require("../../../../../lib/localization");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var places = require("../../../../../lib/places");
 var toolbars = require("../../../../lib/toolbars");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 
 const TEST_DATA = "https://www.mozilla.org/" +
                   localization.normalizeLocale() +

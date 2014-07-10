@@ -7,7 +7,7 @@
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab.html";

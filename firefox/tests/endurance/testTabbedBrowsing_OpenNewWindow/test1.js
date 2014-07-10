@@ -6,9 +6,9 @@
 
 // Include the required modules
 var {assert} = require("../../../../lib/assertions");
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();

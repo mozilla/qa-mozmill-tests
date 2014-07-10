@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "form_manager/form.html";

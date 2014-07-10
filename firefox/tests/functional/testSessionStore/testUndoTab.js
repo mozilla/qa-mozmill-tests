@@ -8,7 +8,7 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var sessionStore = require("../../../lib/sessionstore");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab_target.html?id=";

@@ -7,7 +7,7 @@
 // Include the required modules
 var { expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();

@@ -6,7 +6,7 @@
 
 // Include the required modules
 var { assert } = require("../../../../lib/assertions");
-var addons = require("../../../lib/addons");
+var addons = require("../../../../lib/addons");
 var places = require("../../../../lib/places");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
 var tabs = require("../../../lib/tabs");

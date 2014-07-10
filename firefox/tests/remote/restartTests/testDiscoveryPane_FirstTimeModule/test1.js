@@ -6,8 +6,8 @@
 
 // Include required modules
 var {assert} = require("../../../../../lib/assertions");
-var addons = require("../../../../lib/addons");
-var modalDialog = require("../../../../lib/modal-dialog");
+var addons = require("../../../../../lib/addons");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
 var prefs = require("../../../../lib/prefs");
 

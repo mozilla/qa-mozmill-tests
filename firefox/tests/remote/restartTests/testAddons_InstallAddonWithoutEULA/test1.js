@@ -5,13 +5,13 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
-var modalDialog = require("../../../../lib/modal-dialog");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";

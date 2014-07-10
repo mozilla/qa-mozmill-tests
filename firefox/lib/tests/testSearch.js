@@ -4,9 +4,9 @@
 
 // Include required modules
 var {expect} = require("../../../lib/assertions");
-var modalDialog = require("../modal-dialog");
+var modalDialog = require("../../../lib/modal-dialog");
 var search = require("../search");
-var utils = require("../utils");
+var utils = require("../../../lib/utils");
 
 const DELAY = 500;
 
