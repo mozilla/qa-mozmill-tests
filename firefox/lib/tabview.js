@@ -6,7 +6,7 @@
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
 var tabs = require("tabs");
-var utils = require("utils");
+var utils = require("../../lib/utils");
 
 /**
  * Constructor

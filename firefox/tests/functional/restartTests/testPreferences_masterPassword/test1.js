@@ -6,11 +6,11 @@
 
 // Include required modules
 var { expect } = require("../../../../../lib/assertions");
-var modalDialog = require("../../../../lib/modal-dialog");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");

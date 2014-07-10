@@ -11,9 +11,9 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var { assert, expect } = require("../../lib/assertions");
-var addons = require("addons");
+var addons = require("../../lib/addons");
 var prefs = require("prefs");
-var utils = require("utils");
+var utils = require("../../lib/utils");
 
 const TIMEOUT_UPDATE_APPLYING  = 300000;
 const TIMEOUT_UPDATE_CHECK     = 30000;

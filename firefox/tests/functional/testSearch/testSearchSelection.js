@@ -9,7 +9,7 @@ var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_mission.html";

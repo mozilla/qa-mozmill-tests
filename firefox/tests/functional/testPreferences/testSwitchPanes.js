@@ -10,7 +10,7 @@
 
 // Include the required modules
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const DELAY = 100;
 

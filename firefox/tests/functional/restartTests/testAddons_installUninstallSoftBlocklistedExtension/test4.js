@@ -5,10 +5,10 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
 var prefs = require("../../../../lib/prefs");
-var utils = require("../../../../lib/utils");
+var utils = require("../../../../../lib/utils");
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";

@@ -7,7 +7,7 @@
 // Include required modules
 var downloads = require("../../../lib/downloads");
 var prefs = require("../../../lib/prefs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
 

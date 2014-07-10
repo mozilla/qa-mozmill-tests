@@ -5,9 +5,9 @@
 // Include required modules
 var blocklist = require("../ui/addons_blocklist");
 
-var addons = require("../addons");
+var addons = require("../../../lib/addons");
 var {assert, expect} = require("../../../lib/assertions");
-var modalDialog = require("../modal-dialog");
+var modalDialog = require("../../../lib/modal-dialog");
 var prefs = require("../prefs");
 var tabs = require("../tabs");
 

@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();

@@ -10,7 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";

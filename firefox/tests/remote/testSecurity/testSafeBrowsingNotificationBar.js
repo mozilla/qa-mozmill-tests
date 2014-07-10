@@ -8,7 +8,7 @@
 var { assert } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
 var toolbar = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = [
   // Phishing URL object
