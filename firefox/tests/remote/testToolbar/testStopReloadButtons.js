@@ -8,7 +8,7 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 
-const TEST_DATA = "http://www.mozilla.org/en-US/about/contact";
+const TEST_DATA = "http://mozqa.com/data/firefox/layout/delayed_load.php?seconds=2";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -46,19 +46,18 @@ var testStopAndReload = function() {
 
   // Even an element at the top of a page shouldn't exist when we hit the stop
   // button extremely fast
-  var masthead = new elementslib.ID(controller.tabs.activeTab, "masthead");
-  assert.ok(!masthead.exists(), "'masthead' element has not been found");
+  var content = findElement.ID(controller.tabs.activeTab, "content");
+  assert.ok(!content.exists(), "'content' element has not been found");
 
   // Reload, wait for it to completely loading and test again
   var reloadButton = locationBar.getElement({type: "reloadButton"});
   controller.click(reloadButton);
   controller.waitForPageLoad();
 
-  masthead = new elementslib.ID(controller.tabs.activeTab, "masthead");
-  assert.ok(masthead.exists(), "'masthead' element has been found");
+  content = findElement.ID(controller.tabs.activeTab, "content");
+  assert.ok(content.exists(), "'content' element has been found");
 }
 
-setupModule.__force_skip__ = "Bug 945156 - 'masthead' element has not been found";
 /**
  * Map test functions to litmus tests
  */
