@@ -6,7 +6,7 @@
 
 // Include necessary modules
 var { assert } = require("../../../../lib/assertions");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = "https://ssl-selfsigned.mozqa.com";
 

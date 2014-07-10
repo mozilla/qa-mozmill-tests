@@ -5,7 +5,7 @@
 "use strict";
 
 // Include the required modules
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 var tabView = require("../../../lib/tabview");
 

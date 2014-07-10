@@ -8,7 +8,7 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = [

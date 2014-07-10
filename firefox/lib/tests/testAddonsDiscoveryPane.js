@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var Addons = require("../addons");
+var Addons = require("../../../lib/addons");
 var {expect} = require("../../../lib/assertions");
 
 

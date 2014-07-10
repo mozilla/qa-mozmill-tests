@@ -8,10 +8,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";

@@ -5,12 +5,12 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../lib/addons");
+var addons = require("../../../../lib/addons");
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 

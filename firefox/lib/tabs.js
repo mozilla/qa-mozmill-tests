@@ -38,9 +38,9 @@ var animationObserver = {
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
-var utils = require("utils");
 var prefs = require("prefs");
 var sessionStore = require("../lib/sessionstore");
+var utils = require("../../lib/utils");
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +

@@ -8,7 +8,7 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = "https://mozqa.com";
 

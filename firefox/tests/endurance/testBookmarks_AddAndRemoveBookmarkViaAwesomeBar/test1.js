@@ -6,11 +6,11 @@
 
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var places = require("../../../../lib/places");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource('../../../../data/');
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";

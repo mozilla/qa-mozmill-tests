@@ -6,7 +6,7 @@
 
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
-var addons = require("../../../lib/addons");
+var addons = require("../../../../lib/addons");
 var tabs = require("../../../lib/tabs");
 
 function setupModule(aModule) {
