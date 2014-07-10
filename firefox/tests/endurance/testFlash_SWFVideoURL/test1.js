@@ -5,8 +5,8 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../lib/addons");
-var endurance = require("../../../lib/endurance");
+var addons = require("../../../../lib/addons");
+var endurance = require("../../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
 const TEST_DATA = "http://www.mozqa.com/data/firefox/plugins/flash/" +

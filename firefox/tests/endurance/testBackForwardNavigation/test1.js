@@ -5,7 +5,7 @@
 "use strict";
 
 // Include the required modules
-var endurance = require("../../../lib/endurance");
+var endurance = require("../../../../lib/endurance");
 var tabs = require("../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");

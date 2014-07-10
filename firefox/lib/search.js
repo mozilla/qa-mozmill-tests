@@ -11,9 +11,9 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var { assert, expect } = require("../../lib/assertions");
-var modalDialog = require("modal-dialog");
-var utils = require("utils");
-var widgets = require("widgets");
+var modalDialog = require("../../lib/modal-dialog");
+var utils = require("../../lib/utils");
+var widgets = require("../../lib/ui/widgets");
 
 var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"]
                              .getService(Ci.nsIAutoCompleteController);

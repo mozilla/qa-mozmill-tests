@@ -9,7 +9,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "form_manager/form.html";

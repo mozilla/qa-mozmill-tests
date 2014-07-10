@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var addons = require("../../../../lib/addons");
-var modalDialog = require("../../../../lib/modal-dialog");
+var addons = require("../../../../../lib/addons");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 

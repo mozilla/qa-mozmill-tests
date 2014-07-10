@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var modalDialog = require("../../../../lib/modal-dialog");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";

@@ -5,9 +5,9 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
-var modalDialog = require("../../../../lib/modal-dialog");
+var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");

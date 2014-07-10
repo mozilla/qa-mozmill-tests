@@ -8,7 +8,7 @@
 var { assert } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var search = require("../../../lib/search");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "search/mozsearch.html";

@@ -16,7 +16,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
 var prefs = require("prefs");
-var utils = require("utils");
+var utils = require("../../lib/utils");
 
 const PREF_DOWNLOAD_DIR = "browser.download.dir";
 // Needs to be set to 2 for custom download path to be used

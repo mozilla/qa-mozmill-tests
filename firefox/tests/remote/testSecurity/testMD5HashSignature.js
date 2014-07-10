@@ -5,7 +5,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils")
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 
 const TEST_DATA = {
   link : "http://quality.mozilla.org",

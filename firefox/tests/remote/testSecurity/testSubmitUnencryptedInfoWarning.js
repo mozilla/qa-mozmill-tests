@@ -6,10 +6,10 @@
 
 // Include necessary modules
 var {expect} = require("../../../../lib/assertions");
-var modalDialog = require("../../../lib/modal-dialog");
+var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var utils = require("../../../lib/utils");
+var utils = require("../../../../lib/utils");
 
 const TEST_DATA = "https://ssl-dv.mozqa.com/data/firefox/security/" +
                   "unencryptedsearch.html";

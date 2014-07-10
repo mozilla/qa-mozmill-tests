@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../lib/addons");
+var addons = require("../../../../../lib/addons");
 var tabs = require("../../../../lib/tabs");
 
 const TIMEOUT_USERSHUTDOWN = 2000;
