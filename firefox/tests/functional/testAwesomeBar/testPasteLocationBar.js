@@ -59,6 +59,5 @@ var testPasteLocationBar = function() {
   // Get contents of the location bar and compare it to the expected result
   assert.waitFor(function () {
     return locationBar.value === docSelection;
-  }, "Location bar should contain pasted clipboard content - got " +
-    locationBar.value + ", expected " + docSelection);
+  }, "Location bar should contain pasted clipboard content - expected " + docSelection);
 }

@@ -59,20 +59,24 @@ function testInstallMultipleExtensions() {
     controller.open(addon.url);
     controller.waitForPageLoad();
 
-    var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
     var md = new modalDialog.modalDialog(addonsManager.controller.window);
+    md.start(aController => {
+      // Wait for the 'addon-install-complete' notification to show
+      locationBar.waitForNotificationPanel(() => {
+        addons.handleInstallAddonDialog(aController);
+      }, {type: "notification"});
+    });
 
-    // Install the addon
-    md.start(addons.handleInstallAddonDialog);
-    controller.click(installLink);
+    locationBar.waitForNotificationPanel(() => {
+      var installLink = findElement.ID(controller.tabs.activeTab, "addon");
+      installLink.click();
+    }, {type: "notification"});
+
     md.waitForDialog(TIMEOUT_DOWNLOAD);
 
-    // Wait for the notification to load
-    locationBar.waitForNotification("notification_popup", true);
-
-    controller.keypress(null , 'VK_ESCAPE', {});
-
     // Wait for the notification to unload
-    locationBar.waitForNotification("notification_popup", false);
+    locationBar.waitForNotificationPanel(panel => {
+      panel.keypress('VK_ESCAPE', {});
+    }, {type: "notification", open: false});
   });
 }

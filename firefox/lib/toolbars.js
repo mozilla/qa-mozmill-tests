@@ -263,23 +263,6 @@ editBookmarksPanel.prototype = {
   },
 
   /**
-   * Wait for Edit Bookmarks Panel to load
-   *
-   * @param {object} aSpec
-   *        Object with parameters for customization
-   *        Elements: timeout - Duration to wait for the target state
-   *                            [optional - default: 5s]
-   */
-  waitForPanel: function editBookmarksPanel_waitForPanel(aSpec) {
-    var spec = aSpec || { };
-    var timeout = spec.timeout;
-
-    assert.waitFor(function () {
-      return this._controller.window.top.StarUI._overlayLoaded;
-    }, "Edit Bookmarks Panel has been opened", timeout, undefined, this);
-  },
-
-  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -298,6 +281,9 @@ editBookmarksPanel.prototype = {
        * subtype: subtype to match
        * value: value to match
        */
+      case "bookmarkPanel":
+        elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanel");
+        break;
       case "doneButton":
         elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanelDoneButton");
         break;
@@ -522,9 +508,16 @@ locationBar.prototype = {
         nodeCollector.queryAnonymousNode("anonid", "historydropmarker");
         break;
       case "identityBox":
-        return [new elementslib.ID(root, "dentity-box")];
+        return [new elementslib.ID(root, "identity-box")];
       case "identityPopup":
-        return [new elementslib.ID(root, "identity-popup-encryption")];
+        return [new elementslib.ID(root, "identity-popup")];
+      case "notificationPopup_buttonMenu":
+        nodeCollector.queryAnonymousNode("anonid", "menupopup");
+        break;
+      case "notificationPopup_menuItem":
+        nodeCollector.queryNodes("menuitem").filterByDOMProperty(spec.subtype,
+                                                                 spec.value);
+        break;
       case "notification_element":
         nodeCollector.queryNodes("#" + spec.subtype);
         break;
@@ -606,6 +599,45 @@ locationBar.prototype = {
   },
 
   /**
+   * Reload the currently open web page
+   *
+   * @param {object} aSpec
+   *        Information for the reload event
+   * @param {string} [aSpec.eventType="shortcut"]
+   *        Type of event which triggers the action
+   * @param {boolean} [aSpec.aForce=false]
+   *        Value if the reload will be forced
+   */
+  reload : function locationBar_reload(aSpec) {
+    var spec = aSpec || {};
+    var type = spec.eventType || "shortcut";
+    var forceReload = !!spec.aForce;
+    var urlbar = this.getElement({type: "urlbar"});
+
+    switch (type) {
+      case "button":
+        var reloadButton = this.getElement({type: "reloadButton"});
+        // Bug 980794
+        // Extend the new mouse events to accept modifier keys
+        // Once fixed, replace this with the standard click() event
+        reloadButton.mouseEvent(undefined, undefined, {
+          clickCount: 1,
+          shiftKey: forceReload
+        });
+        break;
+      case "shortcut":
+        var cmdKey = utils.getEntity(this.getDtds(), "reloadCmd.commandkey");
+        urlbar.keypress(cmdKey, {accelKey: true, shiftKey: forceReload});
+        break;
+      case "shortcut2":
+        urlbar.keypress("VK_F5", {shiftKey: forceReload});
+        break;
+      default:
+        throw new Error("Unknown event type - " + type);
+    }
+  },
+
+  /**
    * Type the given text into the location bar
    *
    * @param {string} text
@@ -655,22 +687,59 @@ locationBar.prototype = {
   /**
    * Waits for the given notification popup
    *
-   * @param {String} aElement
-   *        Notification element to wait for
-   * @param {Boolean} [aState=false]
+   * @param {function} aCallback
+   *        Function that triggers the panel to open/close
+   * @param {object} aSpec
+   *        Information related to the notification to wait for
+   * @param {boolean} [aSpec.open=true]
    *        True if the notification should be open
-   * @param {Object} [aIcon=undefined]
-   *        Icon linked to the notification
+   * @param {string} aSpec.type
+   *        Type of notification panel
    */
-  waitForNotification : function locationBar_waitForNotification(aElement, aState, aIcon) {
-    var notification = this.getElement({type: aElement});
-    assert.waitFor(function () {
-      return notification.getNode().state === (!!aState ? 'open' : 'closed');
-    }, "Notification popup visibility state has been changed");
+  waitForNotificationPanel : function locationBar_waitForNotificationPanel(aCallback, aSpec) {
+    var spec = aSpec || {};
 
-    if (aIcon) {
-      elem = this.getElement({type: "notificationIcon", subtype: aIcon});
-      assert.ok(elem.getNode(), "The notification icon has been found");
+    assert.equal(typeof aCallback, "function", "Callback function is defined");
+    assert.ok(spec.type, "Type of the notification panel is mandatory");
+
+    var open = (spec.open == undefined) ? true : spec.open;
+    var eventType = open ? "popupshown" : "popuphidden";
+    var state = open ? "open" : "closed";
+    var panel = null;
+
+    switch (spec.type) {
+      case "notification":
+        panel = this.getElement({type: "notification_popup"});
+        break;
+      case "bookmark":
+        panel = this._editBookmarksPanel.getElement({type: "bookmarkPanel"});
+        break;
+      case "identity":
+        panel = this.getElement({type: "identityPopup"});
+        break;
+      default :
+        assert.fail("Unknown notification panel to wait for: " + spec.type);
+    }
+
+    // Bug 994117
+    // Transitions are not handled correctly
+    // Add waiting for transition events once they get fixed
+    panel.getNode().setAttribute("animate", "false");
+    var panelStateChanged = false;
+
+    function onPanelState() { panelStateChanged = true; }
+
+    panel.getNode().addEventListener(eventType, onPanelState);
+    try {
+      aCallback(panel);
+
+      assert.waitFor(() => {
+        return panelStateChanged;
+      }, "Notification popup state has been " + (open ? "opened" : "closed"));
+    }
+    finally {
+      panel.getNode().removeEventListener(eventType, onPanelState);
+      panel.getNode().removeAttribute("animate");
     }
   }
 }
