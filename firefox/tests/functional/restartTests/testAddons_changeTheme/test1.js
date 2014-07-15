@@ -15,7 +15,7 @@ const BASE_URL = collector.addHttpResource("../../../../../data/");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
-const INSTALL_DIALOG_DELAY = 250;
+const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 const TIMEOUT_USER_SHUTDOWN = 2000;
 
@@ -47,19 +47,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 886811
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // startUserShutdown is broken in mozmill-2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
-  else {
-    // Restart the browser using restart prompt
-    var restartLink = aModule.addonsManager.getElement({type: "listView_restartLink",
-                                                        parent: aModule.installedAddon});
-    aModule.controller.startUserShutdown(TIMEOUT_USER_SHUTDOWN, true);
-    aModule.controller.click(restartLink);
-  }
+  aModule.controller.restartApplication();
 }
 
 /**
@@ -95,5 +83,3 @@ function testInstallTheme() {
   installedAddon = plainTheme;
 }
 
-setupModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";
-teardownModule.__force_skip__ = "Bug 931704 - plainTheme is undefined.";

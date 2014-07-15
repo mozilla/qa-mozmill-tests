@@ -6,12 +6,15 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+
   aModule.cert = null;
 }
 
@@ -28,16 +31,12 @@ var testSecurityInfoViaMoreInformation = function() {
   var secUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
-  // Click the Identity Box
-  var identityBox = new elementslib.ID(controller.window.document,
-                                       "identity-box");
-  controller.click(identityBox);
+  locationBar.waitForNotificationPanel(() => {
+    var identityBox = locationBar.getElement({type: "identityBox"});
+    identityBox.click();
+  }, {type: "identity"});
 
-  // Make sure the doorhanger is "open" before continuing
-  var doorhanger = new elementslib.ID(controller.window.document, "identity-popup");
-  assert.waitFor(function () {
-    return doorhanger.getNode().state === 'open';
-  }, "Identity doorhanger is open: got '" + doorhanger.getNode().state + "', expected 'open'");
+  var doorhanger = locationBar.getElement({type: "identityPopup"});
 
   // Click the 'More Information' button in the Larry popup notification
   var moreInfoButton = new elementslib.ID(controller.window.document,

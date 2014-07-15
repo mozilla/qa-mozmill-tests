@@ -30,17 +30,18 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.waitForPageLoad();
 
   // Open the bookmark panel via bookmarks menu
-  controller.mainMenu.click("#menu_bookmarkThisPage");
-
-  // editBookmarksPanel is loaded lazily. Wait until overlay for StarUI has been loaded
-  locationBar.editBookmarksPanel.waitForPanel();
+  locationBar.waitForNotificationPanel(() => {
+    controller.mainMenu.click("#menu_bookmarkThisPage");
+  }, {type: "bookmark"});
 
   // Bookmark should automatically be stored under the Bookmark Menu
   var nameField = locationBar.editBookmarksPanel.getElement({type: "nameField"});
   var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
 
   controller.type(nameField, "Mozilla");
-  controller.click(doneButton);
+  locationBar.waitForNotificationPanel(() => {
+    doneButton.click();
+  }, {type: "bookmark", open: false});
 
   // Bug 474486
   // Until we can't check via a menu click, call the Places API function for now
@@ -49,7 +50,3 @@ var testAddBookmarkToBookmarksMenu = function() {
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testAddBookmarkToBookmarksMenu.meta = {litmusids : [8154]};

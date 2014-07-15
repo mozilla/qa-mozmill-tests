@@ -58,14 +58,12 @@ var testCheckItemHighlight = function() {
   // Wait for the location bar to contain the entire test string
   assert.waitFor(function () {
     return locationBar.value === TEST_DATA.name;
-  }, "Location bar contains the entered string - got '" +
-    locationBar.value + "', expected '" + TEST_DATA.name + "'");
+  }, "Location bar contains the entered string - expected '" + TEST_DATA.name + "'");
 
   // Check the autocomplete list is open
   assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened == true;
-  }, "Autocomplete popup has been opened - got '" +
-    locationBar.autoCompleteResults.isOpened + "', expected 'true'");
+  }, "Autocomplete popup has been opened - expected 'true'");
 
   // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);

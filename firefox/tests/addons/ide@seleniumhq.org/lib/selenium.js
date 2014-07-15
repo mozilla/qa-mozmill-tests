@@ -59,7 +59,7 @@ SeleniumManager.prototype = {
         browserController.keypress(null, "S", {ctrlKey: true, altKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + event.type);
+        assert.fail("Unknown event type - " + event.type);
     }
 
     this._controller = Utils.handleWindow("type", "global:selenium-ide", undefined, false);
@@ -310,7 +310,7 @@ SeleniumManager.prototype = {
         nodeCollector.queryNodes(".error");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return nodeCollector.elements;

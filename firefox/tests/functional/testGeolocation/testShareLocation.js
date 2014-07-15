@@ -6,12 +6,15 @@
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
+var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "geolocation/position.html";
+
+const PREF_WIFI_LOGGING = "geo.wifi.logging.enabled";
 
 const TIMEOUT_POSITION = 30000;
 
@@ -20,10 +23,14 @@ function setupModule(aModule) {
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
+  prefs.preferences.setPref(PREF_WIFI_LOGGING, true);
+
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
+  prefs.preferences.clearUserPref(PREF_WIFI_LOGGING);
+
   aModule.tabBrowser.closeAllTabs();
 }
 
@@ -31,29 +38,33 @@ function teardownModule(aModule) {
  * Test displaying geolocation notification
  */
 function testVerifyDisplayGeolocationNotification() {
-  controller.open(TEST_DATA);
-  controller.waitForPageLoad();
+  // Wait for the notification to be opened and check its icon in the location bar
+  locationBar.waitForNotificationPanel(() => {
+    controller.open(TEST_DATA);
+    controller.waitForPageLoad();
+  }, {type: "notification"});
 
-  // Wait for the notification to be opened and check it's icon in the location bar
-  locationBar.waitForNotification("notification_popup", true, "geo");
+  // Check the geolocation icon is visible in the location bar
+  var geolocationIcon = locationBar.getElement({type: "notificationIcon",
+                                                subtype: "geo"});
+  expect.ok(geolocationIcon.getNode(), "The notification icon has been found");
 
   // Check the icon inside the popup notification exists
   var icon = locationBar.getNotificationElement("geolocation-notification",
-                                                '/anon({"popupid":"geolocation"})');
+                                                {type: "popupid", value: "geolocation"});
   expect.ok(icon, "The geolocation icon appears in the notification popup");
 
   // Check if a Share Location button is visible
   var locationLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                         "geolocation.shareLocation");
   var button = locationBar.getNotificationElement("geolocation-notification",
-                                                  '/anon({"label": "' +
-                                                  locationLabel + '"})');
+                                                  {type: "label", value: locationLabel});
   expect.ok(button, "'Share location' button appears in the notification popup");
 
-  controller.click(button);
-
   // Wait for the notification to unload
-  locationBar.waitForNotification("notification_popup", false);
+  locationBar.waitForNotificationPanel(() => {
+    button.click();
+  }, {type: "notification", open: false});
 
   // Check if the location is displayed
   // The position updates lazily so additional timeout is needed
@@ -68,3 +79,6 @@ function testVerifyDisplayGeolocationNotification() {
     assert.fail("Geolocation position is: " + result.getNode().textContent);
   }
 }
+
+setupModule.__force_skip__ = "Bug 1028818 - Google geolocation API 'Daily Limit Exceeded'";
+teardownModule.__force_skip__ = "Bug 1028818 - Google geolocation API 'Daily Limit Exceeded'";

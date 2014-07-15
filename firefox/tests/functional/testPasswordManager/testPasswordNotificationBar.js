@@ -44,19 +44,13 @@ var testPasswordNotification = function() {
 
   // Click the login button and wait for the form to process
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
-  controller.click(loginButton);
-  controller.waitForPageLoad();
+  locationBar.waitForNotificationPanel(() => {
+    loginButton.click();
+    controller.waitForPageLoad();
+  }, {type: "notification"});
 
-  // Get a reference to the password-save notification
-  var passwordNotification = locationBar.getNotificationElement(
-                               "password-save-notification"
-                             );
-
-  // Close the notification and check its state
-  controller.keypress(passwordNotification, "VK_ESCAPE", {});
-
-  var notification = locationBar.getNotification();
-  assert.waitFor(function () {
-    return notification.getNode().state === "closed";
-  }, "Password notification has been closed");
+  // Close the notification and wait for it to unload
+  locationBar.waitForNotificationPanel((aPanel) => {
+    aPanel.keypress("VK_ESCAPE", {});
+  }, {type: "notification", open: false});
 }

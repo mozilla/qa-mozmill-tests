@@ -12,7 +12,7 @@ var tabs = require("../../../../lib/tabs");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
-const INSTALL_DIALOG_DELAY = 250;
+const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = [
@@ -35,12 +35,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
+  aModule.controller.restartApplication();
 }
 
 /*

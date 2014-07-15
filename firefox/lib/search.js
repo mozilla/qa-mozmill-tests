@@ -31,7 +31,7 @@ const NAV_BAR             = '/id("main-window")/id("tab-view-deck")/[0]' +
 const NAV_BAR_TARGET      = NAV_BAR         + utils.australis.getElement("nav-bar-wrapper");
 const SEARCH_BAR          = NAV_BAR_TARGET  + '/id("search-container")/id("searchbar")';
 const SEARCH_TEXTBOX      = SEARCH_BAR      + '/anon({"anonid":"searchbar-textbox"})';
-const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[0]/anon({"anonid":"searchbar-engine-button"})';
+const SEARCH_DROPDOWN     = SEARCH_TEXTBOX  + '/[1]/anon({"anonid":"searchbar-engine-button"})';
 const SEARCH_POPUP        = SEARCH_DROPDOWN + '/anon({"anonid":"searchbar-popup"})';
 const SEARCH_INPUT        = SEARCH_TEXTBOX  + '/anon({"class":"autocomplete-textbox-container"})' +
                                               '/anon({"anonid":"textbox-input-box"})' +
@@ -41,6 +41,8 @@ const SEARCH_CONTEXT      = SEARCH_TEXTBOX  + '/anon({"anonid":"textbox-input-bo
 const SEARCH_GO_BUTTON    = SEARCH_TEXTBOX  + '/anon({"class":"search-go-container"})' +
                                               '/anon({"class":"search-go-button"})';
 const SEARCH_AUTOCOMPLETE =  '/id("main-window")/id("mainPopupSet")/id("PopupAutoComplete")';
+
+const TOPIC_SEARCH_ENGINE_MODIFIED = "browser-search-engine-modified";
 
 /**
  * Constructor
@@ -297,7 +299,7 @@ engineManager.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "enableSuggest");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -528,16 +530,24 @@ searchBar.prototype = {
       this.enginesDropDownOpen = true;
 
       var engine = this.getElement({type: "engine", subtype: "id", value: name});
-      this._controller.waitThenClick(engine);
+      var engineChanged = false;
+      var observer = {
+        observe: (aSubject, aTopic, aData) => {
+          if (aData === "engine-default") {
+            engineChanged = true;
+          }
+        }
+      }
+      Services.obs.addObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED, false);
 
-      // Wait until the drop down has been closed
-      assert.waitFor(function () {
-        return !this.enginesDropDownOpen;
-      }, "Search engines drop down has been closed", undefined, undefined, this);
-
-      assert.waitFor(function () {
-        return this.selectedEngine === name;
-      }, "Search engine has been selected. Expected '" + name + "'", undefined, undefined, this);
+      try {
+        engine.waitThenClick();
+        assert.waitFor(() =>  engineChanged,
+                       "Search engine has been selected. Expected '" + name + "'");
+      }
+      finally {
+        Services.obs.removeObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED);
+      }
     }
   },
 
@@ -610,7 +620,7 @@ searchBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + event.type);
+        assert.fail("Unknown element type - " + event.type);
     }
 
     // Check if the search bar has the focus
@@ -685,7 +695,7 @@ searchBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -706,20 +716,17 @@ searchBar.prototype = {
 
     // Bug 542990
     // Bug 392633
-    // Typing too fast can cause several issue like the suggestions not to appear.
-    // Lets type the letters one by one and wait for the popup or the timeout
-    for (var i = 0; i < searchTerm.length; i++) {
-      try {
-        this.type(searchTerm[i]);
-        assert.waitFor(function () {
-          return popup.getNode().state === 'open' &&
-                 autoCompleteController.searchStatus ===
-                 autoCompleteController.STATUS_COMPLETE_MATCH;
-        }, "", TIMEOUT_REQUEST_SUGGESTIONS);
-      }
-      catch (e) {
-        // We are not interested in handling the timeout for now
-      }
+    // Type search term and wait for the popup or the timeout
+    try {
+      this.type(searchTerm);
+      assert.waitFor(function () {
+        return popup.getNode().state === 'open' &&
+               autoCompleteController.searchStatus ===
+               autoCompleteController.STATUS_COMPLETE_MATCH;
+      }, "", TIMEOUT_REQUEST_SUGGESTIONS);
+    }
+    catch (e) {
+      // We are not interested in handling the timeout for now
     }
 
     // Get suggestions in an array if the popup with suggestions is opened

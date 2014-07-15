@@ -40,17 +40,16 @@ var teardownModule = function(aModule) {
 var testPopUpBlocked = function() {
   var windowCount = mozmill.utils.getWindows().length;
 
-  // Open the Pop-up test site
-  controller.open(TEST_DATA);
-  controller.waitForPageLoad();
+  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, () => {
+    controller.open(TEST_DATA);
+    controller.waitForPageLoad();
+  }, '/{"value":"popup-blocked"}');
 
   // Check for the close button in the notification bar
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"popup-blocked"}/anon({"type":"warning"})' +
                                              utils.australis.getElement("close-button"));
-
-  tabBrowser.waitForTabPanel(tabBrowser.selectedIndex, '/{"value":"popup-blocked"}');
-  controller.waitForElement(button);
+  button.waitForElement();
 
   expect.equal(windowCount, mozmill.utils.getWindows().length,
                "The window count has not changed");

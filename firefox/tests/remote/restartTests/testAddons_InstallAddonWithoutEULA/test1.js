@@ -11,11 +11,12 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var toolbars = require("../../../../lib/toolbars");
+var utils = require("../../../../lib/utils");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";
 
-const INSTALL_DIALOG_DELAY = 250;
+const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDON = {
@@ -45,12 +46,7 @@ function teardownModule(aModule) {
 
   tabs.closeAllTabs(aModule.controller);
 
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
+  aModule.controller.restartApplication();
 }
 
 /**
@@ -65,9 +61,21 @@ function testInstallAddonWithEULA() {
   var md = new modalDialog.modalDialog(controller.window);
 
   // Install the add-on
-  md.start(addons.handleInstallAddonDialog);
-  controller.click(addButton);
-  md.waitForDialog(TIMEOUT_DOWNLOAD);
+  md.start(aController => {
+    // Wait for the 'addon-install-complete' notification to show
+    locationBar.waitForNotificationPanel(() => {
+      addons.handleInstallAddonDialog(aController);
+    }, {type: "notification"});
+  });
 
-  locationBar.waitForNotification("notification_popup", true);
+  locationBar.waitForNotificationPanel(() => {
+    expect.waitFor(() => utils.isDisplayed(controller, addButton),
+                   "Add extension to Firefox button is ready");
+    addButton.click();
+  }, {type: "notification"});
+
+  md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
+
+setupModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
+teardownModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";

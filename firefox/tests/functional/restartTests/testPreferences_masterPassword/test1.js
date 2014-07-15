@@ -27,12 +27,7 @@ var setupModule = function(aModule) {
 var teardownModule = function(aModule) {
   controller.open("about:newtab");
 
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
+  aModule.controller.restartApplication();
 }
 
 /**
@@ -51,26 +46,25 @@ var testSetMasterPassword = function() {
   controller.type(passField, "foo");
 
   var loginButton = new elementslib.ID(controller.tabs.activeTab, "LogIn");
-  controller.waitThenClick(loginButton);
+
+  // Wait for the notification to load
+  locationBar.waitForNotificationPanel(() => {
+    loginButton.click();
+  }, {type: "notification"});
 
   // After logging in, remember the login information
   var button = locationBar.getNotificationElement(
                  "password-save-notification",
-                 '/anon({"anonid":"button"})'
+                 {type: "anonid", value: "button"}
                );
 
   expect.ok(utils.isDisplayed(controller, button),
             "Remember password button is visible");
 
-  // Click the Remember Password button
-  controller.waitThenClick(button);
-
-  // After clicking the 'Remember Password' button, check notification state
-  var notification = locationBar.getNotification();
-
-  expect.waitFor(function() {
-    return notification.getNode().state == 'closed';
-  }, "Password notification should be closed");
+  // Wait for the notification to unload
+  locationBar.waitForNotificationPanel(() => {
+    button.click();
+  }, {type: "notification", open: false});
 
   // Call preferences dialog and invoke master password functionality
   prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
@@ -134,3 +128,4 @@ var confirmHandler = function(controller) {
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
   controller.waitThenClick(button);
 }
+

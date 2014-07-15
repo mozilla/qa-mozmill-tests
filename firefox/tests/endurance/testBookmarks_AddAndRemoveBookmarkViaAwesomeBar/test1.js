@@ -44,7 +44,10 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);
     });
-    controller.click(starButton);
+    // Click on the bookmark button and wait for the animation
+    locationBar.bookmarkWithAnimation(() => {
+      starButton.click();
+    });
 
     // Wait for the bookmark event
     assert.waitFor(function () {
@@ -54,12 +57,14 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark added via the Awesomebar");
 
     // Trigger editBookmarksPanel and remove bookmark
-    controller.click(starButton);
-    locationBar.editBookmarksPanel.waitForPanel();
+    locationBar.waitForNotificationPanel(() => {
+      starButton.click();
+    }, {type: "bookmark"});
 
-    var removeBookmark = locationBar.editBookmarksPanel.getElement({type: "removeButton"});
-
-    controller.click(removeBookmark);
+    locationBar.waitForNotificationPanel(() => {
+      var removeBookmark = locationBar.editBookmarksPanel.getElement({type: "removeButton"});
+      removeBookmark.click();
+    }, {type: "bookmark", open: false});
 
     // Verify the bookmark was removed
     assert.ok(!places.bookmarksService.isBookmarked(URI), "The bookmark was removed");

@@ -11,18 +11,8 @@
 
 // Include required modules
 var { assert } = require("../../lib/assertions");
+var domUtils = require("../../lib/dom-utils");
 var utils = require("utils");
-
-const AUTOCOMPLETE_POPUP = '/id("main-window")/id("mainPopupSet")/id("PopupAutoCompleteRichResult")';
-const NOTIFICATION_POPUP = '/id("main-window")/id("mainPopupSet")/id("notification-popup")';
-const URLBAR_CONTAINER = '/id("main-window")/id("tab-view-deck")/[0]' +
-                         '/id("navigator-toolbox")/id("nav-bar")' +
-                         utils.australis.getElement("nav-bar-wrapper") + '/id("urlbar-container")';
-const URLBAR_INPUTBOX = URLBAR_CONTAINER +
-                        utils.australis.getElement('urlbar-wrapper') +
-                        '/id("urlbar")/anon({"anonid":"textbox-container"})' +
-                        '/anon({"anonid":"textbox-input-box"})';
-const CONTEXT_MENU = URLBAR_INPUTBOX + '/anon({"anonid":"input-box-contextmenu"})';
 
 /**
  * Constructor
@@ -134,7 +124,7 @@ autoCompleteResults.prototype = {
         description = result.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
         break;
       default:
-        throw new Error(arguments.callee.name + ": Type unknown - " + type);
+        assert.fail("Type unknown - " + type);
     }
 
     let values = [ ];
@@ -161,37 +151,58 @@ autoCompleteResults.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
-   *        type: General type information
-   *        subtype: Specific element or property
-   *        value: Value of the element or property
-   * @returns Element which has been created
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Element which has been found
    * @type {ElemBase}
    */
-  getElement : function autoCompleteResults_getElement(spec) {
-    var elem = null;
+  getElement : function autoCompleteResults_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Elements which have been found
+   * @type {array of ElemBase}
+   */
+  getElements : function autoCompleteResults_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch (spec.type) {
-      /**
-       * subtype: subtype to match
-       * value: value to match
-       */
       case "popup":
-        elem = new elementslib.Lookup(this._controller.window.document, AUTOCOMPLETE_POPUP);
+        nodeCollector.queryNodes("#PopupAutoCompleteRichResult");
         break;
       case "results":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      AUTOCOMPLETE_POPUP + '/anon({"anonid":"richlistbox"})');
+        nodeCollector.root = this.getElement({type: "popup"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "richlistbox");
         break;
       case "result":
-        elem = new elementslib.Elem(this._results.getNode().getItemAtIndex(spec.value));
-        break;
+        var elem = new elementslib.Elem(this.getElement({type: "results"}).
+                                        getNode().getItemAtIndex(spec.value));
+        return [elem];
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
-    return elem;
+    return nodeCollector.elements;
   },
 
   /**
@@ -199,6 +210,7 @@ autoCompleteResults.prototype = {
    *
    * @param {number} index
    *        Index of the result to return
+   *
    * @returns Autocomplete result element
    * @type {ElemBase}
    */
@@ -251,23 +263,6 @@ editBookmarksPanel.prototype = {
   },
 
   /**
-   * Wait for Edit Bookmarks Panel to load
-   *
-   * @param {object} aSpec
-   *        Object with parameters for customization
-   *        Elements: timeout - Duration to wait for the target state
-   *                            [optional - default: 5s]
-   */
-  waitForPanel: function editBookmarksPanel_waitForPanel(aSpec) {
-    var spec = aSpec || { };
-    var timeout = spec.timeout;
-
-    assert.waitFor(function () {
-      return this._controller.window.top.StarUI._overlayLoaded;
-    }, "Edit Bookmarks Panel has been opened", timeout, undefined, this);
-  },
-
-  /**
    * Retrieve an UI element based on the given spec
    *
    * @param {object} spec
@@ -286,6 +281,9 @@ editBookmarksPanel.prototype = {
        * subtype: subtype to match
        * value: value to match
        */
+      case "bookmarkPanel":
+        elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanel");
+        break;
       case "doneButton":
         elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanelDoneButton");
         break;
@@ -305,7 +303,7 @@ editBookmarksPanel.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "editBMPanel_tagsSelectorExpander");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
     return elem;
@@ -424,7 +422,7 @@ locationBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unkown event type - " + event.type);
+        assert.fail("Unkown event type - " + event.type);
     }
 
     // Wait until the location bar has been focused
@@ -448,80 +446,108 @@ locationBar.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
-   *        type: General type information
-   *        subtype: Specific element or property
-   *        value: Value of the element or property
-   * @returns Element which has been created
-   * @type ElemBase
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Element which has been found
+   * @type {ElemBase}
    */
-  getElement : function locationBar_getElement(spec) {
-    var elem = null;
+  getElement : function locationBar_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @config {string}  type      - General type information
+   * @config {string}  [subtype] - Attribute of the element to filter
+   * @config {string}  [value]   - Value of the element or property
+   * @config {element} [parent]  - Parent of the to find element
+   *
+   * @returns Elements which have been found
+   * @type {array of ElemBase}
+   */
+  getElements : function locationBar_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
 
     switch(spec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
        */
+      case "bookmarksMenuButton":
+        return [new elementslib.ID(root, "bookmarks-menu-button")];
       case "contextMenu":
-        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU);
+        nodeCollector.root = this.getElement({type: "urlbar_input"}).getNode().parentNode;
+        nodeCollector.queryAnonymousNode("anonid", "input-box-contextmenu");
         break;
       case "contextMenu_entry":
-        elem = new elementslib.Lookup(this._controller.window.document, CONTEXT_MENU +
-                                      '/{"cmd":"cmd_' + spec.subtype + '"}');
+        nodeCollector.root = this.getElement({type: "contextMenu"}).getNode();
+        nodeCollector.queryNodes("menuitem").filterByDOMProperty("cmd",
+                                                                 "cmd_" + spec.subtype);
         break;
       case "favicon":
-        elem = new elementslib.ID(this._controller.window.document, "page-proxy-favicon");
-        break;
+        return [new elementslib.ID(root, "page-proxy-favicon")];
       case "feedButton":
-        elem = new elementslib.ID(this._controller.window.document, "feed-button");
-        break;
+        return [new elementslib.ID(root, "feed-button")];
       case "goButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-go-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-go-button")];
       case "historyDropMarker":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      URLBAR_CONTAINER + '/id("urlbar")/anon({"anonid":"historydropmarker"})');
+        nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "historydropmarker");
         break;
       case "identityBox":
-        elem = new elementslib.ID(this._controller.window.document, "identity-box");
-        break;
+        return [new elementslib.ID(root, "identity-box")];
       case "identityPopup":
-        elem = new elementslib.ID(this._controller.window.document, "identity-popup-encryption");
+        return [new elementslib.ID(root, "identity-popup")];
+      case "notificationPopup_buttonMenu":
+        nodeCollector.queryAnonymousNode("anonid", "menupopup");
+        break;
+      case "notificationPopup_menuItem":
+        nodeCollector.queryNodes("menuitem").filterByDOMProperty(spec.subtype,
+                                                                 spec.value);
         break;
       case "notification_element":
-        elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP +
-                                      spec.subtype);
+        nodeCollector.queryNodes("#" + spec.subtype);
         break;
       case "notificationIcon":
-        elem = new elementslib.ID(this._controller.window.document,
-                                  spec.subtype + "-notification-icon");
-        break;
+        return [new elementslib.ID(root, spec.subtype + "-notification-icon")];
       case "notification_popup":
-        elem = new elementslib.Lookup(this._controller.window.document, NOTIFICATION_POPUP);
-        break;
+        return [new elementslib.ID(root, "notification-popup")];
       case "reloadButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-reload-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-reload-button")];
       case "starButton":
-        elem = new elementslib.ID(this._controller.window.document, "star-button");
-        break;
+        if (utils.australis.isAustralis()) {
+          nodeCollector.root = this.getElement({type: "bookmarksMenuButton"}).getNode();
+          nodeCollector.queryAnonymousNode("anonid", "button");
+          break;
+        }
+
+        return [new elementslib.ID(root, "star-button")];
       case "stopButton":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar-stop-button");
-        break;
+        return [new elementslib.ID(root, "urlbar-stop-button")];
       case "urlbar":
-        elem = new elementslib.ID(this._controller.window.document, "urlbar");
-        break;
+        return [new elementslib.ID(root, "urlbar")];
       case "urlbar_input":
-        elem = new elementslib.Lookup(this._controller.window.document, URLBAR_INPUTBOX +
-                                      '/anon({"anonid":"input"})');
+        nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
+        nodeCollector.queryAnonymousNode("anonid", "input");
         break;
       default:
-        throw new Error(arguments.callee.name + ": Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + spec.type);
     }
 
-    return elem;
+    return nodeCollector.elements;
   },
 
   /**
@@ -539,19 +565,25 @@ locationBar.prototype = {
    *
    * @param {string} aType
    *        Type of the notification bar to look for
-   * @param {string} aLookupString
-   *        Lookup string of the notification bar's child element
-   *        [optional - default: ""]
+   * @param {object} [aChildElement=""]
+   *        Configuration of child element to retrieve from notification element
+   * @config {string} [type]  Type of attribute of child we are looking for
+   * @config {string} [value] Value of attribute of child we are looking for
    *
-   * @return The created element
+   * @return The found element
    * @type {ElemBase}
    */
-  getNotificationElement : function locationBar_getNotificationElement(aType, aLookupString) {
-    var lookup = '/id("' + aType + '")';
-    lookup = aLookupString ? lookup + aLookupString : lookup;
+  getNotificationElement : function locationBar_getNotificationElement(aType, aChildElement) {
+    var notification = this.getElement({type: "notification_element",
+                                       subtype: aType,
+                                       parent: this.getNotification()});
+    if (!aChildElement)
+      return notification;
 
-    // Get the notification and fetch the child element if wanted
-    return this.getElement({type: "notification_element", subtype: lookup});
+    var nodeCollector = new domUtils.nodeCollector(notification.getNode());
+    nodeCollector.queryAnonymousNode(aChildElement.type, aChildElement.value);
+
+    return nodeCollector.elements[0];
   },
 
   /**
@@ -567,6 +599,45 @@ locationBar.prototype = {
   },
 
   /**
+   * Reload the currently open web page
+   *
+   * @param {object} aSpec
+   *        Information for the reload event
+   * @param {string} [aSpec.eventType="shortcut"]
+   *        Type of event which triggers the action
+   * @param {boolean} [aSpec.aForce=false]
+   *        Value if the reload will be forced
+   */
+  reload : function locationBar_reload(aSpec) {
+    var spec = aSpec || {};
+    var type = spec.eventType || "shortcut";
+    var forceReload = !!spec.aForce;
+    var urlbar = this.getElement({type: "urlbar"});
+
+    switch (type) {
+      case "button":
+        var reloadButton = this.getElement({type: "reloadButton"});
+        // Bug 980794
+        // Extend the new mouse events to accept modifier keys
+        // Once fixed, replace this with the standard click() event
+        reloadButton.mouseEvent(undefined, undefined, {
+          clickCount: 1,
+          shiftKey: forceReload
+        });
+        break;
+      case "shortcut":
+        var cmdKey = utils.getEntity(this.getDtds(), "reloadCmd.commandkey");
+        urlbar.keypress(cmdKey, {accelKey: true, shiftKey: forceReload});
+        break;
+      case "shortcut2":
+        urlbar.keypress("VK_F5", {shiftKey: forceReload});
+        break;
+      default:
+        throw new Error("Unknown event type - " + type);
+    }
+  },
+
+  /**
    * Type the given text into the location bar
    *
    * @param {string} text
@@ -577,24 +648,98 @@ locationBar.prototype = {
   },
 
   /**
+   * Bookmark a page
+   * Also waits for the animation event that occurs to finish
+   *
+   * @param {function} aCallback
+   *        Function to trigger page bookmarking event
+   */
+  bookmarkWithAnimation : function locationBar_bookmarkWithAnimation(aCallback) {
+    var self = { started: false, ended: false };
+    var bookmarksMenuButton = this.getElement({type: "bookmarksMenuButton"});
+    var window = this._controller.window.document.defaultView;
+
+    var mutationObserver = new window.MutationObserver(function (aMutations) {
+      aMutations.forEach(function (aMutation) {
+        // For changing the CSS style and enabling the button there's a different
+        // action besides animationend event
+        // We have to wait until the attribute has been added then removed
+
+        if (!self.started) {
+          self.started = (aMutation.target.getAttribute("notification") === "finish");
+        }
+        else {
+          self.ended = !aMutation.target.hasAttribute("notification");
+        }
+      });
+    });
+    try {
+      mutationObserver.observe(bookmarksMenuButton.getNode(),
+                               {attributes: true, attributeFilter: ["notification"]});
+      aCallback();
+      assert.waitFor(() => self.ended);
+    }
+    finally {
+      mutationObserver.disconnect();
+    }
+  },
+
+  /**
    * Waits for the given notification popup
    *
-   * @param {String} aElement
-   *        Notification element to wait for
-   * @param {Boolean} [aState=false]
+   * @param {function} aCallback
+   *        Function that triggers the panel to open/close
+   * @param {object} aSpec
+   *        Information related to the notification to wait for
+   * @param {boolean} [aSpec.open=true]
    *        True if the notification should be open
-   * @param {Object} [aIcon=undefined]
-   *        Icon linked to the notification
+   * @param {string} aSpec.type
+   *        Type of notification panel
    */
-  waitForNotification : function locationBar_waitForNotification(aElement, aState, aIcon) {
-    var notification = this.getElement({type: aElement});
-    assert.waitFor(function () {
-      return notification.getNode().state === (!!aState ? 'open' : 'closed');
-    }, "Notification popup visibility state has been changed");
+  waitForNotificationPanel : function locationBar_waitForNotificationPanel(aCallback, aSpec) {
+    var spec = aSpec || {};
 
-    if (aIcon) {
-      elem = this.getElement({type: "notificationIcon", subtype: aIcon});
-      assert.ok(elem.getNode(), "The notification icon has been found");
+    assert.equal(typeof aCallback, "function", "Callback function is defined");
+    assert.ok(spec.type, "Type of the notification panel is mandatory");
+
+    var open = (spec.open == undefined) ? true : spec.open;
+    var eventType = open ? "popupshown" : "popuphidden";
+    var state = open ? "open" : "closed";
+    var panel = null;
+
+    switch (spec.type) {
+      case "notification":
+        panel = this.getElement({type: "notification_popup"});
+        break;
+      case "bookmark":
+        panel = this._editBookmarksPanel.getElement({type: "bookmarkPanel"});
+        break;
+      case "identity":
+        panel = this.getElement({type: "identityPopup"});
+        break;
+      default :
+        assert.fail("Unknown notification panel to wait for: " + spec.type);
+    }
+
+    // Bug 994117
+    // Transitions are not handled correctly
+    // Add waiting for transition events once they get fixed
+    panel.getNode().setAttribute("animate", "false");
+    var panelStateChanged = false;
+
+    function onPanelState() { panelStateChanged = true; }
+
+    panel.getNode().addEventListener(eventType, onPanelState);
+    try {
+      aCallback(panel);
+
+      assert.waitFor(() => {
+        return panelStateChanged;
+      }, "Notification popup state has been " + (open ? "opened" : "closed"));
+    }
+    finally {
+      panel.getNode().removeEventListener(eventType, onPanelState);
+      panel.getNode().removeAttribute("animate");
     }
   }
 }

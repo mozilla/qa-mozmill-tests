@@ -4,8 +4,11 @@
 
 "use strict";
 
+Cu.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
+var domUtils = require("../../../../lib/dom-utils");
 var modalDialog = require("../../../lib/modal-dialog");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -72,18 +75,13 @@ function testClearFormHistory() {
  * Accesses the clear recent history dialog and accepts the default options to clear
  */
 function clearHistoryHandler(controller) {
-  // Verify the checkbox to clear form data is checked
-  var checkBox = new elementslib.XPath(controller.window.document,
-                                       "/*[name()='prefwindow']" +
-                                       "/*[name()='prefpane'][1]" +
-                                       "/*[name()='listbox'][1]" +
-                                       "/*[name()='listitem'][2]");
-  controller.waitForElement(checkBox);
-  assert.ok(checkBox.getNode().checked, "The checkbox to clear form data is checked");
+  var sanitizeDialog = elementslib.ID(controller.window.document, "SanitizeDialog").getNode();
+  var nodeCollector = new domUtils.nodeCollector(sanitizeDialog);
 
-  var clearButton = new elementslib.Lookup(controller.window.document,
-                                           '/id("SanitizeDialog")' +
-                                           '/anon({"anonid":"dlg-buttons"})' +
-                                           '/{"dlgtype":"accept"}');
-  controller.waitThenClick(clearButton);
+  // Verify that the checkbox to clear form data is checked
+  var checkBoxes = nodeCollector.queryNodes("listitem").elements;
+  assert.ok(checkBoxes[1].getNode().checked, "The checkbox to clear form data is checked");
+  nodeCollector.queryAnonymousNode("dlgtype", "accept");
+  var clearButton = nodeCollector.elements[0];
+  clearButton.click();
 }

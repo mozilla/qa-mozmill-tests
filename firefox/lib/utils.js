@@ -137,8 +137,7 @@ function assertLoadedUrlEqual(controller, targetUrl) {
   // Check the same web page has been opened
   assert.waitFor(function () {
     return locationBar.getNode().value === currentURL;
-  }, "Current URL should be identical to the target URL - got " +
-     locationBar.getNode().value + ", expected " + currentURL);
+  }, "Current URL should be identical to the target URL - expected " + currentURL);
 }
 
 /**
@@ -165,7 +164,7 @@ var australis = {
                                         : '/{"class":"messageCloseButton tabbable"}';
         break;
       case "nav-bar-wrapper" :
-        nodeElem = (this.isAustralis()) ? '/id("nav-bar-customizationtarget")' : "";
+        nodeElem = (this.isAustralis()) ? '/id("nav-bar-customization-target")' : "";
         break;
       case "tabs" :
         nodeElem = (this.isAustralis()) ? '/id("content-deck")' : "";
@@ -174,7 +173,7 @@ var australis = {
         nodeElem = (this.isAustralis()) ? '/id("urlbar-wrapper")' : "";
         break;
       default :
-        throw new Error(arguments.callee.name + ": Unknown element type - " + aSpec);
+        assert.fail("Unknown element type - " + aSpec);
     }
     return nodeElem;
   },
@@ -341,7 +340,7 @@ function getProperty(url, prefName) {
     return bundle.GetStringFromName(prefName);
   }
   catch (ex) {
-    throw new Error(arguments.callee.name + ": Unknown property - " + prefName);
+    assert.fail("Unknown property - " + prefName);
   }
 }
 
@@ -382,7 +381,7 @@ function handleWindow(type, text, callback, close) {
       func_ptr = mozmill.utils.getWindowByTitle;
       break;
     default:
-      throw new Error(arguments.callee.name + ": Unknown opener type - " + type);
+      assert.fail("Unknown opener type - " + type);
   }
 
   try {
@@ -504,6 +503,86 @@ function getElementStyle(aElement, aProperty) {
 }
 
 /**
+ * Sanitize user data, this clears cache, cookies, offlineApps, history,
+ * formdata, downloads, passwords, sessions, siteSettings
+ *
+ * Usage:
+ * sanitize(); // Will clear all user data
+ * sanitize({ downloads: true }); // Will clear downloads only
+ *
+ * @param {object} [aSpec]
+ *        Information about the data to be cleared
+ *        If undefined, all data will be cleared
+ * @param {boolean} [aSpec.cache=false]
+ *        If true cache will be cleared
+ * @param {boolean} [aSpec.cookies=false]
+ *        If true cookies will be cleared
+ * @param {boolean} [aSpec.downloads=false]
+ *        If true downloads history will be cleared
+ * @param {boolean} [aSpec.formdata=false]
+ *        If true form-data history will be cleared
+ * @param {boolean} [aSpec.history=false]
+ *        If true browsing history will be cleared
+ * @param {boolean} [aSpec.offlineApps=false]
+ *        If true offlineApps data will be cleared
+ * @param {boolean} [aSpec.passwords=false]
+ *        If true persisted passwords will be cleared
+ * @param {boolean} [aSpec.sessions=false]
+ *        If true session storage will be cleared
+ * @param {boolean} [aSpec.siteSettings=false]
+ *        If true site settings will be cleared
+ */
+function sanitize(aSpec) {
+  var spec = (typeof aSpec === "undefined") ? {} : {
+    cache: aSpec.cache || false,
+    cookies: aSpec.cookies || false,
+    downloads: aSpec.downloads || false,
+    formdata: aSpec.formdata || false,
+    history: aSpec.history || false,
+    offlineApps: aSpec.offlineApps || false,
+    passwords: aSpec.passwords || false,
+    sessions: aSpec.sessions || false,
+    siteSettings: aSpec.siteSettings || false
+  };
+
+  // Load the sanitize script
+  var tempScope = {};
+  Cc["@mozilla.org/moz/jssubscript-loader;1"]
+  .getService(Ci.mozIJSSubScriptLoader)
+  .loadSubScript("chrome://browser/content/sanitize.js", tempScope);
+
+  // Instantiate the Sanitizer
+  var s = new tempScope.Sanitizer();
+  s.prefDomain = "privacy.cpd.";
+  var itemPrefs = Services.prefs.getBranch(s.prefDomain);
+
+  // Apply options for what to sanitize
+  for (var pref in spec) {
+    itemPrefs.setBoolPref(pref, spec[pref]);
+  };
+
+  try {
+    // Sanitize and wait for the promise to resolve
+    var finished = false;
+    s.sanitize().then(() => {
+      finished = true;
+    }, aError => {
+      throw aError;
+    });
+    assert.waitFor(() => finished);
+  }
+  catch (e) {
+    assert.fail("Failed to sanitize users data: " + e);
+  }
+  finally {
+    // Restore prefs to default
+    for (let pref in spec) {
+      itemPrefs.clearUserPref(pref);
+    };
+  }
+}
+
+/**
  * Helper function to ping the blocklist Service so Firefox updates the blocklist
  *
  * @param {Boolean} [aWait=true]
@@ -553,4 +632,5 @@ exports.getProfileDownloadLocation = getProfileDownloadLocation;
 exports.handleWindow = handleWindow;
 exports.isDisplayed = isDisplayed;
 exports.removePermission = removePermission;
+exports.sanitize = sanitize;
 exports.updateBlocklist = updateBlocklist;

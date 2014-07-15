@@ -52,8 +52,3 @@ var testCloseTab = function() {
     return tabBrowser.length === 1;
   }, "One tab has been closed via keyboard shortcut");
 }
-
-/**
- * Map test functions to litmus tests
- */
-// testOpenInBackgroundTab.meta = {litmusids : [8094]};

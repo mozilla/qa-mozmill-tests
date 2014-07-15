@@ -10,7 +10,7 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../lib/utils");
 
-const TEST_DATA = "https://mail.mozilla.org";
+const TEST_DATA = "https://mozqa.com";
 
 const PREF_TLS_MIN = "security.tls.version.min";
 const PREF_TLS_MAX = "security.tls.version.max";
@@ -22,6 +22,7 @@ var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   tabs.closeAllTabs(aModule.controller);
+  utils.sanitize({ sessions: true });
 
   // Disable SSL 3.0, TLS 1.0 and TLS 1.1 for secure connections
   // by forcing the use of TLS 1.2
@@ -63,6 +64,6 @@ var testDisableSSL = function() {
   expect.contain(text.getNode().textContent, 'ssl_error_no_cypher_overlap',
                  "The SSL error message contains disabled information");
 
-  expect.contain(text.getNode().textContent, 'mail.mozilla.org',
+  expect.contain(text.getNode().textContent, 'mozqa.com',
                  "The SSL error message contains domain name");
 }

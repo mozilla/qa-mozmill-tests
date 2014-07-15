@@ -57,7 +57,3 @@ function checkDefaultHomepage(controller) {
   utils.assertLoadedUrlEqual(controller, defaultHomepage);
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testNewWindow.meta = {litmusids : [7954]};

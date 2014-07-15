@@ -16,7 +16,7 @@ const BASE_URL = collector.addHttpResource("../../../../../data/");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 
-const INSTALL_DIALOG_DELAY = 250;
+const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDONS = [
@@ -47,12 +47,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  // Bug 867217
-  // Mozmill 1.5 does not have the restartApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("restartApplication" in aModule.controller) {
-    aModule.controller.restartApplication();
-  }
+  aModule.controller.restartApplication();
 }
 
 /**
@@ -64,23 +59,24 @@ function testInstallMultipleExtensions() {
     controller.open(addon.url);
     controller.waitForPageLoad();
 
-    var installLink = new elementslib.ID(controller.tabs.activeTab, "addon");
     var md = new modalDialog.modalDialog(addonsManager.controller.window);
+    md.start(aController => {
+      // Wait for the 'addon-install-complete' notification to show
+      locationBar.waitForNotificationPanel(() => {
+        addons.handleInstallAddonDialog(aController);
+      }, {type: "notification"});
+    });
 
-    // Install the addon
-    md.start(addons.handleInstallAddonDialog);
-    controller.click(installLink);
+    locationBar.waitForNotificationPanel(() => {
+      var installLink = findElement.ID(controller.tabs.activeTab, "addon");
+      installLink.click();
+    }, {type: "notification"});
+
     md.waitForDialog(TIMEOUT_DOWNLOAD);
 
-    var notification = locationBar.getNotification();
-    assert.waitFor(function () {
-      return notification.getNode().state === "open";
-    }, "Notification pop-up has been opened");
-
-    controller.keypress(null , 'VK_ESCAPE', {});
-
-    assert.waitFor(function () {
-      return notification.getNode().state === "closed";
-    }, "Notification pop-up has been closed");
+    // Wait for the notification to unload
+    locationBar.waitForNotificationPanel(panel => {
+      panel.keypress('VK_ESCAPE', {});
+    }, {type: "notification", open: false});
   });
 }

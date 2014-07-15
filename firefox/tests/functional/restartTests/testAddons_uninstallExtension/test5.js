@@ -28,12 +28,7 @@ function teardownModule(aModule) {
 
   addons.resetDiscoveryPaneURL();
 
-  // Bug 886811
-  // Mozmill 1.5 does not have the stopApplication method on the controller.
-  // Remove condition when transitioned to 2.0
-  if ("stopApplication" in aModule.controller) {
-    aModule.controller.stopApplication(true);
-  }
+  aModule.controller.stopApplication(true);
 }
 
 /**
@@ -50,8 +45,3 @@ function testEnabledExtensionIsUninstalled() {
                "Extension '" + persisted.addons[0].id +
                "' has been uninstalled");
 }
-
-setupModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                             "but none detected before end of test";
-teardownModule.__force_skip__ = "Bug 783484 -  Test failure 'Shutdown expected " +
-                                "but none detected before end of test";

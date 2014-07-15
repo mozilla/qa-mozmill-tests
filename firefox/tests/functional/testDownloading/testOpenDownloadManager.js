@@ -42,10 +42,6 @@ var testOpenDownloadManager = function() {
   dm.close();
 }
 
-/**
- * Map test functions to litmus tests
- */
-// testOpenDownloadManager.meta = {litmusids : [7979]};
 
 setupModule.__force_skip__ = "Bug 930509 - Window has been found.";
 teardownModule.__force_skip__ = "Bug 930509 - Window has been found.";
