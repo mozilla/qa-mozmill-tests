@@ -1364,7 +1364,7 @@ AMOAddonPage.prototype = {
 
     switch (type) {
       case "install-button":
-        nodeCollector.queryNodes(".install-button");
+        nodeCollector.queryNodes(".install-button > a");
         break;
       default:
         assert.fail("Unknown element type - " + spec.type);

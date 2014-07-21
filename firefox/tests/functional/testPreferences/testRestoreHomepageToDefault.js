@@ -13,13 +13,22 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
+
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
   tabs.closeAllTabs(aModule.controller);
 }
 
 var teardownModule = function(aModule) {
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
   prefs.preferences.clearUserPref("browser.startup.homepage");
 }
 
@@ -91,3 +100,7 @@ var prefDialogDefHomePageCallback = function(controller) {
   prefDialog.close(true);
 }
 
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+}

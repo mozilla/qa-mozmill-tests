@@ -12,6 +12,8 @@ var prefs = require("../../../lib/prefs");
 var utils = require("../../../lib/utils");
 
 const PREF_ACCEPT_LANG = "intl.accept_languages";
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
@@ -20,10 +22,16 @@ var setupModule = function (aModule) {
   var intlProperties = prefs.preferences.getPref(PREF_ACCEPT_LANG, "", false,
                                                  Ci['nsIPrefLocalizedString']);
   aModule.initLang = intlProperties.toString().toLowerCase().split(/\s*,\s*/);
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
 }
 
 var teardownModule = function (aModule) {
   prefs.preferences.clearUserPref(PREF_ACCEPT_LANG);
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 }
 
 /**
