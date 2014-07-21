@@ -10,8 +10,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 var {expect} = require("../../../../../lib/assertions");
 
 if (mozmill.isMac) {
-  var macutils = Cc["@mozilla.org/xpcom/mac-utils;1"].
-                 getService(Ci.nsIMacUtils);
+  var macutils = Cc["@mozilla.org/xpcom/mac-utils;1"]
+                 .getService(Ci.nsIMacUtils);
 
   // If already running in 32-bit mode then the machine doesn't support 64-bit
   // and if the build is not universal then we can't change architecture so

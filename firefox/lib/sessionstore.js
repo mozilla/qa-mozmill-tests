@@ -17,7 +17,7 @@ var widgets = require("widgets");
 
 // Session Store service
 var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
-                             .getService(Ci.nsISessionStore);
+                          .getService(Ci.nsISessionStore);
 
 // Preference for indicating the amount of restorable tabs
 const SESSIONSTORE_MAXTABS_PREF = 'browser.sessionstore.max_tabs_undo';
