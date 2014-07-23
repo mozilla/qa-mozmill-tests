@@ -10,14 +10,14 @@ var utils = require("../utils");
 
 const DELAY = 500;
 
-var setupModule = function(module) {
+var setupModule = function(aModule) {
   controller = mozmill.getBrowserController();
 
   searchBar = new search.searchBar(controller);
   searchBar.clear();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   searchBar.clear();
   searchBar.restoreDefaultEngines();
 }
@@ -38,8 +38,8 @@ var testSearchAPI = function() {
   searchBar.search({text: "Firefox", action: "returnKey"});
 }
 
-var handlerManager = function(controller) {
-  var manager = new search.engineManager(controller);
+var handlerManager = function(aController) {
+  var manager = new search.engineManager(aController);
   var engines = manager.engines;
 
   // Remove the first search engine
@@ -69,11 +69,11 @@ var handlerManager = function(controller) {
   //manager.close(true);
 }
 
-var handlerKeyword = function(controller) {
-  var textbox = new elementslib.ID(controller.window.document, "loginTextbox");
-  controller.type(textbox, "g");
+var handlerKeyword = function(aController) {
+  var textbox = new elementslib.ID(aController.window.document, "loginTextbox");
+  aController.type(textbox, "g");
 
-  var okButton = new elementslib.Lookup(controller.window.document,
+  var okButton = new elementslib.Lookup(aController.window.document,
                                         '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.click(okButton);
+  aController.click(okButton);
 }

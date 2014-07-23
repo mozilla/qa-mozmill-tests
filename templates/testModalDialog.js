@@ -25,7 +25,7 @@ var testSampleTestcase = function() {
   md.waitForDialog();
 }
 
-var callbackHandler = function(controller) {
+var callbackHandler = function(aController) {
   // Code to be executed in the modal dialog
 
 }

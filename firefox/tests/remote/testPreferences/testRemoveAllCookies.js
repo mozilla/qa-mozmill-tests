@@ -52,23 +52,23 @@ var testRemoveAllCookies = function() {
 
 /**
  * Open the cookie manager from the privacy pane
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
+  var historyMode = new elementslib.ID(aController.window.document, "historyMode");
+  aController.waitForElement(historyMode);
+  aController.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";
   }, "History mode is set to custom");
 
-  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.click(showCookies);
+  var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
+  aController.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", deleteAllCookies);
 
@@ -77,21 +77,21 @@ var prefDialogCallback = function(controller) {
 
 /**
  * Delete all cookies
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function deleteAllCookies(controller) {
+function deleteAllCookies(aController) {
   // Get the amount of current cookies
-  var cookiesList = controller.window.document.getElementById("cookiesList");
+  var cookiesList = aController.window.document.getElementById("cookiesList");
   assert.ok(cookiesList.view.rowCount > 0, "There are cookies in the list.");
 
   // Verify all cookies have been removed
-  var removeAll = new elementslib.ID(controller.window.document, "removeAllCookies");
-  controller.waitThenClick(removeAll);
+  var removeAll = new elementslib.ID(aController.window.document, "removeAllCookies");
+  aController.waitThenClick(removeAll);
   expect.equal(cookiesList.view.rowCount, 0, "There are no cookies left on the list");
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 

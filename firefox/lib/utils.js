@@ -121,18 +121,18 @@ var appInfo = {
  * Assert if the current URL is identical to the target URL.
  * With this function also redirects can be tested.
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
- * @param {string} targetURL
+ * @param {string} aTargetUrl
  *        URL to check
  */
-function assertLoadedUrlEqual(controller, targetUrl) {
-  var locationBar = new elementslib.ID(controller.window.document, "urlbar");
+function assertLoadedUrlEqual(aController, aTargetUrl) {
+  var locationBar = new elementslib.ID(aController.window.document, "urlbar");
   var currentURL = locationBar.getNode().value;
 
   // Load the target URL
-  controller.open(targetUrl);
-  controller.waitForPageLoad();
+  aController.open(aTargetUrl);
+  aController.waitForPageLoad();
 
   // Check the same web page has been opened
   assert.waitFor(function () {
@@ -193,54 +193,54 @@ var australis = {
 /**
  * Close the context menu inside the content area of the currently open tab
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
  */
-function closeContentAreaContextMenu(controller) {
-  var contextMenu = new elementslib.ID(controller.window.document, "contentAreaContextMenu");
-  controller.keypress(contextMenu, "VK_ESCAPE", {});
+function closeContentAreaContextMenu(aController) {
+  var contextMenu = new elementslib.ID(aController.window.document, "contentAreaContextMenu");
+  aController.keypress(contextMenu, "VK_ESCAPE", {});
 }
 
 /**
  * Run tests against a given search form
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
- * @param {ElemBase} searchField
+ * @param {ElemBase} aSearchField
  *        The HTML input form element to test
- * @param {string} searchTerm
+ * @param {string} aSearchTerm
  *        The search term for the test
- * @param {ElemBase} submitButton
+ * @param {ElemBase} aSubmitButton
  *        (Optional) The forms submit button
- * @param {number} timeout
+ * @param {number} aTimeout
  *        The timeout value for the single tests
  */
-function checkSearchField(controller, searchField,
-                                                     searchTerm, submitButton,
-                                                     timeout) {
-  controller.waitThenClick(searchField, timeout);
-  controller.type(searchField, searchTerm);
+function checkSearchField(aController, aSearchField,
+                          aSearchTerm, aSubmitButton,
+                          aTimeout) {
+  aController.waitThenClick(aSearchField, aTimeout);
+  aController.type(aSearchField, aSearchTerm);
 
-  if (submitButton != undefined) {
-    controller.waitThenClick(submitButton, timeout);
+  if (aSubmitButton != undefined) {
+    controller.waitThenClick(aSubmitButton, aTimeout);
   }
 }
 
 /**
  * Create a new URI
  *
- * @param {string} spec
+ * @param {string} aSpec
  *        The URI string in UTF-8 encoding.
- * @param {string} originCharset
+ * @param {string} aOriginCharset
  *        The charset of the document from which this URI string originated.
- * @param {string} baseURI
+ * @param {string} aBaseURI
  *        If null, spec must specify an absolute URI. Otherwise, spec may be
  *        resolved relative to baseURI, depending on the protocol.
  * @return A URI object
  * @type nsIURI
  */
-function createURI(spec, originCharset, baseURI) {
-  return Services.io.newURI(spec, originCharset, baseURI);
+function createURI(aSpec, aOriginCharset, aBaseURI) {
+  return Services.io.newURI(aSpec, aOriginCharset, aBaseURI);
 }
 
 /**
@@ -270,8 +270,8 @@ function formatUrl(aURL) {
  *
  * @returns {String} The formatted URL
  */
-function formatUrlPref(prefName) {
-  return Services.urlFormatter.formatURLPref(prefName);
+function formatUrlPref(aPrefName) {
+  return Services.urlFormatter.formatURLPref(aPrefName);
 }
 
 /**
@@ -291,33 +291,33 @@ function getDefaultHomepage() {
 /**
  * Returns the value of an individual entity in a DTD file.
  *
- * @param [string] urls
+ * @param [string] aUrls
  *        Array of DTD urls.
- * @param {string} entityId
+ * @param {string} aEntityId
  *        The ID of the entity to get the value of.
  *
  * @return The value of the requested entity
  * @type string
  */
-function getEntity(urls, entityId) {
+function getEntity(aUrls, aEntityId) {
   // Add xhtml11.dtd to prevent missing entity errors with XHTML files
-  urls.push("resource:///res/dtd/xhtml11.dtd");
+  aUrls.push("resource:///res/dtd/xhtml11.dtd");
 
   // Build a string of external entities
   var extEntities = "";
-  for (i = 0; i < urls.length; i++) {
+  for (i = 0; i < aUrls.length; i++) {
     extEntities += '<!ENTITY % dtd' + i + ' SYSTEM "' +
-                   urls[i] + '">%dtd' + i + ';';
+                   aUrls[i] + '">%dtd' + i + ';';
   }
 
   var parser = Cc["@mozilla.org/xmlextras/domparser;1"]
                .createInstance(Ci.nsIDOMParser);
   var header = '<?xml version="1.0"?><!DOCTYPE elem [' + extEntities + ']>';
-  var elem = '<elem id="elementID">&' + entityId + ';</elem>';
+  var elem = '<elem id="elementID">&' + aEntityId + ';</elem>';
   var doc = parser.parseFromString(header + elem, 'text/xml');
   var elemNode = doc.querySelector('elem[id="elementID"]');
 
-  assert.ok(elemNode, arguments.callee.name + ": Entity - " + entityId + " has been found");
+  assert.ok(elemNode, arguments.callee.name + ": Entity - " + aEntityId + " has been found");
 
   return elemNode.textContent;
 }
@@ -325,22 +325,22 @@ function getEntity(urls, entityId) {
 /**
  * Returns the value of an individual property.
  *
- * @param {string} url
+ * @param {string} aUrl
  *        URL of the string bundle.
- * @param {string} prefName
+ * @param {string} aPrefName
  *        The property to get the value of.
  *
  * @return The value of the requested property
  * @type string
  */
-function getProperty(url, prefName) {
-  var bundle = Services.strings.createBundle(url);
+function getProperty(aUrl, aPrefName) {
+  var bundle = Services.strings.createBundle(aUrl);
 
   try {
-    return bundle.GetStringFromName(prefName);
+    return bundle.GetStringFromName(aPrefName);
   }
   catch (ex) {
-    assert.fail("Unknown property - " + prefName);
+    assert.fail("Unknown property - " + aPrefName);
   }
 }
 
@@ -358,22 +358,22 @@ function getProfileDownloadLocation() {
 /**
  * Function to handle non-modal windows
  *
- * @param {string} type
+ * @param {string} aType
  *        Specifies how to check for the new window (possible values: type or title)
- * @param {string} text
+ * @param {string} aText
  *        The window type of title string to search for
- * @param {function} callback (optional)
+ * @param {function} aCallback (optional)
  *        Callback function to call for window specific tests
- * @param {boolean} close (optional - default: true)
+ * @param {boolean} aClose (optional - default: true)
  *        Make sure the window is closed after the return from the callback handler
  * @returns The MozMillController of the window (if the window hasn't been closed)
  */
-function handleWindow(type, text, callback, close) {
+function handleWindow(aType, aText, aCallback, aClose) {
   var window = null;
 
   // Set the window opener function to use depending on the type
   var func_ptr = null;
-  switch (type) {
+  switch (aType) {
     case "type":
       func_ptr = mozmill.utils.getWindowByType;
       break;
@@ -381,13 +381,13 @@ function handleWindow(type, text, callback, close) {
       func_ptr = mozmill.utils.getWindowByTitle;
       break;
     default:
-      assert.fail("Unknown opener type - " + type);
+      assert.fail("Unknown opener type - " + aType);
   }
 
   try {
     // Wait until the window has been opened
     assert.waitFor(function () {
-      window = func_ptr(text);
+      window = func_ptr(aText);
       return !!window;
     }, "Window has been found.");
 
@@ -396,16 +396,16 @@ function handleWindow(type, text, callback, close) {
     var windowId = mozmill.utils.getWindowId(window);
 
     // Call the specified callback method for the window
-    if (callback) {
-      callback(controller);
+    if (aCallback) {
+      aCallback(controller);
     }
 
     // Check if we have to close the window
-    if (close === undefined)
-      close = true;
+    if (aClose === undefined)
+      aClose = true;
 
     // Close the window if necessary and wait until it has been unloaded
-    if (close && window) {
+    if (aClose && window) {
 
       try {
         window.close();
@@ -444,13 +444,13 @@ function handleWindow(type, text, callback, close) {
  * Bug 490548
  * A test should fail if an element we operate on is not visible
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
- * @param {ElemBase} elem
+ * @param {ElemBase} aElem
  *        Element to check its visibility
  */
-function isDisplayed(controller, elem) {
-  var element = elem.getNode();
+function isDisplayed(aController, aElem) {
+  var element = aElem.getNode();
   var visible;
 
   switch (element.nodeName) {
@@ -458,7 +458,7 @@ function isDisplayed(controller, elem) {
       visible = (element.state === 'open');
       break;
     default:
-      var style = controller.window.getComputedStyle(element, '');
+      var style = aController.window.getComputedStyle(element, '');
       var visibility = style.getPropertyValue('visibility');
       var display = style.getPropertyValue('display');
       var width = parseInt(style.getPropertyValue('width'), 10);

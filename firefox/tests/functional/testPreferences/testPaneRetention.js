@@ -42,11 +42,11 @@ function testPreferencesDialogRetention() {
 /**
  * Select the Advanced and the Privacy pane
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function prefPaneSetCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefPaneSetCallback(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneAdvanced';
   prefDialog.paneId = 'panePrivacy';
@@ -59,11 +59,11 @@ function prefPaneSetCallback(controller) {
 /**
  * The Privacy pane should still be selected
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function prefPaneCheckCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefPaneCheckCallback(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   expect.waitFor(function () {
     return prefDialog.paneId === lastSelectedPaneId;
@@ -74,11 +74,11 @@ function prefPaneCheckCallback(controller) {
 /**
  * Reset the current pane to the main options
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function prefPaneResetCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefPaneResetCallback(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneMain';
   prefDialog.close();

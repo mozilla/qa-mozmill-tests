@@ -1622,23 +1622,23 @@ function enableAddon(aAddonId) {
 /**
  * Gets all installed add-ons
  *
- * @param {Function} [callbackFilter]
+ * @param {Function} [aCallbackFilter]
  *        If not provided the unfiltered add-ons will be returned.
  *        If provided, the callback filter takes an argument of an Addon object
  *        as documented at https://developer.mozilla.org/en/Addons/Add-on_Manager/Addon
  *        and returns a filtered version.
  */
-function getInstalledAddons(callbackFilter) {
+function getInstalledAddons(aCallbackFilter) {
   let addonInfo = null;
 
   AddonManager.getAllAddons(function (aAddons) {
-    if (callbackFilter == undefined) {
+    if (aCallbackFilter == undefined) {
       addonInfo = aAddons;
     }
     else {
       addons = [];
-      aAddons.forEach(function (addon) {
-        var result = callbackFilter(addon);
+      aAddons.forEach(function (aAddon) {
+        var result = aCallbackFilter(aAddon);
         if (result)
           addons.push(result);
       });
@@ -1694,14 +1694,14 @@ function setDiscoveryPaneURL(aUrl) {
  */
 function submitInstalledAddons() {
   frame.events.fireEvent('installedAddons',
-    getInstalledAddons(function (addon) {
+    getInstalledAddons(function (aAddon) {
       return {
-        id : addon.id,
-        type : addon.type,
-        name : addon.name,
-        version : addon.version,
-        isActive : addon.isActive,
-        isCompatible : addon.isCompatible
+        id : aAddon.id,
+        type : aAddon.type,
+        name : aAddon.name,
+        version : aAddon.version,
+        isActive : aAddon.isActive,
+        isCompatible : aAddon.isCompatible
       }
     })
   );
@@ -1723,7 +1723,7 @@ function useAmoPreviewUrls() {
 /**
  * Handles the modal dialog to install an add-on
  *
- * @param {MozMillController} MozMill Controller
+ * @param {MozMillController} aController
  */
 function handleInstallAddonDialog(aController) {
   // Get the install button

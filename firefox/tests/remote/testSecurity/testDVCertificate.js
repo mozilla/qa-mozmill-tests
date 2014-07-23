@@ -87,15 +87,15 @@ var testLarryBlue = function() {
 
 /**
  * Check the security tab of the page info window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSecurityTab(controller) {
-  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+function checkSecurityTab(aController) {
+  var securityTab = new elementslib.ID(aController.window.document, "securityTab");
   assert.ok(securityTab.getNode().selected, "The Security tab is selected by default");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+  var webIDDomainLabel = new elementslib.ID(aController.window.document,
                                             "security-identity-domain-value");
   var certName = (cert.commonName.replace(/\./g, "\\\.")).replace(/\*/g, ".*");
   var certNameRegExp = new RegExp("^" + certName + "$");
@@ -104,7 +104,7 @@ function checkSecurityTab(controller) {
                "Expected web site label found");
 
   // Check the Owner label for "This web site does not supply ownership information."
-  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+  var webIDOwnerLabel = new elementslib.ID(aController.window.document,
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
@@ -112,10 +112,10 @@ function checkSecurityTab(controller) {
                "Expected owner label found");
 
   // Check the Verifier label against the Cert Issuer
-  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+  var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");
   expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Expected verifier label found");
 
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }

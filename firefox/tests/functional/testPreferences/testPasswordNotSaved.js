@@ -57,15 +57,15 @@ var testPasswordNotSaved = function() {
 /**
  * Open the password manager from the security pane
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneSecurity';
 
-  var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords);
+  var showPasswords = new elementslib.ID(aController.window.document, "showPasswords");
+  aController.waitThenClick(showPasswords);
 
   utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
@@ -74,18 +74,18 @@ var prefDialogCallback = function(controller) {
 
 /**
  * Check that passwords haven't been saved
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkPasswordsNotSaved(controller) {
-  var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField);
+function checkPasswordsNotSaved(aController) {
+  var filterField = new elementslib.ID(aController.window.document, "filter");
+  aController.waitForElement(filterField);
 
-  var removeLogin = new elementslib.ID(controller.window.document, "removeSignon");
+  var removeLogin = new elementslib.ID(aController.window.document, "removeSignon");
   expect.ok(removeLogin.getNode().disabled, "Remove Passwords Button is disabled");
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }

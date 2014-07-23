@@ -278,12 +278,12 @@ softwareUpdate.prototype = {
   /**
    * Checks if an update has been applied correctly
    *
-   * @param {object} updateData
+   * @param {object} aUpdateData
    *        All the data collected during the update process
    */
-  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(updateData) {
+  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(aUpdateData) {
     // Get the information from the last update
-    var info = updateData.updates[updateData.updateIndex];
+    var info = aUpdateData.updates[aUpdateData.updateIndex];
 
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
@@ -295,7 +295,7 @@ softwareUpdate.prototype = {
                  "The post buildid is equal to the buildid of the update.");
 
     // If a target build id has been given, check if it matches the updated build
-    info.target_buildid = updateData.targetBuildID;
+    info.target_buildid = aUpdateData.targetBuildID;
     if (info.target_buildid) {
       expect.equal(info.build_post.buildid, info.target_buildid,
                    "Post buildid matches target buildid of the update patch.");
@@ -320,8 +320,8 @@ softwareUpdate.prototype = {
    */
   checkAboutDialog : function softwareUpdate_checkAboutDialog(aBrowserController) {
     aBrowserController.mainMenu.click("#aboutName");
-    utils.handleWindow("type", "Browser:About", function (controller) {
-      var button = new elementslib.Selector(controller.window.document, "#updateButton");
+    utils.handleWindow("type", "Browser:About", function (aController) {
+      var button = new elementslib.Selector(aController.window.document, "#updateButton");
       expect.ok(!button.getNode().hidden,
                 "The update button is always visible even after an update.");
     }, true);
@@ -341,18 +341,18 @@ softwareUpdate.prototype = {
 
   /**
    * Download the update of the given channel and type
-   * @param {string} channel
+   * @param {string} aChannel
    *        Update channel to use
-   * @param {boolean} waitForFinish
+   * @param {boolean} aWaitForFinish
    *        Sets if the function should wait until the download has been finished
-   * @param {number} timeout
+   * @param {number} aTimeout
    *        Timeout the download has to stop
    */
-  download : function softwareUpdate_download(channel, waitForFinish, timeout) {
-    waitForFinish = waitForFinish ? waitForFinish : true;
+  download : function softwareUpdate_download(aChannel, aWaitForFinish, aTimeout) {
+    waitForFinish = aWaitForFinish ? aWaitForFinish : true;
 
     // Check that the correct channel has been set
-    assert.equal(channel, this.channel,
+    assert.equal(aChannel, this.channel,
                  "The update channel has been set correctly.");
 
     // Retrieve the timestamp, so we can measure the duration of the download
@@ -381,7 +381,7 @@ softwareUpdate.prototype = {
     switch (this.currentPage) {
       case WIZARD_PAGES.downloading:
         if (waitForFinish) {
-          this.waitforDownloadFinished(timeout);
+          this.waitforDownloadFinished(aTimeout);
 
           assert.waitFor(function () {
             return this.currentPage ===  WIZARD_PAGES.finished ||
@@ -431,7 +431,7 @@ softwareUpdate.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -439,30 +439,30 @@ softwareUpdate.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function softwareUpdate_getElement(spec) {
+  getElement : function softwareUpdate_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
        */
       case "button":
         elem = new elementslib.Lookup(this._controller.window.document,
-                                      WIZARD_BUTTONS_BOX + WIZARD_BUTTON[spec.subtype]);
+                                      WIZARD_BUTTONS_BOX + WIZARD_BUTTON[aSpec.subtype]);
         break;
       case "wizard":
         elem = new elementslib.Lookup(this._controller.window.document, WIZARD);
         break;
       case "wizard_page":
         elem = new elementslib.Lookup(this._controller.window.document, WIZARD_DECK +
-                                      '/id(' + spec.subtype + ')');
+                                      '/id(' + aSpec.subtype + ')');
         break;
       case "download_progress":
         elem = new elementslib.ID(this._controller.window.document, "downloadProgress");
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -506,10 +506,10 @@ softwareUpdate.prototype = {
   /**
    * Open software update dialog
    *
-   * @param {MozMillController} browserController
+   * @param {MozMillController} aBrowserController
    *        Mozmill controller of the browser window
    */
-  openDialog: function softwareUpdate_openDialog(browserController) {
+  openDialog: function softwareUpdate_openDialog(aBrowserController) {
     // TODO: After Firefox 4 has been released and we do not have to test any
     // beta release anymore uncomment out the following code
 
@@ -541,18 +541,18 @@ softwareUpdate.prototype = {
     }
     else {
       // For builds <4.0b7pre
-      browserController.mainMenu.click("#checkForUpdates");
+      aBrowserController.mainMenu.click("#checkForUpdates");
     }
 
-    this.waitForDialogOpen(browserController);
+    this.waitForDialogOpen(aBrowserController);
   },
 
   /**
    * Wait that check for updates has been finished
-   * @param {number} timeout
+   * @param {number} aTimeout
    */
-  waitForCheckFinished : function softwareUpdate_waitForCheckFinished(timeout) {
-    timeout = timeout ? timeout : TIMEOUT_UPDATE_CHECK;
+  waitForCheckFinished : function softwareUpdate_waitForCheckFinished(aTimeout) {
+    timeout = aTimeout ? aTimeout : TIMEOUT_UPDATE_CHECK;
 
     assert.waitFor(function() {
       return this.currentPage != WIZARD_PAGES.checking;
@@ -562,10 +562,10 @@ softwareUpdate.prototype = {
   /**
    * Wait for the software update dialog
    *
-   * @param {MozMillController} browserController
+   * @param {MozMillController} aBrowserController
    *        Mozmill controller of the browser window
    */
-  waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
+  waitForDialogOpen : function softwareUpdate_waitForDialogOpen(aBrowserController) {
     this._controller = utils.handleWindow("type", "Update:Wizard",
                                           undefined, false);
     this._wizard = this.getElement({type: "wizard"});
@@ -580,11 +580,11 @@ softwareUpdate.prototype = {
   /**
    * Wait until the download has been finished
    *
-   * @param {number} timeout
+   * @param {number} aTimeout
    *        Timeout the download has to stop
    */
-  waitforDownloadFinished: function softwareUpdate_waitForDownloadFinished(timeout) {
-    timeout = timeout ? timeout : TIMEOUT_UPDATE_DOWNLOAD;
+  waitforDownloadFinished: function softwareUpdate_waitForDownloadFinished(aTimeout) {
+    timeout = aTimeout ? aTimeout : TIMEOUT_UPDATE_DOWNLOAD;
 
     var progress =  this.getElement({type: "download_progress"});
     assert.waitFor(function () {
@@ -604,9 +604,9 @@ softwareUpdate.prototype = {
   /**
    * Waits for the given page of the update dialog wizard
    */
-  waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
+  waitForWizardPage : function softwareUpdate_waitForWizardPage(aStep) {
     assert.waitFor(function () {
-      return this.currentPage === step;
+      return this.currentPage === aStep;
     }, "New wizard page has been selected", undefined, undefined, this);
   }
 }

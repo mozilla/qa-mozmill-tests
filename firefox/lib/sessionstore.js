@@ -25,11 +25,11 @@ const SESSIONSTORE_MAXTABS_PREF = 'browser.sessionstore.max_tabs_undo';
 /**
  * Constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMill controller of the browser window to operate on.
  */
-function aboutSessionRestore(controller) {
-  this._controller = controller;
+function aboutSessionRestore(aController) {
+  this._controller = aController;
 }
 
 /**
@@ -70,7 +70,7 @@ aboutSessionRestore.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -78,10 +78,10 @@ aboutSessionRestore.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function aboutSessionRestore_getElement(spec) {
+  getElement : function aboutSessionRestore_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       case "button_restoreSession":
         elem = new elementslib.ID(this._controller.tabs.activeTab, "errorTryAgain");
         break;
@@ -101,7 +101,7 @@ aboutSessionRestore.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "tabList");
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -110,32 +110,32 @@ aboutSessionRestore.prototype = {
   /**
    * Returns the current restore state of the given element
    *
-   * @param {object} element
+   * @param {object} aElement
    *        Element which restore state should be retrieved
    * @returns True if the element should be restored
    * @type {boolean}
    *
    */
-  getRestoreState : function aboutSessionRestore_getRestoreState(element) {
+  getRestoreState : function aboutSessionRestore_getRestoreState(aElement) {
     var tree = this.tabList.getNode();
 
-    return tree.view.getCellValue(element.listIndex, tree.columns.getColumnAt(0));
+    return tree.view.getCellValue(aElement.listIndex, tree.columns.getColumnAt(0));
   },
 
   /**
    * Get restorable tabs under the given window
    *
-   * @param {object} window
+   * @param {object} aWindow
    *        Window inside the tree
    * @returns List of tabs
    * @type {array of object}
    */
-  getTabs : function aboutSessionRestore_getTabs(window) {
+  getTabs : function aboutSessionRestore_getTabs(aWindow) {
     var tabs = [ ];
     var tree = this.tabList.getNode();
 
     // Add entries when they are tabs (no container)
-    var ii = window.listIndex + 1;
+    var ii = aWindow.listIndex + 1;
     while (ii < tree.view.rowCount && !tree.view.isContainer(ii)) {
       tabs.push({
                  index: tabs.length,
@@ -177,16 +177,16 @@ aboutSessionRestore.prototype = {
   /**
    * Toggles the restore state for the element
    *
-   * @param {object} element
+   * @param {object} aElement
    *        Specifies the element which restore state should be toggled
    */
-  toggleRestoreState : function aboutSessionRestore_toggleRestoreState(element) {
-    var state = this.getRestoreState(element);
+  toggleRestoreState : function aboutSessionRestore_toggleRestoreState(aElement) {
+    var state = this.getRestoreState(aElement);
 
-    widgets.clickTreeCell(this._controller, this.tabList, element.listIndex, 0, {});
+    widgets.clickTreeCell(this._controller, this.tabList, aElement.listIndex, 0, {});
     this._controller.sleep(0);
 
-    assert.notEqual(this.getRestoreState(element), state, "Restore state has been toggled");
+    assert.notEqual(this.getRestoreState(aElement), state, "Restore state has been toggled");
   }
 }
 
@@ -202,40 +202,40 @@ function resetRecentlyClosedTabs()
 /**
  * Returns the number of restorable tabs for a given window
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  * @returns The number of restorable tabs in the window
  */
-function getClosedTabCount(controller)
+function getClosedTabCount(aController)
 {
-  return sessionStoreService.getClosedTabCount(controller.window);
+  return sessionStoreService.getClosedTabCount(aController.window);
 }
 
 /**
  * Restores the tab which has been recently closed
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
- * @param {object} event
+ * @param {object} aEvent
  *        Specifies the event to use to execute the command
  */
-function undoClosedTab(controller, event)
+function undoClosedTab(aController, aEvent)
 {
-  var count = sessionStoreService.getClosedTabCount(controller.window);
+  var count = sessionStoreService.getClosedTabCount(aController.window);
   var dtds = ["chrome://browser/locale/browser.dtd"];
 
-  switch (event.type) {
+  switch (aEvent.type) {
     case "menu":
       assert.fail("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
       var cmdKey = utils.getEntity(dtds, "tabCmd.commandkey");
-      controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
+      aController.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
 
   if (count > 0) {
-    assert.ok(sessionStoreService.getClosedTabCount(controller.window) < count,
+    assert.ok(sessionStoreService.getClosedTabCount(aController.window) < count,
               "Closed tab count is lower");
   }
 }
@@ -243,28 +243,28 @@ function undoClosedTab(controller, event)
 /**
  * Restores the window which has been recently closed
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
- * @param {object} event
+ * @param {object} aEvent
  *        Specifies the event to use to execute the command
  */
-function undoClosedWindow(controller, event)
+function undoClosedWindow(aController, aEvent)
 {
-  var count = sessionStoreService.getClosedWindowCount(controller.window);
+  var count = sessionStoreService.getClosedWindowCount(aController.window);
   var dtds = ["chrome://browser/locale/browser.dtd"];
 
-  switch (event.type) {
+  switch (aEvent.type) {
     case "menu":
       assert.fail("Menu gets build dynamically and cannot be accessed.");
       break;
     case "shortcut":
       var cmdKey = utils.getEntity(dtds, "newNavigatorCmd.key");
-      controller.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
+      aController.keypress(null, cmdKey, {accelKey: true, shiftKey: true});
       break;
   }
 
   if (count > 0)
-    assert.ok(sessionStoreService.getClosedWindowCount(controller.window) < count, "Closed window count is lower");
+    assert.ok(sessionStoreService.getClosedWindowCount(aController.window) < count, "Closed window count is lower");
 }
 
 // Export of functions

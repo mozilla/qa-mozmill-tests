@@ -47,11 +47,11 @@ function testGetMoreEngines() {
 /**
  * Click on "Get more search engines" link in the manager
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var enginesHandler = function(controller) {
+var enginesHandler = function(aController) {
   // Click Browse link - dialog will close automatically
-  var browseLink = new elementslib.ID(controller.window.document, "addEngines");
-  controller.waitThenClick(browseLink);
+  var browseLink = new elementslib.ID(aController.window.document, "addEngines");
+  aController.waitThenClick(browseLink);
 }

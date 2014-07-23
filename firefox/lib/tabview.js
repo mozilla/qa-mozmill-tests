@@ -236,9 +236,9 @@ tabView.prototype = {
 
     assert.ok(group, arguments.callee.name + ": Group has been specified.");
 
-    this._groupItemsObject.groupItems.forEach(function (node) {
-      if (node.container == group.getNode()) {
-        groupObj = node;
+    this._groupItemsObject.groupItems.forEach(function (aNode) {
+      if (aNode.container == group.getNode()) {
+        groupObj = aNode;
       }
     });
 
@@ -294,9 +294,9 @@ tabView.prototype = {
     assert.ok(group, arguments.callee.name + ": Group has been specified.");
 
     var groupObj = null;
-    this._groupItemsObject.groupItems.forEach(function(node) {
-      if (node.container == group.getNode()) {
-        groupObj = node;
+    this._groupItemsObject.groupItems.forEach(function(aNode) {
+      if (aNode.container == group.getNode()) {
+        groupObj = aNode;
       }
     });
 
@@ -561,17 +561,17 @@ tabView.prototype = {
         nodeCollector.queryNodes(".undo");
         break;
       case "groups":
-        nodeCollector.queryNodes(".groupItem").filter(function (node) {
+        nodeCollector.queryNodes(".groupItem").filter(function (aNode) {
           switch(subtype) {
             case "active":
-              return node.className.indexOf("activeGroup") != -1;
+              return aNode.className.indexOf("activeGroup") != -1;
             case "title":
               // If no title is given the default name is used
               if (!value) {
                 value = utils.getProperty("chrome://browser/locale/tabview.properties",
                                           "tabview.groupItem.defaultName");
               }
-              var title = node.querySelector(".name");
+              var title = aNode.querySelector(".name");
               return (value == title.value);
             default:
               return true;
@@ -598,10 +598,10 @@ tabView.prototype = {
         nodeCollector.queryNodes(".tab .tab-title");
         break;
       case "tabs":
-        nodeCollector.queryNodes(".tab").filter(function (node) {
+        nodeCollector.queryNodes(".tab").filter(function (aNode) {
           switch (subtype) {
             case "active":
-              return (node.className.indexOf("focus") != -1);
+              return (aNode.className.indexOf("focus") != -1);
             case "group":
               var group = value ? value.getNode() : null;
               if (group) {
@@ -615,7 +615,7 @@ tabView.prototype = {
                 return false;
               }
               else {
-                return (node.className.indexOf("tabInGroupItem") == -1);
+                return (aNode.className.indexOf("tabInGroupItem") == -1);
               }
             default:
               return true;

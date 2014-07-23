@@ -30,12 +30,12 @@ function testTabViewClass() {
   tabView.open();
 
   // Test all available elements
-  NODES.forEach(function (element) {
+  NODES.forEach(function (aElement) {
     var node = tabView.getElement({
-      type: element.type,
-      subtype: element.subtype,
-      value: element.value,
-      parent: element.parent
+      type: aElement.type,
+      subtype: aElement.subtype,
+      value: aElement.value,
+      parent: aElement.parent
     });
 
     assert.ok(node.exists(), "Element has been found");

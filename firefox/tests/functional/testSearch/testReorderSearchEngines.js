@@ -56,12 +56,12 @@ var testReorderEngines = function() {
 /**
  * Reorder the search engines a bit
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var reorderEngines = function(controller)
+var reorderEngines = function(aController)
 {
-  var manager = new search.engineManager(controller);
+  var manager = new search.engineManager(aController);
   var engines = manager.engines;
 
   // Move two of the engines down
@@ -85,12 +85,12 @@ var reorderEngines = function(controller)
 /**
  * Get the new search order of the engines
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var retrieveEngines = function(controller)
+var retrieveEngines = function(aController)
 {
-  var manager = new search.engineManager(controller);
+  var manager = new search.engineManager(aController);
 
   // Save current state
   gSharedData.postEngines = manager.engines;

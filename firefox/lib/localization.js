@@ -22,12 +22,12 @@ const NORMALIZATION_MAP = {
  * At the end, it calls the screenshot.create to create a screenshot with the
  * elements containing the broken access keys highlighted.
  *
- * @param {array of array of object} accessKeysSet
- * @param {MozmillController} controller
+ * @param {array of array of object} aAccessKeysSet
+ * @param {MozmillController} aController
  */
-function checkAccessKeysResults(controller, accessKeysSet) {
+function checkAccessKeysResults(aController, aAccessKeysSet) {
   // Sort the access keys to have them in a A->Z order
-  var accessKeysList = accessKeysSet.sort();
+  var accessKeysList = aAccessKeysSet.sort();
 
   // List of access keys
   var aKeysList = [];
@@ -82,7 +82,7 @@ function checkAccessKeysResults(controller, accessKeysSet) {
 
   // If we have found broken access keys, make a screenshot
   if (badRects.length > 0) {
-    screenshot.create(controller, badRects);
+    screenshot.create(aController, badRects);
   }
 }
 
@@ -92,19 +92,19 @@ function checkAccessKeysResults(controller, accessKeysSet) {
  * Checks if the XUL boxObject has screen coordinates outside of
  * the screen coordinates of its parent. If there's no parent, return.
  *
- * @param {node} child
+ * @param {node} aChild
  * @returns List of boxes that can be highlighted on a screenshot
  * @type {array of array of int}
  */
-function checkDimensions(child) {
-  if (!child.boxObject)
+function checkDimensions(aChild) {
+  if (!aChild.boxObject)
     return [];
   var tolerance = 1;
-  var childBox = child.boxObject;
+  var childBox = aChild.boxObject;
   var parent = childBox.parentBox;
 
   // toplevel element or hidden elements, like script tags
-  if (!parent || parent == child.element || !parent.boxObject) {
+  if (!parent || parent == aChild.element || !parent.boxObject) {
     return [];
   }
   var parentBox = parent.boxObject;
@@ -130,7 +130,7 @@ function checkDimensions(child) {
     badRects.push([parentBox.x + parentBox.offsetWidth, childBox.y,
                    pixels, childBox.offsetHeight]);
     expect.fail('Node is cut off by ' + pixels +
-                ' px at the right: ' + _reportNode(child) +
+                ' px at the right: ' + _reportNode(aChild) +
                 '. Parent node: ' + _reportNode(parent));
   }
 
@@ -138,14 +138,14 @@ function checkDimensions(child) {
   // for elements wider than the tolerance
   // We don't want to test menupopup's, as they always report the full height
   // of all items in the popup
-  if (child.nodeName != 'menupopup' && parent.nodeName != 'menupopup') {
+  if (aChild.nodeName != 'menupopup' && parent.nodeName != 'menupopup') {
     if (childBox.offsetWidth > tolerance &&
         childBox.screenY + tolerance < parentBox.screenY) {
       pixels = parentBox.y - childBox.y;
       badRects.push([childBox.x, childBox.y,
                      childBox.offsetWidth, pixels]);
       expect.fail('Node is cut off by ' + pixels +
-                  ' px at the top: ' + _reportNode(child) +
+                  ' px at the top: ' + _reportNode(aChild) +
                   '. Parent node: ' + _reportNode(parent));
     }
     if (childBox.offsetWidth > tolerance &&
@@ -155,7 +155,7 @@ function checkDimensions(child) {
       badRects.push([childBox.x, parentBox.y + parentBox.offsetHeight,
                      childBox.offsetWidth, pixels]);
       expect.fail('Node is cut off by ' + pixels +
-                  ' px at the bottom: ' + _reportNode(child) +
+                  ' px at the bottom: ' + _reportNode(aChild) +
                   '. Parent node: ' + _reportNode(parent));
     }
   }
@@ -167,27 +167,27 @@ function checkDimensions(child) {
  * Filters out nodes which should not be tested because they are not in the
  * current access key scope.
  *
- * @param {node} node
+ * @param {node} aNode
  * @returns Filter status of the given node
  * @type {array of array of int}
  */
-function filterAccessKeys(node) {
+function filterAccessKeys(aNode) {
   // Menus will need a separate filter set
   var notAllowedLocalNames = ["menu", "menubar", "menupopup", "popupset"];
 
-  if (!node.disabled && !node.collapsed && !node.hidden &&
+  if (!aNode.disabled && !aNode.collapsed && !aNode.hidden &&
       notAllowedLocalNames.indexOf(node.localName) == -1) {
     // Code specific to the preferences panes to reject out not visible nodes
     // in the panes.
-    if (node.parentNode && (node.parentNode.localName == "prefwindow" &&
-                            node.parentNode.currentPane.id != node.id) ||
-        ((node.parentNode.localName == "tabpanels" ||
-          node.parentNode.localName == "deck") &&
-          node.parentNode.selectedPanel.id != node.id)) {
+    if (aNode.parentNode && (aNode.parentNode.localName == "prefwindow" &&
+                             aNode.parentNode.currentPane.id != aNode.id) ||
+        ((aNode.parentNode.localName == "tabpanels" ||
+          aNode.parentNode.localName == "deck") &&
+          aNode.parentNode.selectedPanel.id != aNode.id)) {
       return domUtils.DOMWalker.FILTER_REJECT;
       // end of the specific code
     }
-    else if (node.accessKey) {
+    else if (aNode.accessKey) {
       return domUtils.DOMWalker.FILTER_ACCEPT;
     }
     else {
@@ -203,23 +203,23 @@ function filterAccessKeys(node) {
 /**
  * Filters out nodes which should not be tested because they are not visible
  *
- * @param {node} node
+ * @param {node} aNode
  * @returns Filter status of the given node
  * @type {array of array of int}
  */
-function filterCroppedNodes(node) {
-  if (!node.boxObject) {
+function filterCroppedNodes(aNode) {
+  if (!aNode.boxObject) {
     return domUtils.DOMWalker.FILTER_SKIP;
   }
   else {
-    if (!node.disabled && !node.collapsed && !node.hidden) {
+    if (!aNode.disabled && !aNode.collapsed && !aNode.hidden) {
       // Code specific to the preferences panes to reject out not visible nodes
       // in the panes.
-      if (node.parentNode && (node.parentNode.localName == "prefwindow" &&
-                              node.parentNode.currentPane.id != node.id) ||
-          ((node.parentNode.localName == "tabpanels" ||
-            node.parentNode.localName == "deck") &&
-           node.parentNode.selectedPanel.id != node.id)) {
+      if (aNode.parentNode && (aNode.parentNode.localName == "prefwindow" &&
+                               aNode.parentNode.currentPane.id != aNode.id) ||
+          ((aNode.parentNode.localName == "tabpanels" ||
+            aNode.parentNode.localName == "deck") &&
+           aNode.parentNode.selectedPanel.id != aNode.id)) {
         return domUtils.DOMWalker.FILTER_REJECT;
         // end of the specific code
       }
@@ -255,12 +255,12 @@ function normalizeLocale(aLocale) {
  *
  * It packs a submitted node and its access key into a double array
  *
- * @param {node} node Node containing the access key
+ * @param {node} aNode Node containing the access key
  * @returns lower-cased access key and its node in a nested array
  * @type {array of array}
  */
-function prepareAccessKey(node) {
-  return [[node.accessKey.toLowerCase(), node]];
+function prepareAccessKey(aNode) {
+  return [[aNode.accessKey.toLowerCase(), aNode]];
 }
 
 /**
@@ -269,36 +269,36 @@ function prepareAccessKey(node) {
  * This function calls the screenshot.create method if there is at least one
  * box.
  *
- * @param {array of array of int} boxes
- * @param {MozmillController} controller
+ * @param {array of array of int} aBoxes
+ * @param {MozmillController} aController
  */
-function processDimensionsResults(controller, boxes) {
-  if (boxes && boxes.length > 0) {
-    screenshot.create(controller, boxes);
+function processDimensionsResults(aController, aBoxes) {
+  if (aBoxes && aBoxes.length > 0) {
+    screenshot.create(aController, aBoxes);
   }
 }
 
 /**
  * Tries to return a useful string identificator of the given node
  *
- * @param {node} node
+ * @param {node} aNode
  * @returns Identificator of the node
  * @type {String}
  */
-function _reportNode(node) {
-  if (node.id) {
-    return node.localName + "#" + node.id;
+function _reportNode(aNode) {
+  if (aNode.id) {
+    return aNode.localName + "#" + aNode.id;
   }
-  else if (node.label) {
-    return node.localName + "[label=" + node.label + "]";
+  else if (aNode.label) {
+    return aNode.localName + "[label=" + aNode.label + "]";
   }
-  else if (node.value) {
-    return "value: " + node.value;
+  else if (aNode.value) {
+    return "value: " + aNode.value;
   }
-  else if (node.hasAttributes()) {
-    var attrs = node.localName;
-    for (var i = node.attributes.length - 1; i >= 0; i--) {
-      attrs += "[" + node.attributes[i].name + "=" + node.attributes[i].value + "]";
+  else if (aNode.hasAttributes()) {
+    var attrs = aNode.localName;
+    for (var i = aNode.attributes.length - 1; i >= 0; i--) {
+      attrs += "[" + aNode.attributes[i].name + "=" + aNode.attributes[i].value + "]";
     }
     return attrs;
   }

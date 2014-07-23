@@ -37,22 +37,22 @@ var testRemoveMasterPassword = function() {
 
 /**
  * Delete the master password using the preferences window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var deleteMasterPassword = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var deleteMasterPassword = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneSecurity';
 
-  var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
-  controller.waitForElement(masterPasswordCheck);
+  var masterPasswordCheck = new elementslib.ID(aController.window.document, "useMasterPassword");
+  aController.waitForElement(masterPasswordCheck);
 
   // Call setMasterPassword dialog and remove the master password to your profile
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(removeMasterHandler);
 
-  controller.click(masterPasswordCheck);
+  aController.click(masterPasswordCheck);
   md.waitForDialog();
 
   // Close the Preferences dialog
@@ -61,31 +61,31 @@ var deleteMasterPassword = function(controller) {
 
 /**
  * Remove the master password via the master password dialog
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var removeMasterHandler = function(controller) {
-  var removePwdField = new elementslib.ID(controller.window.document, "password");
+var removeMasterHandler = function(aController) {
+  var removePwdField = new elementslib.ID(aController.window.document, "password");
 
-  controller.waitForElement(removePwdField);
-  controller.type(removePwdField, "test1");
+  aController.waitForElement(removePwdField);
+  aController.type(removePwdField, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(confirmHandler);
 
-  controller.click(new elementslib.Lookup(controller.window.document,
+  aController.click(new elementslib.Lookup(aController.window.document,
                    '/id("removemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}'));
   md.waitForDialog();
 }
 
 /**
  * Call the confirmation dialog and click ok to go back to the preferences dialog
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var confirmHandler = function(controller) {
-  var button = new elementslib.Lookup(controller.window.document,
+var confirmHandler = function(aController) {
+  var button = new elementslib.Lookup(aController.window.document,
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button);
+  aController.waitThenClick(button);
 }

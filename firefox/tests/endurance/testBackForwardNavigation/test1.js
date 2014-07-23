@@ -23,8 +23,8 @@ function setupModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
 
   // Open the test pages
-  TEST_DATA.forEach(function (page) {
-    aModule.controller.open(page.url);
+  TEST_DATA.forEach(function (aPage) {
+    aModule.controller.open(aPage.url);
     aModule.controller.waitForPageLoad();
   });
 }

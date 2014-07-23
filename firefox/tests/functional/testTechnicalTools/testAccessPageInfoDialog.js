@@ -31,7 +31,7 @@ var testAccessPageInfo = function () {
   utils.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
 }
 
-function checkPageInfoWindow(controller) {
+function checkPageInfoWindow(aController) {
   // List of all available panes inside the page info window
   var panes = [
                {button: 'generalTab', panel: 'generalPanel'},
@@ -43,15 +43,15 @@ function checkPageInfoWindow(controller) {
 
   // Step through each of the tabs
   for each (var pane in panes) {
-    var paneButton = new elementslib.ID(controller.window.document, pane.button);
-    controller.click(paneButton);
+    var paneButton = new elementslib.ID(aController.window.document, pane.button);
+    aController.click(paneButton);
 
     // Check if the panel has been shown
-    var node = new elementslib.ID(controller.window.document, pane.panel);
-    controller.waitForElement(node);
+    var node = new elementslib.ID(aController.window.document, pane.panel);
+    aController.waitForElement(node);
   }
 
   // Close the Page Info window by pressing Escape
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }
 

@@ -122,28 +122,28 @@ var testLarryGreen = function() {
 
 /**
  * Check the security tab of the page info window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSecurityTab(controller) {
-  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+function checkSecurityTab(aController) {
+  var securityTab = new elementslib.ID(aController.window.document, "securityTab");
   expect.ok(securityTab.getNode().selected, "Security tab is selected by default");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+  var webIDDomainLabel = new elementslib.ID(aController.window.document,
                                             "security-identity-domain-value");
   expect.notEqual(webIDDomainLabel.getNode().value.indexOf(cert.commonName), -1,
                   "Found certificate common name '" + cert.commonName + "'");
 
-  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+  var webIDOwnerLabel = new elementslib.ID(aController.window.document,
                                            "security-identity-owner-value");
   expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
                "Owner matches certificate's organization");
 
-  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+  var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");
   expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Verifier matches certificate's issuer");
 
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }

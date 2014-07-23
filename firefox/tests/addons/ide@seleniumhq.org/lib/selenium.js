@@ -39,7 +39,7 @@ SeleniumManager.prototype = {
   /**
    * Open Selenium IDE
    *
-   * @param {MozMillController} browserController Mozmill controller of the browser window
+   * @param {MozMillController} aBrowserController Mozmill controller of the browser window
    * @param {String} [aEventType="menu"] Type of event which triggers the action
    *   <dl>
    *     <dt>menu</dt>
@@ -48,15 +48,15 @@ SeleniumManager.prototype = {
    *     <dd>The keyboard shortcut is used</dd>
    *   </dl>
    */
-  open : function SeleniumManager_open(browserController, aEventType) {
+  open : function SeleniumManager_open(aBrowserController, aEventType) {
     var type = aEventType || "menu";
 
     switch (type) {
       case "menu":
-        browserController.mainMenu.click("#menuToolsSeleniumIDE");
+        aBrowserController.mainMenu.click("#menuToolsSeleniumIDE");
         break;
       case "shortcut":
-        browserController.keypress(null, "S", {ctrlKey: true, altKey: true});
+        aBrowserController.keypress(null, "S", {ctrlKey: true, altKey: true});
         break;
       default:
         assert.fail("Unknown event type - " + event.type);
@@ -96,39 +96,39 @@ SeleniumManager.prototype = {
   /**
    * Set the value of the base URL
    *
-   * @param {String} url New base URL value
+   * @param {String} aUrl New base URL value
    */
-  set baseURL(url) {
+  set baseURL(aUrl) {
     this.clearBaseURLField();
     var baseURL = this.getElement({type: "baseURL"});
-    this._controller.type(baseURL, url);
+    this._controller.type(baseURL, aUrl);
   },
 
   /**
    * Add a test command
    *
-   * @param {Object} spec Information of the test command to be added
-   * @param {String} spec.action Command name
-   * @param {String} spec.target Element locator
-   * @param {String} spec.value Value
+   * @param {Object} aSpec Information of the test command to be added
+   * @param {String} aSpec.action Command name
+   * @param {String} aSpec.target Element locator
+   * @param {String} aSpec.value Value
    */
-  addCommand : function SeleniumManager_addCommand(spec) {
+  addCommand : function SeleniumManager_addCommand(aSpec) {
     var commands = this.getElement({type: "commands"});
     Widgets.clickTreeCell(this._controller, commands, commands.getNode().view.rowCount - 1, 0, {});
 
-    if (spec.action !== undefined) {
+    if (aSpec.action !== undefined) {
       var command = this.getElement({type: "command_action"});
-      this._controller.type(command, spec.action);
+      this._controller.type(command, aSpec.action);
     }
 
-    if (spec.target !== undefined) {
+    if (aSpec.target !== undefined) {
       var target = this.getElement({type: "command_target"});
-      this._controller.type(target, spec.target);
+      this._controller.type(target, aSpec.target);
     }
 
-    if (spec.value !== undefined) {
+    if (aSpec.value !== undefined) {
       var value = this.getElement({type: "command_value"});
-      this._controller.type(value, spec.value);
+      this._controller.type(value, aSpec.value);
     }
   },
 
