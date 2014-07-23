@@ -80,7 +80,7 @@ function testNewTab() {
  */
 function checkOpenTab(aEventType) {
   // Open a new tab and check that 'about:newtab' has been opened
-  tabBrowser.openTab(aEventType);
+  tabBrowser.openTab({method: aEventType});
 
   // Bug 716108 has landed but we still require this for a clean test
   controller.waitForPageLoad();

@@ -41,11 +41,11 @@ var testOpenInBackgroundTab = function() {
 
     if (i == 2) {
       // Open another tab by middle-clicking on the link
-      tabBrowser.openInNewTab(currentLink);
+      tabBrowser.openTab({method: "middleClick", target: currentLink});
     }
     else {
       // Open the first link via context menu in a new tab:
-      tabBrowser.openInNewTab(currentLink, "contextMenu");
+      tabBrowser.openTab({method: "contextMenu", target: currentLink});
     }
 
     // Check that i+1 tabs are open and the first tab is selected
