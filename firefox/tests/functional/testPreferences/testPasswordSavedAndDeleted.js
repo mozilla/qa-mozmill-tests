@@ -87,15 +87,15 @@ function testSaveAndDeletePassword() {
 
 /**
  * Go to the security pane and open the password manager
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function prefDialogCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefDialogCallback(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneSecurity';
 
-  var showPasswords = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitThenClick(showPasswords);
+  var showPasswords = new elementslib.ID(aController.window.document, "showPasswords");
+  aController.waitThenClick(showPasswords);
 
   utils.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
@@ -109,16 +109,16 @@ function prefDialogCallback(controller) {
  * @param {MozMillController} controller
  *        MozMillController of the window to operate on
  */
-function deleteAllPasswords(controller) {
-  var signOnsTree = controller.window.document.getElementById("signonsTree");
+function deleteAllPasswords(aController) {
+  var signOnsTree = aController.window.document.getElementById("signonsTree");
 
   assert.equal(signOnsTree.view.rowCount, 1, "There is a saved password");
 
   // Delete all passwords and accept the deletion of the saved passwords
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(confirmHandler);
 
-  controller.click(new elementslib.ID(controller.window.document, "removeAllSignons"));
+  aController.click(new elementslib.ID(aController.window.document, "removeAllSignons"));
   md.waitForDialog();
 
   expect.equal(signOnsTree.view.rowCount, 0, "There are no more saved passwords");
@@ -126,19 +126,19 @@ function deleteAllPasswords(controller) {
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**
  * Call the confirmation dialog and click ok to go back to the password manager
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function confirmHandler(controller) {
-  var dialogButton = new elementslib.Lookup(controller.window.document,
+function confirmHandler(aController) {
+  var dialogButton = new elementslib.Lookup(aController.window.document,
                                             '/id("commonDialog")' +
                                             '/anon({"anonid":"buttons"})' +
                                             '/{"dlgtype":"accept"}');
 
-  controller.waitThenClick(dialogButton);
+  aController.waitThenClick(dialogButton);
 }

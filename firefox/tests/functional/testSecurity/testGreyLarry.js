@@ -51,33 +51,33 @@ var testLarryGrey = function() {
 
 /**
  * Check the security tab of the page info window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSecurityTab(controller) {
-  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+function checkSecurityTab(aController) {
+  var securityTab = new elementslib.ID(aController.window.document, "securityTab");
   expect.ok(securityTab.getNode().selected, "The Security tab is selected by default");
 
   // Check the Web Site label for "localhost:port#"
-  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+  var webIDDomainLabel = new elementslib.ID(aController.window.document,
                                             "security-identity-domain-value");
   expect.match(webIDDomainLabel.getNode().value, /\/\/(.*[^\/])/.exec(BASE_URL)[1],
                "The domain label should equal the domain");
 
   // Check the Owner label for "This web site does not supply ownership information."
-  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+  var webIDOwnerLabel = new elementslib.ID(aController.window.document,
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
   expect.equal(webIDOwnerLabel.getNode().value, securityOwner,
                "The owner label should equal the security owner");
 
-  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+  var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");
   var securityIdentifier = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                              "notset");
   expect.equal(webIDVerifierLabel.getNode().value, securityIdentifier,
                "Verifier label present for 'Not Specified'");
 
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }

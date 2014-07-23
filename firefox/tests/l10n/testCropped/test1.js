@@ -38,12 +38,12 @@ function teardownModule(aModule) {
   aModule.controller.stopApplication(true);
 }
 
-function prefPaneInit(controller, prefDialog) {
+function prefPaneInit(aController, aPrefDialog) {
   var ids = [
     { getBy : GET_BY_ID,
       id : "paneMain",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog,
+      windowHandler : aPrefDialog,
       subContent : [
         { getBy : GET_BY_ID,
           id : "useBookmark",
@@ -52,11 +52,11 @@ function prefPaneInit(controller, prefDialog) {
     { getBy : GET_BY_ID,
       id : "paneTabs",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog},
+      windowHandler : aPrefDialog},
     { getBy : GET_BY_ID,
       id : "paneContent",
       target : WINDOW_CURRENT, windowHandler :
-      prefDialog, subContent : [
+      aPrefDialog, subContent : [
         { getBy : GET_BY_ID,
           id : "popupPolicyButton",
           target : WINDOW_NEW,
@@ -81,11 +81,11 @@ function prefPaneInit(controller, prefDialog) {
     { getBy : GET_BY_ID,
       id : "paneApplications",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog},
+      windowHandler : aPrefDialog},
     { getBy : GET_BY_ID,
       id : "panePrivacy",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog,
+      windowHandler : aPrefDialog,
       subContent : [
         { getBy : GET_BY_ID,
           id : "historyMode",
@@ -125,7 +125,7 @@ function prefPaneInit(controller, prefDialog) {
     { getBy : GET_BY_ID,
       id : "paneSecurity",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog,
+      windowHandler : aPrefDialog,
       subContent : [
         { getBy : GET_BY_ID,
           id : "addonExceptions",
@@ -146,20 +146,20 @@ function prefPaneInit(controller, prefDialog) {
     { getBy : GET_BY_ID,
       id : "paneSync",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog},
+      windowHandler : aPrefDialog},
     { getBy : GET_BY_ID,
       id : "paneAdvanced",
       target : WINDOW_CURRENT,
-      windowHandler : prefDialog,
+      windowHandler : aPrefDialog,
       subContent : [
         { getBy : GET_BY_ID,
           id : "generalTab",
           target : WINDOW_CURRENT,
-          windowHandler : prefDialog},
+          windowHandler : aPrefDialog},
         { getBy : GET_BY_ID,
           id : "networkTab",
           target : WINDOW_CURRENT,
-          windowHandler : prefDialog,
+          windowHandler : aPrefDialog,
           subContent : [
             { getBy : GET_BY_ID,
               id : "connectionSettings",
@@ -172,7 +172,7 @@ function prefPaneInit(controller, prefDialog) {
         { getBy : GET_BY_ID,
           id : "updateTab",
           target : WINDOW_CURRENT,
-          windowHandler : prefDialog,
+          windowHandler : aPrefDialog,
           subContent : [
             { getBy : GET_BY_ID,
               id : "showUpdateHistory",
@@ -181,7 +181,7 @@ function prefPaneInit(controller, prefDialog) {
         { getBy : GET_BY_ID,
           id : "encryptionTab",
           target : WINDOW_CURRENT,
-          windowHandler : prefDialog,
+          windowHandler : aPrefDialog,
           subContent : [
             { getBy : GET_BY_ID,
               id : "viewCertificatesButton",
@@ -205,12 +205,12 @@ function prefPaneInit(controller, prefDialog) {
   return ids;
 }
 
-function prefPanesCroppedTest(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefPanesCroppedTest(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
-  var ids = prefPaneInit(controller, prefDialog);
+  var ids = prefPaneInit(aController, prefDialog);
 
-  var domWalker = new domUtils.DOMWalker(controller,
+  var domWalker = new domUtils.DOMWalker(aController,
                                          localization.filterCroppedNodes,
                                          localization.checkDimensions,
                                          localization.processDimensionsResults);

@@ -30,8 +30,8 @@ var testSampleTestcase = function() {
   prefs.openPreferencesDialog(controller, callbackHandler);
 }
 
-var callbackHandler = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var callbackHandler = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneMain';
 
   // Code to be executed in the preferences dialog

@@ -28,11 +28,11 @@ const PREF_DIALOG_SELECTOR = '/{"type":"prefwindow"}/anon({"orient":"vertical"})
 /**
  * Constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMill controller of the browser window to operate on.
  */
-function preferencesDialog(controller) {
-  this._controller = controller;
+function preferencesDialog(aController) {
+  this._controller = aController;
 }
 
 /**
@@ -77,21 +77,21 @@ preferencesDialog.prototype = {
   /**
    * Set the given pane by id
    *
-   * @param {string} id of the pane
+   * @param {string} aId of the pane
    */
-  set paneId(id) {
+  set paneId(aId) {
     // Disable the animation when switching panes
     preferences.setPref(PREF_PANE_ANIMATION, false);
 
-    var button = this.getElement({type: "selector_button", value: id});
+    var button = this.getElement({type: "selector_button", value: aId});
     this._controller.waitThenClick(button);
 
     try {
       var documentElement = this._controller.window.document.documentElement;
 
       assert.waitFor(function () {
-        return documentElement.lastSelected === id;
-      }, "Pane has been changed - expected '" + id + "'");
+        return documentElement.lastSelected === aId;
+      }, "Pane has been changed - expected '" + aId + "'");
     }
     catch (e) {
       throw e;
@@ -108,12 +108,12 @@ preferencesDialog.prototype = {
    *
    * @param {MozMillController} controller
    *        MozMillController of the window to operate on
-   * @param {boolean} saveChanges
+   * @param {boolean} aSaveChanges
    *        (Optional) If true the OK button is clicked on Windows which saves
    *        the changes. On OS X and Linux changes are applied immediately
    */
-  close : function preferencesDialog_close(saveChanges) {
-    saveChanges = (saveChanges == undefined) ? false : saveChanges;
+  close : function preferencesDialog_close(aSaveChanges) {
+    saveChanges = (aSaveChanges == undefined) ? false : aSaveChanges;
 
     if (mozmill.isWindows) {
       var button = this.getElement({type: "button", subtype: (saveChanges ? "accept" : "cancel")});
@@ -156,7 +156,7 @@ preferencesDialog.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -164,13 +164,13 @@ preferencesDialog.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function aboutSessionRestore_getElement(spec) {
+  getElement : function aboutSessionRestore_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       case "button":
         elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_BUTTONS +
-                                      '/{"dlgtype":"' + spec.subtype + '"}');
+                                      '/{"dlgtype":"' + aSpec.subtype + '"}');
         break;
       case "deck":
         elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_DECK);
@@ -191,10 +191,10 @@ preferencesDialog.prototype = {
         break;
       case "selector_button":
         elem = new elementslib.Lookup(this._controller.window.document, PREF_DIALOG_SELECTOR +
-                                      '/{"pane":"' + spec.value + '"}');
+                                      '/{"pane":"' + aSpec.value + '"}');
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -238,14 +238,14 @@ var preferences = {
   /**
    * Clear a user set preference
    *
-   * @param {string} prefName
+   * @param {string} aPrefName
    *        The user-set preference to clear
    * @return False if the preference had the default value
    * @type boolean
    **/
-  clearUserPref : function preferences_clearUserPref(prefName) {
+  clearUserPref : function preferences_clearUserPref(aPrefName) {
     try {
-      this.prefBranch.clearUserPref(prefName);
+      this.prefBranch.clearUserPref(aPrefName);
       return true;
     }
     catch (e) {
@@ -256,73 +256,73 @@ var preferences = {
   /**
    * Retrieve the value of an individual preference.
    *
-   * @param {string} prefName
+   * @param {string} aPrefName
    *        The preference to get the value of.
-   * @param {boolean/number/string} defaultValue
+   * @param {boolean/number/string} aDefaultValue
    *        The default value if preference cannot be found.
-   * @param {boolean/number/string} defaultBranch
+   * @param {boolean/number/string} aDefaultBranch
    *        If true the value will be read from the default branch (optional)
-   * @param {string} interfaceType
+   * @param {string} aInterfaceType
    *        Interface to use for the complex value (optional)
    *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
    *
    * @return The value of the requested preference
    * @type boolean/int/string/complex
    */
-  getPref : function preferences_getPref(prefName, defaultValue, defaultBranch,
-                                         interfaceType) {
+  getPref : function preferences_getPref(aPrefName, aDefaultValue, aDefaultBranch,
+                                         aInterfaceType) {
     try {
-      branch = defaultBranch ? this.defaultPrefBranch : this.prefBranch;
+      branch = aDefaultBranch ? this.defaultPrefBranch : this.prefBranch;
 
       // If interfaceType has been set, handle it differently
-      if (interfaceType != undefined) {
-        return branch.getComplexValue(prefName, interfaceType);
+      if (aInterfaceType != undefined) {
+        return branch.getComplexValue(aPrefName, aInterfaceType);
       }
 
-      switch (typeof defaultValue) {
+      switch (typeof aDefaultValue) {
         case ('boolean'):
-          return branch.getBoolPref(prefName);
+          return branch.getBoolPref(aPrefName);
         case ('string'):
-          return branch.getCharPref(prefName);
+          return branch.getCharPref(aPrefName);
         case ('number'):
-          return branch.getIntPref(prefName);
+          return branch.getIntPref(aPrefName);
         default:
           return undefined;
       }
     }
     catch(e) {
-      return defaultValue;
+      return aDefaultValue;
     }
   },
 
   /**
    * Set the value of an individual preference.
    *
-   * @param {string} prefName
+   * @param {string} aPrefName
    *        The preference to set the value of.
-   * @param {boolean/number/string/complex} value
+   * @param {boolean/number/string/complex} aValue
    *        The value to set the preference to.
-   * @param {string} interfaceType
+   * @param {string} aInterfaceType
    *        Interface to use for the complex value
    *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
    *
    * @return Returns if the value was successfully set.
    * @type boolean
    */
-  setPref : function preferences_setPref(prefName, value, interfaceType) {
+  setPref : function preferences_setPref(aPrefName, aValue, aInterfaceType) {
     try {
-      switch (typeof value) {
+      switch (typeof aValue) {
         case ('boolean'):
-          this.prefBranch.setBoolPref(prefName, value);
+          this.prefBranch.setBoolPref(aPrefName, aValue);
           break;
         case ('string'):
-          this.prefBranch.setCharPref(prefName, value);
+          this.prefBranch.setCharPref(aPrefName, aValue);
           break;
         case ('number'):
-          this.prefBranch.setIntPref(prefName, value);
+          this.prefBranch.setIntPref(aPrefName, aValue);
           break;
         default:
-          this.prefBranch.setComplexValue(prefName, interfaceType, value);
+          this.prefBranch.setComplexValue(aPrefName, aInterfaceType, aValue);
       }
     }
     catch(e) {
@@ -336,26 +336,26 @@ var preferences = {
 /**
  * Open the preferences dialog and call the given handler
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController which is the opener of the preferences dialog
- * @param {function} callback
+ * @param {function} aCallback
  *        The callback handler to use to interact with the preference dialog
- * @param {function} launcher
+ * @param {function} aLauncher
  *        (Optional) A callback handler to launch the preference dialog
  */
-function openPreferencesDialog(controller, callback, launcher) {
-  assert.ok(controller, "Controller for Preferences Dialog has been specified");
-  assert.equal(typeof callback, "function", "Callback for Preferences Dialog has been specified");
+function openPreferencesDialog(aController, aCallback, aLauncher) {
+  assert.ok(aController, "Controller for Preferences Dialog has been specified");
+  assert.equal(typeof aCallback, "function", "Callback for Preferences Dialog has been specified");
 
   if (mozmill.isWindows) {
     // Preference dialog is modal on windows, set up our callback
-    var prefModal = new modalDialog.modalDialog(controller.window);
-    prefModal.start(callback);
+    var prefModal = new modalDialog.modalDialog(aController.window);
+    prefModal.start(aCallback);
   }
 
   // Launch the preference dialog
-  if (launcher) {
-    launcher();
+  if (aLauncher) {
+    aLauncher();
   }
   else {
     mozmill.getPreferencesController();
@@ -375,7 +375,7 @@ function openPreferencesDialog(controller, callback, launcher) {
         prefWindowType = "Browser:Preferences";
     }
 
-    utils.handleWindow("type", prefWindowType, callback);
+    utils.handleWindow("type", prefWindowType, aCallback);
   }
 }
 

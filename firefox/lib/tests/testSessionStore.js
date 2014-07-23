@@ -11,11 +11,11 @@ var utils = require("../utils");
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_projects.html";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 
-  module.session = new sessionStore.aboutSessionRestore(controller);
-  module.tabBrowser = new tabs.tabBrowser(controller);
+  aModule.session = new sessionStore.aboutSessionRestore(controller);
+  aModule.tabBrowser = new tabs.tabBrowser(controller);
 }
 
 var testAboutSessionRestoreErrorPage = function() {

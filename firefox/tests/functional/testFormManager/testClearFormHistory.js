@@ -74,8 +74,8 @@ function testClearFormHistory() {
 /**
  * Accesses the clear recent history dialog and accepts the default options to clear
  */
-function clearHistoryHandler(controller) {
-  var sanitizeDialog = elementslib.ID(controller.window.document, "SanitizeDialog").getNode();
+function clearHistoryHandler(aController) {
+  var sanitizeDialog = elementslib.ID(aController.window.document, "SanitizeDialog").getNode();
   var nodeCollector = new domUtils.nodeCollector(sanitizeDialog);
 
   // Verify that the checkbox to clear form data is checked

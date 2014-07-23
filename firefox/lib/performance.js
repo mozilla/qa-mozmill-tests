@@ -31,14 +31,14 @@ var { assert } = require("../../lib/assertions");
 /**
  * PerfTracer constructor
  *
- * @param {string} name
+ * @param {string} aName
  *        Name of the tracer, currently used in the output title
  */
-function PerfTracer(name) {
-  assert.ok(name, arguments.callee.name + ": name has been supplied.");
+function PerfTracer(aName) {
+  assert.ok(aName, arguments.callee.name + ": name has been supplied.");
 
   this.clearLog();
-  this._name = name;
+  this._name = aName;
 }
 
 PerfTracer.prototype = {
@@ -47,7 +47,7 @@ PerfTracer.prototype = {
   /**
    * Format a single result for printing
    *
-   * @param {object} result
+   * @param {object} aResult
    *        Result as created by addCheckpoint()
    *        Elements: timestamp {Date}   - date/time
    *                  explicit {number} - explicit memory allocated
@@ -57,11 +57,11 @@ PerfTracer.prototype = {
    * @returns Result string formatted for output
    * @type {string}
    */
-  _formatResult : function PerfTracer_formatResult(result) {
-    var resultString = result.timestamp.toUTCString() + " | " +
-                       result.explicit + " | " +
-                       result.resident + " | " +
-                       result.label + "\n";
+  _formatResult : function PerfTracer_formatResult(aResult) {
+    var resultString = aResult.timestamp.toUTCString() + " | " +
+                       aResult.explicit + " | " +
+                       aResult.resident + " | " +
+                       aResult.label + "\n";
 
     return resultString;
   },

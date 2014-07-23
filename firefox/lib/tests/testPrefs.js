@@ -5,8 +5,8 @@
 // Include required modules
 var prefs = require("../prefs");
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
 }
 
 var testPrefHelperClass = function () {
@@ -16,11 +16,11 @@ var testPrefHelperClass = function () {
 /**
  * Test the preferences dialog methods
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function handlePrefDialog(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function handlePrefDialog(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   var pane = prefDialog.pane;
   prefDialog.paneId = 'paneContent';

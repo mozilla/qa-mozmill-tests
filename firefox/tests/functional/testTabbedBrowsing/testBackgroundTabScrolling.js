@@ -57,10 +57,10 @@ var testScrollBackgroundTabIntoView = function() {
   var highlighted = false;
   var config = { attributes: true, attributeOldValue: true, attributeFilter: ["notifybgtab"]};
 
-  var obs = new controller.window.MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      highlighted = (mutation.oldValue == 'true') &&
-                    !mutation.target.hasAttribute('notifybgtab');
+  var obs = new controller.window.MutationObserver(function (aMutations) {
+    aMutations.forEach(function (aMutation) {
+      highlighted = (aMutation.oldValue == 'true') &&
+                    !aMutation.target.hasAttribute('notifybgtab');
     });
   });
   obs.observe(scrollButtonDown.getNode(), config);

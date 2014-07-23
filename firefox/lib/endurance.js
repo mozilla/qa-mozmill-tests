@@ -15,11 +15,11 @@ Cu.import('resource://mozmill/modules/frame.js', frame);
  *
  * @constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function EnduranceManager(controller) {
-  this._controller = controller;
+function EnduranceManager(aController) {
+  this._controller = aController;
   this._perfTracer = new performance.PerfTracer("Endurance");
   this._currentIteration = 1;
   this._currentEntity = 1;
@@ -83,10 +83,10 @@ EnduranceManager.prototype = {
   /**
    * Run endurance test
    *
-   * @param {function} callback
+   * @param {function} aCallback
    *        Callback function to call
    */
-  run : function endurance_run(callback) {
+  run : function endurance_run(aCallback) {
     var _testResults = {
       testMethod : frame.events.currentTest.__name__,
       testFile : frame.events.currentModule.__file__,
@@ -101,7 +101,7 @@ EnduranceManager.prototype = {
 
         try {
           // Run the main test method
-          callback();
+          aCallback();
           this._perfTracer.addCheckpoint("End iteration");
         }
         finally {
@@ -118,13 +118,13 @@ EnduranceManager.prototype = {
   /**
    * Loop through each of the entities
    *
-   * @param {function} callback
+   * @param {function} aCallback
    *        Callback function to call
    */
-  loop : function endurance_loop(callback) {
+  loop : function endurance_loop(aCallback) {
     for (var i = 0; i < this._entities; i++) {
       this._currentEntity = i + 1;
-      callback();
+      aCallback();
       this._controller.sleep(this._delay);
     }
   },
@@ -132,11 +132,11 @@ EnduranceManager.prototype = {
   /**
    * Add a checkpoint.
    *
-   * @param {string} label
+   * @param {string} aLabel
    *        Label for checkpoint
    */
-  addCheckpoint : function endurance_addCheckpoint(label) {
-    this._perfTracer.addCheckpoint(label +
+  addCheckpoint : function endurance_addCheckpoint(aLabel) {
+    this._perfTracer.addCheckpoint(aLabel +
                                    " [i:" + this._currentIteration +
                                    " e:" + this._currentEntity + "]");
   }

@@ -76,17 +76,17 @@ function testSubmitUnencryptedInfoWarning() {
 /**
  * Helper function to handle interaction with the Security Warning modal dialog
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function handleSecurityWarningDialog(controller) {
+function handleSecurityWarningDialog(aController) {
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
                                   "PostToInsecureFromSecureMessage");
 
   // Wait for the content to load
-  var infoBody = new elementslib.ID(controller.window.document, "info.body");
-  controller.waitForElement(infoBody);
+  var infoBody = new elementslib.ID(aController.window.document, "info.body");
+  aController.waitForElement(infoBody);
 
   // The message string contains "##" instead of \n for newlines.
   // There are two instances in the string. Replace them both.
@@ -95,9 +95,9 @@ function handleSecurityWarningDialog(controller) {
   expect.equal(infoBody.getNode().textContent, message, "The dialog shows the security message");
 
   // Click the OK button
-  var okButton = new elementslib.Lookup(controller.window.document,
+  var okButton = new elementslib.Lookup(aController.window.document,
                                         '/id("commonDialog")' +
                                         '/anon({"anonid":"buttons"})' +
                                         '/{"dlgtype":"accept"}');
-  controller.click(okButton);
+  aController.click(okButton);
 }

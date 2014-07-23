@@ -38,10 +38,10 @@ function setupModule() {
 }
 
 function testBlocklistAPI() {
-  ADDONS.forEach(function (addon) {
+  ADDONS.forEach(function (aAddon) {
     var md = new modalDialog.modalDialog(addonsManager.controller.window);
     md.start(addons.handleInstallAddonDialog);
-    controller.open(addon.url);
+    controller.open(aAddon.url);
     md.waitForDialog();
   });
 

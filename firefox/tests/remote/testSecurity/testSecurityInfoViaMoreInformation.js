@@ -48,32 +48,32 @@ var testSecurityInfoViaMoreInformation = function() {
 
 /**
  * Check the security tab of the page info window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSecurityTab(controller) {
+function checkSecurityTab(aController) {
   // Check that the Security tab is selected by default
-  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+  var securityTab = new elementslib.ID(aController.window.document, "securityTab");
   expect.ok(securityTab.getNode().selected, "Security tab is selected");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+  var webIDDomainLabel = new elementslib.ID(aController.window.document,
                                             "security-identity-domain-value");
   expect.equal(webIDDomainLabel.getNode().value, cert.commonName,
                "Domain found in Cerificate Common Name");
 
   // Check the Owner label against the Cert Owner
-  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+  var webIDOwnerLabel = new elementslib.ID(aController.window.document,
                                            "security-identity-owner-value");
   expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
                "Certificate Owner matches Website Owner");
-
+  
   // Check the Verifier label against the Cert Issuer
-  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+  var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");
   expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Certificate Verifier matches Website Verifier");
 
   // Close the Page Info window by pressing Escape
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }

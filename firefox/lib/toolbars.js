@@ -17,11 +17,11 @@ var utils = require("utils");
 /**
  * Constructor
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
  */
-function autoCompleteResults(controller) {
-  this._controller = controller;
+function autoCompleteResults(aController) {
+  this._controller = aController;
   this._popup = this.getElement({type: "popup"});
   this._results = this.getElement({type: "results"});
 }
@@ -103,28 +103,28 @@ autoCompleteResults.prototype = {
   /**
    * Returns the underlined text of all results from the text or URL
    *
-   * @param {ElemBase} result
+   * @param {ElemBase} aResult
    *        Autocomplete result which has to be checked
-   * @param {string} type
+   * @param {string} aType
    *        Type of element to check (text or url)
    *
    * @returns An array of substrings which are underlined
    * @type {Array of string}
    */
-  getUnderlinedText : function autoCompleteResults_getUnderlinedText(result, type) {
-    assert.notEqual(result.getNode(), null, "Result is not null");
+  getUnderlinedText : function autoCompleteResults_getUnderlinedText(aResult, aType) {
+    assert.notEqual(aResult.getNode(), null, "Result is not null");
 
     // Get the description element of the given title or url
     var description = null;
-    switch (type) {
+    switch (aType) {
       case "title":
-        description = result.getNode().boxObject.firstChild.childNodes[1].childNodes[0];
+        description = aResult.getNode().boxObject.firstChild.childNodes[1].childNodes[0];
         break;
       case "url":
-        description = result.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
+        description = aResult.getNode().boxObject.lastChild.childNodes[2].childNodes[0];
         break;
       default:
-        assert.fail("Type unknown - " + type);
+        assert.fail("Type unknown - " + aType);
     }
 
     let values = [ ];
@@ -208,25 +208,25 @@ autoCompleteResults.prototype = {
   /**
    * Returns the autocomplete result element of the given index
    *
-   * @param {number} index
+   * @param {number} aIndex
    *        Index of the result to return
    *
    * @returns Autocomplete result element
    * @type {ElemBase}
    */
-  getResult : function autoCompleteResults_getResult(index) {
-    return this.getElement({type: "result", value: index});
+  getResult : function autoCompleteResults_getResult(aIndex) {
+    return this.getElement({type: "result", value: aIndex});
   },
 
   /**
    * Close the autocomplete popup
    *
-   * @param {boolean} force
+   * @param {boolean} aForce
    *        Force the closing of the autocomplete popup
    */
-  close : function autoCompleteResults_close(force) {
+  close : function autoCompleteResults_close(aForce) {
     if (this.isOpened) {
-      if (force) {
+      if (aForce) {
         this._popup.getNode().hidePopup();
       }
       else {
@@ -242,11 +242,11 @@ autoCompleteResults.prototype = {
 /**
  * Constructor
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
  */
-function editBookmarksPanel(controller) {
-  this._controller = controller;
+function editBookmarksPanel(aController) {
+  this._controller = aController;
 }
 
 /**
@@ -265,7 +265,7 @@ editBookmarksPanel.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -273,10 +273,10 @@ editBookmarksPanel.prototype = {
    * @returns Element which has been created
    * @type ElemBase
    */
-  getElement : function editBookmarksPanel_getElement(spec) {
+  getElement : function editBookmarksPanel_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
@@ -303,7 +303,7 @@ editBookmarksPanel.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "editBMPanel_tagsSelectorExpander");
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -313,13 +313,13 @@ editBookmarksPanel.prototype = {
 /**
  * Constructor
  *
- * @param {MozmillController} controller
+ * @param {MozmillController} aController
  *        MozMillController of the window to operate on
  */
-function locationBar(controller) {
-  this._controller = controller;
-  this._autoCompleteResults = new autoCompleteResults(controller);
-  this._editBookmarksPanel = new editBookmarksPanel(controller);
+function locationBar(aController) {
+  this._controller = aController;
+  this._autoCompleteResults = new autoCompleteResults(aController);
+  this._editBookmarksPanel = new editBookmarksPanel(aController);
 }
 
 /**
@@ -399,21 +399,21 @@ locationBar.prototype = {
   /**
    * Check if the location bar contains the given text
    *
-   * @param {string} text
+   * @param {string} aText
    *        Text which should be checked against
    */
-  contains : function locationBar_contains(text) {
-    return this.urlbar.getNode().value.indexOf(text) != -1;
+  contains : function locationBar_contains(aText) {
+    return this.urlbar.getNode().value.indexOf(aText) != -1;
   },
 
   /**
    * Focus the location bar
    *
-   * @param {object} event
+   * @param {object} aEvent
    *        Focus the location bar with the given event (click or shortcut)
    */
-  focus : function locationBar_focus(event) {
-    switch (event.type) {
+  focus : function locationBar_focus(aEvent) {
+    switch (aEvent.type) {
       case "click":
         this._controller.click(this.urlbar);
         break;
@@ -422,7 +422,7 @@ locationBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        assert.fail("Unkown event type - " + event.type);
+        assert.fail("Unkown event type - " + aEvent.type);
     }
 
     // Wait until the location bar has been focused
@@ -589,12 +589,12 @@ locationBar.prototype = {
   /**
    * Load the given URL
    *
-   * @param {string} url
+   * @param {string} aUrl
    *        URL of web page to load
    */
-  loadURL : function locationBar_loadURL(url) {
+  loadURL : function locationBar_loadURL(aUrl) {
     this.focus({type: "shortcut"});
-    this.type(url);
+    this.type(aUrl);
     this._controller.keypress(this.urlbar, "VK_RETURN", {});
   },
 
@@ -640,11 +640,11 @@ locationBar.prototype = {
   /**
    * Type the given text into the location bar
    *
-   * @param {string} text
+   * @param {string} aText
    *        Text to enter into the location bar
    */
-  type : function locationBar_type(text) {
-    this._controller.type(this.urlbar, text);
+  type : function locationBar_type(aText) {
+    this._controller.type(this.urlbar, aText);
   },
 
   /**

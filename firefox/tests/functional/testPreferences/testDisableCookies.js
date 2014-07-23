@@ -57,23 +57,23 @@ var testDisableCookies = function() {
 
 /**
  * Go to the privacy pane and disable saving cookies
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDisableCookieDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDisableCookieDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
+  var historyMode = new elementslib.ID(aController.window.document, "historyMode");
+  aController.waitForElement(historyMode);
+  aController.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";
   }, "History mode is set to custom");
 
-  var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
-  controller.check(acceptCookiesPref, false);
+  var acceptCookiesPref = new elementslib.ID(aController.window.document, "acceptCookies");
+  aController.check(acceptCookiesPref, false);
 
   // Close the preferences dialog
   prefDialog.close(true);
@@ -81,13 +81,13 @@ var prefDisableCookieDialogCallback = function(controller) {
 
 /**
  * Open the cookie manager from the privacy pane
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefCheckDisableDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
-  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.click(showCookies);
+var prefCheckDisableDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
+  var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
+  aController.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", checkCookieNotSaved);
 
@@ -96,13 +96,13 @@ var prefCheckDisableDialogCallback = function(controller) {
 
 /**
  * Check that the cookie is not saved
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkCookieNotSaved(controller) {
+function checkCookieNotSaved(aController) {
   // Bug 513820
   // Remove Cookies button is not cleared when cookie list is cleared
-  var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
+  var removeCookieButton = new elementslib.ID(aController.window.document, "removeCookie");
   //expect.ok(removeCookieButton.getNode().disabled, "Remove Cookie Button is disabled");
 
   expect.equal(Services.cookies.countCookiesFromHost(persisted.hostName), 0,
@@ -110,6 +110,6 @@ function checkCookieNotSaved(controller) {
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 

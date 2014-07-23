@@ -72,8 +72,8 @@ function testMemBuster() {
   });
 }
 
-function closeModalDialog(controller) {
-  controller.window.close();
+function closeModalDialog(aController) {
+  aController.window.close();
   md.start(closeModalDialog);
 }
 
