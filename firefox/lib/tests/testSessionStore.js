@@ -44,7 +44,7 @@ var testAboutSessionRestoreErrorPage = function() {
   expect.equal(button.getNode().getAttribute('oncommand'), "restoreSession();",
                "Restore Session button has the correct action");
 
-  tabBrowser.openTab("shortcut");
+  tabBrowser.openTab({method: "shortcut"});
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
   tabBrowser.closeTab("shortcut");

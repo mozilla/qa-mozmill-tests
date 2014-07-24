@@ -409,19 +409,119 @@ tabBrowser.prototype = {
   },
 
   /**
-   * Open element (link) in a new tab
+   * Open a new tab using different methods
    *
-   * @param {Elem} aTarget - Element to interact with
-   * @param {String} [aEventType="middleClick"] Type of event which triggers the action
-   *   <dl>
-   *     <dt>contextMenu</dt>
-   *     <dd>The "Open in new Tab" context menu entry is used</dd>
-   *     <dt>middleClick</dt>
-   *     <dd>A middle mouse click gets synthesized</dd>
-   *   </dl>
+   * @param {object} [aSpec]
+   *        Information about how to open the tab
+   * @param {function} [aSpec.callback]
+   *        Callback used for opening the tab
+   * @param {string} [aSpec.method="menu"]
+   *        Method used for opening the tab
+   * @param {MozElement} [aSpec.target]
+   *        Element from where to open the tab
    */
-  openInNewTab : function tabBrowser_openInNewTab(aTarget, aEventType) {
-    var type = aEventType || "middleClick";
+  openTab : function tabBrowser_openTab(aSpec) {
+    var spec = aSpec || {};
+    var method = spec.method || "menu";
+
+    this._waitForTabOpened(() => {
+      switch (method) {
+        case "callback":
+          assert.equal(typeof spec.callback, "function",
+                       "Callback function is defined");
+
+          spec.callback();
+          break;
+        case "menu":
+          this._controller.mainMenu.click("#menu_newNavigatorTab");
+          break;
+        case "newTabButton":
+          var newTabButton = this.getElement({type: "tabs_newTabButton"});
+          newTabButton.click();
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
+          this._controller.keypress(null, cmdKey, {accelKey: true});
+          break;
+        case "tabStrip":
+          var tabStrip = this.getElement({type: "tabs_strip"});
+
+          // RTL-locales need to be treated separately
+          if (utils.getEntity(this.getDtds(), "locale.dir") == "rtl") {
+            // TODO: Calculate the correct x position
+            this._controller.doubleClick(tabStrip, 100, 3);
+          }
+          else {
+            // TODO: Calculate the correct x position
+            this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
+          }
+          break;
+        case "contextMenu":
+          assert.ok(spec.target, "Target element has to be specified");
+
+          var contextMenuItem = findElement.ID(this._controller.window.document,
+                                               "context-openlinkintab");
+          spec.target.rightClick();
+          contextMenuItem.click();
+          utils.closeContentAreaContextMenu(this._controller);
+          break;
+        case "middleClick":
+          assert.ok(spec.target, "Target element has to be specified");
+
+          spec.target.middleClick();
+          break;
+        default:
+          assert.fail("Unknown method - " + method);
+      }
+    });
+  },
+
+  /**
+   * Method for reopening the last closed tab
+   *
+   * @param {object} [aSpec]
+   *        Information about how to open the tab
+   * @param {string} [aSpec.method="shortcut"]
+   *        Method used for opening the tab
+   */
+  reopen: function tabBrowser_reopen(aSpec) {
+    var spec = aSpec || {};
+    var method = spec.method || "shortcut";
+
+    var tabCount = sessionStore.getClosedTabCount(this._controller);
+    assert.notEqual(tabCount, 0,
+                    "'Recently Closed Tabs' sub menu has at least one entry");
+
+    this._waitForTabOpened(() => {
+      switch (method) {
+        case "contextMenu":
+          var contextMenu = this._controller.getMenu("#tabContextMenu");
+          contextMenu.select("#context_undoCloseTab", this.getTab());
+          break;
+        case "mainMenu":
+          this._controller.mainMenu.click("#historyUndoMenu .restoreallitem");
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
+          this._controller.keypress(null, cmdKey,
+                                    {accelKey: true, shiftKey: true});
+          break;
+        default:
+          assert.fail("Unknown method - " + method);
+      }
+    });
+
+    assert.notEqual(tabCount, sessionStore.getClosedTabCount(this._controller),
+                    "'Recently Closed Tabs' sub menu entries have changed");
+  },
+
+  /**
+   * Wait for a tab to open
+   *
+   * @param {function} aCallback
+   *        Function that opens the tab
+   */
+  _waitForTabOpened: function tabBrowser_waitForTabOpened(aCallback) {
     var self = {
       opened: false,
       transitioned: false
@@ -439,100 +539,14 @@ tabBrowser.prototype = {
       self.transitioned = true;
     }
 
-    switch (type) {
-      case "contextMenu":
-        var contextMenuItem = new elementslib.ID(this._controller.window.document,
-                                                 "context-openlinkintab");
-        this._controller.rightClick(aTarget);
-        this._controller.click(contextMenuItem);
-        utils.closeContentAreaContextMenu(this._controller);
-        break;
-      case "middleClick":
-        this._controller.middleClick(aTarget);
-        break;
-      default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
-    }
-
     try {
+      aCallback();
+
       assert.waitFor(function () {
         return self.opened && self.transitioned;
-      }, "Link has been opened in a new tab");
-    } finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
-      if (animationObserver.isAnimated) {
-        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
-      }
+      }, "Tab has been opened");
     }
-  },
-
-  /**
-   * Open a new tab
-   *
-   * @param {String} [aEventType="menu"] Type of event which triggers the action
-   *   <dl>
-   *     <dt>menu</dt>
-   *     <dd>The main menu is used</dd>
-   *     <dt>newTabButton</dt>
-   *     <dd>The new tab button on the toolbar is used</dd>
-   *     <dt>shortcut</dt>
-   *     <dd>The keyboard shortcut is used</dd>
-   *     <dt>tabStrip</dt>
-   *     <dd>A double click on the tabstrip gets synthesized</dd>
-   *   </dl>
-   */
-  openTab : function tabBrowser_openTab(aEventType) {
-    var type = aEventType || "menu";
-    var self = {
-      opened: false,
-      transitioned: false
-    };
-
-    function checkTabOpened() { self.opened = true; }
-    function checkTabTransitioned() { self.transitioned = true; }
-
-    // Add event listener to wait until the tab has been opened
-    this._controller.window.addEventListener("TabOpen", checkTabOpened);
-    if (animationObserver.isAnimated) {
-     this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
-    }
-    else {
-     self.transitioned = true;
-    }
-
-    switch (type) {
-      case "menu":
-        this._controller.mainMenu.click("#menu_newNavigatorTab");
-        break;
-      case "shortcut":
-        var cmdKey = utils.getEntity(this.getDtds(), "tabCmd.commandkey");
-        this._controller.keypress(null, cmdKey, {accelKey: true});
-        break;
-      case "newTabButton":
-        var newTabButton = this.getElement({type: "tabs_newTabButton"});
-        this._controller.click(newTabButton);
-        break;
-      case "tabStrip":
-        var tabStrip = this.getElement({type: "tabs_strip"});
-
-        // RTL-locales need to be treated separately
-        if (utils.getEntity(this.getDtds(), "locale.dir") == "rtl") {
-          // TODO: Calculate the correct x position
-          this._controller.doubleClick(tabStrip, 100, 3);
-        } else {
-          // TODO: Calculate the correct x position
-          this._controller.doubleClick(tabStrip, tabStrip.getNode().clientWidth - 100, 3);
-        }
-        break;
-      default:
-        throw new Error(arguments.callee.name + ": Unknown event type - " + type);
-    }
-
-    try {
-      assert.waitFor(function () {
-        return self.opened && self.transitioned;
-      }, "New tab has been opened");
-    } finally {
+    finally {
       this._controller.window.removeEventListener("TabOpen", checkTabOpened);
       if (animationObserver.isAnimated) {
         this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);

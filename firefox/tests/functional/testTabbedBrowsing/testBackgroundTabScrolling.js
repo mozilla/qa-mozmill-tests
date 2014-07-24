@@ -41,7 +41,7 @@ var testScrollBackgroundTabIntoView = function() {
   var link2 = new elementslib.Name(controller.tabs.activeTab, "link_2");
 
   assert.waitFor(function () {
-    tabBrowser.openInNewTab(link1);
+    tabBrowser.openTab({method: "middleClick", target: link1});
 
     // Wait until the pages have been loaded, so they can be loaded from the cache
     var tab = controller.tabs.getTab(controller.tabs.length - 1);
@@ -65,7 +65,7 @@ var testScrollBackgroundTabIntoView = function() {
   obs.observe(scrollButtonDown.getNode(), config);
 
   // Open one more tab but with another link for later verification
-  tabBrowser.openInNewTab(link2);
+  tabBrowser.openTab({method: "middleClick", target: link2});
 
   // Check that the right scroll button flashes
   expect.waitFor(function () {
