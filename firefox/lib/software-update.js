@@ -352,7 +352,7 @@ softwareUpdate.prototype = {
     waitForFinish = aWaitForFinish ? aWaitForFinish : true;
 
     // Check that the correct channel has been set
-    assert.equal(aChannel, this.aChannel,
+    assert.equal(aChannel, this.channel,
                  "The update channel has been set correctly.");
 
     // Retrieve the timestamp, so we can measure the duration of the download
