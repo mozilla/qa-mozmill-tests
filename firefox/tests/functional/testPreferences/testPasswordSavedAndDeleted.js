@@ -76,9 +76,9 @@ function testSaveAndDeletePassword() {
   passField = new elementslib.ID(controller.tabs.activeTab, "Password");
 
   controller.waitForElement(userField);
-  expect.waitFor(() => userField.getNode().value === "bar",
+  expect.waitFor(() => (userField.getNode().value === "bar"),
                  "Username has been saved");
-  expect.waitFor(() =>passField.getNode().value === "foo",
+  expect.waitFor(() => (passField.getNode().value === "foo"),
                  "Password has been saved");
 
   // Call preferences dialog and delete the saved password
