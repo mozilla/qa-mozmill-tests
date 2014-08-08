@@ -14,15 +14,23 @@ const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
 
+  aModule.targetPanel = null;
   aModule.cert = null;
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
  * Test clicking the 'More Information' button in Larry,
  * to open the Page Info dialog to the Security tab
  */
-var testSecurityInfoViaMoreInformation = function() {
+function testSecurityInfoViaMoreInformation() {
   // Go to a secure website
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
@@ -31,17 +39,16 @@ var testSecurityInfoViaMoreInformation = function() {
   var secUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
   cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
-  locationBar.waitForNotificationPanel(() => {
-    var identityBox = locationBar.getElement({type: "identityBox"});
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
+
+    var identityBox = identityPopup.getElement({type: "box"});
     identityBox.click();
   }, {type: "identity"});
 
-  var doorhanger = locationBar.getElement({type: "identityPopup"});
-
   // Click the 'More Information' button in the Larry popup notification
-  var moreInfoButton = new elementslib.ID(controller.window.document,
-                                    "identity-popup-more-info-button");
-  controller.click(moreInfoButton);
+  var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
+  moreInfoButton.click();
 
   utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
