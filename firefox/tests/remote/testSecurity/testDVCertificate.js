@@ -13,17 +13,25 @@ var utils = require("../../../lib/utils");
 
 const TEST_DATA = "https://ssl-dv.mozqa.com";
 
-var setupModule = function(aModule) {
+function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
 
+  aModule.targetPanel = null;
   aModule.cert = null;
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
  * Test the Larry displays as BLUE
  */
-var testLarryBlue = function() {
+function testLarryBlue() {
   // Go to a "blue" website
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
@@ -33,54 +41,58 @@ var testLarryBlue = function() {
   cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
 
   // Check the favicon
-  var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
+  var favicon = locationBar.getElement({type: "favicon"});
   expect.ok(!favicon.getNode().hasAttribute("hidden"),
             "Lock icon is visible in identity box");
 
-  var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
-  expect.contain(faviconImage, "identity-icons-https.png", "There is a lock icon");
+  var faviconImage = utils.getElementStyle(favicon, "list-style-image");
+  expect.contain(faviconImage, "identity-icons-https", "There is a lock icon");
 
-  var identityBox = locationBar.getElement({type: "identityBox"});
-  expect.equal(identityBox.getNode().className, "verifiedDomain", "Identity is verified");
+  var identityBox = identityPopup.getElement({type: "box"});
+  expect.equal(identityBox.getNode().className, "verifiedDomain",
+               "Identity is verified");
 
-  locationBar.waitForNotificationPanel(() => {
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
+
     identityBox.click();
   }, {type: "identity"});
 
-  var doorhanger = locationBar.getElement({type: "identityPopup"});
+  var doorhanger = identityPopup.getElement({type: "popup"});
 
   expect.equal(doorhanger.getNode().className, "verifiedDomain",
                "The Larry UI is domain verified (aka Blue)");
 
   // Check for the Lock icon is visible
-  var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
-  var cssInfoLockImage = utils.getElementStyle(lockIcon, 'list-style-image');
+  var lockIcon = identityPopup.getElement({type: "encryptionIcon"});
+  var cssInfoLockImage = utils.getElementStyle(lockIcon, "list-style-image");
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
 
   // Bug 443116
   // Larry strips the 'www.' from the CName using the eTLDService
   // This is expected behaviour for the time being
-  var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
+  var host = identityPopup.getElement({type: "host"});
+  expect.equal(host.getNode().textContent,
+               Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the cert host");
 
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
-  var verifier = new elementslib.ID(controller.window.document, "identity-popup-content-verifier");
+  var verifier = identityPopup.getElement({type: "verifier"});
   expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
                "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted2");
-  var encryptionLabel = new elementslib.ID(controller.window.document, "identity-popup-encryption-label");
+  var encryptionLabel = identityPopup.getElement({type: "encryptionLabel"});
   expect.equal(encryptionLabel.getNode().textContent, l10nEncryptionLabel,
                "The Encryption Label text is set");
 
   // Check the More Information button
-  var moreInfoButton = new elementslib.ID(controller.window.document, "identity-popup-more-info-button");
-  controller.click(moreInfoButton);
+  var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
+  moreInfoButton.click();
 
   utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }

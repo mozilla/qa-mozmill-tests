@@ -15,8 +15,17 @@ const TEST_DATA = "https://mozqa.com/data/firefox/security/mixedcontent.html";
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
+
+  aModule.targetPanel = null;
 
   tabs.closeAllTabs(aModule.controller);
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
@@ -26,15 +35,20 @@ function testMixedContentPage() {
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  var favicon = locationBar.getElement({type:"favicon"});
+  var favicon = locationBar.getElement({type: "favicon"});
   assert.waitFor(function () {
-    var faviconImage = utils.getElementStyle(favicon, 'list-style-image');
-    return faviconImage.indexOf("identity-icons-https-mixed-display.png") !== -1;
+    var faviconImage = utils.getElementStyle(favicon, "list-style-image");
+    return faviconImage.indexOf("identity-icons-https-mixed-display") !== -1;
   }, "There is a warning image");
 
-  controller.click(favicon);
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
 
-  var encryptionPopup = locationBar.getElement({type:"identityPopup"});
+    var identityBox = identityPopup.getElement({type: "box"});
+    identityBox.click();
+  }, {type: "identity"});
+
+  var encryptionPopup = identityPopup.getElement({type: "popup"});
   var property = utils.getProperty("chrome://browser/locale/browser.properties",
                                    "identity.mixed_display_loaded");
   assert.equal(encryptionPopup.getNode().textContent, property, "The page has mixed content");

@@ -311,15 +311,127 @@ editBookmarksPanel.prototype = {
 }
 
 /**
+ * Identity popup (from location bar) class
+ * @constructor
+ *
+ * @param {MozMillController} aController
+ *        MozMillController of the window to operate on
+ */
+function IdentityPopup(aController) {
+  assert.ok(aController, "A controller has to be specified");
+
+  this._controller = aController;
+  this._popup = this.getElement({type: "popup"});
+}
+
+IdentityPopup.prototype = {
+  /**
+   * Get the controller of the window
+   *
+   * @returns {MozMillController} Mozmill Controller
+   */
+  get controller() {
+    return this._controller;
+  },
+
+  /**
+   * Check if the identity popup is open
+   *
+   * @returns {boolean} True if the panel is open, false otherwise
+   */
+  get isOpen() {
+    return this._popup.getNode().state === "open";
+  },
+
+  /**
+   * Retrieve an UI element based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @parma {string} aSpec.type
+   *        Identifier of the element
+   *
+   * @returns {ElemBase} Element which has been found
+   */
+  getElement : function IdentityPopup_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve list of UI elements based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @parma {string} aSpec.type
+   *        Identifier of the element
+   *
+   * @returns {ElemBase[]} Elements which have been found
+   */
+  getElements : function IdentityPopup_getElements(aSpec) {
+    var spec = aSpec || { };
+    var elem = null;
+    var parent = this._controller.window.document;
+
+    switch (spec.type) {
+      case "box":
+        elem = findElement.ID(parent, "identity-box");
+        break;
+      case "countryLabel":
+        elem = findElement.ID(parent, "identity-icon-country-label");
+        break;
+      case "encryptionLabel":
+        elem = findElement.ID(parent, "identity-popup-encryption-label");
+        break;
+      case "encryptionIcon":
+        elem = findElement.ID(parent, "identity-popup-encryption-icon");
+        break;
+      case "host":
+        elem = findElement.ID(parent, "identity-popup-content-host");
+        break;
+      case "moreInfoButton":
+        elem = findElement.ID(parent, "identity-popup-more-info-button");
+        break;
+      case "organizationLabel":
+        elem = findElement.ID(parent, "identity-icon-label");
+        break;
+      case "owner":
+        elem = findElement.ID(parent, "identity-popup-content-owner");
+        break;
+      case "ownerLocation":
+        elem = findElement.ID(parent, "identity-popup-content-supplemental");
+        break;
+      case "popup":
+        elem = findElement.ID(parent, "identity-popup");
+        break;
+      case "permissions":
+        elem = findElement.ID(parent, "identity-popup-permissions");
+        break;
+      case "verifier":
+        elem = findElement.ID(parent, "identity-popup-content-verifier");
+        break;
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return [elem];
+  }
+}
+
+/**
  * Constructor
  *
  * @param {MozmillController} aController
  *        MozMillController of the window to operate on
  */
 function locationBar(aController) {
+  assert.ok(aController, "A controller has to be specified");
+
   this._controller = aController;
   this._autoCompleteResults = new autoCompleteResults(aController);
   this._editBookmarksPanel = new editBookmarksPanel(aController);
+  this._identityPopup = new IdentityPopup(aController);
 }
 
 /**
@@ -344,6 +456,15 @@ locationBar.prototype = {
    */
   get editBookmarksPanel() {
     return this._editBookmarksPanel;
+  },
+
+  /**
+   * Returns the identity popup object
+   *
+   * @returns {object} Identity popup instance
+   */
+  get identityPopup() {
+    return this._identityPopup;
   },
 
   /**
@@ -507,10 +628,6 @@ locationBar.prototype = {
         nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
         nodeCollector.queryAnonymousNode("anonid", "historydropmarker");
         break;
-      case "identityBox":
-        return [new elementslib.ID(root, "identity-box")];
-      case "identityPopup":
-        return [new elementslib.ID(root, "identity-popup")];
       case "notificationPopup_buttonMenu":
         nodeCollector.queryAnonymousNode("anonid", "menupopup");
         break;
@@ -715,7 +832,7 @@ locationBar.prototype = {
         panel = this._editBookmarksPanel.getElement({type: "bookmarkPanel"});
         break;
       case "identity":
-        panel = this.getElement({type: "identityPopup"});
+        panel = this._identityPopup.getElement({type: "popup"});
         break;
       default :
         assert.fail("Unknown notification panel to wait for: " + spec.type);
