@@ -6,6 +6,7 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var toolbars = require("../../../lib/toolbars");
 
 const TEST_DATA = [
   // Invalid cert page
@@ -16,19 +17,21 @@ const TEST_DATA = [
   "http://www.mozqa.com"
 ];
 
-var setupModule = function(aModule) {
+function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
 }
 
 /**
  * Test the identity button and Bad Cert error page
  */
-var testSecNotification = function() {
+function testSecNotification() {
   // Go to a secure HTTPS site
   controller.open(TEST_DATA[1]);
   controller.waitForPageLoad();
 
-  var identityBox = new elementslib.ID(controller.window.document, "identity-box");
+  var identityBox = identityPopup.getElement({type: "box"});
 
   expect.waitFor(function () {
     return identityBox.getNode().className === "verifiedIdentity";

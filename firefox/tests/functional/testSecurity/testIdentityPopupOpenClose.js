@@ -11,44 +11,49 @@
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
+var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-var setupModule = function(aModule) {
+function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
+
+  aModule.targetPanel = null;
+
   tabs.closeAllTabs(aModule.controller);
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
  * Test that the identity popup can be opened and closed
  */
-var testIdentityPopupOpenClose = function() {
+function testIdentityPopupOpenClose() {
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  // Click the identity box
-  var identityBox = new elementslib.ID(controller.window.document, "identity-box");
-  controller.click(identityBox);
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
 
-  // Check the popup state
-  var popup = new elementslib.ID(controller.window.document, "identity-popup");
-  assert.waitFor(function () {
-    return popup.getNode().state === 'open';
-  }, "Identity popup has been opened");
+    var identityBox = identityPopup.getElement({type: "box"});
+    identityBox.click();
+  }, {type: "identity"});
 
-  var button = new elementslib.ID(controller.window.document,
-                                  "identity-popup-more-info-button");
-  expect.ok(utils.isDisplayed(controller, button),
+  var moreInfo = identityPopup.getElement({type: "moreInfoButton"});
+  expect.ok(utils.isDisplayed(controller, moreInfo),
             "More Information button is visible");
 
-  // Press Escape to close the popup
-  controller.keypress(popup, 'VK_ESCAPE', {});
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
 
-  // Check the popup state again
-  assert.waitFor(function () {
-    return popup.getNode().state === 'closed';
-  }, "Identity popup has been closed");
+    aPanel.keypress("VK_ESCAPE", {});
+  }, {type: "identity", open: false});
 }
-

@@ -12,39 +12,48 @@ var utils = require("../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
-var setupModule = function(aModule) {
+function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
+
+  aModule.targetPanel = null;
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
  * Test the Larry displays as GREY
  */
-var testLarryGrey = function() {
+function testLarryGrey() {
   // Go to a "grey" website
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
-  var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
+  var favicon = locationBar.getElement({type: "favicon"});
   expect.ok(!favicon.getNode().hidden, "The globe favicon is visible");
 
-  var identityIconLabel = new elementslib.ID(controller.window.document,
-                                             "identity-icon-label");
-  expect.equal(identityIconLabel.getNode().value, "", "The favicon has no label");
+  var orgLabel = identityPopup.getElement({type: "organizationLabel"});
+  expect.equal(orgLabel.getNode().value, "", "The favicon has no label");
 
-  locationBar.waitForNotificationPanel(() => {
-    var identityBox = locationBar.getElement({type: "identityBox"});
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
+
+    var identityBox = identityPopup.getElement({type: "box"});
     identityBox.click();
   }, {type: "identity"});
 
-  var doorhanger = locationBar.getElement({type: "identityPopup"});
+  var doorhanger = identityPopup.getElement({type: "popup"});
   expect.equal(doorhanger.getNode().className, "unknownIdentity",
                "The Larry UI is unknown (aka Grey)");
 
   // Check the More Information button
-  var moreInfoButton = new elementslib.ID(controller.window.document,
-                                          "identity-popup-more-info-button");
-  controller.click(moreInfoButton);
+  var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
+  moreInfoButton.click();
 
   utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
