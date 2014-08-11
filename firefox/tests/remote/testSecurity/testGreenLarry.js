@@ -16,8 +16,16 @@ const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.identityPopup = aModule.locationBar.identityPopup;
 
+  aModule.targetPanel = null;
   aModule.cert = null;
+}
+
+function teardownModule(aModule) {
+  if (aModule.targetPanel) {
+    aModule.targetPanel.getNode().hidePopup();
+  }
 }
 
 /**
@@ -37,34 +45,36 @@ var testLarryGreen = function() {
 
   // Check the label displays
   // Format: Organization (CountryCode)
-  var identOrganizationLabel = new elementslib.ID(controller.window.document,
-                                                  "identity-icon-label");
-  var identCountryLabel = new elementslib.ID(controller.window.document,
-                                             "identity-icon-country-label");
-  expect.equal(identOrganizationLabel.getNode().value, cert.organization,
+  var orgLabel = identityPopup.getElement({type: "organizationLabel"});
+  var countryLabel = identityPopup.getElement({type: "countryLabel"});
+  expect.equal(orgLabel.getNode().value, cert.organization,
                "Certificate's organization is displayed");
-  expect.equal(identCountryLabel.getNode().value, '(' + country + ')',
+  expect.equal(countryLabel.getNode().value, '(' + country + ')',
                "Certificate's country code is displayed");
 
   // Check the favicon
-  var favicon = new elementslib.ID(controller.window.document, "page-proxy-favicon");
+  var favicon = locationBar.getElement({type: "favicon"});
   assert.waitFor(function () {
     return favicon.getNode().getAttribute("hidden") == false;
   }, "Lock icon is visible in identity box");
 
-  var identityBox = locationBar.getElement({type: "identityBox"});
-  expect.equal(identityBox.getNode().className, "verifiedIdentity", "Identity is verified");
+  var identityBox = identityPopup.getElement({type: "box"});
+  expect.equal(identityBox.getNode().className, "verifiedIdentity",
+               "Identity is verified");
 
-  locationBar.waitForNotificationPanel(() => {
+  locationBar.waitForNotificationPanel(aPanel => {
+    targetPanel = aPanel;
+
     identityBox.click();
   }, {type: "identity"});
 
-  var doorhanger = locationBar.getElement({type: "identityPopup"});
+  var doorhanger = identityPopup.getElement({type: "popup"});
 
-  expect.equal(doorhanger.getNode().className, "verifiedIdentity", "Larry UI is verified aka Green");
+  expect.equal(doorhanger.getNode().className, "verifiedIdentity",
+               "Larry UI is verified aka Green");
 
   // Check for the Lock icon is visible
-  var lockIcon = new elementslib.ID(controller.window.document, "identity-popup-encryption-icon");
+  var lockIcon = identityPopup.getElement({type: "encryptionIcon"});
   var cssInfoLockImage = utils.getElementStyle(lockIcon, 'list-style-image');
 
   expect.notEqual(cssInfoLockImage, "none", "There is a lock icon");
@@ -72,11 +82,12 @@ var testLarryGreen = function() {
   // Bug 443116
   // Larry strips the 'www.' from the CName using the eTLDService
   // This is expected behaviour for the time being
-  var host = new elementslib.ID(controller.window.document, "identity-popup-content-host");
-  expect.equal(host.getNode().textContent, Services.eTLD.getBaseDomainFromHost(cert.commonName),
+  var host = identityPopup.getElement({type: "host"});
+  expect.equal(host.getNode().textContent,
+               Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the Cert host");
 
-  var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
+  var owner = identityPopup.getElement({type: "owner"});
   expect.equal(owner.getNode().textContent, cert.organization,
                "Owner string is equal to the Cert organization");
 
@@ -93,29 +104,25 @@ var testLarryGreen = function() {
                                         "identity.identified.state_and_country");
   var updateLocationLabel = locationLabel.replace("%S", state).replace("%S", country);
   var location = city + '\n' + updateLocationLabel;
-  var ownerLocation = new elementslib.ID(controller.window.document,
-                                         "identity-popup-content-supplemental");
+  var ownerLocation = identityPopup.getElement({type: "ownerLocation"});
   expect.equal(ownerLocation.getNode().textContent, location,
                "Owner location string is equal to the Cert location");
 
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
-  var verifier = new elementslib.ID(controller.window.document,
-                                    "identity-popup-content-verifier");
+  var verifier = identityPopup.getElement({type: "verifier"});
   expect.equal(verifier.getNode().textContent, l10nVerifierLabel,
                "The 'Verified by: %S' string is set");
 
   var l10nEncryptionLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                               "identity.encrypted2");
-  var label = new elementslib.ID(controller.window.document,
-                                 "identity-popup-encryption-label");
+  var label = identityPopup.getElement({type: "encryptionLabel"});
   expect.equal(label.getNode().textContent, l10nEncryptionLabel, "Encryption Label text is set");
 
   // Check the More Information button
-  var moreInfoButton = new elementslib.ID(controller.window.document,
-                                          "identity-popup-more-info-button");
-  controller.click(moreInfoButton);
+  var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
+  moreInfoButton.click();
 
   utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
