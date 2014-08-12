@@ -606,11 +606,15 @@ tabBrowser.prototype = {
     var document = this._controller.window.document;
     var elem = null;
 
-    switch(spec.type) {
+    switch (spec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
        */
+      case "openLinkInNewTab":
+        elem = new elementslib.ID(this._controller.window.document,
+                                  "context-openlinkintab");
+        break;
       case "tabs":
         elem = new elementslib.Lookup(this._controller.window.document,
                                       TABS_TABS);
@@ -790,8 +794,7 @@ tabBrowser.prototype = {
         case "contextMenu":
           assert.ok(spec.target, "Target element has to be specified");
 
-          var contextMenuItem = findElement.ID(this._controller.window.document,
-                                               "context-openlinkintab");
+          var contextMenuItem = this.getElement({type: "openLinkInNewTab"});
           spec.target.rightClick();
           contextMenuItem.click();
           utils.closeContentAreaContextMenu(this._controller);
@@ -842,8 +845,8 @@ tabBrowser.prototype = {
       }
     });
 
-    assert.notEqual(tabCount, sessionStore.getClosedTabCount(this._controller),
-                    "'Recently Closed Tabs' sub menu entries have changed");
+    assert.equal(sessionStore.getClosedTabCount(this._controller), tabCount - 1,
+                 "'Recently Closed Tabs' sub menu entries have changed");
   },
 
   /**
