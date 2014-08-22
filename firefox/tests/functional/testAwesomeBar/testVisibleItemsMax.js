@@ -64,14 +64,17 @@ var testVisibleItemsMax = function() {
   }, "Location bar contains the typed data - expected '" + testString + "'");
 
   // Get the visible results from the autocomplete list. Verify it is equal to maxrows
+  var popup = locationBar.autoCompleteResults.getElement({type:"popup"});
   var autoCompleteResultsList = locationBar.autoCompleteResults.getElement({type:"results"});
   var maxRows = locationBar.urlbar.getNode().getAttribute("maxrows");
-  assert.waitFor(function () {
-    return autoCompleteResultsList.getNode().getNumberOfVisibleRows() === parseInt(maxRows);
-  }, "Number of visible rows should equal " + maxRows);
+
+  // Bug 901946
+  // Because the height is not computed dynamically but is row1 height * maxrows
+  // getNumberOfVisibleRows() returns a different number than max for certain
+  // exotic locales. Use the same algorithm here.
+  assert.waitFor(() => (parseInt(autoCompleteResultsList.getNode().height) ===
+                        parseInt(maxRows * popup.getNode()._rowHeight)),
+                 "Number of visible rows should equal " + maxRows);
 
   locationBar.autoCompleteResults.close();
 }
-
-setupModule.__force_skip__ = "Bug 818128 - Test failure 'Number of visible rows should equal 6'";
-teardownModule.__force_skip__ = "Bug 818128 - Test failure 'Number of visible rows should equal 6'";
