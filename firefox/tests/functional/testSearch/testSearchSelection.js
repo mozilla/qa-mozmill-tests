@@ -92,8 +92,10 @@ var startSearch = function(element, engineName, loadInBackground) {
 
   expect.contain(contextLabel, engineName, "The specified search engine is installed");
 
-  controller.click(contextEntry);
-  utils.closeContentAreaContextMenu(controller);
+  tabs.openTab({method: "callback", callback: () => {
+    controller.click(contextEntry);
+    utils.closeContentAreaContextMenu(controller);
+  }});
 
   // A new tab will be opened in the background
   assert.waitFor(function () {

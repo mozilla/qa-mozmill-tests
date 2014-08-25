@@ -14,14 +14,24 @@ var utils = require("../../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
 
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
+
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
   Services.cookies.removeAll();
 }
 
 var teardownModule = function(aModule) {
   prefs.preferences.clearUserPref("network.cookie.cookieBehavior");
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+
   Services.cookies.removeAll();
 
   persisted.hostName = undefined;

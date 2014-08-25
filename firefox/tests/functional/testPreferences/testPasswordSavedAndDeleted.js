@@ -16,14 +16,24 @@ var utils = require("../../../../lib/utils");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
 
+const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
+const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
+
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
 
+  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  if (mozmill.isWindows) {
+    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+  }
   Services.logins.removeAllLogins();
 }
 
 function teardownModule() {
+  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+
   // Just in case the test fails remove all cookies
   Services.logins.removeAllLogins();
 }

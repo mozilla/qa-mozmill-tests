@@ -76,6 +76,3 @@ function testInstallAddonWithEULA() {
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
-
-setupModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
-teardownModule.__force_skip__ = "Bug 992187 - Test failure 'addButton is undefined'";
