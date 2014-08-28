@@ -63,6 +63,6 @@ var testSearchAddons = function () {
   controller.waitForPageLoad();
 
   // Verify that the URL contains an AMO address
-  assert.contain(locationBar.value, addons.AMO_PREVIEW_DOMAIN,
+  assert.contain(locationBar.value, addons.AMO_DOMAIN,
                  "The URL contains the correct address ");
 }
