@@ -32,7 +32,7 @@ var setupModule = function(aModule) {
 }
 
 var teardownModule = function(aModule) {
-  controller.open("about:newtab");
+  controller.open("about:blank");
 
   prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
   prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
