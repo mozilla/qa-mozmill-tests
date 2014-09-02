@@ -508,15 +508,6 @@ tabBrowser.prototype = {
   },
 
   /**
-   * Get the security UI
-   *
-   * @returns {object} Reference to the security UI
-   */
-  get securityUI() {
-    return this._controller.window.getBrowser().mCurrentBrowser.securityUI;
-  },
-
-  /**
    * Close all tabs of the window except the last one and open a blank page.
    */
   closeAllTabs : function tabBrowser_closeAllTabs() {
