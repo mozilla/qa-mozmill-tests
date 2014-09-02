@@ -4,26 +4,26 @@
   <script type="text/javascript">
     var result = null;
 
-    function handlePosition(position) {
-      result.innerHTML = position.coords.latitude + " " + position.coords.longitude;
+    function handlePosition(aPosition) {
+      result.innerHTML = aPosition.coords.latitude + " " + aPosition.coords.longitude;
     }
 
-    function handleError(error) {
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
+    function handleError(aError) {
+      switch (aError.code) {
+        case aError.PERMISSION_DENIED:
           result.innerHTML = "denied";
           break;
-        case error.POSITION_UNAVAILABLE:
+        case aError.POSITION_UNAVAILABLE:
           result.innerHTML = "unavailable";
           break;
-        case error.TIMEOUT:
+        case aError.TIMEOUT:
           result.innerHTML = "timed_out";
           break;
-        case error.UNKNOWN_ERROR:
+        case aError.UNKNOWN_ERROR:
           result.innerHTML = "unknown_error";
           break;
         default:
-          result.innerHTML = "Unknown error code: " + error.code;
+          result.innerHTML = "Unknown error code: " + aError.code;
       }
     }
 

@@ -8,12 +8,12 @@ var downloads = require("../downloads");
 const TEST_DATA = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/mac/en-US/" +
                   "Firefox%203.6.dmg";
 
-var setupModule = function(module) {
-  module.controller = mozmill.getBrowserController();
-  module.dm = new downloads.downloadManager();
+var setupModule = function(aModule) {
+  aModule.controller = mozmill.getBrowserController();
+  aModule.dm = new downloads.downloadManager();
 }
 
-var teardownModule = function(module) {
+var teardownModule = function(aModule) {
   // Cancel all downloads and close the download manager
   dm.cancelActiveDownloads();
   dm.close();

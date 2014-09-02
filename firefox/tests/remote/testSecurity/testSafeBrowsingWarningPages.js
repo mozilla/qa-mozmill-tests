@@ -70,12 +70,12 @@ var checkGetMeOutOfHereButton = function() {
 /*
  * Check that the reportButton sends the user to the forgery or attack site reporting page
  *
- * @param {number} type
+ * @param {number} aType
  *        Type of malware site to check
- * @param {string} badUrl
+ * @param {string} aBadUrl
  *        URL of malware site to check
  */
-var checkReportButton = function(type, badUrl) {
+var checkReportButton = function(aType, aBadUrl) {
   // Wait for the reportButton to be safely loaded onto the warning page
   var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
   controller.waitThenClick(reportButton);
@@ -84,13 +84,13 @@ var checkReportButton = function(type, badUrl) {
   var locale = prefs.preferences.getPref("general.useragent.locale", "");
   var url = "";
 
-  if (type == 0) {
+  if (aType == 0) {
     // Build phishing URL be replacing identifiers with actual locale of browser
     url = utils.formatUrlPref("app.support.baseURL") + "phishing-malware";
   }
-  else if (type == 1) {
+  else if (aType == 1) {
     // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
-    url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + badUrl;
+    url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + aBadUrl;
   }
 
   utils.assertLoadedUrlEqual(controller, url);
@@ -99,10 +99,10 @@ var checkReportButton = function(type, badUrl) {
 /*
  * Check that the ignoreWarningButton goes to proper page associated to the url provided
  *
- * @param {string} url
+ * @param {string} aUrl
  *        URL of the target website which should be opened
  */
-var checkIgnoreWarningButton = function(url) {
+var checkIgnoreWarningButton = function(aUrl) {
   var ignoreWarningButton = new elementslib.ID(controller.tabs.activeTab, "ignoreWarningButton");
   var mainFeatureElem = new elementslib.ID(controller.tabs.activeTab, "main-feature");
 
@@ -111,7 +111,7 @@ var checkIgnoreWarningButton = function(url) {
   controller.waitForPageLoad();
 
   // Verify the warning button is not visible and the location bar displays the correct url
-  utils.assertLoadedUrlEqual(controller, url);
+  utils.assertLoadedUrlEqual(controller, aUrl);
   assert.ok(!ignoreWarningButton.exists(), "'Ignore warning' button has not been found");
   assert.ok(mainFeatureElem.exists(), "'Main feature' element has been found");
 

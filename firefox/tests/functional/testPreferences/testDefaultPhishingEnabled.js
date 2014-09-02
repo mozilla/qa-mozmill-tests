@@ -35,19 +35,19 @@ var testDefaultPhishingEnabled = function() {
 /**
  * Check that phishing checkboxes are enabled
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefPaneSetCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefPaneSetCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneSecurity';
 
   // Check if the Security pane is active
-  var attackElem = new elementslib.ID(controller.window.document, "blockAttackSites");
-  var forgeryElem = new elementslib.ID(controller.window.document, "blockWebForgeries");
+  var attackElem = new elementslib.ID(aController.window.document, "blockAttackSites");
+  var forgeryElem = new elementslib.ID(aController.window.document, "blockWebForgeries");
 
   // Verify Block Attack Sites and Reported Web Forgeries are checked by default
-  controller.waitForElement(attackElem);
+  aController.waitForElement(attackElem);
   expect.ok(attackElem.getNode().checked, "Block Attack Sites checkbox is checked");
   expect.ok(forgeryElem.getNode().checked, "Reported Web Forgeries checkbox is checked");
 

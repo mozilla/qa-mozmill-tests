@@ -45,6 +45,11 @@ function testAccessLocationBarHistory() {
   // Wait about 4s so the history gets populated
   controller.sleep(4000);
 
+  // Bug 1038614
+  // Need to blur the urlbar before focusing it otherwise the Autocomplete
+  // won't load
+  locationBar.urlbar.getNode().blur();
+
   // First - Focus the locationbar then delete any contents there
   locationBar.clear();
 

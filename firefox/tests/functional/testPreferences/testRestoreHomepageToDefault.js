@@ -66,33 +66,33 @@ var testRestoreHomeToDefault = function() {
 /**
  * Set the current page as home page via the preferences dialog
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogHomePageCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogHomePageCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneMain';
 
   // Set home page to the current page
-  var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
-  controller.waitThenClick(useCurrent);
-  controller.sleep(100);
+  var useCurrent = new elementslib.ID(aController.window.document, "useCurrent");
+  aController.waitThenClick(useCurrent);
+  aController.sleep(100);
 
   prefDialog.close(true);
 }
 
-var prefDialogDefHomePageCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogDefHomePageCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   // Reset home page to the default page
-  var useDefault = new elementslib.ID(controller.window.document, "restoreDefaultHomePage");
-  controller.waitForElement(useDefault);
-  controller.click(useDefault);
+  var useDefault = new elementslib.ID(aController.window.document, "restoreDefaultHomePage");
+  aController.waitForElement(useDefault);
+  aController.click(useDefault);
 
   // Check that the homepage field has the default placeholder text
   var dtds = ["chrome://browser/locale/aboutHome.dtd"];
   var defaultHomepageTitle = utils.getEntity(dtds, "abouthome.pageTitle");
-  var browserHomepageField = new elementslib.ID(controller.window.document, "browserHomePage");
+  var browserHomepageField = new elementslib.ID(aController.window.document, "browserHomePage");
   var browserHomepagePlaceholderText = browserHomepageField.getNode().placeholder;
 
   expect.equal(browserHomepagePlaceholderText, defaultHomepageTitle, "Default homepage title");

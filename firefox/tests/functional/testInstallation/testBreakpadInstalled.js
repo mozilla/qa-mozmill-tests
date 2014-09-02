@@ -26,8 +26,8 @@ var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   // Get the crash reporter service
-  aModule.crashReporter = Cc["@mozilla.org/toolkit/crash-reporter;1"].
-                          getService(Ci.nsICrashReporter);
+  aModule.crashReporter = Cc["@mozilla.org/toolkit/crash-reporter;1"]
+                          .getService(Ci.nsICrashReporter);
 }
 
 /**
@@ -35,8 +35,8 @@ var setupModule = function (aModule) {
  */
 var testBreakpadInstalled = function () {
   // Check that the crash reporter executable is present
-  var execFile = Cc["@mozilla.org/file/local;1"].
-                 createInstance(Ci.nsILocalFile);
+  var execFile = Cc["@mozilla.org/file/local;1"]
+                 .createInstance(Ci.nsILocalFile);
   execFile.initWithPath(Services.dirsvc.get("GreD", Ci.nsILocalFile).path);
   execFile.append(FILE_NAMES[mozmill.platform]);
 

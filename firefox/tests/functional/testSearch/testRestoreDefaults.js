@@ -44,11 +44,11 @@ function testRestoreDefaultEngines() {
 /**
  * Remove some of the default search engines
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function removeEngines(controller) {
-  var manager = new search.engineManager(controller);
+function removeEngines(aController) {
+  var manager = new search.engineManager(aController);
 
   // Save initial state
   gSharedData.preEngines = manager.engines;
@@ -69,11 +69,11 @@ function removeEngines(controller) {
 /**
  * Restore the default engines
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function restoreEngines(controller) {
-  var manager = new search.engineManager(controller);
+function restoreEngines(aController) {
+  var manager = new search.engineManager(aController);
 
   manager.restoreDefaults();
   manager.close(true);

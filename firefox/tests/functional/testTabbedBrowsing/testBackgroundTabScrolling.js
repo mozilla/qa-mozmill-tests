@@ -7,6 +7,7 @@
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
+var domUtils = require("../../../../lib/dom-utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "tabbedbrowsing/openinnewtab.html";
@@ -56,10 +57,10 @@ var testScrollBackgroundTabIntoView = function() {
   var highlighted = false;
   var config = { attributes: true, attributeOldValue: true, attributeFilter: ["notifybgtab"]};
 
-  var obs = new controller.window.MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      highlighted = (mutation.oldValue == 'true') &&
-                    !mutation.target.hasAttribute('notifybgtab');
+  var obs = new controller.window.MutationObserver(function (aMutations) {
+    aMutations.forEach(function (aMutation) {
+      highlighted = (aMutation.oldValue == 'true') &&
+                    !aMutation.target.hasAttribute('notifybgtab');
     });
   });
   obs.observe(scrollButtonDown.getNode(), config);
@@ -88,22 +89,24 @@ var testScrollBackgroundTabIntoView = function() {
     return allTabsPopup.getNode().state == 'open';
   }, "The all tabs popup should have been opened");
 
-  // Check that the correct title is shown for all tabs except the last one
-  // Last tab in the 'List all Tabs' menu
-  var lastMenuItemIndex = allTabsPopup.getNode().childNodes.length - 1;
+  // Select all opened tabs
+  var nodeCollector = new domUtils.nodeCollector(allTabsPopup.getNode());
+  nodeCollector.queryNodes(".alltabs-item");
 
-  for (var i = 3; i < lastMenuItemIndex; i++) {
-    expect.waitFor(function () {
-      var node = allTabsPopup.getNode().childNodes[i];
-      return node && node.label == '1';
-    }, "Link 1 title is visible for the tab");
-  }
+  // Ignore the first tab
+  nodeCollector.nodes.shift();
 
-  // Also check the last title
-  assert.waitFor(function () {
-    var node = allTabsPopup.getNode().childNodes[lastMenuItemIndex];
-    return node && node.label == '2';
-  }, "Link 2 title is visible for the last tab");
+  var countTabs = nodeCollector.nodes.length;
+  // Check that the correct title is shown for the last tab
+  expect.equal(nodeCollector.nodes[countTabs - 1].label, "2",
+               "Link 2 title is visible for the last tab");
+
+  nodeCollector.nodes.pop();
+
+  // Check that the correct title is shown for rest of the tabs
+  nodeCollector.nodes.forEach(aTab => {
+    expect.equal(aTab.label, "1", "Link 1 title is visible for the tab");
+  });
 
   // Close the all tabs menu
   controller.click(allTabsButton);
@@ -111,4 +114,3 @@ var testScrollBackgroundTabIntoView = function() {
     return allTabsPopup.getNode().state == 'closed';
   }, "The all tabs popup should have been closed");
 }
-

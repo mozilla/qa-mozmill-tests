@@ -27,8 +27,8 @@ function teardownModule(aModule) {
 function testVideo_OGVBuffering() {
   enduranceManager.run(function () {
     // Clearing the cache between iterations
-    var cs = Cc["@mozilla.org/netwerk/cache-storage-service;1"].
-             getService(Ci.nsICacheStorageService);
+    var cs = Cc["@mozilla.org/netwerk/cache-storage-service;1"]
+             .getService(Ci.nsICacheStorageService);
     cs.clear();
 
     enduranceManager.addCheckpoint("Load a web page with HTML5 Video");

@@ -35,11 +35,11 @@ var testRemoveEngine = function() {
 /**
  * Remove a search engine from the list of available search engines
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var handleEngines = function(controller) {
-  var manager = new search.engineManager(controller);
+var handleEngines = function(aController) {
+  var manager = new search.engineManager(aController);
 
   // Remove the second search engine
   var engines = manager.engines;

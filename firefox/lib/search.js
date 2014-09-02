@@ -15,8 +15,8 @@ var modalDialog = require("../../lib/modal-dialog");
 var utils = require("../../lib/utils");
 var widgets = require("../../lib/ui/widgets");
 
-var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"].
-                             getService(Ci.nsIAutoCompleteController);
+var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"]
+                             .getService(Ci.nsIAutoCompleteController);
 
 const TIMEOUT_REQUEST_SUGGESTIONS = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
@@ -47,11 +47,11 @@ const TOPIC_SEARCH_ENGINE_MODIFIED = "browser-search-engine-modified";
 /**
  * Constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the engine manager
  */
-function engineManager(controller) {
-  this._controller = controller;
+function engineManager(aController) {
+  this._controller = aController;
 }
 
 /**
@@ -107,14 +107,14 @@ engineManager.prototype = {
   /**
    * Select the engine with the given name
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the search engine to select
    */
-  set selectedEngine(name) {
+  set selectedEngine(aName) {
     var treeNode = this.getElement({type: "engine_list"}).getNode();
 
     for (var ii = 0; ii < treeNode.view.rowCount; ii ++) {
-      if (name == treeNode.view.getCellText(ii, treeNode.columns.getColumnAt(0))) {
+      if (aName == treeNode.view.getCellText(ii, treeNode.columns.getColumnAt(0))) {
         this.selectedIndex = ii;
         break;
       }
@@ -137,20 +137,20 @@ engineManager.prototype = {
   /**
    * Select the engine with the given index
    *
-   * @param {number} index
+   * @param {number} aIndex
    *        Index of the search engine to select
    */
-  set selectedIndex(index) {
+  set selectedIndex(aIndex) {
     var tree = this.getElement({type: "engine_list"});
     var treeNode = tree.getNode();
 
-    if (index < treeNode.view.rowCount) {
-      widgets.clickTreeCell(this._controller, tree, index, 0, {});
+    if (aIndex < treeNode.view.rowCount) {
+      widgets.clickTreeCell(this._controller, tree, aIndex, 0, {});
     }
 
     assert.waitFor(function () {
-      return this.selectedIndex === index;
-    }, "Search engine has been selected. Expected index: '" + index + "'", undefined, undefined, this);
+      return this.selectedIndex === aIndex;
+    }, "Search engine has been selected. Expected index: '" + aIndex + "'", undefined, undefined, this);
   },
 
   /**
@@ -165,9 +165,9 @@ engineManager.prototype = {
   /**
    * Sets the suggestions enabled state
    */
-  set suggestionsEnabled(state) {
+  set suggestionsEnabled(aState) {
     var checkbox = this.getElement({type: "suggest"});
-    this._controller.check(checkbox, state);
+    this._controller.check(checkbox, aState);
   },
 
   /**
@@ -208,31 +208,31 @@ engineManager.prototype = {
    *
    * @param {MozMillController} controller
    *        MozMillController of the window to operate on
-   * @param {boolean} saveChanges
+   * @param {boolean} aSaveChanges
    *        (Optional) If true the OK button is clicked otherwise Cancel
    */
-  close : function preferencesDialog_close(saveChanges) {
-    saveChanges = (saveChanges == undefined) ? false : saveChanges;
+  close : function preferencesDialog_close(aSaveChanges) {
+    aSaveChanges = (aSaveChanges == undefined) ? false : aSaveChanges;
 
-    var button = this.getElement({type: "button", subtype: (saveChanges ? "accept" : "cancel")});
+    var button = this.getElement({type: "button", subtype: (aSaveChanges ? "accept" : "cancel")});
     this._controller.click(button);
   },
 
   /**
    * Edit the keyword associated to a search engine
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the engine to remove
-   * @param {function} handler
+   * @param {function} aHandler
    *        Callback function for Engine Manager
    */
-  editKeyword : function engineManager_editKeyword(name, handler) {
+  editKeyword : function engineManager_editKeyword(aName, aHandler) {
     // Select the search engine
-    this.selectedEngine = name;
+    this.selectedEngine = aName;
 
     // Setup the modal dialog handler
     md = new modalDialog.modalDialog(this._controller.window);
-    md.start(handler);
+    md.start(aHandler);
 
     var button = this.getElement({type: "engine_button", subtype: "edit"});
     this._controller.click(button);
@@ -253,7 +253,7 @@ engineManager.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -261,10 +261,10 @@ engineManager.prototype = {
    * @returns Element which has been created
    * @type ElemBase
    */
-  getElement : function engineManager_getElement(spec) {
+  getElement : function engineManager_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
@@ -274,10 +274,10 @@ engineManager.prototype = {
         break;
       case "button":
         elem = new elementslib.Lookup(this._controller.window.document, MANAGER_BUTTONS +
-                                      '/{"dlgtype":"' + spec.subtype + '"}');
+                                      '/{"dlgtype":"' + aSpec.subtype + '"}');
         break;
       case "engine_button":
-        switch(spec.subtype) {
+        switch(aSpec.subtype) {
           case "down":
             elem = new elementslib.ID(this._controller.window.document, "down");
             break;
@@ -299,7 +299,7 @@ engineManager.prototype = {
         elem = new elementslib.ID(this._controller.window.document, "enableSuggest");
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -352,11 +352,11 @@ engineManager.prototype = {
   /**
    * Move down the engine with the given name
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the engine to remove
    */
-  moveDownEngine : function engineManager_moveDownEngine(name) {
-    this.selectedEngine = name;
+  moveDownEngine : function engineManager_moveDownEngine(aName) {
+    this.selectedEngine = aName;
     var index = this.selectedIndex;
 
     var button = this.getElement({type: "engine_button", subtype: "down"});
@@ -370,11 +370,11 @@ engineManager.prototype = {
   /**
    * Move up the engine with the given name
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the engine to remove
    */
-  moveUpEngine : function engineManager_moveUpEngine(name) {
-    this.selectedEngine = name;
+  moveUpEngine : function engineManager_moveUpEngine(aName) {
+    this.selectedEngine = aName;
     var index = this.selectedIndex;
 
     var button = this.getElement({type: "engine_button", subtype: "up"});
@@ -388,18 +388,18 @@ engineManager.prototype = {
   /**
    * Remove the engine with the given name
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the engine to remove
    */
-  removeEngine : function engineManager_removeEngine(name) {
-    this.selectedEngine = name;
+  removeEngine : function engineManager_removeEngine(aName) {
+    this.selectedEngine = aName;
 
     var button = this.getElement({type: "engine_button", subtype: "remove"});
     this._controller.click(button);
 
     assert.waitFor(function () {
-      return this.selectedEngine !== name;
-    }, "Search engine has been removed. Expected: '" + name + "'", undefined, undefined, this);
+      return this.selectedEngine !== aName;
+    }, "Search engine has been removed. Expected: '" + aName + "'", undefined, undefined, this);
   },
 
   /**
@@ -414,11 +414,11 @@ engineManager.prototype = {
 /**
  * Constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the browser window to operate on
  */
-function searchBar(controller) {
-  this._controller = controller;
+function searchBar(aController) {
+  this._controller = aController;
 }
 
 /**
@@ -466,15 +466,15 @@ searchBar.prototype = {
   /**
    * Set the search engines drop down open state
    */
-  set enginesDropDownOpen(newState) {
-    if (this.enginesDropDownOpen != newState) {
+  set enginesDropDownOpen(aNewState) {
+    if (this.enginesDropDownOpen != aNewState) {
       var button = this.getElement({type: "searchBar_dropDown"});
       this._controller.click(button);
 
       assert.waitFor(function () {
-        return this.enginesDropDownOpen === newState;
+        return this.enginesDropDownOpen === aNewState;
       }, "Search engines drop down open state has been changed. Expected: '"
-      + newState + "'", undefined, undefined, this);
+      + aNewState + "'", undefined, undefined, this);
       this._controller.sleep(0);
     }
   },
@@ -521,15 +521,15 @@ searchBar.prototype = {
   /**
    * Select the search engine with the given name if it is not already selected
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the search engine to select
    */
-  set selectedEngine(name) {
-    if (name !== Services.search.currentEngine.name) {
+  set selectedEngine(aName) {
+    if (aName !== Services.search.currentEngine.name) {
       // Open drop down and click on search engine
       this.enginesDropDownOpen = true;
 
-      var engine = this.getElement({type: "engine", subtype: "id", value: name});
+      var engine = this.getElement({type: "engine", subtype: "id", value: aName});
       var engineChanged = false;
       var observer = {
         observe: (aSubject, aTopic, aData) => {
@@ -543,7 +543,7 @@ searchBar.prototype = {
       try {
         engine.waitThenClick();
         assert.waitFor(() =>  engineChanged,
-                       "Search engine has been selected. Expected '" + name + "'");
+                       "Search engine has been selected. Expected '" + aName + "'");
       }
       finally {
         Services.obs.removeObserver(observer, TOPIC_SEARCH_ENGINE_MODIFIED);
@@ -561,12 +561,12 @@ searchBar.prototype = {
   /**
    * Checks if the correct target URL has been opened for the search
    *
-   * @param {string} searchTerm
+   * @param {string} aSearchTerm
    *        Text which should be checked for
    */
-  checkSearchResultPage : function searchBar_checkSearchResultPage(searchTerm) {
+  checkSearchResultPage : function searchBar_checkSearchResultPage(aSearchTerm) {
     // Retrieve the URL which is used for the currently selected search engine
-    var targetUri = Services.search.currentEngine.getSubmission(searchTerm, null).uri;
+    var targetUri = Services.search.currentEngine.getSubmission(aSearchTerm, null).uri;
     var currentUrl = this._controller.tabs.activeTabWindow.document.location;
 
     var domainRegex = /[^\.]+\.([^\.]+)\..+$/gi;
@@ -577,9 +577,9 @@ searchBar.prototype = {
                  "Current domain name matches target domain name");
 
     // Check if search term is listed in URL
-    expect.ok(currentUrl.href.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1,
+    expect.ok(currentUrl.href.toLowerCase().indexOf(aSearchTerm.toLowerCase()) != -1,
               "Current URL contains the search term '" +
-              searchTerm.toLowerCase() + "'");
+              aSearchTerm.toLowerCase() + "'");
   },
 
   /**
@@ -600,13 +600,13 @@ searchBar.prototype = {
   /**
    * Focus the search bar text field
    *
-   * @param {object} event
+   * @param {object} aEvent
    *        Specifies the event which has to be used to focus the search bar
    */
-  focus : function searchBar_focus(event) {
+  focus : function searchBar_focus(aEvent) {
     var input = this.getElement({type: "searchBar_input"});
 
-    switch (event.type) {
+    switch (aEvent.type) {
       case "click":
         this._controller.click(input);
         break;
@@ -620,7 +620,7 @@ searchBar.prototype = {
         this._controller.keypress(null, cmdKey, {accelKey: true});
         break;
       default:
-        assert.fail("Unknown element type - " + event.type);
+        assert.fail("Unknown element type - " + aEvent.type);
     }
 
     // Check if the search bar has the focus
@@ -642,7 +642,7 @@ searchBar.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -650,17 +650,17 @@ searchBar.prototype = {
    * @returns Element which has been created
    * @type ElemBase
    */
-  getElement : function searchBar_getElement(spec) {
+  getElement : function searchBar_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
        */
       case "engine":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP +
-                                      '/anon({"' + spec.subtype + '":"' + spec.value + '"})');
+                                      '/anon({"' + aSpec.subtype + '":"' + aSpec.value + '"})');
         break;
       case "engine_manager":
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_POPUP +
@@ -695,7 +695,7 @@ searchBar.prototype = {
         elem = new elementslib.Lookup(this._controller.window.document, SEARCH_TEXTBOX);
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -705,7 +705,7 @@ searchBar.prototype = {
    * Returns the search suggestions for the search term or null if the engine
    * does not support suggestions
    */
-  getSuggestions : function(searchTerm) {
+  getSuggestions : function(aSearchTerm) {
     // Check if the current search engine supports suggestions
     if (!this.hasSuggestions(this.selectedEngine))
       return null;
@@ -718,7 +718,7 @@ searchBar.prototype = {
     // Bug 392633
     // Type search term and wait for the popup or the timeout
     try {
-      this.type(searchTerm);
+      this.type(aSearchTerm);
       assert.waitFor(function () {
         return popup.getNode().state === 'open' &&
                autoCompleteController.searchStatus ===
@@ -756,11 +756,11 @@ searchBar.prototype = {
   /**
    * Check if a search engine supports suggestions (API call)
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the search engine to check
    */
-  hasSuggestions : function searchBar_hasSuggestions(name) {
-    var engine = Services.search.getEngineByName(name);
+  hasSuggestions : function searchBar_hasSuggestions(aName) {
+    var engine = Services.search.getEngineByName(aName);
     return engine.supportsResponseType("application/x-suggestions+json");
   },
 
@@ -796,27 +796,27 @@ searchBar.prototype = {
   /**
    * Check if a search engine is installed (API call)
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the search engine to check
    */
-  isEngineInstalled : function searchBar_isEngineInstalled(name) {
-    var engine = Services.search.getEngineByName(name);
+  isEngineInstalled : function searchBar_isEngineInstalled(aName) {
+    var engine = Services.search.getEngineByName(aName);
     return (engine != null);
   },
 
   /**
    * Open the Engine Manager
    *
-   * @param {function} handler
+   * @param {function} aHandler
    *        Callback function for Engine Manager
    */
-  openEngineManager : function searchBar_openEngineManager(handler) {
+  openEngineManager : function searchBar_openEngineManager(aHandler) {
     this.enginesDropDownOpen = true;
     var engineManager = this.getElement({type: "engine_manager"});
 
     // Setup the modal dialog handler
     md = new modalDialog.modalDialog(this._controller.window);
-    md.start(handler);
+    md.start(aHandler);
 
     // Bug 555347
     // Process any outstanding events before clicking the entry
@@ -831,12 +831,12 @@ searchBar.prototype = {
   /**
    * Remove the search engine with the given name (API call)
    *
-   * @param {string} name
+   * @param {string} aName
    *        Name of the search engine to remove
    */
-  removeEngine : function searchBar_removeEngine(name) {
-    if (this.isEngineInstalled(name)) {
-      var engine = Services.search.getEngineByName(name);
+  removeEngine : function searchBar_removeEngine(aName) {
+    if (this.isEngineInstalled(aName)) {
+      var engine = Services.search.getEngineByName(aName);
       Services.search.removeEngine(engine);
     }
   },
@@ -875,14 +875,14 @@ searchBar.prototype = {
    * Start a search with the given search term and check if the resulting URL
    * contains the search term.
    *
-   * @param {object} data
+   * @param {object} aData
    *        Object which contains the search term and the action type
    */
-  search : function searchBar_search(data) {
+  search : function searchBar_search(aData) {
     var searchBar = this.getElement({type: "searchBar"});
-    this.type(data.text);
+    this.type(aData.text);
 
-    switch (data.action) {
+    switch (aData.action) {
       case "returnKey":
         this._controller.keypress(searchBar, 'VK_RETURN', {});
         break;
@@ -893,18 +893,18 @@ searchBar.prototype = {
     }
 
     this._controller.waitForPageLoad();
-    this.checkSearchResultPage(data.text);
+    this.checkSearchResultPage(aData.text);
   },
 
   /**
    * Enter a search term into the search bar
    *
-   * @param {string} searchTerm
+   * @param {string} aSearchTerm
    *        Text which should be searched for
    */
-  type : function searchBar_type(searchTerm) {
+  type : function searchBar_type(aSearchTerm) {
     var searchBar = this.getElement({type: "searchBar"});
-    this._controller.type(searchBar, searchTerm);
+    this._controller.type(searchBar, aSearchTerm);
   }
 };
 
