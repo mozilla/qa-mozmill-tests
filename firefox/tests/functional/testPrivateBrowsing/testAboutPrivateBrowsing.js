@@ -36,19 +36,19 @@ function testCheckAboutPrivateBrowsing() {
 
   // Check descriptions on the about:privatebrowsing page
   var issueDesc = utils.getEntity(pbWindow.getDtds(),
-                                  "privatebrowsingpage.perwindow.issueDesc.normal");
-  var statusText = new elementslib.ID(controller.tabs.activeTab, "errorShortDescTextNormal");
+                                  "aboutPrivateBrowsing.subtitle.normal");
+  var statusText = findElement.Selector(controller.tabs.activeTab, "p.showNormal");
   controller.waitForElement(statusText);
 
   var statusTextContent = statusText.getNode().textContent;
   expect.equal(statusTextContent, issueDesc, "Status text indicates we are in private browsing mode");
 
   pbWindow.open(controller, "callback", function () {
-    var button = new elementslib.ID(controller.tabs.activeTab, "startPrivateBrowsing");
+    var button = new findElement.Selector(controller.tabs.activeTab, "button.showNormal");
     controller.click(button);
   });
 
-  var moreInfo = new elementslib.ID(pbWindow.controller.tabs.activeTab, "moreInfoLink");
+  var moreInfo = new findElement.ID(pbWindow.controller.tabs.activeTab, "learnMore");
   pbWindow.controller.click(moreInfo);
 
   // Clicking on the more info link opens a new tab with a page on SUMO
