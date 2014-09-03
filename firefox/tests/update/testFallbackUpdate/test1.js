@@ -31,6 +31,12 @@ function setupModule(aModule) {
 
   // Turn on software update logging
   prefs.preferences.setPref(PREF_UPDATE_LOG, true);
+
+  // Modify the default update channel if necessary
+  if (persisted.channel) {
+    persisted.origChannel = aModule.update.defaultChannel;
+    aModule.update.defaultChannel = persisted.channel;
+  }
 }
 
 function teardownModule(aModule) {
