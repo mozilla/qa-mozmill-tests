@@ -25,7 +25,7 @@ var setupModule = function(aModule) {
 }
 
 var teardownModule = function(aModule) {
-  controller.open("about:newtab");
+  controller.open("about:blank");
 
   aModule.controller.restartApplication();
 }
