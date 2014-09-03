@@ -12,6 +12,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var { assert, expect } = require("../../lib/assertions");
 var addons = require("../../lib/addons");
+var files = require("../../lib/files");
 var prefs = require("prefs");
 var utils = require("../../lib/utils");
 
@@ -22,8 +23,9 @@ const TIMEOUT_UPDATE_DOWNLOAD  = 360000;
 const PREF_APP_DISTRIBUTION = "distribution.id";
 const PREF_APP_DISTRIBUTION_VERSION = "distribution.version";
 const PREF_APP_UPDATE_URL = "app.update.url";
-
 const PREF_DISABLED_ADDONS = "extensions.disabledAddons";
+
+const REGEX_UPDATE_CHANNEL_PREF = /("app\.update\.channel", ")([^"].*)(?=")/m;
 
 // Helper lookup constants for elements of the software update dialog
 const WIZARD = '/id("updates")';
@@ -176,6 +178,40 @@ softwareUpdate.prototype = {
    */
   get currentPage() {
     return this._wizard.getNode().getAttribute('currentpageid');
+  },
+
+  /**
+   * Reads the current default update channel from channel-prefs.js
+   *
+   * @returns {string} The current update channel
+   */
+  get defaultChannel() {
+    var file = Services.dirsvc.get("PrfDef", Ci.nsIFile);
+    file.append("channel-prefs.js");
+
+    // Read contents and store current update channel
+    var contents = files.readFile(file);
+    var result = contents.match(REGEX_UPDATE_CHANNEL_PREF);
+    assert.equal(result.length, 3, "Update channel value has been found");
+
+    return result[2];
+  },
+
+  /**
+   * Modify the channel-prefs.js file for the wanted default update channel
+   *
+   * @param {string} aChannel
+   *        Channel to use for the update
+   */
+  set defaultChannel(aChannel) {
+    assert.ok(typeof aChannel, "string", "Update channel has to be specified");
+
+    var file = Services.dirsvc.get("PrfDef", Ci.nsIFile);
+    file.append("channel-prefs.js");
+
+    var contents = files.readFile(file);
+    contents = contents.replace(REGEX_UPDATE_CHANNEL_PREF, "$1" + aChannel);
+    files.writeFile(file, contents);
   },
 
   /**
@@ -341,18 +377,17 @@ softwareUpdate.prototype = {
 
   /**
    * Download the update of the given channel and type
-   * @param {string} aChannel
-   *        Update channel to use
+   *
    * @param {boolean} aWaitForFinish
    *        Sets if the function should wait until the download has been finished
    * @param {number} aTimeout
    *        Timeout the download has to stop
    */
-  download : function softwareUpdate_download(aChannel, aWaitForFinish, aTimeout) {
+  download : function softwareUpdate_download(aWaitForFinish, aTimeout) {
     waitForFinish = aWaitForFinish ? aWaitForFinish : true;
 
     // Check that the correct channel has been set
-    assert.equal(aChannel, this.channel,
+    assert.equal(this.defaultChannel, this.channel,
                  "The update channel has been set correctly.");
 
     // Retrieve the timestamp, so we can measure the duration of the download
@@ -408,12 +443,7 @@ softwareUpdate.prototype = {
     var updateStatus = this.stagingDirectory;
     updateStatus.append("update.status");
 
-    var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
-                   .createInstance(Ci.nsIFileOutputStream);
-    var status = "failed: 6\n";
-    foStream.init(updateStatus, 0x02 | 0x08 | 0x20, -1, 0);
-    foStream.write(status, status.length);
-    foStream.close();
+    files.writeFile(updateStatus, "failed: 6\n");
   },
 
   /**

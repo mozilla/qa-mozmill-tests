@@ -21,6 +21,11 @@ function teardownModule(aModule) {
   // Prepare persisted object for the next update
   persisted.updateIndex++;
 
+  // Ensure we restore the original update channel
+  if (persisted.origChannel) {
+    aModule.update.defaultChannel = persisted.origChannel;
+  }
+
   aModule.controller.stopApplication(true);
 }
 
@@ -35,7 +40,7 @@ function testDirectUpdate_AppliedAndNoUpdatesFound() {
 
   // No updates should be offered now - filter out major updates
   if (update.updatesFound) {
-    update.download(persisted.channel, false);
+    update.download(false);
 
     var lastUpdateType = persisted.updates[persisted.updateIndex].type;
     expect.notEqual(update.updateType, lastUpdateType,

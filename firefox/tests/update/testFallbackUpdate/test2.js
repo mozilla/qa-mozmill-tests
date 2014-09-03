@@ -37,5 +37,5 @@ function testFallbackUpdate_Download() {
     return update.updatesFound;
   }, "An update has been found.");
 
-  update.download(persisted.channel);
+  update.download();
 }
