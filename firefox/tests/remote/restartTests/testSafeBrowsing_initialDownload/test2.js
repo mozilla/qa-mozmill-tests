@@ -62,5 +62,3 @@ function verifyFilesExistence(aFileNames, aLocation) {
                    file.path + " exists", TIMEOUT);
   });
 }
-
-setupModule.__force_skip__ = "Bug 1018161 - Test failures in test2.js";
