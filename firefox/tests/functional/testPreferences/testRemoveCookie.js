@@ -88,6 +88,11 @@ function deleteCookie(aController) {
 
   // Get the number of cookies in the file manager before removing a single cookie
   var cookiesList = aController.window.document.getElementById("cookiesList");
+
+  // Wait for the cookie list to load
+  assert.waitFor(() => (cookiesList.view.rowCount === 1),
+                 "There is one item in the cookie list.");
+
   var origNumCookies = cookiesList.view.rowCount;
 
   aController.click(new elementslib.ID(aController.window.document, "removeCookie"));
@@ -103,4 +108,3 @@ function deleteCookie(aController) {
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
   aController.keypress(null, cmdKey, {accelKey: true});
 }
-
