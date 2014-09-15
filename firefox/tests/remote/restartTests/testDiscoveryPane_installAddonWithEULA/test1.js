@@ -82,8 +82,3 @@ function testInstallAddonWithEULA() {
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),
             "The add-on has been correctly installed");
 }
-
-setupModule.__force_skip__ = "Bug 658369 - 'Echofon' add-on is not compatible" +
-                             "with Firefox Nightly, Aurora and Beta builds";
-teardownModule.__force_skip__ = "Bug 658369 - 'Echofon' add-on is not compatible" +
-                                "with Firefox Nightly, Aurora and Beta builds";

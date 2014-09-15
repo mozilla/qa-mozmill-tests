@@ -85,10 +85,3 @@ function testInstallPickOfTheMonthAddon() {
 
   assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
-
-// XXX: Bug 688146
-//      Pick of the Month add-ons are not compatible with this version of Firefox
-setupModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " +
-                             "are not compatible with this version of Firefox";
-teardownModule.__force_skip__ = "Bug 688146 - 'Pick of the Month' add-ons " +
-                                "are not compatible with this version of Firefox";
