@@ -71,7 +71,3 @@ var testCloseDownloadManager = function() {
     }, "The Download Manager has been closed");
   }
 }
-
-
-setupModule.__force_skip__ = "Bug 930509 - Window has been found.";
-teardownModule.__force_skip__ = "Bug 930509 - Window has been found.";
