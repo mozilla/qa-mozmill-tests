@@ -41,7 +41,3 @@ var testOpenDownloadManager = function() {
   dm.open(controller, true);
   dm.close();
 }
-
-
-setupModule.__force_skip__ = "Bug 930509 - Window has been found.";
-teardownModule.__force_skip__ = "Bug 930509 - Window has been found.";
