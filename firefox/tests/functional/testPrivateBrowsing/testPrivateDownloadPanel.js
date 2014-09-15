@@ -86,6 +86,3 @@ var testPrivateDownloadPanel = function () {
   assert._deepEqual(downloadedPBFiles, DOWNLOADS.pbWindow,
                     "Private Downloads are correctly shown in the Private Downloads Panel");
 }
-
-setupModule.__force_skip__ = "Bug 908206 - Skipped test due to nsiDownloadManager being disabled";
-teardownModule.__force_skip__ = "Bug 908206 - Skipped test due to nsiDownloadManager being disabled";

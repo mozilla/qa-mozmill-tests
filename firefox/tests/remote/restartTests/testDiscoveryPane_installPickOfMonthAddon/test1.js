@@ -85,11 +85,3 @@ function testInstallPickOfTheMonthAddon() {
 
   assert.ok(am.isAddonInstalled({addon: addon}), "Add-on has been installed");
 }
-
-// Bug 657492
-// Skip because the Mozilla's pick of the month add-on is not compatible with
-// Nightly builds
-setupModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " +
-                             "are only compatible with Release and Beta builds";
-teardownModule.__force_skip__ = "Bug 657492 - 'Pick of the Month' add-ons " +
-                                "are only compatible with Release and Beta builds";

@@ -71,6 +71,3 @@ function testInstallRestartlessExtension() {
 
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
 }
-
-setupModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";
-teardownModule.__force_skip__ = "Bug 784305 - Current URL should match expected URL";
