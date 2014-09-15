@@ -78,10 +78,3 @@ function testInstallUpAndComingAddon() {
 
   assert.ok(addonIsInstalled, "Extension '" + addonName + "' has been installed");
 }
-
-setupModule.__force_skip__ = "Bug 780556 - Mozmill test failure remote/restartTests/" +
-                             "testDiscoveryPane_UpAndComingModule/test1.js " +
-                             "sometime fails with 'aElement is undefined'";
-teardownModule.__force_skip__ = "Bug 780556 - Mozmill test failure remote/restartTests/" +
-                                "testDiscoveryPane_UpAndComingModule/test1.js " +
-                                "sometime fails with 'aElement is undefined'";
