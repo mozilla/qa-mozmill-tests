@@ -15,6 +15,7 @@ var observerService = Cc["@mozilla.org/observer-service;1"]
 // Include required modules
 var { assert } = require("../../../lib/assertions");
 var utils = require("../../../lib/utils");
+var windows = require("../../../lib/windows");
 
 // Import PrivateBrowsingUtils to gain acces to its API
 Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
@@ -104,7 +105,7 @@ PrivateBrowsingWindow.prototype = {
       return (windows.length === (windowCount + 1));
     }, "A new window has been opened");
 
-    this._controller = utils.handleWindow("type", "navigator:browser", undefined, false);
+    this._controller = windows.handleWindow("type", "navigator:browser", undefined, false);
 
     // Bug 847991
     // We need to wait for the about:privatebrowsing page to load,

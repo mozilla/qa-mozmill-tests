@@ -17,6 +17,7 @@ var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
 var prefs = require("prefs");
 var utils = require("../../lib/utils");
+var windows = require("../../lib/windows");
 
 const PREF_DOWNLOAD_DIR = "browser.download.dir";
 // Needs to be set to 2 for custom download path to be used
@@ -391,8 +392,8 @@ downloadManager.prototype = {
    * @param {MozMillController} aController MozMillController of the window to operate on
    */
   waitForOpened : function downloadManager_waitForOpened(aController) {
-    this._controller = utils.handleWindow("type", "Download:Manager",
-                                          undefined, false);
+    this._controller = windows.handleWindow("type", "Download:Manager",
+                                            undefined, false);
   }
 };
 
@@ -411,7 +412,7 @@ var downloadFileOfUnknownType = function(aController, aUrl) {
     return mozmill.wm.getMostRecentWindow('').document.documentElement.id === 'unknownContentType';
   }, "Unknown content type dialog has been opened");
 
-  utils.handleWindow("type", "", function (aController) {
+  windows.handleWindow("type", "", function (aController) {
     // If there is a Save File As radio, make sure it is selected
     var saveFileRadio = new elementslib.ID(aController.window.document, "save");
     if (saveFileRadio.getNode()) {

@@ -15,7 +15,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var { assert, expect } = require("../../lib/assertions");
 var modalDialog = require("../../lib/modal-dialog");
-var utils = require("../../lib/utils");
+var windows = require("../../lib/windows");
 
 const PREF_PANE_ANIMATION = "browser.preferences.animateFadeIn";
 
@@ -375,7 +375,7 @@ function openPreferencesDialog(aController, aCallback, aLauncher) {
         prefWindowType = "Browser:Preferences";
     }
 
-    utils.handleWindow("type", prefWindowType, aCallback);
+    windows.handleWindow("type", prefWindowType, aCallback);
   }
 }
 
