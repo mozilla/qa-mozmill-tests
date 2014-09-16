@@ -14,6 +14,7 @@ var { assert, expect } = require("../../../../../lib/assertions");
 var DOMUtils = require("../../../../../lib/dom-utils");
 var Utils = require("../../../../../lib/utils");
 var Widgets = require("../../../../../lib/ui/widgets");
+var windows = require("../../../../../lib/windows");
 
 /**
  * @constructor
@@ -62,7 +63,7 @@ SeleniumManager.prototype = {
         assert.fail("Unknown event type - " + event.type);
     }
 
-    this._controller = Utils.handleWindow("type", "global:selenium-ide", undefined, false);
+    this._controller = windows.handleWindow("type", "global:selenium-ide", undefined, false);
   },
 
   /**

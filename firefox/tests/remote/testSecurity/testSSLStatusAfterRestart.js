@@ -9,6 +9,7 @@ var security = require("../../../lib/security");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const PREF_STARTUP_PAGE = "browser.startup.page";
 
@@ -116,7 +117,7 @@ function verifyCertificateStatus(aPage) {
   var moreInfoButton = locationBar.identityPopup.getElement({type: "moreInfoButton"});
   controller.click(moreInfoButton);
   try {
-    utils.handleWindow("type", "Browser:page-info", aPage.callback);
+    windows.handleWindow("type", "Browser:page-info", aPage.callback);
   }
   finally {
     doorhanger.keypress('VK_ESCAPE', {});

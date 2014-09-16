@@ -15,6 +15,7 @@ var addons = require("../../lib/addons");
 var files = require("../../lib/files");
 var prefs = require("prefs");
 var utils = require("../../lib/utils");
+var windows = require("../../lib/windows");
 
 const TIMEOUT_UPDATE_APPLYING  = 300000;
 const TIMEOUT_UPDATE_CHECK     = 30000;
@@ -356,7 +357,7 @@ softwareUpdate.prototype = {
    */
   checkAboutDialog : function softwareUpdate_checkAboutDialog(aBrowserController) {
     aBrowserController.mainMenu.click("#aboutName");
-    utils.handleWindow("type", "Browser:About", function (aController) {
+    windows.handleWindow("type", "Browser:About", function (aController) {
       var button = new elementslib.Selector(aController.window.document, "#updateButton");
       expect.ok(!button.getNode().hidden,
                 "The update button is always visible even after an update.");
@@ -554,7 +555,7 @@ softwareUpdate.prototype = {
       // Open the about window and check the update button
       // browserController.mainMenu.click("#aboutName");
 
-      // utils.handleWindow("type", "Browser:About", function(controller) {
+      // windows.handleWindow("type", "Browser:About", function(controller) {
       //  // Bug 599290
       //  // Check for updates has been completely relocated
       //  // into the about window. We can't check the in-about ui yet.
@@ -596,8 +597,8 @@ softwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function softwareUpdate_waitForDialogOpen(aBrowserController) {
-    this._controller = utils.handleWindow("type", "Update:Wizard",
-                                          undefined, false);
+    this._controller = windows.handleWindow("type", "Update:Wizard",
+                                            undefined, false);
     this._wizard = this.getElement({type: "wizard"});
 
     assert.waitFor(function () {

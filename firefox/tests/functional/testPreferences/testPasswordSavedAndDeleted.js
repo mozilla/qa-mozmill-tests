@@ -12,6 +12,7 @@ var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
@@ -97,7 +98,7 @@ function prefDialogCallback(aController) {
   var showPasswords = new elementslib.ID(aController.window.document, "showPasswords");
   aController.waitThenClick(showPasswords);
 
-  utils.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
+  windows.handleWindow("type", "Toolkit:PasswordManager", deleteAllPasswords);
 
 
   // Close the preferences dialog
