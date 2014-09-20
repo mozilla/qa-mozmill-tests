@@ -818,7 +818,7 @@ locationBar.prototype = {
         panel = this.getElement({type: "notification_popup"});
         break;
       case "bookmark":
-        panel = this._edit.getElement({type: "bookmarkPanel"});
+        panel = this.getElement({type: "bookmarkPanel"});
         break;
       case "identity":
         panel = this._identityPopup.getElement({type: "popup"});
