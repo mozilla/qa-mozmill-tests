@@ -34,5 +34,5 @@ function testStoreEditableCommand() {
 
   checks.commandPassed(sm);
 
-  assert.equal(sm.finalLogInfoMessage, "echo: true");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: true");
 }

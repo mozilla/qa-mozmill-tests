@@ -35,5 +35,5 @@ function testStoreAlertCommand() {
 
   checks.commandPassed(sm);
 
-  assert.equal(sm.finalLogInfoMessage, "echo: hello");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: hello");
 }

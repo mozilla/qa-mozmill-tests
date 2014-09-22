@@ -33,5 +33,5 @@ function testVerifyAlertPresentCommandFails() {
   checks.commandFailed(sm, "false");
 
   //check final command is executed
-  assert.equal(sm.finalLogInfoMessage, "echo: final command");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: final command");
 }
