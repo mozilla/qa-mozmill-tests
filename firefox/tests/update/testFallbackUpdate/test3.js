@@ -13,12 +13,12 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.update = new softwareUpdate.softwareUpdate();
 
-  persisted.updates[persisted.updateIndex].fallback = true;
+  persisted.updates[persisted.update.index].fallback = true;
 }
 
 function teardownModule(aModule) {
   // Store information for fallback patch
-  persisted.updates[persisted.updateIndex].patch_fallback = aModule.update.patchInfo;
+  persisted.updates[persisted.update.index].patch_fallback = aModule.update.patchInfo;
 
   aModule.controller.restartApplication();
 }
@@ -31,7 +31,7 @@ function testFallbackUpdate_ErrorPatching() {
   update.waitForDialogOpen(controller);
 
   // Complete updates have to be handled differently
-  if (persisted.updates[persisted.updateIndex].patch.is_complete) {
+  if (persisted.updates[persisted.update.index].patch.is_complete) {
     // Wait for the error page and close the software update dialog
     update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
     update.closeDialog();
