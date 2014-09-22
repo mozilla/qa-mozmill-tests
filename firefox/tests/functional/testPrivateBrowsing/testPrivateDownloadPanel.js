@@ -9,8 +9,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include the required modules
 var { assert } = require("../../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "downloading/";
@@ -29,8 +31,8 @@ const DOWNLOADS = {
 var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
-  aModule.pbWindow.open(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.pbWindow = browserWindow.open({private: true, method: "shortcut"});
 
   aModule.dm = new downloads.downloadManager();
 
@@ -48,7 +50,7 @@ var teardownModule = function (aModule) {
   aModule.dm.resetDownloadDir();
 
   aModule.dm.close();
-  aModule.pbWindow.close();
+  windows.closeAllWindows(aModule.browserWindow);
 }
 
 /**

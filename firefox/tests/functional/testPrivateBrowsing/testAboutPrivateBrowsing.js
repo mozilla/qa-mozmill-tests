@@ -7,8 +7,10 @@
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "private_browsing/about.html?";
@@ -17,14 +19,14 @@ const PREF_PRIVATE_BROWSING_SUPPORT = "app.support.baseURL";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+  aModule.browserWindow = new browser.BrowserWindow();
 
   prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, TEST_DATA);
 }
 
 function teardownModule(aModule) {
   prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
-  aModule.pbWindow.close();
+  windows.closeAllWindows(aModule.browserWindow);
 }
 
 /**
@@ -35,7 +37,7 @@ function testCheckAboutPrivateBrowsing() {
   controller.waitForPageLoad();
 
   // Check descriptions on the about:privatebrowsing page
-  var issueDesc = utils.getEntity(pbWindow.getDtds(),
+  var issueDesc = utils.getEntity(browserWindow.dtds,
                                   "aboutPrivateBrowsing.subtitle.normal");
   var statusText = findElement.Selector(controller.tabs.activeTab, "p.showNormal");
   controller.waitForElement(statusText);
@@ -43,9 +45,10 @@ function testCheckAboutPrivateBrowsing() {
   var statusTextContent = statusText.getNode().textContent;
   expect.equal(statusTextContent, issueDesc, "Status text indicates we are in private browsing mode");
 
-  pbWindow.open(controller, "callback", function () {
-    var button = new findElement.Selector(controller.tabs.activeTab, "button.showNormal");
-    controller.click(button);
+  var pbWindow = browserWindow.open({private: true, method: "callback"}, () => {
+    var button = findElement.Selector(controller.tabs.activeTab,
+                                      "button.showNormal");
+    button.click();
   });
 
   var moreInfo = new findElement.ID(pbWindow.controller.tabs.activeTab, "learnMore");
