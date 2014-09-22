@@ -6,28 +6,30 @@
 
 // Include the required modules
 var { expect } = require("../../../../lib/assertions");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+  aModule.browserWindow = new browser.BrowserWindow();
 }
 
 function teardownModule(aModule) {
-  aModule.pbWindow.close(true);
+  windows.closeAllWindows(aModule.browserWindow);
 }
 
 /**
  * Open and close Private Browsing Mode through Keyboard shortcut
  */
 function testOpenClosePBKeyboardShortcut() {
-  pbWindow.open(controller, "shortcut");
+  var pbWindow = browserWindow.open({private: true, method: "shortcut"});
   expect.equal(pbWindow.controller.tabs.length, 1, "Only one tab is open");
 
   // Check descriptions on the about:privatebrowsing page
-  var description = utils.getEntity(pbWindow.getDtds(), "aboutPrivateBrowsing.description");
-  var learnMore = utils.getEntity(pbWindow.getDtds(), "aboutPrivateBrowsing.moreInfo");
+  var description = utils.getEntity(pbWindow.dtds, "aboutPrivateBrowsing.description");
+  var learnMore = utils.getEntity(pbWindow.dtds, "aboutPrivateBrowsing.moreInfo");
   var longDescElem = findElement.Selector(pbWindow.controller.tabs.activeTab, "p.showNormal + p");
   var moreInfoElem = findElement.Selector(pbWindow.controller.tabs.activeTab, "div.showPrivate p:first-child");
 

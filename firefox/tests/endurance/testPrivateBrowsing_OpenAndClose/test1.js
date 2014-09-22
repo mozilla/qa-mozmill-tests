@@ -6,26 +6,30 @@
 
 // Include the required modules
 var Endurance = require("../../../../lib/endurance");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
 var Tabs = require("../../../lib/tabs");
+var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
   aModule.enduranceManager = new Endurance.EnduranceManager(aModule.controller);
-  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
-
   aModule.tabBrowser = new Tabs.tabBrowser(aModule.controller);
+
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
-  aModule.pbWindow.close(true);
+  windows.closeAllWindows(aModule.browserWindow);
   aModule.tabBrowser.closeAllTabs();
 }
 
 function testOpenAndClosePrivateBrowsingWindow() {
+  var pbWindow = null;
+
   enduranceManager.run(function () {
-    pbWindow.open(controller);
+    pbWindow = browserWindow.open({private: true});
     enduranceManager.addCheckpoint("Opened a private browsing window");
     pbWindow.close();
     enduranceManager.addCheckpoint("Closed a private browsing window");
