@@ -35,5 +35,5 @@ function testVerifyNotTextCommandFails() {
   checks.commandFailed(sm, "Actual value 'link with onclick attribute' did match 'link with onclick attribute'");
 
   //check final command is executed
-  assert.equal(sm.finalLogInfoMessage, "echo: final command");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: final command");
 }

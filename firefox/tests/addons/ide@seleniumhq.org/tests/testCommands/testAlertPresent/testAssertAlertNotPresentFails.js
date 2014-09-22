@@ -35,5 +35,5 @@ function testAssertAlertNotPresentCommandFails() {
   checks.commandFailed(sm, "true");
 
   //check final command is not executed
-  assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
+  assert.notEqual(sm.finalLogEchoInfoMessage, "echo: final command");
 }

@@ -36,5 +36,5 @@ function testVerifyBodyTextCommandFails() {
                            " did not match 'elephants and zebras'");
 
   //check final command is executed
-  assert.equal(sm.finalLogInfoMessage, "echo: final command");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: final command");
 }
