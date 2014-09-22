@@ -78,6 +78,97 @@ else {
 }
 
 /**
+ * Class to handle the allowed MAR channels as listed in update-settings.ini
+ */
+function MARChannels() {
+  var file = Services.dirsvc.get("GreD", Ci.nsIFile);
+  file.append("update-settings.ini");
+  this._ini = new files.INIFile(file);
+
+  // TODO: Key is "ACCEPTED_MAR_CHANNEL_IDS " (extra final whitespace) if
+  //       modified via the automation script. Remove once the issue is fixed:
+  //       https://github.com/mozilla/mozmill-automation/issues/164
+  this._keyname = this._ini.getKeys("Settings")[0];
+}
+
+MARChannels.prototype = {
+  /**
+   * Get the currently allowed MAR channels
+   *
+   * @returns {string[]} List of MAR channels
+   */
+  get channels() {
+    return this._read();
+  },
+
+  /**
+   * Read allowed channels from INI file
+   *
+   * @returns {string[]} MAR Channels
+   */
+  _read: function MC_read() {
+    // TODO: Revert once the following issue is fixed
+    // https://github.com/mozilla/mozmill-automation/issues/164
+    // var channels = this._ini.getValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS");
+    var channels = this._ini.getValue("Settings", this._keyname).trim();
+    assert.ok(channels, "Accepted MAR channel IDs have been found");
+
+    return channels.split(',');
+  },
+
+  /**
+   * Write allowed channels to INI file
+   *
+   * @param {string[]} aChannels
+   *        List of allowed channels
+   */
+  _write: function MC_write(aChannels) {
+    // TODO: Revert once the following issue is fixed
+    // https://github.com/mozilla/mozmill-automation/issues/164
+    // this._ini.setValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS",
+    this._ini.setValue("Settings", this._keyname,
+                       aChannels.join(','));
+  },
+
+  /**
+   * Add channels to the list of allowed channels
+   *
+   * @param {string} aChannels
+   *        Channels to add
+   */
+  add: function MC_add(aChannels) {
+    var channels = this._read();
+
+    aChannels.forEach(aChannel => {
+      if (channels.indexOf(aChannel) == -1) {
+        channels.push(aChannel);
+      }
+    });
+
+    this._write(channels);
+  },
+
+  /**
+   * Remove channels from the list of allowed channels
+   *
+   * @param {string} aChannels
+   *        Channels to remove
+   */
+  remove: function MC_remove(aChannels) {
+    var channels = this._read();
+
+    aChannels.forEach(aChannel => {
+      var index = channels.indexOf(aChannel);
+      if (index != -1) {
+        channels.splice(index, 1);
+      }
+    });
+
+    this._write(channels);
+  }
+};
+
+/**
  * Constructor for software update class
  */
 function softwareUpdate() {
@@ -89,6 +180,8 @@ function softwareUpdate() {
               getService(Ci.nsIApplicationUpdateService);
   this._ums = Cc["@mozilla.org/updates/update-manager;1"].
               getService(Ci.nsIUpdateManager);
+
+  this.marChannels = new MARChannels();
 
   addons.submitInstalledAddons();
 }
@@ -148,8 +241,10 @@ softwareUpdate.prototype = {
   get buildInfo() {
     return {
       buildid : utils.appInfo.buildID,
+      channel : this.channel,
       disabled_addons : prefs.preferences.getPref(PREF_DISABLED_ADDONS, ''),
       locale : utils.appInfo.locale,
+      mar_channels : this.marChannels.channels.join(','),
       url_aus : this.getUpdateURL(true),
       user_agent : utils.appInfo.userAgent,
       version : utils.appInfo.version
@@ -314,12 +409,12 @@ softwareUpdate.prototype = {
   /**
    * Checks if an update has been applied correctly
    *
-   * @param {object} updateData
+   * @param {object} aUpdateData
    *        All the data collected during the update process
    */
-  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(updateData) {
+  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(aUpdateData) {
     // Get the information from the last update
-    var info = updateData.updates[updateData.updateIndex];
+    var info = aUpdateData.updates[aUpdateData.update.index];
 
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
@@ -331,7 +426,7 @@ softwareUpdate.prototype = {
                  "The post buildid is equal to the buildid of the update.");
 
     // If a target build id has been given, check if it matches the updated build
-    info.target_buildid = updateData.targetBuildID;
+    info.target_buildid = aUpdateData.update.targetBuildID;
     if (info.target_buildid) {
       expect.equal(info.build_post.buildid, info.target_buildid,
                    "Post buildid matches target buildid of the update patch.");
