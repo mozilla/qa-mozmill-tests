@@ -34,5 +34,5 @@ function testStoreTextCommand() {
 
   checks.commandPassed(sm);
 
-  assert.equal(sm.finalLogInfoMessage, "echo: link with onclick attribute");
+  assert.equal(sm.finalLogEchoInfoMessage, "echo: link with onclick attribute");
 }

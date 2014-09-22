@@ -196,15 +196,29 @@ SeleniumManager.prototype = {
   },
 
   /**
+   * Retrieve the final info message from the log that starts with echo
+   *
+   * @returns {String} Log info message
+   */
+  get finalLogEchoInfoMessage() {
+    var logInfo = this.logInfo;
+    var index = logInfo.length;
+    while (--index >= 0) {
+      var message = this.getLogInfoMessage(index);
+      if (message.substr(0,5) == 'echo:') {
+        return message;
+      }
+    }
+    return null;
+  },
+
+  /**
    * Retrieve the final info message from the log
    *
    * @returns {String} Log info message
    */
   get finalLogInfoMessage() {
-    var logInfo = this.logInfo;
-    var finalLogInfoMessage = logInfo[logInfo.length-1].getNode().textContent;
-    var re = new RegExp("^\\[info] (.*)");
-    return re.exec(finalLogInfoMessage)[1];
+    return this.getLogInfoMessage(-1);
   },
 
   /**
@@ -224,6 +238,27 @@ SeleniumManager.prototype = {
   getDtds : function searchBar_getDtds() {
     var dtds = ["chrome://browser/locale/browser.dtd"];
     return dtds;
+  },
+
+  /**
+   * Retrieve a info message from the log
+   *
+   * @param {Integer} aOffset Index if positive or offset from the last element
+   *                  if negative where -1 is last
+   * @returns {String} Log info message
+   */
+  getLogInfoMessage : function SeleniumManager_getLogInfoMessage(aOffset) {
+    var logInfo = this.logInfo;
+    var index = aOffset;
+    if (aOffset < 0) {
+      index += logInfo.length;
+    }
+    if (index < 0 || index >= logInfo.length) {
+      return 'Bad aOffset';
+    }
+    var message = logInfo[index].getNode().textContent;
+    var re = new RegExp("^\\[info] (.*)");
+    return re.exec(message)[1];
   },
 
   ///////////////////////////////
