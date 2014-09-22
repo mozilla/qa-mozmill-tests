@@ -815,13 +815,8 @@ locationBar.prototype = {
    */
   waitForNotificationPanel : function locationBar_waitForNotificationPanel(aCallback, aSpec) {
     var spec = aSpec || {};
-
-    assert.equal(typeof aCallback, "function", "Callback function is defined");
     assert.ok(spec.type, "Type of the notification panel is mandatory");
 
-    var open = (spec.open == undefined) ? true : spec.open;
-    var eventType = open ? "popupshown" : "popuphidden";
-    var state = open ? "open" : "closed";
     var panel = null;
 
     switch (spec.type) {
@@ -838,26 +833,7 @@ locationBar.prototype = {
         assert.fail("Unknown notification panel to wait for: " + spec.type);
     }
 
-    // Bug 994117
-    // Transitions are not handled correctly
-    // Add waiting for transition events once they get fixed
-    panel.getNode().setAttribute("animate", "false");
-    var panelStateChanged = false;
-
-    function onPanelState() { panelStateChanged = true; }
-
-    panel.getNode().addEventListener(eventType, onPanelState);
-    try {
-      aCallback(panel);
-
-      assert.waitFor(() => {
-        return panelStateChanged;
-      }, "Notification popup state has been " + (open ? "opened" : "closed"));
-    }
-    finally {
-      panel.getNode().removeEventListener(eventType, onPanelState);
-      panel.getNode().removeAttribute("animate");
-    }
+    waitForNotificationPanel(aCallback, {open: spec.open, panel: panel});
   }
 }
 
@@ -888,6 +864,64 @@ function toggleBookmarksToolbar(aController, aState) {
   }, "Bookmarks Toolbar has " + ((state) ? "opened" : "closed"));
 }
 
+/**
+ * Waits for a notification popup panel
+ *
+ * @param {function} aCallback
+ *        Function that triggers the panel to open/close
+ * @param {object} aSpec
+ *        Information related to the notification to wait for
+ * @param {object} aSpec.panel
+ *        The panel to wait for
+ * @param {object} [aSpec.parent]
+ *        Element to use for waiting for the events (usually same as the panel)
+ * @param {boolean} [aSpec.open=true]
+ *        True if the notification should be open
+ */
+function waitForNotificationPanel(aCallback, aSpec) {
+  var spec = aSpec || {};
+
+  assert.equal(typeof aCallback, "function", "Callback function is defined");
+  assert.ok(spec.panel, "Panel has to be specified");
+
+  var open = (typeof spec.open === "undefined") || spec.open;
+
+  var eventType = "popupshown";
+  if (open) {
+    if (spec.panel.getNode()) {
+      expect.equal(spec.panel.getNode().state, "closed",
+                   "Panel is in the correct state");
+    }
+    else {
+      assert.ok(spec.parent,
+                "Parent should be defined if panel node is not initialized");
+    }
+  }
+  else {
+    expect.equal(spec.panel.getNode().state, "open",
+                 "Panel is in the correct state");
+    eventType = "popuphidden";
+  }
+
+  var parent = spec.parent || spec.panel.getNode();
+  var panelStateChanged = false;
+
+  function onPanelState() { panelStateChanged = true; }
+
+  parent.addEventListener(eventType, onPanelState);
+
+  try {
+    aCallback(spec.panel);
+
+    assert.waitFor(() => {
+      return panelStateChanged;
+    }, "Notification popup state has been " + (open ? "opened" : "closed"));
+  }
+  finally {
+    parent.removeEventListener(eventType, onPanelState);
+  }
+}
+
 // Export of classes
 exports.locationBar = locationBar;
 exports.editBookmarksPanel = editBookmarksPanel;
@@ -895,3 +929,4 @@ exports.autoCompleteResults = autoCompleteResults;
 
 // Export of functions
 exports.toggleBookmarksToolbar = toggleBookmarksToolbar;
+exports.waitForNotificationPanel = waitForNotificationPanel;
