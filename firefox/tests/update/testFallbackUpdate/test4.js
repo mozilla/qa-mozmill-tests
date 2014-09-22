@@ -14,16 +14,16 @@ function setupModule(aModule) {
   aModule.update = new softwareUpdate.softwareUpdate();
 
   // Collect some data of the current build
-  persisted.updates[persisted.updateIndex].build_post = aModule.update.buildInfo;
+  persisted.updates[persisted.update.index].build_post = aModule.update.buildInfo;
 }
 
 function teardownModule(aModule) {
   // Prepare persisted object for the next update
-  persisted.updateIndex++;
+  persisted.update.index++;
 
   // Ensure we restore the original update channel
-  if (persisted.origChannel) {
-    aModule.update.defaultChannel = persisted.origChannel;
+  if (persisted.update.origChannel) {
+    aModule.update.defaultChannel = persisted.update.origChannel;
   }
 
   aModule.controller.stopApplication(true);
@@ -42,7 +42,7 @@ function testFallbackUpdate_AppliedAndNoUpdatesFound() {
   if (update.updatesFound) {
     update.download(false);
 
-    var lastUpdateType = persisted.updates[persisted.updateIndex].type;
+    var lastUpdateType = persisted.updates[persisted.update.index].type;
     expect.notEqual(update.updateType, lastUpdateType,
                     "No more update of the same type offered.");
   }
@@ -51,5 +51,5 @@ function testFallbackUpdate_AppliedAndNoUpdatesFound() {
   update.assertUpdateApplied(persisted);
 
   // Update was successful
-  persisted.updates[persisted.updateIndex].success = true;
+  persisted.updates[persisted.update.index].success = true;
 }

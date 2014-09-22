@@ -16,7 +16,7 @@ function setupModule(aModule) {
 
 function teardownModule(aModule) {
   // Store the patch info from a possibly found update
-  persisted.updates[persisted.updateIndex].patch = aModule.update.patchInfo;
+  persisted.updates[persisted.update.index].patch = aModule.update.patchInfo;
 
   // Put the downloaded update into failed state
   aModule.update.forceFallback();
