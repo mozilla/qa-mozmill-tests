@@ -34,5 +34,5 @@ function testAssertEditableCommandFails() {
   checks.commandFailed(sm, "false");
 
   //check final command is not executed
-  assert.notEqual(sm.finalLogInfoMessage, "echo: final command");
+  assert.notEqual(sm.finalLogEchoInfoMessage, "echo: final command");
 }
