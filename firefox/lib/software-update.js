@@ -427,7 +427,7 @@ softwareUpdate.prototype = {
                  "The post buildid is equal to the buildid of the update.");
 
     // If a target build id has been given, check if it matches the updated build
-    info.target_buildid = aUpdateData.targetBuildID;
+    info.target_buildid = aUpdateData.update.targetBuildID;
     if (info.target_buildid) {
       expect.equal(info.build_post.buildid, info.target_buildid,
                    "Post buildid matches target buildid of the update patch.");
