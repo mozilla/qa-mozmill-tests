@@ -45,11 +45,11 @@ function testFallbackUpdate_ErrorPatching() {
       return update.updatesFound;
     }, "An update has been found.");
 
-    update.download(persisted.channel);
+    update.download();
   } else {
     update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
 
     // Start downloading the fallback update
-    update.download(persisted.channel);
+    update.download();
   }
 }
