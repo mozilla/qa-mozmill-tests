@@ -4,13 +4,12 @@
 
 /**
  * @fileoverview
- * The SoftwareUpdateAPI adds support for an easy access to the update process.
+ * The SoftwareUpdate API adds support for an easy access to the update process.
  */
 
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
-var { assert, expect } = require("../../lib/assertions");
 var addons = require("../../lib/addons");
 var files = require("../../lib/files");
 var prefs = require("prefs");
@@ -102,6 +101,25 @@ MARChannels.prototype = {
   },
 
   /**
+   * Set the currently allowed MAR channels
+   *
+   * @param {string[]} aChannels
+   *        List of MAR channels to set
+   */
+  set channels(aChannels) {
+    return this._write(aChannels);
+  },
+
+  /**
+   * Get a reference to the update-settings.ini file
+   *
+   * @returns {INIFile} Reference to INI file
+   */
+  get configFile() {
+    return this._ini;
+  },
+
+  /**
    * Read allowed channels from INI file
    *
    * @returns {string[]} MAR Channels
@@ -171,7 +189,7 @@ MARChannels.prototype = {
 /**
  * Constructor for software update class
  */
-function softwareUpdate() {
+function SoftwareUpdate() {
   this._controller = null;
   this._wizard = null;
   this._downloadDuration = -1;
@@ -182,6 +200,7 @@ function softwareUpdate() {
               getService(Ci.nsIUpdateManager);
 
   this.marChannels = new MARChannels();
+  this.updateChannel = new UpdateChannel();
 
   addons.submitInstalledAddons();
 }
@@ -189,7 +208,7 @@ function softwareUpdate() {
 /**
  * Class for software updates
  */
-softwareUpdate.prototype = {
+SoftwareUpdate.prototype = {
   /**
    * Get the customized ABI for the update service
    *
@@ -241,21 +260,14 @@ softwareUpdate.prototype = {
   get buildInfo() {
     return {
       buildid : utils.appInfo.buildID,
-      channel : this.channel,
+      channel : this.updateChannel.channel,
       disabled_addons : prefs.preferences.getPref(PREF_DISABLED_ADDONS, ''),
       locale : utils.appInfo.locale,
-      mar_channels : this.marChannels.channels.join(','),
+      mar_channels : this.marChannels.channels,
       url_aus : this.getUpdateURL(true),
       user_agent : utils.appInfo.userAgent,
       version : utils.appInfo.version
     };
-  },
-
-  /**
-   * Returns the current update channel from the default branch
-   */
-  get channel() {
-    return prefs.preferences.getPref('app.update.channel', '', true, null);
   },
 
   /**
@@ -273,40 +285,6 @@ softwareUpdate.prototype = {
    */
   get currentPage() {
     return this._wizard.getNode().getAttribute('currentpageid');
-  },
-
-  /**
-   * Reads the current default update channel from channel-prefs.js
-   *
-   * @returns {string} The current update channel
-   */
-  get defaultChannel() {
-    var file = Services.dirsvc.get("PrfDef", Ci.nsIFile);
-    file.append("channel-prefs.js");
-
-    // Read contents and store current update channel
-    var contents = files.readFile(file);
-    var result = contents.match(REGEX_UPDATE_CHANNEL_PREF);
-    assert.equal(result.length, 3, "Update channel value has been found");
-
-    return result[2];
-  },
-
-  /**
-   * Modify the channel-prefs.js file for the wanted default update channel
-   *
-   * @param {string} aChannel
-   *        Channel to use for the update
-   */
-  set defaultChannel(aChannel) {
-    assert.ok(typeof aChannel, "string", "Update channel has to be specified");
-
-    var file = Services.dirsvc.get("PrfDef", Ci.nsIFile);
-    file.append("channel-prefs.js");
-
-    var contents = files.readFile(file);
-    contents = contents.replace(REGEX_UPDATE_CHANNEL_PREF, "$1" + aChannel);
-    files.writeFile(file, contents);
   },
 
   /**
@@ -342,7 +320,7 @@ softwareUpdate.prototype = {
     if (this.activeUpdate) {
       info = {
         buildid : this.activeUpdate.buildID,
-        channel : this.channel,
+        channel : this.updateChannel.channel,
         is_complete : this.isCompleteUpdate,
         size : this.activeUpdate.selectedPatch.size,
         type : this.activeUpdate.type,
@@ -412,33 +390,35 @@ softwareUpdate.prototype = {
    * @param {object} aUpdateData
    *        All the data collected during the update process
    */
-  assertUpdateApplied : function softwareUpdate_assertUpdateApplied(aUpdateData) {
+  assertUpdateApplied : function SU_assertUpdateApplied(aUpdateData) {
     // Get the information from the last update
     var info = aUpdateData.updates[aUpdateData.update.index];
 
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
     var check = Services.vc.compare(info.build_post.version, info.build_pre.version);
-    expect.ok(check >= 0, "The version of the upgraded build is higher or equal.");
+    expect.ok(check >= 0, "The version of the upgraded build is higher or equal");
 
-    // The build id should be identical with the one from the update
-    expect.equal(info.build_post.buildid, info.patch.buildid,
-                 "The post buildid is equal to the buildid of the update.");
+    // If there was an update, the post build id should be identical with the patch
+    if (info.patch.buildid) {
+      expect.equal(info.build_post.buildid, info.patch.buildid,
+                   "The post buildid is equal to the buildid of the update");
+    }
 
     // If a target build id has been given, check if it matches the updated build
     info.target_buildid = aUpdateData.update.targetBuildID;
     if (info.target_buildid) {
       expect.equal(info.build_post.buildid, info.target_buildid,
-                   "Post buildid matches target buildid of the update patch.");
+                   "Post buildid matches target buildid of the update patch");
     }
 
     // An upgrade should not change the builds locale
     expect.equal(info.build_post.locale, info.build_pre.locale,
-                 "The locale of the updated build has not been changed.");
+                 "The locale of the updated build has not been changed");
 
     // Check that no application-wide add-ons have been disabled
     expect.equal(info.build_post.disabled_addons, info.build_pre.disabled_addons,
-                 "No application-wide add-ons have been disabled by the update.");
+                 "No application-wide add-ons have been disabled by the update");
   },
 
   /**
@@ -449,7 +429,7 @@ softwareUpdate.prototype = {
    * @param {MozMillController} aBrowserController
    *        Controller of the browser window to spawn the about dialog
    */
-  checkAboutDialog : function softwareUpdate_checkAboutDialog(aBrowserController) {
+  checkAboutDialog : function SU_checkAboutDialog(aBrowserController) {
     aBrowserController.mainMenu.click("#aboutName");
     utils.handleWindow("type", "Browser:About", function (controller) {
       var button = new elementslib.Selector(controller.window.document, "#updateButton");
@@ -461,7 +441,7 @@ softwareUpdate.prototype = {
   /**
    * Close the software update dialog
    */
-  closeDialog: function softwareUpdate_closeDialog() {
+  closeDialog: function SU_closeDialog() {
     if (this._controller) {
       this._controller.keypress(null, "VK_ESCAPE", {});
       this._controller.sleep(500);
@@ -478,11 +458,11 @@ softwareUpdate.prototype = {
    * @param {number} timeout
    *        Timeout the download has to stop
    */
-  download : function softwareUpdate_download(waitForFinish, timeout) {
+  download : function SU_download(waitForFinish, timeout) {
     waitForFinish = waitForFinish ? waitForFinish : true;
 
     // Check that the correct channel has been set
-    assert.equal(this.defaultChannel, this.channel,
+    assert.equal(this.updateChannel.defaultChannel, this.updateChannel.channel,
                  "The update channel has been set correctly.");
 
     // Retrieve the timestamp, so we can measure the duration of the download
@@ -533,11 +513,12 @@ softwareUpdate.prototype = {
   /**
    * Update the update.status file and set the status to 'failed:6'
    */
-  forceFallback : function softwareUpdate_forceFallback() {
+  forceFallback : function SU_forceFallback() {
     var updateStatus = this.stagingDirectory;
     updateStatus.append("update.status");
 
-    files.writeFile(updateStatus, "failed: 6\n");
+    var file = new files.File(updateStatus);
+    file.contents = "failed: 6\n";
   },
 
   /**
@@ -546,7 +527,7 @@ softwareUpdate.prototype = {
    * @returns Array of external DTD urls
    * @type [string]
    */
-  getDtds : function softwareUpdate_getDtds() {
+  getDtds : function SU_getDtds() {
     var dtds = ["chrome://mozapps/locale/update/history.dtd",
                 "chrome://mozapps/locale/update/updates.dtd"]
     return dtds;
@@ -563,7 +544,7 @@ softwareUpdate.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function softwareUpdate_getElement(spec) {
+  getElement : function SU_getElement(spec) {
     var elem = null;
 
     switch(spec.type) {
@@ -599,7 +580,7 @@ softwareUpdate.prototype = {
    *
    * @returns {String} The URL of the update snippet
    */
-  getUpdateURL: function softwareUpdate_getUpdateURL(aForce) {
+  getUpdateURL: function SU_getUpdateURL(aForce) {
     var url = prefs.preferences.getPref(PREF_APP_UPDATE_URL, "");
     var dist = prefs.preferences.getPref(PREF_APP_DISTRIBUTION,
                                          "default", true, null);
@@ -615,7 +596,7 @@ softwareUpdate.prototype = {
     url = url.replace(/%BUILD_ID%/g, utils.appInfo.buildID);
     url = url.replace(/%BUILD_TARGET%/g, utils.appInfo.os + "_" + this.ABI);
     url = url.replace(/%OS_VERSION%/g, this.OSVersion);
-    url = url.replace(/%CHANNEL%/g, this.channel);
+    url = url.replace(/%CHANNEL%/g, this.updateChannel.channel);
     url = url.replace(/%DISTRIBUTION%/g, dist);
     url = url.replace(/%DISTRIBUTION_VERSION%/g, dist_version);
 
@@ -633,7 +614,7 @@ softwareUpdate.prototype = {
    * @param {MozMillController} browserController
    *        Mozmill controller of the browser window
    */
-  openDialog: function softwareUpdate_openDialog(browserController) {
+  openDialog: function SU_openDialog(browserController) {
     // TODO: After Firefox 4 has been released and we do not have to test any
     // beta release anymore uncomment out the following code
 
@@ -675,7 +656,7 @@ softwareUpdate.prototype = {
    * Wait that check for updates has been finished
    * @param {number} timeout
    */
-  waitForCheckFinished : function softwareUpdate_waitForCheckFinished(timeout) {
+  waitForCheckFinished : function SU_waitForCheckFinished(timeout) {
     timeout = timeout ? timeout : TIMEOUT_UPDATE_CHECK;
 
     assert.waitFor(function() {
@@ -689,7 +670,7 @@ softwareUpdate.prototype = {
    * @param {MozMillController} browserController
    *        Mozmill controller of the browser window
    */
-  waitForDialogOpen : function softwareUpdate_waitForDialogOpen(browserController) {
+  waitForDialogOpen : function SU_waitForDialogOpen(browserController) {
     this._controller = utils.handleWindow("type", "Update:Wizard",
                                           undefined, false);
     this._wizard = this.getElement({type: "wizard"});
@@ -707,7 +688,7 @@ softwareUpdate.prototype = {
    * @param {number} timeout
    *        Timeout the download has to stop
    */
-  waitforDownloadFinished: function softwareUpdate_waitForDownloadFinished(timeout) {
+  waitforDownloadFinished: function SU_waitForDownloadFinished(timeout) {
     timeout = timeout ? timeout : TIMEOUT_UPDATE_DOWNLOAD;
 
     var progress =  this.getElement({type: "download_progress"});
@@ -728,15 +709,129 @@ softwareUpdate.prototype = {
   /**
    * Waits for the given page of the update dialog wizard
    */
-  waitForWizardPage : function softwareUpdate_waitForWizardPage(step) {
+  waitForWizardPage : function SU_waitForWizardPage(step) {
     assert.waitFor(function () {
       return this.currentPage === step;
     }, "New wizard page has been selected", undefined, undefined, this);
   }
 }
 
+/**
+ * Class to handle the update channel as listed in channel-prefs.js
+ */
+function UpdateChannel() {
+  var file = Services.dirsvc.get("PrfDef", Ci.nsIFile);
+  file.append("channel-prefs.js");
+
+  this._file = new files.File(file);
+}
+
+UpdateChannel.prototype = {
+  /**
+   * Return the current update channel from the default branch
+   *
+   * @returns {string} Current update channel
+   */
+  get channel() {
+    return prefs.preferences.getPref('app.update.channel', '', true, null);
+  },
+
+  /**
+   * Get a reference to the update-settings.ini file
+   *
+   * @returns {INIFile} Reference to INI file
+   */
+  get configFile() {
+    return this._file;
+  },
+
+  /**
+   * Get the default update channel
+   *
+   * @returns {string} Current default update channel
+   */
+  get defaultChannel() {
+    var result = this._file.contents.match(REGEX_UPDATE_CHANNEL_PREF);
+    assert.equal(result.length, 3, "Update channel value has been found");
+
+    return result[2];
+  },
+
+  /**
+   * Set default update channel
+   *
+   * @param {string} aChannel
+   *        New default update channel
+   */
+  set defaultChannel(aChannel) {
+    assert.ok(typeof aChannel, "string", "Update channel has been specified");
+
+    var contents = this._file.contents;
+    contents = contents.replace(REGEX_UPDATE_CHANNEL_PREF, "$1" + aChannel);
+    this._file.contents = contents;
+  },
+};
+
+
+/**
+ * Initialize all the data used by update tests
+ *
+ * @param {boolean} aFallback
+ *        True in case it is a fallback update
+ */
+function initUpdateTests(aFallback=false) {
+  var update = new SoftwareUpdate();
+
+  // Prepare persisted object for update results
+  // If an update fails the post build will be the same as the pre build.
+  persisted.update.index = 0;
+  persisted.update.stagingPath = update.stagingDirectory.path;
+
+  // TODO: For backward compatibility. Can be removed once the issue is fixed:
+  // https://github.com/mozilla/mozmill-automation/issues/180
+  persisted.updateStagingPath = update.stagingDirectory.path;
+
+  // Create results object with information of the unmodified pre build
+  // TODO: Lets change to persisted.update.results once the issue is fixed:
+  // https://github.com/mozilla/mozmill-automation/issues/175
+  persisted.updates = [{
+    build_pre : update.buildInfo,
+    build_post : update.buildInfo,
+    fallback : aFallback,
+    patch : {},
+    success : false,
+  }];
+
+  // If requested modify the default update channel. It will be active
+  // after the next restart of the application
+  if (persisted.update.channel) {
+    // Backup the original content and the path of the channel-prefs.js file
+    persisted.update.default_update_channel = {
+      content : update.updateChannel.configFile.contents,
+      path : update.updateChannel.configFile.path
+    };
+
+    update.updateChannel.defaultChannel = persisted.update.channel;
+  }
+
+  // If requested modify the list of allowed MAR channels
+  if (persisted.update.allowed_mar_channels) {
+    // Backup the original content and the path of the update-settings.ini file
+    persisted.update.default_mar_channels = {
+      content : update.marChannels.configFile.contents,
+      path : update.marChannels.configFile.path
+    };
+
+    update.marChannels.add(persisted.update.allowed_mar_channels);
+  }
+}
+
+
 // Export of variables
 exports.WIZARD_PAGES = WIZARD_PAGES;
 
+// Export of functions
+exports.initUpdateTests = initUpdateTests;
+
 // Export of classes
-exports.softwareUpdate = softwareUpdate;
+exports.SoftwareUpdate = SoftwareUpdate;
