@@ -15,7 +15,7 @@ const PROXY_TYPE = 'network.proxy.type';
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.update = new softwareUpdate.softwareUpdate();
+  aModule.update = new softwareUpdate.SoftwareUpdate();
 
   if (!aModule.update.allowed)
     testSoftwareUpdateAutoProxy.__force_skip__ = "No permission to update Firefox.";
