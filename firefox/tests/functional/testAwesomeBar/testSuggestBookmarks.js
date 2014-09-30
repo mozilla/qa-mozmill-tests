@@ -72,8 +72,8 @@ var testStarInAutocomplete = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
+  // Define the path to the second auto-complete result
+  var richlistItem = locationBar.autoCompleteResults.getResult(1);
 
   // For the page title check matched text is underlined
   var underlined = locationBar.autoCompleteResults.getUnderlinedText(richlistItem,
