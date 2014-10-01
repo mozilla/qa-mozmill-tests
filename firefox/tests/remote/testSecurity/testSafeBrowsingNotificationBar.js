@@ -13,13 +13,13 @@ var utils = require("../../../../lib/utils");
 const TEST_DATA = [
   // Phishing URL object
   {
-    buttonAccessKey : "safebrowsing.notAForgeryButton.accessKey",
+    buttonLabel : "safebrowsing.notAForgeryButton.label",
     reportPage : "www.google.com/safebrowsing/report_error",
     unsafePage : "https://www.itisatrap.org/firefox/its-a-trap.html"
   },
   // Malware URL object
   {
-    buttonAccessKey : "safebrowsing.notAnAttackButton.accessKey",
+    buttonLabel : "safebrowsing.notAnAttackButton.label",
     reportPage : "www.stopbadware.org",
     unsafePage : "https://www.itisatrap.org/firefox/its-an-attack.html"
   }
@@ -111,11 +111,11 @@ var checkIgnoreWarningButton = function(aData) {
  */
 var checkNoPhishingButton = function(aData) {
   // Click on the web forgery report button
-  var buttonAccessKey = utils.getProperty("chrome://browser/locale/browser.properties",
-                                          aData.buttonAccessKey);
+  var buttonLabel = utils.getProperty("chrome://browser/locale/browser.properties",
+                                      aData.buttonLabel);
   var button = tabBrowser.getTabPanelElement(tabBrowser.selectedIndex,
                                              '/{"value":"blocked-badware-page"}' +
-                                             '/{"accesskey":"' + buttonAccessKey + '"}');
+                                             '/{"label":"' + buttonLabel + '"}');
   button.waitThenClick();
   controller.waitForPageLoad(controller.tabs.getTab(1));
 
