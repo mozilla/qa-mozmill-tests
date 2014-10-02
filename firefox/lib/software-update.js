@@ -84,11 +84,6 @@ function MARChannels() {
   var file = Services.dirsvc.get("GreD", Ci.nsIFile);
   file.append("update-settings.ini");
   this._ini = new files.INIFile(file);
-
-  // TODO: Key is "ACCEPTED_MAR_CHANNEL_IDS " (extra final whitespace) if
-  //       modified via the automation script. Remove once the issue is fixed:
-  //       https://github.com/mozilla/mozmill-automation/issues/164
-  this._keyname = this._ini.getKeys("Settings")[0];
 }
 
 MARChannels.prototype = {
@@ -126,12 +121,7 @@ MARChannels.prototype = {
    * @returns {string[]} MAR Channels
    */
   _read: function MC_read() {
-    // TODO: Revert once the following issue is fixed
-    // https://github.com/mozilla/mozmill-automation/issues/164
-    // var channels = this._ini.getValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS");
-    var channels = this._ini.getValue("Settings", this._keyname).trim();
-    assert.ok(channels, "Accepted MAR channel IDs have been found");
-
+    var channels = this._ini.getValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS");
     return channels.split(',');
   },
 
@@ -142,10 +132,7 @@ MARChannels.prototype = {
    *        List of allowed channels
    */
   _write: function MC_write(aChannels) {
-    // TODO: Revert once the following issue is fixed
-    // https://github.com/mozilla/mozmill-automation/issues/164
-    // this._ini.setValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS",
-    this._ini.setValue("Settings", this._keyname,
+    this._ini.setValue("Settings", "ACCEPTED_MAR_CHANNEL_IDS",
                        aChannels.join(','));
   },
 
@@ -788,10 +775,6 @@ function initUpdateTests(aFallback=false) {
   // If an update fails the post build will be the same as the pre build.
   persisted.update.index = 0;
   persisted.update.stagingPath = update.stagingDirectory.path;
-
-  // TODO: For backward compatibility. Can be removed once the issue is fixed:
-  // https://github.com/mozilla/mozmill-automation/issues/180
-  persisted.updateStagingPath = update.stagingDirectory.path;
 
   // Create results object with information of the unmodified pre build
   // TODO: Lets change to persisted.update.results once the issue is fixed:
