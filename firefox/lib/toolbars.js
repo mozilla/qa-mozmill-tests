@@ -430,7 +430,6 @@ function locationBar(aController) {
 
   this._controller = aController;
   this._autoCompleteResults = new autoCompleteResults(aController);
-  this._editBookmarksPanel = new editBookmarksPanel(aController);
   this._identityPopup = new IdentityPopup(aController);
 }
 
@@ -446,16 +445,6 @@ locationBar.prototype = {
    */
   get autoCompleteResults() {
     return this._autoCompleteResults;
-  },
-
-  /**
-   * Returns the edit bookmarks panel object
-   *
-   * @returns editBookmarksPanel object
-   * @type {object}
-   */
-  get editBookmarksPanel() {
-    return this._editBookmarksPanel;
   },
 
   /**
@@ -822,9 +811,6 @@ locationBar.prototype = {
     switch (spec.type) {
       case "notification":
         panel = this.getElement({type: "notification_popup"});
-        break;
-      case "bookmark":
-        panel = this._editBookmarksPanel.getElement({type: "bookmarkPanel"});
         break;
       case "identity":
         panel = this._identityPopup.getElement({type: "popup"});
