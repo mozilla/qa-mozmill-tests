@@ -33,15 +33,6 @@ function teardownModule(aModule) {
   // Prepare persisted object for the next update
   persisted.update.updateIndex++;
 
-  // TODO: Remove this block when mozmill-automation 2.0.8.1 has been released
-  var curUpdate = persisted.updates[persisted.update.index];
-  if (persisted.update.default_update_channel) {
-    aModule.update.updateChannel.defaultChannel = curUpdate.build_pre.channel;
-  }
-  if (persisted.update.allowed_mar_channels) {
-    aModule.update.marChannels.channels = curUpdate.build_pre.mar_channels;
-  }
-
   prefs.preferences.clearUserPref(PREF_UPDATE_LOG);
   prefs.preferences.clearUserPref(PREF_UPDATE_URL_OVERRIDE);
 
