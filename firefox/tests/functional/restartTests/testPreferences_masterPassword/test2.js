@@ -39,22 +39,22 @@ var testInvokeMasterPassword = function() {
 
 /**
  * Bring up the master password dialog via the preferences window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogInvokeMasterPasswordCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogInvokeMasterPasswordCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneSecurity';
 
-  var showPasswordButton = new elementslib.ID(controller.window.document, "showPasswords");
-  controller.waitForElement(showPasswordButton);
+  var showPasswordButton = new elementslib.ID(aController.window.document, "showPasswords");
+  aController.waitForElement(showPasswordButton);
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(checkMasterHandler);
 
-  controller.click(showPasswordButton);
+  aController.click(showPasswordButton);
   md.waitForDialog();
 
   // Check if the password manager has been opened
@@ -65,47 +65,47 @@ var prefDialogInvokeMasterPasswordCallback = function(controller) {
 
 /**
  * Check that the saved passwords are shown
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkPasswordManager(controller) {
-  var togglePasswords = new elementslib.ID(controller.window.document, "togglePasswords");
-  var passwordCol = new elementslib.ID(controller.window.document, "passwordCol");
+function checkPasswordManager(aController) {
+  var togglePasswords = new elementslib.ID(aController.window.document, "togglePasswords");
+  var passwordCol = new elementslib.ID(aController.window.document, "passwordCol");
 
-  controller.waitForElement(togglePasswords);
+  aController.waitForElement(togglePasswords);
 
-  expect.ok(!utils.isDisplayed(controller, passwordCol),
+  expect.ok(!utils.isDisplayed(aController, passwordCol),
             "Password column is hidden");
 
   // Call showPasswords dialog and view the passwords on your profile
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(checkMasterHandler);
 
-  controller.click(togglePasswords);
+  aController.click(togglePasswords);
   md.waitForDialog();
 
-  expect.ok(utils.isDisplayed(controller, passwordCol),
+  expect.ok(utils.isDisplayed(aController, passwordCol),
             "Password column is visible");
 
 
   // Close the password manager
   var dtds = ["chrome://passwordmgr/locale/passwordManager.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 
 /**
  * Verify the master password dialog is invoked
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var checkMasterHandler = function(controller) {
-  var passwordBox = new elementslib.ID(controller.window.document, "password1Textbox");
+var checkMasterHandler = function(aController) {
+  var passwordBox = new elementslib.ID(aController.window.document, "password1Textbox");
 
-  controller.waitForElement(passwordBox);
-  controller.type(passwordBox, "test1");
+  aController.waitForElement(passwordBox);
+  aController.type(passwordBox, "test1");
 
-  var button = new elementslib.Lookup(controller.window.document,
+  var button = new elementslib.Lookup(aController.window.document,
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.click(button);
+  aController.click(button);
 }

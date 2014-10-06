@@ -51,10 +51,10 @@ function teardownModule(aModule) {
 function testInstallExtensions() {
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
-  persisted.addons.forEach(function (addon) {
+  persisted.addons.forEach(function (aAddon) {
    // Install the addon
     md.start(addons.handleInstallAddonDialog);
-    controller.open(addon.url);
+    controller.open(aAddon.url);
     md.waitForDialog(TIMEOUT_DOWNLOAD);
 
     // Dispose of the restart doorhanger notification by keyboard event

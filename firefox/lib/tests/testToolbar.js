@@ -12,7 +12,7 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 
 const METHODS = ["shortcut", "shortcut2", "button"];
 
-var setupModule = function(module) {
+var setupModule = function(aModule) {
   controller = mozmill.getBrowserController();
   locationBar = new toolbars.locationBar(controller);
 }

@@ -25,9 +25,9 @@ var animationObserver = {
   init: function (aElement) {
     var win = aElement.getNode().ownerDocument.defaultView;
     var self = this;
-    this.mutationObserver = new win.MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        self.isAnimated = mutation.target.hasAttribute("collapsed");
+    this.mutationObserver = new win.MutationObserver(function (aMutations) {
+      aMutations.forEach(function (aMutation) {
+        self.isAnimated = aMutation.target.hasAttribute("collapsed");
       });
     });
     this.mutationObserver.observe(aElement.getNode(), {attributes: true,
@@ -53,12 +53,12 @@ const TABS_STRIP = TABS_ARROW_SCROLLBOX + '/anon({"anonid":"scrollbox"})/anon({"
 /**
  * Close all tabs and open about:blank
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function closeAllTabs(controller)
+function closeAllTabs(aController)
 {
-  var browser = new tabBrowser(controller);
+  var browser = new tabBrowser(aController);
   browser.closeAllTabs();
 }
 
@@ -390,7 +390,7 @@ findBar.prototype = {
   /**
    * Set search text
    *
-   * @param {string} text
+   * @param {string} aText
    *        Text used as search keywords.
    */
   search : function findBar_search(aText) {
@@ -409,11 +409,11 @@ findBar.prototype = {
 /**
  * Constructor
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMill controller of the window to operate on
  */
-function tabBrowser(controller) {
-  this._controller = controller;
+function tabBrowser(aController) {
+  this._controller = aController;
   this.findBar = new findBar(this);
   this._tabs = this.getElement({type: "tabs"});
   let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
@@ -469,11 +469,11 @@ tabBrowser.prototype = {
   /**
    * Select the tab with the given index
    *
-   * @param {number} index
+   * @param {number} aIndex
    *        Index of the tab which should be selected
    */
-  set selectedIndex(index) {
-    var tab = this.getTab(index);
+  set selectedIndex(aIndex) {
+    var tab = this.getTab(aIndex);
     assert.waitFor(function() {
       return !tab.getNode().hasAttribute("busy");
     }, "The tab has loaded");
@@ -484,8 +484,8 @@ tabBrowser.prototype = {
     tab.mouseEvent(null, null, {type: "mousemove"});
     this._controller.click(tab);
     assert.waitFor(function () {
-      return this.selectedIndex === index;
-    }, "The tab with index '" + index + "' has been selected", undefined,
+      return this.selectedIndex === aIndex;
+    }, "The tab with index '" + aIndex + "' has been selected", undefined,
      undefined, this);
   },
 
@@ -594,7 +594,7 @@ tabBrowser.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {object} spec
+   * @param {object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -602,11 +602,11 @@ tabBrowser.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function tabBrowser_getElement(spec) {
+  getElement : function tabBrowser_getElement(aSpec) {
     var document = this._controller.window.document;
     var elem = null;
 
-    switch (spec.type) {
+    switch (aSpec.type) {
       /**
        * subtype: subtype to match
        * value: value to match
@@ -634,21 +634,21 @@ tabBrowser.prototype = {
       case "tabs_scrollButton":
         elem = new elementslib.Lookup(this._controller.window.document,
                                       TABS_ARROW_SCROLLBOX +
-                                      '/anon({"anonid":"scrollbutton-' + spec.subtype + '"})');
+                                      '/anon({"anonid":"scrollbutton-' + aSpec.subtype + '"})');
         break;
       case "tabs_strip":
         elem = new elementslib.Lookup(this._controller.window.document, TABS_STRIP);
         break;
       case "tabs_tab":
-        switch (spec.subtype) {
+        switch (aSpec.subtype) {
           case "index":
-            elem = new elementslib.Elem(this._tabs.getNode().getItemAtIndex(spec.value));
+            elem = new elementslib.Elem(this._tabs.getNode().getItemAtIndex(aSpec.value));
             break;
         }
         break;
       case "tabs_tabCloseButton":
         var node = document.getAnonymousElementByAttribute(
-                     spec.value.getNode(),
+                     aSpec.value.getNode(),
                      "anonid",
                      "close-button"
                    );
@@ -656,7 +656,7 @@ tabBrowser.prototype = {
         break;
       case "tabs_tabFavicon":
         var node = document.getAnonymousElementByAttribute(
-                     spec.value.getNode(),
+                     aSpec.value.getNode(),
                      "class",
                      "tab-icon-image"
                    );
@@ -664,13 +664,13 @@ tabBrowser.prototype = {
         elem = new elementslib.Elem(node);
         break;
       case "tabs_tabPanel":
-        var panelId = spec.value.getNode().getAttribute("linkedpanel");
+        var panelId = aSpec.value.getNode().getAttribute("linkedpanel");
         elem = new elementslib.Lookup(this._controller.window.document, TABS_BROWSER +
                                       '/anon({"anonid":"tabbox"})/anon({"anonid":"panelcontainer"})' +
                                       '/{"id":"' + panelId + '"}');
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -679,42 +679,42 @@ tabBrowser.prototype = {
   /**
    * Get the tab at the specified index
    *
-   * @param {number} index
+   * @param {number} aIndex
    *        Index of the tab
    * @returns The requested tab
    * @type {ElemBase}
    */
-  getTab : function tabBrowser_getTab(index) {
-    if (index === undefined)
-      index = this.selectedIndex;
+  getTab : function tabBrowser_getTab(aIndex) {
+    if (aIndex === undefined)
+      aIndex = this.selectedIndex;
 
-    return this.getElement({type: "tabs_tab", subtype: "index", value: index});
+    return this.getElement({type: "tabs_tab", subtype: "index", value: aIndex});
   },
 
   /**
    * Check if the specified tab is an AppTab
    *
-   * @param {ElemBase} tab
+   * @param {ElemBase} aTab
    *        Index of the tab
    * @returns {Boolean} True if the tab is an AppTab
    */
-  isAppTab : function tabBrowser_isAppTab(tab) {
-    return tab.getNode().hasAttribute('pinned');
+  isAppTab : function tabBrowser_isAppTab(aTab) {
+    return aTab.getNode().hasAttribute('pinned');
   },
 
   /**
    * Creates the child element of the tab's notification bar
    *
-   * @param {number} tabIndex
+   * @param {number} aTabIndex
    *        (Optional) Index of the tab to check
-   * @param {string} elemString
+   * @param {string} aElemString
    *        (Optional) Lookup string of the notification bar's child element
    * @return The created child element
    * @type {ElemBase}
    */
-  getTabPanelElement : function tabBrowser_getTabPanelElement(tabIndex, elemString) {
-    var index = tabIndex ? tabIndex : this.selectedIndex;
-    var elemStr = elemString ? elemString : "";
+  getTabPanelElement : function tabBrowser_getTabPanelElement(aTabIndex, aElemString) {
+    var index = aTabIndex ? aTabIndex : this.selectedIndex;
+    var elemStr = aElemString ? aElemString : "";
 
     // Get the tab panel and check if an element has to be fetched
     var panel = this.getElement({type: "tabs_tabPanel", subtype: "tab", value: this.getTab(index)});

@@ -41,11 +41,11 @@ var testPreferencesPanes = function() {
 /**
  * Callback handler for preferences window
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   // List of all available panes inside the Preferences window
   var panes = [
@@ -54,9 +54,9 @@ var prefDialogCallback = function(controller) {
               ];
 
   // Step through each of the panes
-  panes.forEach(function (pane) {
-    prefDialog.paneId = pane;
-    controller.sleep(DELAY);
+  panes.forEach(function (aPane) {
+    prefDialog.paneId = aPane;
+    aController.sleep(DELAY);
   });
 
   // Close the Preferences window

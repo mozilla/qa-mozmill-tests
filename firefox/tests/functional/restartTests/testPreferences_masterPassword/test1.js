@@ -82,22 +82,22 @@ var testSetMasterPassword = function() {
 
 /**
  * Handler for preferences dialog to set the Master Password
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogSetMasterPasswordCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogSetMasterPasswordCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneSecurity';
 
-  var masterPasswordCheck = new elementslib.ID(controller.window.document, "useMasterPassword");
-  controller.waitForElement(masterPasswordCheck);
+  var masterPasswordCheck = new elementslib.ID(aController.window.document, "useMasterPassword");
+  aController.waitForElement(masterPasswordCheck);
 
   // Call setMasterPassword dialog and set a master password to your profile
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(masterPasswordHandler);
 
-  controller.click(masterPasswordCheck);
+  aController.click(masterPasswordCheck);
   md.waitForDialog();
 
   // Close the Preferences dialog
@@ -106,36 +106,36 @@ var prefDialogSetMasterPasswordCallback = function(controller) {
 
 /**
  * Set the master password via the master password dialog
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var masterPasswordHandler = function(controller) {
-  var pw1 = new elementslib.ID(controller.window.document, "pw1");
-  var pw2 = new elementslib.ID(controller.window.document, "pw2");
+var masterPasswordHandler = function(aController) {
+  var pw1 = new elementslib.ID(aController.window.document, "pw1");
+  var pw2 = new elementslib.ID(aController.window.document, "pw2");
 
   // Fill in the master password into both input fields and click ok
-  controller.waitForElement(pw1);
-  controller.type(pw1, "test1");
-  controller.type(pw2, "test1");
+  aController.waitForElement(pw1);
+  aController.type(pw1, "test1");
+  aController.type(pw2, "test1");
 
   // Call the confirmation dialog and click ok to go back to the preferences dialog
-  var md = new modalDialog.modalDialog(controller.window);
+  var md = new modalDialog.modalDialog(aController.window);
   md.start(confirmHandler);
 
-  var button = new elementslib.Lookup(controller.window.document,
+  var button = new elementslib.Lookup(aController.window.document,
                            '/id("changemp")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button);
+  aController.waitThenClick(button);
   md.waitForDialog();
 }
 
 /**
  * Call the confirmation dialog and click ok to go back to the preferences dialog
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var confirmHandler = function(controller) {
-  var button = new elementslib.Lookup(controller.window.document,
+var confirmHandler = function(aController) {
+  var button = new elementslib.Lookup(aController.window.document,
                                '/id("commonDialog")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-  controller.waitThenClick(button);
+  aController.waitThenClick(button);
 }
 

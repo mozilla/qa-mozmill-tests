@@ -55,24 +55,24 @@ var testEnableCookies = function() {
 
 /**
  * Go to the privacy pane and enables cookie saving
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefEnableCookieDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefEnableCookieDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
+  var historyMode = new elementslib.ID(aController.window.document, "historyMode");
+  aController.waitForElement(historyMode);
+  aController.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";
   }, "History mode is set to custom");
 
   // Enable cookies
-  var acceptCookiesPref = new elementslib.ID(controller.window.document, "acceptCookies");
-  controller.check(acceptCookiesPref, true);
+  var acceptCookiesPref = new elementslib.ID(aController.window.document, "acceptCookies");
+  aController.check(acceptCookiesPref, true);
 
   // Close the preferences dialog
   prefDialog.close(true);
@@ -80,22 +80,22 @@ var prefEnableCookieDialogCallback = function(controller) {
 
 /**
  * Open the cookie manager from the privacy pane
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefCheckEnableDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefCheckEnableDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
 
   // Go to custom history settings and click on the show cookies button
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
+  var historyMode = new elementslib.ID(aController.window.document, "historyMode");
+  aController.waitForElement(historyMode);
+  aController.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";
   }, "History mode is set to custom");
 
-  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.click(showCookies);
+  var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
+  aController.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", checkSavedCookies);
 
@@ -104,12 +104,12 @@ var prefCheckEnableDialogCallback = function(controller) {
 
 /**
  * Check that cookies have been saved.
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSavedCookies(controller) {
-  var removeCookieButton = new elementslib.ID(controller.window.document, "removeCookie");
-  controller.waitForElement(removeCookieButton);
+function checkSavedCookies(aController) {
+  var removeCookieButton = new elementslib.ID(aController.window.document, "removeCookie");
+  aController.waitForElement(removeCookieButton);
   expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");
 
   var cookieExists = Services.cookies.cookieExists({host: persisted.hostName,
@@ -119,6 +119,6 @@ function checkSavedCookies(controller) {
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 

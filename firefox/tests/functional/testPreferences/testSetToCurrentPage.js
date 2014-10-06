@@ -61,21 +61,16 @@ function testSetHomePage() {
 /**
  * Set the current page as home page
  *
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function prefDialogHomePageCallback(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+function prefDialogHomePageCallback(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'paneMain';
 
   // Set Home Page to the current page
-  var useCurrent = new elementslib.ID(controller.window.document, "useCurrent");
-  controller.click(useCurrent);
+  var useCurrent = new elementslib.ID(aController.window.document, "useCurrent");
+  aController.click(useCurrent);
 
   prefDialog.close(true);
-}
-
-if (mozmill.isLinux) {
-  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
-  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
 }

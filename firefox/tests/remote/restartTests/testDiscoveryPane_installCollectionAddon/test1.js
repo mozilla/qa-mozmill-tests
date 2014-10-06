@@ -90,9 +90,9 @@ function testInstallCollectionAddon() {
 /**
  * Handle the modal dialog to install an addon
  */
-function handleInstallAddonDialog(controller) {
+function handleInstallAddonDialog(aController) {
   // Wait for the install button is enabled before clicking on it
-  var installButton = new elementslib.Lookup(controller.window.document,
+  var installButton = new elementslib.Lookup(aController.window.document,
                                              '/id("xpinstallConfirm")' +
                                              '/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
@@ -100,5 +100,5 @@ function handleInstallAddonDialog(controller) {
     return !installButton.getNode().disabled;
   }, "Install button is enabled");
 
-  controller.click(installButton);
+  aController.click(installButton);
 }

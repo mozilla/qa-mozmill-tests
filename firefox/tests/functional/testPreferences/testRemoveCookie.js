@@ -52,23 +52,23 @@ var testRemoveCookie = function() {
 
 /**
  * Open the cookie manager from the privacy pane
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-var prefDialogCallback = function(controller) {
-  var prefDialog = new prefs.preferencesDialog(controller);
+var prefDialogCallback = function(aController) {
+  var prefDialog = new prefs.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
-  var historyMode = new elementslib.ID(controller.window.document, "historyMode");
-  controller.waitForElement(historyMode);
-  controller.select(historyMode, null, null, "custom");
+  var historyMode = new elementslib.ID(aController.window.document, "historyMode");
+  aController.waitForElement(historyMode);
+  aController.select(historyMode, null, null, "custom");
   assert.waitFor(function () {
     return historyMode.getNode().value === "custom";
   }, "History mode is set to custom");
 
-  var showCookies = new elementslib.ID(controller.window.document, "showCookiesButton");
-  controller.click(showCookies);
+  var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
+  aController.click(showCookies);
 
   utils.handleWindow("type", "Browser:Cookies", deleteCookie);
 
@@ -77,20 +77,20 @@ var prefDialogCallback = function(controller) {
 
 /**
  * Delete a cookie
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function deleteCookie(controller) {
+function deleteCookie(aController) {
   // Check for a cookie and delete it
-  var filterField = new elementslib.ID(controller.window.document, "filter");
-  controller.waitForElement(filterField);
-  controller.type(filterField, "litmus_1");
+  var filterField = new elementslib.ID(aController.window.document, "filter");
+  aController.waitForElement(filterField);
+  aController.type(filterField, "litmus_1");
 
   // Get the number of cookies in the file manager before removing a single cookie
-  var cookiesList = controller.window.document.getElementById("cookiesList");
+  var cookiesList = aController.window.document.getElementById("cookiesList");
   var origNumCookies = cookiesList.view.rowCount;
 
-  controller.click(new elementslib.ID(controller.window.document, "removeCookie"));
+  aController.click(new elementslib.ID(aController.window.document, "removeCookie"));
 
   var cookieRemoved = !Services.cookies.cookieExists({host: persisted.hostName,
                                                       name: "litmus_1",
@@ -101,6 +101,6 @@ function deleteCookie(controller) {
 
   var dtds = ["chrome://browser/locale/preferences/cookies.dtd"];
   var cmdKey = utils.getEntity(dtds, "windowClose.key");
-  controller.keypress(null, cmdKey, {accelKey: true});
+  aController.keypress(null, cmdKey, {accelKey: true});
 }
 

@@ -47,13 +47,13 @@ var testNewWindow = function () {
 
 /**
  * Check if the default homepage has been opened
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkDefaultHomepage(controller) {
+function checkDefaultHomepage(aController) {
   var defaultHomepage = utils.getDefaultHomepage();
 
-  controller.waitForPageLoad();
-  utils.assertLoadedUrlEqual(controller, defaultHomepage);
+  aController.waitForPageLoad();
+  utils.assertLoadedUrlEqual(aController, defaultHomepage);
 }
 

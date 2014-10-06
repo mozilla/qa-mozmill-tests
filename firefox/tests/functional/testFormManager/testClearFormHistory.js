@@ -22,8 +22,8 @@ function setupModule(aModule) {
 
   // Clear complete form history so we don't interfere with already added entries
   try {
-    var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                      getService(Ci.nsIFormHistory2);
+    var formHistory = Cc["@mozilla.org/satchel/form-history;1"]
+                      .getService(Ci.nsIFormHistory2);
     formHistory.removeAllEntries();
   }
   catch (ex) {}
@@ -74,8 +74,8 @@ function testClearFormHistory() {
 /**
  * Accesses the clear recent history dialog and accepts the default options to clear
  */
-function clearHistoryHandler(controller) {
-  var sanitizeDialog = elementslib.ID(controller.window.document, "SanitizeDialog").getNode();
+function clearHistoryHandler(aController) {
+  var sanitizeDialog = elementslib.ID(aController.window.document, "SanitizeDialog").getNode();
   var nodeCollector = new domUtils.nodeCollector(sanitizeDialog);
 
   // Verify that the checkbox to clear form data is checked

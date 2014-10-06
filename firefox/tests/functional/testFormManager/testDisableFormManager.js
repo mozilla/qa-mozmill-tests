@@ -20,8 +20,8 @@ var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   // Clear complete form history so we don't interfer with already added entries
-  var formHistory = Cc["@mozilla.org/satchel/form-history;1"].
-                    getService(Ci.nsIFormHistory2);
+  var formHistory = Cc["@mozilla.org/satchel/form-history;1"]
+                    .getService(Ci.nsIFormHistory2);
   formHistory.removeAllEntries();
 
   // Do not save form and search history

@@ -77,11 +77,6 @@ function testLarryBlue() {
                Services.eTLD.getBaseDomainFromHost(cert.commonName),
                "The site identifier string is equal to the cert host");
 
-  var owner = new elementslib.ID(controller.window.document, "identity-popup-content-owner");
-  var property = utils.getProperty("chrome://browser/locale/browser.properties",
-                                   "identity.ownerUnknown2");
-  expect.equal(owner.getNode().textContent, property, "The owner identifier string is set");
-
   var l10nVerifierLabel = utils.getProperty("chrome://browser/locale/browser.properties",
                                             "identity.identified.verifier");
   l10nVerifierLabel = l10nVerifierLabel.replace("%S", cert.issuerOrganization);
@@ -104,15 +99,15 @@ function testLarryBlue() {
 
 /**
  * Check the security tab of the page info window
- * @param {MozMillController} controller
+ * @param {MozMillController} aController
  *        MozMillController of the window to operate on
  */
-function checkSecurityTab(controller) {
-  var securityTab = new elementslib.ID(controller.window.document, "securityTab");
+function checkSecurityTab(aController) {
+  var securityTab = new elementslib.ID(aController.window.document, "securityTab");
   assert.ok(securityTab.getNode().selected, "The Security tab is selected by default");
 
   // Check the Web Site label against the Cert CName
-  var webIDDomainLabel = new elementslib.ID(controller.window.document,
+  var webIDDomainLabel = new elementslib.ID(aController.window.document,
                                             "security-identity-domain-value");
   var certName = (cert.commonName.replace(/\./g, "\\\.")).replace(/\*/g, ".*");
   var certNameRegExp = new RegExp("^" + certName + "$");
@@ -121,7 +116,7 @@ function checkSecurityTab(controller) {
                "Expected web site label found");
 
   // Check the Owner label for "This web site does not supply ownership information."
-  var webIDOwnerLabel = new elementslib.ID(controller.window.document,
+  var webIDOwnerLabel = new elementslib.ID(aController.window.document,
                                            "security-identity-owner-value");
   var securityOwner = utils.getProperty("chrome://browser/locale/pageInfo.properties",
                                         "securityNoOwner");
@@ -129,10 +124,10 @@ function checkSecurityTab(controller) {
                "Expected owner label found");
 
   // Check the Verifier label against the Cert Issuer
-  var webIDVerifierLabel = new elementslib.ID(controller.window.document,
+  var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");
   expect.equal(webIDVerifierLabel.getNode().value, cert.issuerOrganization,
                "Expected verifier label found");
 
-  controller.keypress(null, 'VK_ESCAPE', {});
+  aController.keypress(null, 'VK_ESCAPE', {});
 }

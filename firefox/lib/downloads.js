@@ -148,21 +148,21 @@ downloadManager.prototype = {
    * Cancel any active downloads, remove the files, and clean
    * up the Download Manager database
    *
-   * @param {Array of download} downloads
+   * @param {Array of download} aDownloads
    *        Downloaded files which should be deleted (optional)
    */
-  cleanAll : function downloadManager_cleanAll(downloads) {
+  cleanAll : function downloadManager_cleanAll(aDownloads) {
     // Cancel any active downloads
     this.cancelActiveDownloads();
 
     // If no downloads have been specified retrieve the list from the database
-    if (downloads === undefined || downloads.length == 0)
-      downloads = this.allDownloads;
+    if (aDownloads === undefined || aDownloads.length == 0)
+      aDownloads = this.allDownloads;
     else
-      downloads = downloads.concat(this.allDownloads);
+      aDownloads = aDownloads.concat(this.allDownloads);
 
     // Delete all files referred to in the Download Manager
-    this.deleteDownloadedFiles(downloads);
+    this.deleteDownloadedFiles(aDownloads);
 
     // Clean any entries from the Download Manager database
     this.cleanUp();
@@ -171,15 +171,15 @@ downloadManager.prototype = {
   /**
    * Close the download manager
    *
-   * @param {boolean} force
+   * @param {boolean} aForce
    *        Force the closing of the DM window
    */
-  close : function downloadManager_close(force) {
+  close : function downloadManager_close(aForce) {
     var windowCount = mozmill.utils.getWindows().length;
 
     if (this._controller) {
       // Check if we should force the closing of the DM window
-      if (force) {
+      if (aForce) {
         this._controller.window.close();
       }
       else {
@@ -197,13 +197,13 @@ downloadManager.prototype = {
   /**
    * Delete all downloads from the local drive
    *
-   * @param {download} downloads
+   * @param {download} aDownloads
    *        List of downloaded files
    */
-  deleteDownloadedFiles : function downloadManager_deleteDownloadedFiles(downloads) {
-    downloads.forEach(function(download) {
+  deleteDownloadedFiles : function downloadManager_deleteDownloadedFiles(aDownloads) {
+    aDownloads.forEach(function(aDownload) {
       try {
-        var file = getLocalFileFromNativePathOrUrl(download.target);
+        var file = getLocalFileFromNativePathOrUrl(aDownload.target);
         file.remove(false);
       }
       catch (ex) {
@@ -243,11 +243,11 @@ downloadManager.prototype = {
   /**
    * Gets the download state of the given download
    *
-   * @param {ElemBase} download
+   * @param {ElemBase} aDownload
    *        Download which state should be checked
    */
-  getDownloadState : function downloadManager_getDownloadState(download) {
-    return download.getNode().getAttribute('state');
+  getDownloadState : function downloadManager_getDownloadState(aDownload) {
+    return aDownload.getNode().getAttribute('state');
   },
 
   /**
@@ -264,7 +264,7 @@ downloadManager.prototype = {
   /**
    * Retrieve an UI element based on the given spec
    *
-   * @param {Object} spec
+   * @param {Object} aSpec
    *        Information of the UI element which should be retrieved
    *        type: General type information
    *        subtype: Specific element or property
@@ -272,10 +272,10 @@ downloadManager.prototype = {
    * @returns Element which has been created
    * @type {ElemBase}
    */
-  getElement : function downloadManager_getElement(spec) {
+  getElement : function downloadManager_getElement(aSpec) {
     var elem = null;
 
-    switch(spec.type) {
+    switch(aSpec.type) {
       /**
        * subtype: subtype of property to match
        * value: value of property to match
@@ -284,7 +284,7 @@ downloadManager.prototype = {
         // Use a temporary lookup to get the download item
         var download = new elementslib.Lookup(this._controller.window.document,
                                               '/id("downloadManager")/id("downloadView")/' +
-                                              '{"' + spec.subtype + '":"' + spec.value + '"}');
+                                              '{"' + aSpec.subtype + '":"' + aSpec.value + '"}');
         this._controller.waitForElement(download);
 
         // Use its download id to construct the real lookup expression
@@ -302,11 +302,11 @@ downloadManager.prototype = {
         // There are outstanding events to process
         this._controller.sleep(0);
 
-        elem = new elementslib.Lookup(this._controller.window.document, spec.value.expression +
-                                      '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + spec.subtype + '"}');
+        elem = new elementslib.Lookup(this._controller.window.document, aSpec.value.expression +
+                                      '/anon({"flex":"1"})/[1]/[1]/{"cmd":"cmd_' + aSpec.subtype + '"}');
         break;
       default:
-        assert.fail("Unknown element type - " + spec.type);
+        assert.fail("Unknown element type - " + aSpec.type);
     }
 
     return elem;
@@ -341,26 +341,26 @@ downloadManager.prototype = {
   /**
    * Open the Download Manager
    *
-   * @param {MozMillController} controller MozMillController of the window to operate on
-   * @param {Boolean} shortcut If true the keyboard shortcut is used
+   * @param {MozMillController} aController MozMillController of the window to operate on
+   * @param {Boolean} aShortcut If true the keyboard shortcut is used
    */
-  open : function downloadManager_open(controller, shortcut) {
-    if (shortcut) {
+  open : function downloadManager_open(aController, aShortcut) {
+    if (aShortcut) {
       if (mozmill.isLinux) {
         var cmdKey = utils.getEntity(this.getDtds(), "downloadsUnix.commandkey");
-        controller.keypress(null, cmdKey, {ctrlKey: true, shiftKey: true});
+        aController.keypress(null, cmdKey, {ctrlKey: true, shiftKey: true});
       }
       else {
         var cmdKey = utils.getEntity(this.getDtds(), "downloads.commandkey");
-        controller.keypress(null, cmdKey, {accelKey: true});
+        aController.keypress(null, cmdKey, {accelKey: true});
       }
     }
     else {
-      controller.mainMenu.click("#menu_openDownloads");
+      aController.mainMenu.click("#menu_openDownloads");
     }
 
-    controller.sleep(500);
-    this.waitForOpened(controller);
+    aController.sleep(500);
+    this.waitForOpened(aController);
   },
 
   /**
@@ -375,22 +375,22 @@ downloadManager.prototype = {
   /**
    * Wait for the given download state
    *
-   * @param {MozMillController} controller MozMillController of the window to operate on
-   * @param {DownloadState} state Expected state of the download
-   * @param {Number} timeout Timeout for waiting for the download state (optional)
+   * @param {MozMillController} aDownload MozMillController of the window to operate on
+   * @param {DownloadState} aState Expected state of the download
+   * @param {Number} aTimeout Timeout for waiting for the download state (optional)
    */
-  waitForDownloadState : function downloadManager_waitForDownloadState(download, state, timeout) {
+  waitForDownloadState : function downloadManager_waitForDownloadState(aDownload, aState, aTimeout) {
     assert.waitFor(function () {
-      return this.getDownloadState(download) === state;
-    }, "Download state has been set. Expected '" + state + "'", undefined, undefined, this);
+      return this.getDownloadState(aDownload) === aState;
+    }, "Download state has been set. Expected '" + aState + "'", undefined, undefined, this);
   },
 
   /**
    * Wait until the Download Manager has been opened
    *
-   * @param {MozMillController} controller MozMillController of the window to operate on
+   * @param {MozMillController} aController MozMillController of the window to operate on
    */
-  waitForOpened : function downloadManager_waitForOpened(controller) {
+  waitForOpened : function downloadManager_waitForOpened(aController) {
     this._controller = utils.handleWindow("type", "Download:Manager",
                                           undefined, false);
   }
@@ -400,35 +400,35 @@ downloadManager.prototype = {
  * Download the file of unkown type from the given location by saving it
  * automatically to disk
  *
- * @param {MozMillController} controller MozMillController of the browser window
- * @param {String} url URL of the file which has to be downloaded
+ * @param {MozMillController} aController MozMillController of the browser window
+ * @param {String} aUrl URL of the file which has to be downloaded
  */
-var downloadFileOfUnknownType = function(controller, url) {
-  controller.open(url);
+var downloadFileOfUnknownType = function(aController, aUrl) {
+  aController.open(aUrl);
 
   // Wait until the unknown content type dialog has been opened
   assert.waitFor(function () {
     return mozmill.wm.getMostRecentWindow('').document.documentElement.id === 'unknownContentType';
   }, "Unknown content type dialog has been opened");
 
-  utils.handleWindow("type", "", function (controller) {
+  utils.handleWindow("type", "", function (aController) {
     // If there is a Save File As radio, make sure it is selected
-    var saveFileRadio = new elementslib.ID(controller.window.document, "save");
+    var saveFileRadio = new elementslib.ID(aController.window.document, "save");
     if (saveFileRadio.getNode()) {
-      controller.click(saveFileRadio);
+      aController.click(saveFileRadio);
       assert.waitFor(function () {
         return saveFileRadio.getNode().selected;
       }, "Save File radio button on the Download Unknown Type dialog has been selected");
     }
 
     // Wait until the OK button has been enabled and click on it
-    var button = new elementslib.Lookup(controller.window.document,
+    var button = new elementslib.Lookup(aController.window.document,
                                         '/id("unknownContentType")/anon({"anonid":"buttons"})/{"dlgtype":"accept"}');
-    controller.waitForElement(button);
+    aController.waitForElement(button);
     assert.waitFor(function () {
       return !button.getNode().hasAttribute('disabled');
     }, "The OK button has been enabled");
-    controller.click(button);
+    aController.click(button);
   });
 }
 

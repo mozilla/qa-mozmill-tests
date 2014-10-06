@@ -65,32 +65,32 @@ var testSearchSelectionViaContextMenu = function() {
 /**
  * Start the search via the context menu of selected text
  *
- * @param {ElemBase} element
+ * @param {ElemBase} aElement
  *        Element to select and search for
- * @param {string} engineName
+ * @param {string} aEngineName
  *        Name of the engine to use
- * @param {boolean} loadInBackground
+ * @param {boolean} aLoadInBackground
  *        Whether the search results should open in a forground or background tab
  */
-var startSearch = function(element, engineName, loadInBackground) {
+var startSearch = function(aElement, aEngineName, aLoadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
-  prefs.preferences.setPref(PREF_LOAD_IN_BACKGROUND, loadInBackground);
+  prefs.preferences.setPref(PREF_LOAD_IN_BACKGROUND, aLoadInBackground);
 
   // Select a word and remember the selection
-  controller.doubleClick(element, 5, 5);
+  controller.doubleClick(aElement, 5, 5);
   var selection = controller.tabs.activeTabWindow.getSelection().toString().trim();
 
   // Use the context menu to start a search
-  controller.rightClick(element);
+  controller.rightClick(aElement);
 
   var contextEntry = new elementslib.ID(controller.window.document, "context-searchselect");
   controller.waitForElement(contextEntry);
 
   var contextLabel = contextEntry.getNode().getAttribute('label');
 
-  expect.contain(contextLabel, engineName, "The specified search engine is installed");
+  expect.contain(contextLabel, aEngineName, "The specified search engine is installed");
 
   tabs.openTab({method: "callback", callback: () => {
     controller.click(contextEntry);
@@ -102,7 +102,7 @@ var startSearch = function(element, engineName, loadInBackground) {
     return tabs.length === (tabCount + 1);
   }, "A new tab has been opened");
 
-  if (loadInBackground) {
+  if (aLoadInBackground) {
     assert.waitFor(function () {
       return tabs.selectedIndex === tabIndex;
     }, "A new tab has been opened in the background");
