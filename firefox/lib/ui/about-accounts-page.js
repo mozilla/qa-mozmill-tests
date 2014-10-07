@@ -35,32 +35,11 @@ AboutAccountsPage.prototype.__defineGetter__('remoteFrameWindow', function () {
 /**
  * Open the about accounts in-content page
  *
- * @params {object} [aSpec={}]
- *         Information about opening the page
- * @params {function} [aSpec.callback]
- *         Function that triggers the opening
- * @params {string} [aSpec.method="menu"]
- *         Method to use when opening the AboutAccountsPage ("menu"|"callback")
+ * @params {function} aCallback
+ *         Callback that opens the page
  */
-AboutAccountsPage.prototype.open = function AboutAccountsPage_open(aSpec={}) {
-  var method = aSpec.method || "menu";
-
-  // Define the callback that opens the in-content page
-  var callback = () => {
-    switch (method) {
-      case "menu":
-        this.browserWindow.controller.mainMenu.click("#sync-setup");
-        break;
-      case "callback":
-        assert.equal(typeof aSpec.callback, "function",
-                     "Callback has been defined");
-        aSpec.callback();
-      default:
-        assert.fail("Unknown method - " + method);
-    }
-  }
-
-  baseInContentPage.BaseInContentPage.prototype.open.call(this, callback);
+AboutAccountsPage.prototype.open = function AboutAccountsPage_open(aCallback) {
+  baseInContentPage.BaseInContentPage.prototype.open.call(this, aCallback);
 
   // Wait for remote frame to load too.
   this.browserWindow.controller.waitForPageLoad(this.remoteFrameWindow.document);
