@@ -5,12 +5,10 @@
 "use strict";
 
 // Include required modules
-var aboutAccounts = require("../ui/about-accounts-page");
 var browser = require("../ui/browser");
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
-  aModule.aboutAccounts = new aboutAccounts.AboutAccountsPage(aModule.browserWindow);
 
   aModule.browserWindow.tabs.closeAllTabs();
 }
@@ -20,7 +18,7 @@ function teardownModule(aModule) {
 }
 
 function testAboutAccounts() {
-  aboutAccounts.open({method: "menu"});
+  var aboutAccounts = browserWindow.openAboutAccountsPage();
   assert.ok(aboutAccounts.isOpen, "Tab with the in-content page has been opened");
 
   // Click on "Get started" button

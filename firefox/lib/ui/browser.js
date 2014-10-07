@@ -9,9 +9,10 @@ Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 // Include required modules
 var tabs = require("../tabs");
 var toolbars = require("../toolbars");
-var utils = require("../../../lib/utils");
 var windows = require("../../../lib/windows");
 
+var aboutAccounts = require("about-accounts-page");
+var aboutPreferences = require("about-preferences-page");
 var baseWindow = require("../../../lib/ui/base-window");
 var pageInfo = require("page-info");
 var placesOrganizer = require("places-organizer");
@@ -120,7 +121,7 @@ BrowserWindow.prototype.open = function BrowserWindow_open(aSpec, aCallback) {
   }
 
   return newWindow;
-}
+};
 
 /**
  * Open the page info window
@@ -166,7 +167,93 @@ BrowserWindow.prototype.openPageInfoWindow = function BW_openPageInfoWindow(aSpe
   }
 
   return pageInfo.open(callback);
-}
+};
+
+/**
+ * Open the about:preferences in-content page
+ *
+ * @params {object} [aSpec={}]
+ *         Information about opening the page
+ * @params {function} [aSpec.method="menu"]
+ *         Method to use when opening the Preferences page
+ *         ("menu"|"shortcut"|"menuPanel"|"callback")
+ * @params {function} [aSpec.callback]
+ *         Callback that opens the page
+ * @params {string} [aSpec.pane="general"]
+ *         Pane to focus after opening the preferences page
+ *
+ * @returns {PreferencesPage} Instance of an PreferencesPage object
+ */
+BrowserWindow.prototype.openAboutPreferencesPage = function BW_openAboutPreferencesPage(aSpec={}) {
+  var method = aSpec.method || "menu";
+
+  var callback = () => {
+    switch (method) {
+      case "callback":
+        assert.equal(typeof aSpec.callback, "function",
+                     "Callback has been defined");
+
+        aSpec.callback();
+        break;
+      case "menu":
+        this.controller.mainMenu.click("#menu_preferences");
+        break;
+      case "shortcut":
+        if (mozmill.isMac) {
+          var cmdKey = this.getEntity( "preferencesCmdMac.commandkey");
+          this.controller.keypress(null, cmdKey, {accelKey: true});
+        }
+        else {
+          // Shortcuts only avaible on Mac OSX for the moment
+          assert.fail("Opening the Preferences via shortcut is only available on OSX");
+        }
+        break;
+      default:
+        assert.fail("Unknown event type - " + method);
+    }
+  }
+
+  var prefsPage = new aboutPreferences.AboutPreferencesPage(this);
+  prefsPage.open(callback);
+
+  return prefsPage;
+};
+
+/**
+ * Open the about:accounts in-content page
+ *
+ * @params {object} [aSpec={}]
+ *         Information about opening the page
+ * @params {string} [aSpec.method]
+ *         Method to use when opening
+ * @params {function} [aSpec.callback]
+ *         Callback that opens the page
+ *
+ * @returns {PreferencesPage} Instance of an PreferencesPage object
+ */
+BrowserWindow.prototype.openAboutAccountsPage = function BW_openAboutAccountsPage(aSpec={}) {
+  var method = aSpec.method || "menu";
+
+  // Define the callback that opens the in-content page
+  var callback = () => {
+    switch (method) {
+      case "callback":
+        assert.equal(typeof aSpec.callback, "function",
+                     "Callback has been defined");
+        aSpec.callback();
+      case "menu":
+        this.controller.mainMenu.click("#sync-setup");
+        break;
+      default:
+        assert.fail("Unknown method - " + method);
+    }
+  };
+
+  var accountsPage = new aboutAccounts.AboutAccountsPage(this);
+  accountsPage.open(callback);
+
+  return accountsPage;
+};
 
 /**
  * Open the places organizer window
@@ -234,7 +321,7 @@ BrowserWindow.prototype.openPlacesOrganizer = function BW_openPlacesOrganizer(aS
   };
 
   return placesOrganizer.open(callback);
-}
+};
 
 /**
  * Open the unknown content type dialog
@@ -244,7 +331,7 @@ BrowserWindow.prototype.openPlacesOrganizer = function BW_openPlacesOrganizer(aS
  */
 BrowserWindow.prototype.openUnknownContentTypeDialog = function BW_openUCTD(aCallback) {
   return unknownContentTypeDialog.open(aCallback);
-}
+};
 
 // Export of methods
 exports.BrowserWindow = BrowserWindow;
