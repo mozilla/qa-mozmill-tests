@@ -6,6 +6,7 @@
 
 // Include the required modules
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -28,7 +29,7 @@ var testAccessPageInfo = function () {
   controller.rightClick(content);
   controller.click(new elementslib.ID(controller.window.document, "context-viewinfo"));
 
-  utils.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
+  windows.handleWindow("type", "Browser:page-info", checkPageInfoWindow);
 }
 
 function checkPageInfoWindow(aController) {

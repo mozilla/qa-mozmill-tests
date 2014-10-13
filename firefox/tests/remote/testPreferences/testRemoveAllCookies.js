@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const TEST_DATA = [
   "http://domain1.mozqa.com/data/firefox/cookies/cookie_single.html",
@@ -70,7 +71,7 @@ var prefDialogCallback = function(aController) {
   var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
   aController.click(showCookies);
 
-  utils.handleWindow("type", "Browser:Cookies", deleteAllCookies);
+  windows.handleWindow("type", "Browser:Cookies", deleteAllCookies);
 
   prefDialog.close(true);
 }

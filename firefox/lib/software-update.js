@@ -14,6 +14,7 @@ var addons = require("../../lib/addons");
 var files = require("../../lib/files");
 var prefs = require("prefs");
 var utils = require("../../lib/utils");
+var windows = require("../../lib/windows");
 
 const TIMEOUT_UPDATE_APPLYING  = 300000;
 const TIMEOUT_UPDATE_CHECK     = 30000;
@@ -418,7 +419,7 @@ SoftwareUpdate.prototype = {
    */
   checkAboutDialog : function SU_checkAboutDialog(aBrowserController) {
     aBrowserController.mainMenu.click("#aboutName");
-    utils.handleWindow("type", "Browser:About", function (aController) {
+    windows.handleWindow("type", "Browser:About", function (aController) {
       var button = new elementslib.Selector(aController.window.document, "#updateButton");
       expect.ok(!button.getNode().hidden,
                 "The update button is always visible even after an update.");
@@ -484,6 +485,7 @@ SoftwareUpdate.prototype = {
             return this.currentPage ===  WIZARD_PAGES.finished ||
                    this.currentPage === WIZARD_PAGES.finishedBackground;
           }, "Final wizard page has been selected.", undefined, undefined, this);
+
         }
         break;
       case WIZARD_PAGES.finished:
@@ -616,7 +618,7 @@ SoftwareUpdate.prototype = {
       // Open the about window and check the update button
       // browserController.mainMenu.click("#aboutName");
 
-      // utils.handleWindow("type", "Browser:About", function(controller) {
+      // windows.handleWindow("type", "Browser:About", function(controller) {
       //  // Bug 599290
       //  // Check for updates has been completely relocated
       //  // into the about window. We can't check the in-about ui yet.
@@ -658,8 +660,8 @@ SoftwareUpdate.prototype = {
    *        Mozmill controller of the browser window
    */
   waitForDialogOpen : function SU_waitForDialogOpen(aBrowserController) {
-    this._controller = utils.handleWindow("type", "Update:Wizard",
-                                          undefined, false);
+    this._controller = windows.handleWindow("type", "Update:Wizard",
+                                            undefined, false);
     this._wizard = this.getElement({type: "wizard"});
 
     assert.waitFor(function () {

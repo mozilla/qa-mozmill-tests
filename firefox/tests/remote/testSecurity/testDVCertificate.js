@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const TEST_DATA = "https://ssl-dv.mozqa.com";
 
@@ -94,7 +95,7 @@ function testLarryBlue() {
   var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
   moreInfoButton.click();
 
-  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  windows.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**

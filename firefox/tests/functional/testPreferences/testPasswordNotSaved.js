@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
@@ -67,7 +68,7 @@ var prefDialogCallback = function(aController) {
   var showPasswords = new elementslib.ID(aController.window.document, "showPasswords");
   aController.waitThenClick(showPasswords);
 
-  utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
+  windows.handleWindow("type", "Toolkit:PasswordManager", checkPasswordsNotSaved);
 
   prefDialog.close(true);
 }
