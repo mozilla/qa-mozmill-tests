@@ -21,6 +21,7 @@ const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.locationBar =  new toolbars.locationBar(aModule.controller);
+  aModule.editBookmarksPanel = new toolbars.editBookmarksPanel(aModule.controller);
 
   places.removeAllHistory();
 
@@ -43,16 +44,17 @@ var testStarInAutocomplete = function() {
   controller.waitForPageLoad();
 
   // Bookmark the test page via bookmarks menu
-  locationBar.waitForNotificationPanel(() => {
+  var bookmarksPanel = editBookmarksPanel.getElement({type: "bookmarkPanel"});
+  toolbars.waitForNotificationPanel(() => {
     controller.mainMenu.click("#menu_bookmarkThisPage");
-  }, {type: "bookmark"});
+  }, {type: "bookmark", panel: bookmarksPanel});
 
-  locationBar.waitForNotificationPanel(() => {
-    var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
+  toolbars.waitForNotificationPanel(() => {
+    var doneButton = editBookmarksPanel.getElement({type: "doneButton"});
     doneButton.click();
-  }, {type: "bookmark", open: false});
+  }, {type: "bookmark", open: false, panel: bookmarksPanel});
 
-  // We must open the blank page so the autocomplete result isn't "Swith to tab"
+  // We must open the blank page so the autocomplete result isn't "Switch to tab"
   controller.open("about:blank");
   controller.waitForPageLoad();
 
@@ -72,8 +74,8 @@ var testStarInAutocomplete = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
+  // Define the path to the second auto-complete result
+  var richlistItem = locationBar.autoCompleteResults.getResult(1);
 
   // For the page title check matched text is underlined
   var underlined = locationBar.autoCompleteResults.getUnderlinedText(richlistItem,

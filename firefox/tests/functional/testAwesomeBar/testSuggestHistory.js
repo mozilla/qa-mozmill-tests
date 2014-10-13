@@ -57,8 +57,8 @@ var testSuggestHistoryAndBookmarks = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  expect.equal(locationBar.autoCompleteResults.visibleResults.length, 1,
-               "Expected to be one visible result in the autocomplete list");
+  expect.equal(locationBar.autoCompleteResults.visibleResults.length, 2,
+               "Expected to be two visible results in the autocomplete list");
 
   // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);

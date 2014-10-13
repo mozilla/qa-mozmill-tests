@@ -70,3 +70,4 @@ function testMultipleEngines() {
   assert.ok(different, "Suggestions " + allSuggestions[0].join(", ") + " from " +
             searchEngines[0] + " and " + searchEngines[1] + " search providers are different");
 }
+

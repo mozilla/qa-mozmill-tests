@@ -54,7 +54,7 @@ function testAccessLocationBarHistory() {
   locationBar.clear();
 
   // Second - Arrow down to open the autocomplete list, displaying
-  // the most recent visit first, then arrow down again to the first entry,
+  // the most recent visit first, then double arrow down again to the second entry,
   // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   assert.waitFor(function () {
@@ -62,10 +62,11 @@ function testAccessLocationBarHistory() {
   }, "Autocomplete results should be visible");
 
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
+  controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   assert.waitFor(function () {
-    return locationBar.autoCompleteResults.selectedIndex === 0;
-  }, "The first item in the drop down list should be selected");
-
+    return locationBar.autoCompleteResults.selectedIndex === 1;
+  }, "The second item in the drop down list should be selected");
+  
   locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();

@@ -20,6 +20,7 @@ function setupModule(aModule) {
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.editBookmarksPanel = new toolbars.editBookmarksPanel(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Open test page and wait until it has been finished loading
@@ -57,14 +58,15 @@ function testAddRemoveBookmarkViaAwesomeBar() {
     enduranceManager.addCheckpoint("Bookmark added via the Awesomebar");
 
     // Trigger editBookmarksPanel and remove bookmark
-    locationBar.waitForNotificationPanel(() => {
+    var bookmarksPanel = editBookmarksPanel.getElement({type: "bookmarkPanel"});
+    toolbars.waitForNotificationPanel(() => {
       starButton.click();
-    }, {type: "bookmark"});
+    }, {type: "bookmark", panel: bookmarksPanel});
 
-    locationBar.waitForNotificationPanel(() => {
-      var removeBookmark = locationBar.editBookmarksPanel.getElement({type: "removeButton"});
+    toolbars.waitForNotificationPanel(() => {
+      var removeBookmark = editBookmarksPanel.getElement({type: "removeButton"});
       removeBookmark.click();
-    }, {type: "bookmark", open: false});
+    }, {type: "bookmark", open: false, panel: bookmarksPanel});
 
     // Verify the bookmark was removed
     assert.ok(!places.bookmarksService.isBookmarked(URI), "The bookmark was removed");
