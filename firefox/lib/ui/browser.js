@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 // Include required modules
 var baseWindow = require("../../../lib/ui/base-window");
+var tabs = require("../tabs");
 var utils = require("../../../lib/utils");
 var windows = require("../../../lib/windows");
 
@@ -23,6 +24,7 @@ function BrowserWindow(aController) {
   this._dtds = ["chrome://branding/locale/brand.dtd",
                 "chrome://browser/locale/browser.dtd",
                 "chrome://browser/locale/aboutPrivateBrowsing.dtd"];
+  this._tabs = null;
 }
 
 BrowserWindow.prototype = new baseWindow.BaseWindow(true);
@@ -30,6 +32,15 @@ BrowserWindow.prototype.constructor = BrowserWindow;
 
 BrowserWindow.prototype.__defineGetter__('private', function() {
   return PrivateBrowsingUtils.isWindowPrivate(this._controller.window)
+});
+
+/**
+ * Get the tabBrowser of the current browser window
+ *
+ * @returns {object} Tab browser of the window
+ */
+BrowserWindow.prototype.__defineGetter__('tabs', function () {
+  return this._tabs = this._tabs || new tabs.tabBrowser(this._controller);
 });
 
 /**
