@@ -13,6 +13,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
+  browserWindow.tabs.closeAllTabs();
   windows.closeAllWindows(aModule.browserWindow);
 }
 
@@ -48,4 +49,14 @@ function testBrowserWindow() {
   // Close the windows
   privateWindow1.close();
   privateWindow2.close();
+
+  // Open some tabs on the window
+  var length = browserWindow.tabs.length;
+
+  browserWindow.tabs.openTab();
+  browserWindow.tabs.openTab();
+
+  expect.equal(browserWindow.tabs.length,
+               length + 2,
+               "Tabs have been successfully open");
 }
