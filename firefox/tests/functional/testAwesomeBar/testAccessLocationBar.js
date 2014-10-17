@@ -57,16 +57,18 @@ function testAccessLocationBarHistory() {
   // the most recent visit first, then double arrow down again to the second entry,
   // in this case mozilla_projects.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  assert.waitFor(function () {
-    return locationBar.autoCompleteResults.isOpened;
-  }, "Autocomplete results should be visible");
+  assert.waitFor(() => locationBar.autoCompleteResults.isOpened,
+                 "Autocomplete results should be visible");
+
+  // Wait for autocomplete list to be populated
+  assert.waitFor(() => (locationBar.autoCompleteResults.length > 1),
+                 "Expected to be more than one result in the autocomplete list");
 
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
-  assert.waitFor(function () {
-    return locationBar.autoCompleteResults.selectedIndex === 1;
-  }, "The second item in the drop down list should be selected");
-  
+  assert.waitFor(() => (locationBar.autoCompleteResults.selectedIndex === 1),
+                 "The second item in the drop down list should be selected");
+
   locationBar.contains("mission");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
