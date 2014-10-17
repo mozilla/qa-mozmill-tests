@@ -71,17 +71,16 @@ function testDisplayCertificateStatus() {
   // Open a website for each certificate type
   TEST_DATA.forEach(aPage => {
     controller.open(aPage.url);
+    controller.waitForPageLoad();
+
+    cert = security.getCertificate(tabBrowser.securityUI);
+    verifyCertificateStatus(aPage);
+
     tabBrowser.openTab("newTabButton");
   });
-
-  verifyCertificates();
 }
 
 function testDisplayCertificateStatusAfterRestart() {
-  verifyCertificates();
-}
-
-function verifyCertificates() {
   tabBrowser.selectedIndex = 0;
 
   // Check that the correct status is shown for each certificate type
@@ -115,13 +114,11 @@ function verifyCertificateStatus(aPage) {
 
   // Check the retrieved SSL certificate
   var moreInfoButton = locationBar.identityPopup.getElement({type: "moreInfoButton"});
-  controller.click(moreInfoButton);
-  try {
-    windows.handleWindow("type", "Browser:page-info", aPage.callback);
-  }
-  finally {
-    doorhanger.keypress('VK_ESCAPE', {});
-  }
+  locationBar.waitForNotificationPanel(() => {
+    moreInfoButton.click();
+  }, {type: "identity", open: false});
+
+  windows.handleWindow("type", "Browser:page-info", aPage.callback);
 }
 
 function checkSecurityTab_EV(aController) {
