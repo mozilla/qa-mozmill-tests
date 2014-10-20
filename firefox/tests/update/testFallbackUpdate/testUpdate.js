@@ -7,15 +7,15 @@
 // Include required modules
 var prefs = require("../../../../lib/prefs");
 var softwareUpdate = require("../../../lib/software-update");
-var utils = require("../../../../lib/utils");
 
+var browser = require("../../../lib/ui/browser");
+var updateWizard = require("../../../lib/ui/update-wizard");
 
 const PREF_UPDATE_LOG = "app.update.log";
 const PREF_UPDATE_URL_OVERRIDE = "app.update.url.override";
 
-
 function setupTest(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
   aModule.update = new softwareUpdate.SoftwareUpdate();
 
   persisted.nextTest = null;
@@ -23,7 +23,7 @@ function setupTest(aModule) {
 
 function teardownTest(aModule) {
   if (persisted.nextTest) {
-    aModule.controller.restartApplication(persisted.nextTest);
+    aModule.browserWindow.controller.restartApplication(persisted.nextTest);
   }
 }
 
@@ -36,7 +36,7 @@ function teardownModule(aModule) {
   prefs.clearUserPref(PREF_UPDATE_LOG);
   prefs.clearUserPref(PREF_UPDATE_URL_OVERRIDE);
 
-  aModule.controller.stopApplication(true);
+  aModule.browserWindow.controller.stopApplication(true);
 }
 
 function testPrepareTest() {
@@ -62,21 +62,18 @@ function testCheckAndDownloadUpdate() {
   // Check if the user has permissions to run the update
   assert.ok(update.allowed, "User has permissions to update the build");
 
-  // Sanity check for the about dialog
-  update.checkAboutDialog(controller);
-
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
+  // Open the about dialog and check for updates
+  var aboutWindow = browserWindow.openAboutWindow();
+  aboutWindow.checkForUpdates();
 
   try {
-    // If an update has been found, download the patch
-    assert.waitFor(() => update.updatesFound, "An update has been found");
-    update.download();
+    assert.waitFor(() => aboutWindow.updatesFound, "An update has been found");
+    aboutWindow.download();
+    aboutWindow.waitForUpdateApplied();
   }
   finally {
     // Store details about the patch
-    persisted.updates[persisted.update.index].patch = update.patchInfo;
+    persisted.updates[persisted.update.index].patch = aboutWindow.patchInfo;
   }
 
   // Set the downloaded update into failed state
@@ -90,31 +87,41 @@ function testUpdateNotAppliedAndDownloadComplete() {
   persisted.nextTest = "testUpdateAppliedNoOtherUpdate";
 
   // The dialog should be open in the background and shows a failure
-  update.waitForDialogOpen(controller);
+  var wizard = updateWizard.handleUpdateWizardDialog();
 
   // Complete updates have to be handled differently
   if (persisted.updates[persisted.update.index].patch.is_complete) {
     // Wait for the error page and close the software update dialog
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errors);
-    update.closeDialog();
+    wizard.waitForWizardPage(updateWizard.WIZARD_PAGES.errors);
+    wizard.close();
 
-    // Open the software update dialog again and wait until the check has been finished
-    update.openDialog(controller);
-    update.waitForCheckFinished();
+    // Open the software update
+    var aboutWindow = browserWindow.openAboutWindow();
+    aboutWindow.checkForUpdates();
 
-    // If an update has been found, download the patch
-    assert.waitFor(() => update.updatesFound, "An update has been found");
-    update.download();
+    try {
+      assert.waitFor(() => aboutWindow.updatesFound, "An update has been found");
+      aboutWindow.download();
+      aboutWindow.waitForUpdateApplied();
+    }
+    finally {
+      // Store details about the patch
+      persisted.updates[persisted.update.index].patch_fallback = aboutWindow.patchInfo;
+    }
   }
   else {
-    update.waitForWizardPage(softwareUpdate.WIZARD_PAGES.errorPatching);
+    try {
+      wizard.waitForWizardPage(updateWizard.WIZARD_PAGES.errorPatching);
 
-    // Start downloading the fallback update
-    update.download();
+      // Start downloading the fallback update
+      wizard.download();
+      wizard.close();
+    }
+    finally {
+      // Store details about the patch
+      persisted.updates[persisted.update.index].patch_fallback = wizard.patchInfo;
+    }
   }
-
-  // Store details about the patch
-  persisted.updates[persisted.update.index].patch_fallback = update.patchInfo;
 }
 
 /**
@@ -125,24 +132,22 @@ function testUpdateAppliedNoOtherUpdate() {
   // Collect some data of the current (updated) build
   persisted.updates[persisted.update.index].build_post = update.buildInfo;
 
-  // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
+  // Open the about dialog and check for updates
+  var aboutWindow = browserWindow.openAboutWindow();
+  aboutWindow.checkForUpdates();
 
   // No further updates should be offered now with the same update type
-  if (update.updatesFound) {
-    update.download(false);
+  if (aboutWindow.updatesFound) {
+    aboutWindow.download(false);
 
     var lastUpdateType = persisted.updates[persisted.update.index].type;
     expect.notEqual(update.updateType, lastUpdateType,
                     "No more update of the same type offered.");
   }
+  aboutWindow.close();
 
   // Check that updates have been applied correctly
   update.assertUpdateApplied(persisted);
-
-  // Sanity check the about dialog
-  update.checkAboutDialog(controller);
 
   // Update was successful
   persisted.updates[persisted.update.index].success = true;
