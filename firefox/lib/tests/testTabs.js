@@ -3,20 +3,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var {assert, expect} = require("../../../lib/assertions");
 var tabs = require("../tabs");
 
-const TEST_DATA = "string";
+const TEST_DATA = {
+  text: "string",
+  fragment: "#sync",
+  url1: "about:preferences",
+  url2: "about:accounts"
+};
 
-var setupModule = function (aModule) {
+function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.tabBrowser = new tabs.tabBrowser(controller);
   aModule.findBar = aModule.tabBrowser.findBar;
 }
 
-var teardownModule = function (aModule) {
+function teardownModule(aModule) {
   aModule.findBar.value = "";
   aModule.findBar.close(true);
+  aModule.tabBrowser.closeAllTabs();
 }
 
 const NODES = [
@@ -51,12 +56,46 @@ var testFindBarAPI = function () {
   assert.equal(findBar.highlight, true);
 
   // Set text and clear it afterwards
-  findBar.value = TEST_DATA;
-  assert.equal(findBar.value, TEST_DATA,
+  findBar.value = TEST_DATA.text;
+  assert.equal(findBar.value, TEST_DATA.text,
                "Input has been correctly set inside the findBar");
   findBar.clear();
   assert.equal(findBar.value, "",
                "Input has been correctly cleared from inside the findBar");
 
   findBar.close();
+}
+
+/**
+ * Test finding tabs by url
+ * Bug 1081014
+ */
+function testTabs() {
+  openTabWithUrl(TEST_DATA.url1 + TEST_DATA.fragment);
+  openTabWithUrl(TEST_DATA.url1);
+  openTabWithUrl(TEST_DATA.url2);
+
+  var tabsWithUrl = tabs.getTabsWithURL(TEST_DATA.url1, true);
+  expect.equal(tabsWithUrl.length, 2, "Expected tabs have been found");
+
+  tabsWithUrl = tabs.getTabsWithURL(TEST_DATA.url1 + TEST_DATA.fragment, true);
+  expect.equal(tabsWithUrl.length, 2, "Expected tabs have been found");
+
+  tabsWithUrl = tabs.getTabsWithURL(TEST_DATA.url1);
+  expect.equal(tabsWithUrl.length, 1, "Expected tabs have been found");
+
+  tabsWithUrl = tabs.getTabsWithURL(TEST_DATA.url2);
+  expect.equal(tabsWithUrl.length, 1, "Expected tabs have been found");
+}
+
+/**
+ * Open a new tab and navigate to a specific page
+ *
+ * @param {string} aUrl
+ *        Url of the page to navigate to
+ */
+function openTabWithUrl(aUrl) {
+  tabBrowser.openTab();
+  controller.open(aUrl);
+  controller.waitForPageLoad();
 }

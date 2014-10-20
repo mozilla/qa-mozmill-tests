@@ -69,10 +69,12 @@ function closeAllTabs(aController)
  *
  * @param {string} aUrl
  *        URL to check for
+ * @param {boolean} [aIgnoreFragment]
+ *        Exclude fragment-portion of the uri when comparing
  *
  * @returns Array of tabs
  */
-function getTabsWithURL(aUrl) {
+function getTabsWithURL(aUrl, aIgnoreFragment) {
   var tabs = [ ];
 
   var uri = utils.createURI(aUrl, null, null);
@@ -90,7 +92,8 @@ function getTabsWithURL(aUrl) {
     var browsers = window.gBrowser.browsers;
     for (var i = 0; i < browsers.length; i++) {
       var browser = browsers[i];
-      if (browser.currentURI.equals(uri)) {
+      var checkMethod = (aIgnoreFragment) ? "equalsExceptRef" : "equals";
+      if (browser.currentURI[checkMethod](uri)) {
         tabs.push({
           controller : new mozmill.controller.MozMillController(window),
           index : i
