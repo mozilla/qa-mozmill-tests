@@ -7,10 +7,12 @@
 Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 // Include required modules
-var baseWindow = require("../../../lib/ui/base-window");
 var tabs = require("../tabs");
 var utils = require("../../../lib/utils");
 var windows = require("../../../lib/windows");
+
+var baseWindow = require("../../../lib/ui/base-window");
+var unknownContentTypeDialog = require("unknown-content-type-dialog");
 
 /**
  * Browser Window class
@@ -104,6 +106,16 @@ BrowserWindow.prototype.open = function BrowserWindow_open(aSpec, aCallback) {
   }
 
   return newWindow;
+}
+
+/**
+ * Open the unknown content type dialog
+ *
+ * @param {string} aURL
+ *         URL of the file which has to be downloaded
+ */
+BrowserWindow.prototype.openUnknownContentTypeDialog = function BW_openUCTD(aCallback) {
+  return unknownContentTypeDialog.open(aCallback);
 }
 
 // Export of methods
