@@ -66,7 +66,7 @@ var testCheckItemHighlight = function() {
   }, "Autocomplete popup has been opened - expected 'true'");
 
   // Result to check for underlined text
-  var richlistItem = locationBar.autoCompleteResults.getResult(1);
+  var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   checkAwesomebarResults(richlistItem, "title");
   checkAwesomebarResults(richlistItem, "url");
