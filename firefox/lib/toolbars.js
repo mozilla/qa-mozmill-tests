@@ -824,6 +824,187 @@ locationBar.prototype = {
 }
 
 /**
+ * Menu Panel class
+ *
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the menu panel is part of
+ */
+function MenuPanel(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "Browser window has been defined");
+
+  this._browserWindow = aBrowserWindow;
+  this._panel = this.getElement({type: "panel"});
+}
+
+MenuPanel.prototype = {
+  /**
+   * Get the Browser Window
+   *
+   * @returns {object} The browser window where the panel lives
+   */
+  get browserWindow() {
+    return this._browserWindow;
+  },
+
+  /**
+   * Check if the Menu Panel is open
+   *
+   * @returns {boolen} True if the panel is open, false otherwise
+   */
+  get isOpen() {
+    return this.panel.getNode().state === "open";
+  },
+
+  /**
+   * Get the panel
+   *
+   * @returns {MozMillElement} The menu panel
+   */
+  get panel() {
+    return this._panel;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @parma {string} aSpec.type
+   *        Identifier of the element
+   * @param {string} [aSpec.parent=document]
+   *        Parent of the to find element
+   *
+   * @returns {ElemBase} Element which has been found
+   */
+  getElement : function MenuPanel_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+   /**
+   * Retrieve list of UI elements based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @param {string} aSpec.type
+   *        Identifier of the element
+   * @param {string} [aSpec.parent=document]
+   *        Parent of the to find element
+   *
+   * @returns {ElemBase[]} Elements which have been found
+   */
+  getElements : function MenuPanel_getElements(aSpec) {
+    var spec = aSpec || { };
+
+    var root = spec.parent ? spec.parent.getNode()
+                           : this._browserWindow.controller.window.document;
+    var elems = [];
+
+    switch (spec.type) {
+      case "openButton":
+        elems = [findElement.ID(root, "PanelUI-menu-button")];
+        break;
+      case "panel":
+        elems = [findElement.ID(root, "PanelUI-popup")];
+        break;
+      case "panel_addons":
+        elems = [findElement.ID(root, "add-ons-button")];
+        break;
+      case "panel_fxaStatus":
+        elems = [findElement.ID(root, "PanelUI-fxa-status")];
+        break;
+      case "panel_newWindow":
+        elems = [findElement.ID(root, "new-window-button")];
+        break;
+      case "panel_preferences":
+        elems = [findElement.ID(root, "preferences-button")];
+        break;
+      case "panel_quitFirefox":
+        elems = [findElement.ID(root, "PanelUI-quit")];
+        break;
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return elems;
+  },
+
+  /**
+   * Close the panel
+   *
+   * @params {object} [aSpec={}]
+   *         Information on how to close the panel
+   * @params {string} [aSpec.method="shortcut"]
+   *         Method to use to close the menu panel ("callback"|"shortcut")
+   * @params {function} [aSpec.callback]
+   *         Callback that triggeres the menu panel to close
+   * @params {boolean} [aSpec.force=false]
+   *         Force closing the Menu Panel
+   *
+   */
+  close : function MenuPanel_close(aSpec={}) {
+    var method = aSpec.method || "shortcut";
+    var panel = this.panel;
+
+    if (this.panel.getNode().state === "closed" && aSpec.force) {
+      return;
+    }
+
+    waitForNotificationPanel(() => {
+      if (aSpec.force && panel.getNode()) {
+        panel.getNode().hidePopup();
+        return;
+      }
+
+      switch (method) {
+        case "callback":
+          assert.equal(aSpec.callback, "function",
+                       "Callback has been defined");
+          aSpec.callback();
+          break;
+        case "shortcut":
+          panel.keypress("VK_ESCAPE", {});
+          break;
+        default:
+          assert.fail("Unknown method to open the menu panel - " + method);
+      }
+    }, {panel: panel, open: false});
+  },
+
+  /**
+   * Open the panel
+   *
+   * @params {object} [aSpec={}]
+   *         Information on how to open the panel
+   * @params {string} [aSpec.method="button"]
+   *         Method to use to open the menu panel ("button"|"callback")
+   * @params {function} [aSpec.callback]
+   *         Callback that triggeres the menu panel to open
+   */
+  open : function MenuPanel_open(aSpec={}) {
+    var method = aSpec.method || "button";
+    var panel = this.panel;
+
+    waitForNotificationPanel(() => {
+      switch (method) {
+        case "button":
+          this.getElement({type: "openButton"}).click();
+          break;
+        case "callback":
+          assert.equal(aSpec.callback, "function",
+                       "Callback has been defined");
+          aSpec.callback();
+          break;
+        default:
+          assert.fail("Unknown method to open the menu panel - " + method);
+      }
+    }, {panel: this.panel, open: true});
+  }
+}
+
+/**
  * Toogle bookmarks toolbar
  *
  * @param {MozmillController} aController
@@ -909,9 +1090,10 @@ function waitForNotificationPanel(aCallback, aSpec) {
 }
 
 // Export of classes
-exports.locationBar = locationBar;
-exports.editBookmarksPanel = editBookmarksPanel;
 exports.autoCompleteResults = autoCompleteResults;
+exports.editBookmarksPanel = editBookmarksPanel;
+exports.locationBar = locationBar;
+exports.MenuPanel = MenuPanel;
 
 // Export of functions
 exports.toggleBookmarksToolbar = toggleBookmarksToolbar;
