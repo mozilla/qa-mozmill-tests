@@ -50,6 +50,11 @@ function testCheckFlashCookie() {
   pbWindow.controller.open(TEST_DATA);
   pbWindow.controller.waitForPageLoad();
 
+  // Wait for the getCookie() function to type undefined in the #result_get field
+  var resultFieldPB = new elementslib.ID(pbWindow.controller.tabs.activeTab, "result_get");
+  assert.waitFor(() => resultFieldPB.getNode().value === "undefined",
+                 "Cookie value is undefined in private mode");
+
   // Enter an unique value for the cookie
   var cookieField = new elementslib.ID(pbWindow.controller.tabs.activeTab, "cookieValue");
   pbWindow.controller.type(cookieField, COOKIE_VALUE);
@@ -59,7 +64,6 @@ function testCheckFlashCookie() {
   controller.click(setCookie);
 
   // Verify the cookie value was set properly
-  var resultFieldPB = new elementslib.ID(pbWindow.controller.tabs.activeTab, "result_get");
   assert.equal(resultFieldPB.getNode().value, COOKIE_VALUE,
                "Cookie value is displayed in private mode");
 
