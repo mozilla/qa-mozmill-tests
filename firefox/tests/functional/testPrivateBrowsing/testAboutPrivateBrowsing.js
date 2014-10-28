@@ -37,8 +37,7 @@ function testCheckAboutPrivateBrowsing() {
   controller.waitForPageLoad();
 
   // Check descriptions on the about:privatebrowsing page
-  var issueDesc = utils.getEntity(browserWindow.dtds,
-                                  "aboutPrivateBrowsing.subtitle.normal");
+  var issueDesc = browserWindow.getEntity("aboutPrivateBrowsing.subtitle.normal");
   var statusText = findElement.Selector(controller.tabs.activeTab, "p.showNormal");
   controller.waitForElement(statusText);
 
