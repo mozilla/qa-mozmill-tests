@@ -28,8 +28,8 @@ function testOpenClosePBKeyboardShortcut() {
   expect.equal(pbWindow.controller.tabs.length, 1, "Only one tab is open");
 
   // Check descriptions on the about:privatebrowsing page
-  var description = utils.getEntity(pbWindow.dtds, "aboutPrivateBrowsing.description");
-  var learnMore = utils.getEntity(pbWindow.dtds, "aboutPrivateBrowsing.moreInfo");
+  var description = pbWindow.getEntity("aboutPrivateBrowsing.description");
+  var learnMore = pbWindow.getEntity("aboutPrivateBrowsing.moreInfo");
   var longDescElem = findElement.Selector(pbWindow.controller.tabs.activeTab, "p.showNormal + p");
   var moreInfoElem = findElement.Selector(pbWindow.controller.tabs.activeTab, "div.showPrivate p:first-child");
 

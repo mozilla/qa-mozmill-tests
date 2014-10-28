@@ -68,12 +68,12 @@ BrowserWindow.prototype.open = function BrowserWindow_open(aSpec, aCallback) {
 
   if (spec.private) {
     menuItem = "#menu_newPrivateWindow";
-    cmdKey = utils.getEntity(this.dtds, "privateBrowsingCmd.commandkey");
+    cmdKey = this.getEntity("privateBrowsingCmd.commandkey");
     shiftKey = true;
   }
   else {
     menuItem = "#menu_newNavigator";
-    cmdKey = utils.getEntity(this.dtds, "newNavigatorCmd.key");
+    cmdKey = this.getEntity("newNavigatorCmd.key");
   }
 
   var controller = windows.waitForWindowState(() => {
