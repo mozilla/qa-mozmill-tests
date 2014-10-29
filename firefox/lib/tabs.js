@@ -476,20 +476,7 @@ tabBrowser.prototype = {
    *        Index of the tab which should be selected
    */
   set selectedIndex(index) {
-    var tab = this.getTab(index);
-    assert.waitFor(function() {
-      return !tab.getNode().hasAttribute("busy");
-    }, "The tab has loaded");
-
-    // Issue a mousemove event to allow the tab activation click event to propagate
-    // Tab activation is disabled if the mouse is hovering over the close button
-    // See: http://hg.mozilla.org/mozilla-central/file/e5b09585215f/browser/base/content/tabbrowser.xml#l4802
-    tab.mouseEvent(null, null, {type: "mousemove"});
-    this._controller.click(tab);
-    assert.waitFor(function () {
-      return this.selectedIndex === index;
-    }, "The tab with index '" + index + "' has been selected", undefined,
-     undefined, this);
+    this.selectTab({index: aIndex});
   },
 
   /**
@@ -862,6 +849,68 @@ tabBrowser.prototype = {
   },
 
   /**
+   * Select a tab using different methods
+   *
+   * @param {object} [aSpec]
+   *        Information about how to open the tab
+   * @param {function} [aSpec.callback]
+   *        Callback used for opening the tab
+   * @param {number} [aSpec.index]
+   *        Index of the tab to select
+   * @param {string} [aSpec.method="click"]
+   *        Method used for opening the tab ("click"|"callback")
+   * @param {MozElement} [aSpec.tab]
+   *        Tab to select
+   */
+  selectTab: function tabBrowser_selectTab(aSpec={}) {
+    var method = aSpec.method || "click";
+    var tabSelected = false;
+
+    assert.ok(aSpec.tab || (typeof aSpec.index === "number") || aSpec.callback,
+              "Either index, tab or callback should be specified");
+
+    if (!aSpec.callback) {
+      var tab = (typeof aSpec.index === "number") ? this.getTab(aSpec.index)
+                                                  : aSpec.tab;
+
+      // Requested tab is already selected
+      if (tab.getNode().selected) {
+        return;
+      }
+    }
+
+    function checkTabSelected() { tabSelected = true; }
+    this.controller.window.addEventListener("TabSelect", checkTabSelected);
+
+    try {
+      switch (method) {
+        case "click":
+          /** When the tab opens, the close button animates.
+           * If it animates under the real mouse, it will set
+           * the mOverCloseButton flag to true.
+           * Even with a click in the middle of the tab, the flag doesn't get set
+           * to false without a mousemove event and so the tab isn't selected.
+           */
+          tab.mouseEvent(undefined, undefined, {type: "mousemove"});
+          tab.click();
+          break;
+        case "callback":
+          assert.equal(typeof aSpec.callback, "function",
+                       "Callback has been defined!");
+          aSpec.callback();
+          break;
+        default:
+          assert.fail("Unknown method - " + aSpec.method);
+      }
+      assert.waitFor(() => tabSelected,
+                     "Tab has been selected");
+    }
+    finally {
+      this.controller.window.removeEventListener("TabSelect", checkTabSelected);
+    }
+  },
+
+  /**
    * Wait for a tab to open
    *
    * @param {function} aCallback
@@ -898,7 +947,6 @@ tabBrowser.prototype = {
         this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
       }
     }
-
   },
 
   /**
