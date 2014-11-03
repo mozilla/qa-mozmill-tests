@@ -18,6 +18,7 @@ var widgets = require("../../lib/ui/widgets");
 var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"]
                              .getService(Ci.nsIAutoCompleteController);
 
+const TIMEOUT_NEW_SEARCH_BEGIN = 1000;
 const TIMEOUT_REQUEST_SUGGESTIONS = 5000;
 const TIMEOUT_INSTALL_DIALOG = 30000;
 
@@ -734,17 +735,28 @@ searchBar.prototype = {
 
     // Bug 542990
     // Bug 392633
-    // Type search term and wait for the popup or the timeout
-    try {
-      this.type(aSearchTerm);
-      assert.waitFor(function () {
-        return popup.getNode().state === 'open' &&
-               autoCompleteController.searchStatus ===
-               autoCompleteController.STATUS_COMPLETE_MATCH;
-      }, "", TIMEOUT_REQUEST_SUGGESTIONS);
-    }
-    catch (e) {
-      // We are not interested in handling the timeout for now
+    // Typing too fast can cause several issue like the suggestions not to appear.
+    // Lets type the letters one by one and wait for the popup or the timeout
+    for (var i = 0; i < aSearchTerm.length; i++) {
+      try {
+        this.type(aSearchTerm[i]);
+
+        //Wait a second for a new search to begin
+        assert.waitFor(() => {
+          return autoCompleteController.searchStatus !==
+                 autoCompleteController.STATUS_COMPLETE_MATCH;
+        }, "", TIMEOUT_NEW_SEARCH_BEGIN);
+
+        // Wait for the search to complete
+        assert.waitFor(() => {
+          return popup.getNode().state === 'open' &&
+                 autoCompleteController.searchStatus ===
+                 autoCompleteController.STATUS_COMPLETE_MATCH;
+        }, "", TIMEOUT_REQUEST_SUGGESTIONS);
+      }
+      catch (e) {
+        // We are not interested in handling the timeout for now
+      }
     }
 
     // Get suggestions in an array if the popup with suggestions is opened
