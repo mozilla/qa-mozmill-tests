@@ -128,7 +128,7 @@ function testUndoUninstall() {
 
   // Check that addon is still installed
   assert.ok(addonsManager.isAddonInstalled({addon: addon}),
-            "The addon is uninstalled");
+            "The addon is installed");
 
   // Check if the addon is enabled
   assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
