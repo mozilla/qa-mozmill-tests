@@ -381,31 +381,39 @@ SoftwareUpdate.prototype = {
     // Get the information from the last update
     var info = aUpdateData.updates[aUpdateData.update.index];
 
+    // Set a variable for the outcome of the expect calls,
+    // in order to assert it in the end
+    var valid = 1;
+
     // The upgraded version should be identical with the version given by
     // the update and we shouldn't have run a downgrade
     var check = Services.vc.compare(info.build_post.version, info.build_pre.version);
-    expect.ok(check >= 0, "The version of the upgraded build is higher or equal");
+    valid &= expect.ok(check >= 0,
+                       "The version of the upgraded build is higher or equal");
+
 
     // If there was an update, the post build id should be identical with the patch
     if (info.patch.buildid) {
-      expect.equal(info.build_post.buildid, info.patch.buildid,
-                   "The post buildid is equal to the buildid of the update");
+      valid &= expect.equal(info.build_post.buildid, info.patch.buildid,
+                            "The post buildid is equal to the buildid of the update");
     }
 
     // If a target build id has been given, check if it matches the updated build
     info.target_buildid = aUpdateData.update.targetBuildID;
     if (info.target_buildid) {
-      expect.equal(info.build_post.buildid, info.target_buildid,
-                   "Post buildid matches target buildid of the update patch");
+      valid &= expect.equal(info.build_post.buildid, info.target_buildid,
+                            "Post buildid matches target buildid of the update patch");
     }
 
     // An upgrade should not change the builds locale
-    expect.equal(info.build_post.locale, info.build_pre.locale,
-                 "The locale of the updated build has not been changed");
+    valid &= expect.equal(info.build_post.locale, info.build_pre.locale,
+                          "The locale of the updated build has not been changed");
 
     // Check that no application-wide add-ons have been disabled
-    expect.equal(info.build_post.disabled_addons, info.build_pre.disabled_addons,
-                 "No application-wide add-ons have been disabled by the update");
+    valid &= expect.equal(info.build_post.disabled_addons, info.build_pre.disabled_addons,
+                          "No application-wide add-ons have been disabled by the update");
+
+    assert.equal(valid, 1, "Build has been upgraded successfully");
   },
 
   /**
