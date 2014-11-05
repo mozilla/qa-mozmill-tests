@@ -73,8 +73,12 @@ function testInstallTheme() {
     category: addonsManager.getCategoryById({id: "theme"})
   });
 
-  var plainTheme = addonsManager.getAddons({attribute: "value",
-                                            value: persisted.theme[0].id})[0];
+  var plainTheme;
+  assert.waitFor(() => {
+    plainTheme = addonsManager.getAddons({attribute: "value",
+                                          value: persisted.theme[0].id})[0];
+    return !!plainTheme;
+  }, "New installed theme has been found.");
 
   // Verify that plain-theme is marked to be enabled
   assert.equal(plainTheme.getNode().getAttribute("pending"), "enable");
