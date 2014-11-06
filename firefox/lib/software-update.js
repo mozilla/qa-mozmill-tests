@@ -303,19 +303,18 @@ SoftwareUpdate.prototype = {
    * Returns information of the active update in the queue.
    */
   get patchInfo() {
-    var info = { }
+    var info = {
+      channel : this.updateChannel.channel
+    };
 
     if (this.activeUpdate) {
-      info = {
-        buildid : this.activeUpdate.buildID,
-        channel : this.updateChannel.channel,
-        is_complete : this.isCompleteUpdate,
-        size : this.activeUpdate.selectedPatch.size,
-        type : this.activeUpdate.type,
-        url_mirror : this.activeUpdate.selectedPatch.finalURL || "n/a",
-        download_duration : this._downloadDuration,
-        version : this.activeUpdate.version
-      };
+      info.buildid = this.activeUpdate.buildID;
+      info.is_complete = this.isCompleteUpdate;
+      info.size = this.activeUpdate.selectedPatch.size;
+      info.type = this.activeUpdate.type;
+      info.url_mirror = this.activeUpdate.selectedPatch.finalURL || "n/a";
+      info.download_duration = this._downloadDuration;
+      info.version = this.activeUpdate.version;
     }
 
     return info;
