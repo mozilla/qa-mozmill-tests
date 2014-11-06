@@ -70,11 +70,15 @@ function testCheckAndDownloadUpdate() {
   update.openDialog(controller);
   update.waitForCheckFinished();
 
-  // If an update has been found, download the patch
-  assert.waitFor(() => update.updatesFound, "An update has been found");
-  update.download();
-
-  persisted.updates[persisted.update.index].patch = update.patchInfo;
+  try {
+    // If an update has been found, download the patch
+    assert.waitFor(() => update.updatesFound, "An update has been found");
+    update.download();
+  }
+  finally {
+    // Store details about the patch
+    persisted.updates[persisted.update.index].patch = update.patchInfo;
+  }
 
   // Set the downloaded update into failed state
   update.forceFallback();
