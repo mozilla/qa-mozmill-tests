@@ -5,16 +5,18 @@
 "use strict";
 
 // Include required modules
-var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
-const TEST_DATA = BASE_URL + "geolocation/position.html";
+const TEST_DATA = {
+  "url" : BASE_URL + "geolocation/position.html",
+  "location" : BASE_URL + "geolocation/locations/mozilla_san_francisco.json"
+}
 
-const PREF_WIFI_LOGGING = "geo.wifi.logging.enabled";
+const PREF_GEO_WIFI_URI = "geo.wifi.uri";
 
 const TIMEOUT_POSITION = 30000;
 
@@ -23,13 +25,13 @@ function setupModule(aModule) {
   aModule.locationBar = new toolbars.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  prefs.preferences.setPref(PREF_WIFI_LOGGING, true);
+  prefs.preferences.setPref(PREF_GEO_WIFI_URI, TEST_DATA["location"]);
 
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_WIFI_LOGGING);
+  prefs.preferences.clearUserPref(PREF_GEO_WIFI_URI);
 
   aModule.tabBrowser.closeAllTabs();
 }
@@ -40,7 +42,7 @@ function teardownModule(aModule) {
 function testVerifyDisplayGeolocationNotification() {
   // Wait for the notification to be opened and check its icon in the location bar
   locationBar.waitForNotificationPanel(() => {
-    controller.open(TEST_DATA);
+    controller.open(TEST_DATA["url"]);
     controller.waitForPageLoad();
   }, {type: "notification"});
 
