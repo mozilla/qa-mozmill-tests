@@ -12,8 +12,8 @@ var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
-  "geoRequest_url1" : BASE_URL + "geolocation/position.html",
-  "geoRequest_url2" : "http://mozqa.com/data/firefox/geolocation/position.html",
+  "url1" : BASE_URL + "geolocation/position.html",
+  "url2" : "http://mozqa.com/data/firefox/geolocation/position.html",
   "locations" : BASE_URL + "geolocation/locations/mozilla_san_francisco.json"
 };
 
@@ -70,7 +70,7 @@ function testAlwaysShareLocation() {
   locationBar.waitForNotificationPanel(aPanel => {
     targetPanel = aPanel;
 
-    controller.open(TEST_DATA["geoRequest_url1"]);
+    controller.open(TEST_DATA["url1"]);
     controller.waitForPageLoad();
   }, {type: "notification"});
 
@@ -107,7 +107,7 @@ function testAlwaysShareLocation() {
   locationBar.waitForNotificationPanel(aPanel => {
     targetPanel = aPanel;
 
-    controller.open(TEST_DATA["geoRequest_url2"]);
+    controller.open(TEST_DATA["url2"]);
     controller.waitForPageLoad();
   }, {type: "notification"});
 
@@ -123,7 +123,7 @@ function testAlwaysShareLocationPersisted() {
     locationBar.waitForNotificationPanel(aPanel => {
       targetPanel = aPanel;
 
-      controller.open(TEST_DATA["geoRequest_url1"]);
+      controller.open(TEST_DATA["url1"]);
       controller.waitForPageLoad();
     }, {type: "notification"});
   }, errors.TimeoutError, "'Notification Popup' doesn't exist");
