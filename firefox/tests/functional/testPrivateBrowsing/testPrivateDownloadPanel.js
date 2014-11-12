@@ -10,12 +10,12 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert } = require("../../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
 var privateBrowsing = require("../../../lib/ui/private-browsing");
-var utils = require("../../../../lib/utils");
+var files = require("../../../../lib/files");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "downloading/";
 
-const DOWNLOAD_LOCATION = utils.getProfileDownloadLocation();
+const DOWNLOAD_LOCATION = files.getProfileResource("downloads").path;
 const DOWNLOADS = {
   normal: [
     "unknown_type.mtdl",
