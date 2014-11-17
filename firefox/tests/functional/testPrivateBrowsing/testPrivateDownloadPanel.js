@@ -9,7 +9,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include the required modules
 var { assert } = require("../../../../lib/assertions");
 var downloads = require("../../../lib/downloads");
-var files = require("../../../../lib/files");
+var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
 var browser = require("../../../lib/ui/browser");
@@ -17,7 +17,7 @@ var browser = require("../../../lib/ui/browser");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "downloading/";
 
-const DOWNLOAD_LOCATION = files.getProfileResource("downloads").path;
+const DOWNLOAD_LOCATION = utils.getProfileDownloadLocation();
 const DOWNLOADS = {
   normal: [
     "unknown_type.mtdl",
