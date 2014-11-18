@@ -10,7 +10,7 @@ var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
-const TEST_DATA = "https://mozqa.com";
+const TEST_DATA = "https://tlsv1-0.mozqa.com";
 
 const PREF_TLS_MIN = "security.tls.version.min";
 const PREF_TLS_MAX = "security.tls.version.max";
