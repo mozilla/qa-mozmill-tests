@@ -13,6 +13,7 @@ var utils = require("../../../lib/utils");
 var windows = require("../../../lib/windows");
 
 var baseWindow = require("../../../lib/ui/base-window");
+var pageInfo = require("page-info");
 var placesOrganizer = require("places-organizer");
 var unknownContentTypeDialog = require("unknown-content-type-dialog");
 
@@ -36,7 +37,7 @@ function BrowserWindow(aController) {
 BrowserWindow.prototype = new baseWindow.BaseWindow(true);
 BrowserWindow.prototype.constructor = BrowserWindow;
 
-BrowserWindow.prototype.__defineGetter__('private', function() {
+BrowserWindow.prototype.__defineGetter__('private', function () {
   return PrivateBrowsingUtils.isWindowPrivate(this._controller.window)
 });
 
@@ -119,6 +120,52 @@ BrowserWindow.prototype.open = function BrowserWindow_open(aSpec, aCallback) {
   }
 
   return newWindow;
+}
+
+/**
+ * Open the page info window
+ *
+ * @param {object} [aSpec]
+ *        Information for opening the window
+ * @param {function} [aSpec.callback]
+ *        Callback function that triggers the opening
+ * @param {string} [aSpec.method="menu"]
+ *        Method to use ("callback", "contextMenu", "menu", "shortcut")
+ * @param {ElemBase} [aSpec.target]
+ *        Element to use as a target when using the contextMenu method
+ *
+ * @returns {PageInfoWindow} New instance of the PageInfoWindow class
+ */
+BrowserWindow.prototype.openPageInfoWindow = function BW_openPageInfoWindow(aSpec={}) {
+  var method = aSpec.method || "menu";
+
+  var callback = () => {
+    switch (method) {
+      case "callback":
+        assert.equal(typeof aSpec.callback, "function",
+                     "Callback has been defined");
+        aSpec.callback();
+        break;
+      case "contextMenu":
+        assert.ok(aSpec.target, "Target element has been defined");
+
+        var contextMenu = this._controller.getMenu("#contentAreaContextMenu");
+        contextMenu.select("#context-viewinfo", aSpec.target);
+        contextMenu.close();
+        break;
+      case "menu":
+        this._controller.mainMenu.click("#menu_pageInfo");
+        break;
+      case "shortcut":
+        var cmdKey = this.getEntity("pageInfoCmd.commandkey");
+        this._controller.keypress(null, cmdKey, {accelKey: true});
+        break;
+      default:
+        assert.fail("Unknown method to open the page info window - " + method);
+    }
+  }
+
+  return pageInfo.open(callback);
 }
 
 /**
