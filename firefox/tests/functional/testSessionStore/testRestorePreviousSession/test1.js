@@ -18,6 +18,8 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
+
+  persisted.testData = TEST_DATA;
 }
 
 function teardownModule(aModule) {

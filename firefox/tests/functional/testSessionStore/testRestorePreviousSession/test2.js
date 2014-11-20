@@ -8,19 +8,14 @@
 var tabs = require("../../../../lib/tabs");
 var utils = require("../../../../../lib/utils");
 
-const BASE_URL = collector.addHttpResource("../../../../../data/");
-const TEST_DATA = [
-  BASE_URL + "layout/mozilla.html",
-  BASE_URL + "layout/mozilla_projects.html",
-  BASE_URL + "layout/mozilla_organizations.html",
-];
-
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 }
 
 function teardownModule(aModule) {
+  delete persisted.testData;
+
   aModule.controller.stopApplication(true);
 }
 
@@ -32,11 +27,11 @@ function testRestorePreviousSession() {
   controller.mainMenu.click("#historyRestoreLastSession");
 
   // Check if the number of correct tabs have been opened
-  assert.waitFor(() => (tabBrowser.length === TEST_DATA.length),
-                 "There are " + TEST_DATA.length + " opened tabs");
+  assert.waitFor(() => (tabBrowser.length === persisted.testData.length),
+                 "There are " + persisted.testData.length + " opened tabs");
 
   // Check if correct tabs have been opened
-  TEST_DATA.forEach((aURL, aIndex) => {
+  persisted.testData.forEach((aURL, aIndex) => {
     // Wait for the expected tab to load
     let tab;
     assert.waitFor(() => !!(tab = tabs.getTabsWithURL(aURL)[0]),
