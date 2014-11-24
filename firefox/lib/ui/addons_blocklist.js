@@ -5,6 +5,7 @@
 // Include required modules
 var domUtils = require("../../../lib/dom-utils");
 var utils = require("../../../lib/utils");
+var windows = require("../../../lib/windows");
 
 /**
  * @class Class to handle the Blocklist Window
@@ -29,7 +30,7 @@ BlocklistWindow.prototype = {
   open : function BlocklistWindow_open() {
     utils.updateBlocklist(false);
 
-    this._controller = utils.handleWindow("type", "Addons:Blocklist", undefined, false);
+    this._controller = windows.handleWindow("type", "Addons:Blocklist", undefined, false);
   },
 
   ///////////////////////////////

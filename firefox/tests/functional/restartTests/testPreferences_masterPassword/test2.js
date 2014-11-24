@@ -9,6 +9,7 @@ var { expect } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../../lib/utils");
+var windows = require("../../../../../lib/windows");
 
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
@@ -58,7 +59,7 @@ var prefDialogInvokeMasterPasswordCallback = function(aController) {
   md.waitForDialog();
 
   // Check if the password manager has been opened
-  utils.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
+  windows.handleWindow("type", "Toolkit:PasswordManager", checkPasswordManager);
 
   prefDialog.close(true);
 }

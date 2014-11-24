@@ -7,7 +7,7 @@
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
-var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
 
@@ -50,7 +50,7 @@ function testSecurityInfoViaMoreInformation() {
   var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
   moreInfoButton.click();
 
-  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  windows.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**
@@ -74,7 +74,7 @@ function checkSecurityTab(aController) {
                                            "security-identity-owner-value");
   expect.equal(webIDOwnerLabel.getNode().value, cert.organization,
                "Certificate Owner matches Website Owner");
-  
+
   // Check the Verifier label against the Cert Issuer
   var webIDVerifierLabel = new elementslib.ID(aController.window.document,
                                               "security-identity-verifier-value");

@@ -35,10 +35,8 @@ var setupModule = function (aModule) {
  */
 var testBreakpadInstalled = function () {
   // Check that the crash reporter executable is present
-  var execFile = Cc["@mozilla.org/file/local;1"]
-                 .createInstance(Ci.nsILocalFile);
-  execFile.initWithPath(Services.dirsvc.get("GreD", Ci.nsILocalFile).path);
-  execFile.append(FILE_NAMES[mozmill.platform]);
+  let execFile = Services.dirsvc.get("XREExeF", Ci.nsIFile);
+  execFile.leafName = FILE_NAMES[mozmill.platform];
 
   expect.ok(execFile.exists(), "The crash reporter executable is present");
 

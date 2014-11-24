@@ -8,8 +8,10 @@
 var { assert } = require("../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
 var places = require("../../../../lib/places");
-var privateBrowsing = require("../../../lib/ui/private-browsing");
 var tabs = require("../../../lib/tabs");
+var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = "http://mozqa.com/data/firefox/plugins/flash/cookies/" +
                   "flash_cookie.html";
@@ -18,7 +20,7 @@ const COOKIE_VALUE = "cookieValue";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.pbWindow = new privateBrowsing.PrivateBrowsingWindow();
+  aModule.browserWindow = new browser.BrowserWindow();
 
   // Skip test if we don't have Flash plugin enabled
   var isFlashActive = addons.getInstalledAddons(function (aAddon) {
@@ -36,7 +38,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  aModule.pbWindow.close();
+  windows.closeAllWindows(aModule.browserWindow);
   places.clearPluginData();
 }
 
@@ -45,7 +47,7 @@ function teardownModule(aModule) {
  * if it was saved in Private Brosing mode
  */
 function testCheckFlashCookie() {
-  pbWindow.open(controller);
+  var pbWindow = browserWindow.open({private: true});
 
   pbWindow.controller.open(TEST_DATA);
   pbWindow.controller.waitForPageLoad();

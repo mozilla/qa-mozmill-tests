@@ -8,6 +8,7 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -55,7 +56,7 @@ function testLarryGrey() {
   var moreInfoButton = identityPopup.getElement({type: "moreInfoButton"});
   moreInfoButton.click();
 
-  utils.handleWindow("type", "Browser:page-info", checkSecurityTab);
+  windows.handleWindow("type", "Browser:page-info", checkSecurityTab);
 }
 
 /**

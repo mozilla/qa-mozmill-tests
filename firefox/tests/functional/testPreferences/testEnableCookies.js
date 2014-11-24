@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../../lib/assertions");
 var prefs = require("../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+var windows = require("../../../../lib/windows");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
@@ -97,7 +98,7 @@ var prefCheckEnableDialogCallback = function(aController) {
   var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
   aController.click(showCookies);
 
-  utils.handleWindow("type", "Browser:Cookies", checkSavedCookies);
+  windows.handleWindow("type", "Browser:Cookies", checkSavedCookies);
 
   prefDialog.close(true);
 }

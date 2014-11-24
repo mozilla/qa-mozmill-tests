@@ -534,7 +534,7 @@ searchBar.prototype = {
 
     this.enginesDropDownOpen = state;
 
-    return engine.getNode().id;
+    return engine.getNode().label;
   },
 
   /**
@@ -548,7 +548,7 @@ searchBar.prototype = {
       // Open drop down and click on search engine
       this.enginesDropDownOpen = true;
 
-      var engine = this.getElement({type: "engine", subtype: "id", value: aName});
+      var engine = this.getElement({type: "engine", subtype: "label", value: aName});
       var engineChanged = false;
       var observer = {
         observe: (aSubject, aTopic, aData) => {
