@@ -7,7 +7,8 @@
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var toolbars = require("../../../lib/toolbars");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource('../../../../data/');
 const TEST_DATA = [
@@ -18,8 +19,9 @@ const TEST_DATA = [
 ];
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   // Clear complete history so we don't get interference from
   // previous entries

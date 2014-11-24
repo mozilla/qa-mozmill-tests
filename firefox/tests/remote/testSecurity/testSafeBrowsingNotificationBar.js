@@ -7,8 +7,9 @@
 // Include necessary modules
 var { assert } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/tabs");
-var toolbar = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = [
   // Phishing URL object
@@ -26,8 +27,10 @@ const TEST_DATA = [
 ];
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbar.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.tabBrowser.closeAllTabs();

@@ -7,8 +7,9 @@
 // Include required modules
 var prefs = require("../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "geolocation/position.html";
@@ -26,8 +27,10 @@ function setupModule(aModule) {
     teardownModule.__force_skip__ = message;
   }
 
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   prefs.preferences.setPref(PREF_WIFI_LOGGING, true);

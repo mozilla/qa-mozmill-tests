@@ -9,8 +9,9 @@ var { assert } = require("../../../../lib/assertions");
 var endurance = require("../../../../lib/endurance");
 var places = require("../../../../lib/places");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
@@ -18,20 +19,21 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
 const BOOKMARK_FOLDER_NAME = "testFolder";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.navBar = aModule.browserWindow.navBar;
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.tabBrowser.closeAllTabs();
 
   // Bookmark some pages in a custom folder
-  setupBookmarks(aModule.controller);
+  setupBookmarks();
 }
 
 function teardownModule(aModule) {
-  toolbars.toggleBookmarksToolbar(aModule.controller, false);
+  aModule.navBar.toggleBookmarksToolbar(false);
   aModule.tabBrowser.closeAllTabs();
   places.restoreDefaultBookmarks();
 }
@@ -74,8 +76,8 @@ function testOpenAndCloseAllBookmarks() {
 /*
  * Insert bookmarks in a custom folder under Bookmarks Toolbar
  */
-function setupBookmarks(aController) {
-  toolbars.toggleBookmarksToolbar(aController, true);
+function setupBookmarks() {
+  navBar.toggleBookmarksToolbar(true);
 
   // Create a custom folder in Bookmarks Toolbar
   var toolbarFolder = places.bookmarksService.toolbarFolder;

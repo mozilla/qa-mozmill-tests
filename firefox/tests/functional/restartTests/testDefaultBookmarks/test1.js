@@ -10,17 +10,18 @@ var domUtils = require("../../../../../lib/dom-utils");
 var localization = require("../../../../../lib/localization");
 var modalDialog = require("../../../../../lib/modal-dialog");
 var places = require("../../../../../lib/places");
-var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../../lib/utils");
+
+var browser = require("../../../../lib/ui/browser");
 
 const TEST_DATA = "https://www.mozilla.org/" +
                   localization.normalizeLocale() +
                   "/firefox/central/";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
 
-  aModule.locationbar = new toolbars.locationBar(aModule.controller);
   aModule.nodeCollector = new domUtils.nodeCollector(aModule.controller.window.document);
 
   aModule.bs = places.bookmarksService;
