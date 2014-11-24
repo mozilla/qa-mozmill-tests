@@ -5,8 +5,6 @@
 "use strict";
 
 // Include required modules
-var toolbars = require("../toolbars");
-
 var browser = require("../ui/browser");
 
 const MENU_PANEL_ELEMENTS = {
@@ -21,7 +19,7 @@ const MENU_PANEL_ELEMENTS = {
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
-  aModule.menuPanel = new toolbars.MenuPanel(aModule.browserWindow);
+  aModule.menuPanel = aModule.browserWindow.navBar.menuPanel;
 }
 
 function teardownModule(aModule) {

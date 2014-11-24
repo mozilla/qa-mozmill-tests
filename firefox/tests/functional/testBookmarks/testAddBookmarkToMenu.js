@@ -10,13 +10,15 @@ var places = require("../../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
+var browser = require("../../../lib/ui/browser");
+
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
-  aModule.editBookmarksPanel = new toolbars.editBookmarksPanel(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.editBookmarksPanel = aModule.browserWindow.navBar.editBookmarksPanel;
 }
 
 var teardownModule = function(aModule) {
@@ -51,4 +53,3 @@ var testAddBookmarkToBookmarksMenu = function() {
   var bookmarkExists = places.isBookmarkInFolder(uri, bookmarkFolder);
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");
 }
-

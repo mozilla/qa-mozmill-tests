@@ -6,8 +6,9 @@
 
 // Include required modules
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
@@ -16,8 +17,10 @@ const TEST_DATA = {
 };
 
 function setupTest(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.tabBrowser.closeAllTabs();

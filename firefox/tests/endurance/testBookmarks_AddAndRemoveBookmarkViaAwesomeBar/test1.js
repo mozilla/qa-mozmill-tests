@@ -12,15 +12,18 @@ var tabs = require("../../../lib/tabs");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
+var browser = require("../../../lib/ui/browser");
+
 const BASE_URL = collector.addHttpResource('../../../../data/');
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.navBar = aModule.browserWindow.navBar;
+  aModule.editBookmarksPanel = aModule.navBar.editBookmarksPanel;
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
-  aModule.editBookmarksPanel = new toolbars.editBookmarksPanel(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Open test page and wait until it has been finished loading
@@ -39,14 +42,14 @@ function teardownModule(aModule) {
 function testAddRemoveBookmarkViaAwesomeBar() {
   enduranceManager.run(function () {
     // Bookmark the page via the awesome bar star button
-    var starButton = locationBar.getElement({type: "starButton"});
+    var starButton = navBar.getElement({type: "starButton"});
     var URI = utils.createURI(TEST_DATA);
 
     assert.waitFor(function () {
       return places.isBookmarkStarButtonReady(controller);
     });
     // Click on the bookmark button and wait for the animation
-    locationBar.bookmarkWithAnimation(() => {
+    navBar.bookmarkWithAnimation(() => {
       starButton.click();
     });
 

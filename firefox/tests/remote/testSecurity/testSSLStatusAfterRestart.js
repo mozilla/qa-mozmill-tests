@@ -7,9 +7,10 @@
 var prefs = require("../../../lib/prefs");
 var security = require("../../../lib/security");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const PREF_STARTUP_PAGE = "browser.startup.page";
 
@@ -36,9 +37,10 @@ function setupModule(aModule) {
 }
 
 function setupTest(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  //aModule.identityPopup = new toolbars.IdentityPopup(aModule.controller);
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // The cert variable is shared between different methods because of async callback

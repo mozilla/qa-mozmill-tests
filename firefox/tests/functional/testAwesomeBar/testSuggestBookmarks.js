@@ -10,6 +10,8 @@ var places = require("../../../../lib/places");
 var prefs = require("../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
+var browser = require("../../../lib/ui/browser");
+
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
   url: BASE_URL + "layout/mozilla_grants.html",
@@ -19,9 +21,10 @@ const TEST_DATA = {
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
-  aModule.editBookmarksPanel = new toolbars.editBookmarksPanel(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.editBookmarksPanel = aModule.browserWindow.navBar.editBookmarksPanel;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   places.removeAllHistory();
 

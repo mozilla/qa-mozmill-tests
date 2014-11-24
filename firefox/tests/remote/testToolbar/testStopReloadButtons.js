@@ -6,13 +6,15 @@
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var toolbars = require("../../../lib/toolbars");
+
+var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = "http://mozqa.com/data/firefox/layout/delayed_load.php?seconds=2";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 }
 
 /**

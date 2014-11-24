@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 // Include required modules
 var tabs = require("../tabs");
+var toolbars = require("../toolbars");
 var utils = require("../../../lib/utils");
 var windows = require("../../../lib/windows");
 
@@ -27,6 +28,7 @@ function BrowserWindow(aController) {
                 "chrome://browser/locale/browser.dtd",
                 "chrome://browser/locale/aboutPrivateBrowsing.dtd"];
   this._tabs = null;
+  this._navBar = null;
 }
 
 BrowserWindow.prototype = new baseWindow.BaseWindow(true);
@@ -43,6 +45,15 @@ BrowserWindow.prototype.__defineGetter__('private', function() {
  */
 BrowserWindow.prototype.__defineGetter__('tabs', function () {
   return this._tabs = this._tabs || new tabs.tabBrowser(this._controller);
+});
+
+/**
+ * Get the navigation bar of the current browser window
+ *
+ * @returns {object} navBar of the window
+ */
+BrowserWindow.prototype.__defineGetter__('navBar', function () {
+  return this._navBar = this._navBar || new toolbars.NavBar(this);
 });
 
 /**
