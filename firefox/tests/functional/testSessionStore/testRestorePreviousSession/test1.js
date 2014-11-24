@@ -5,6 +5,7 @@
 "use strict";
 
 // Include required modules
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
@@ -14,7 +15,15 @@ const TEST_DATA = [
   BASE_URL + "layout/mozilla_organizations.html",
 ];
 
+const PREF_BROWSER_HOME_PAGE = "browser.startup.homepage";
+
 function setupModule(aModule) {
+
+  // Bug 1097064
+  // We set the default homepage to about:home so the restored tabs will
+  // overwrite the default opened one
+  prefs.preferences.setPref(PREF_BROWSER_HOME_PAGE, "about:home");
+
   aModule.controller = mozmill.getBrowserController();
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
