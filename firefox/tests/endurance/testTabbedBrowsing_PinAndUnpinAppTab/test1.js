@@ -7,7 +7,7 @@
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var endurance = require("../../../../lib/endurance");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -22,15 +22,15 @@ function setupModule(aModule) {
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 
-  prefs.preferences.setPref(SCROLL_DELAY, 0);
-  prefs.preferences.setPref(SCROLL_SMOOTH, false);
+  prefs.setPref(SCROLL_DELAY, 0);
+  prefs.setPref(SCROLL_SMOOTH, false);
 
   aModule.scrollButtonDown = aModule.tabBrowser.getElement({type: "tabs_scrollButton", subtype: "down"});
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(SCROLL_DELAY);
-  prefs.preferences.clearUserPref(SCROLL_SMOOTH);
+  prefs.clearUserPref(SCROLL_DELAY);
+  prefs.clearUserPref(SCROLL_SMOOTH);
 
   aModule.tabBrowser.closeAllTabs();
 }

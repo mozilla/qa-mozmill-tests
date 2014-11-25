@@ -6,7 +6,7 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -27,14 +27,14 @@ var setupModule = function(aModule) {
   // Disable SSL 3.0, TLS 1.0 and TLS 1.1 for secure connections
   // by forcing the use of TLS 1.2
   // see: http://kb.mozillazine.org/Security.tls.version.*#Possible_values_and_their_effects
-  prefs.preferences.setPref(PREF_TLS_MIN, 3);
-  prefs.preferences.setPref(PREF_TLS_MAX, 3);
+  prefs.setPref(PREF_TLS_MIN, 3);
+  prefs.setPref(PREF_TLS_MAX, 3);
 }
 
 var teardownModule = function(aModule) {
   // Reset the security preferences
-  prefs.preferences.clearUserPref(PREF_TLS_MIN);
-  prefs.preferences.clearUserPref(PREF_TLS_MAX);
+  prefs.clearUserPref(PREF_TLS_MIN);
+  prefs.clearUserPref(PREF_TLS_MAX);
 }
 
 /**

@@ -5,7 +5,6 @@
 "use strict";
 
 var { assert } = require("../../../../lib/assertions");
-var prefs = require("../../../../firefox/lib/prefs");
 var toolbars = require("../../../lib/ui/toolbars");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");

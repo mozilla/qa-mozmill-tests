@@ -6,9 +6,11 @@
 
 // Include the required modules
 var { assert } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -20,17 +22,17 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
-  prefs.preferences.clearUserPref(BROWSER_HOMEPAGE);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(BROWSER_HOMEPAGE);
 }
 
 /**
@@ -45,7 +47,7 @@ function testSetHomePage() {
   assert.ok(link.exists(), "'Community' link has been found");
 
   // Call Prefs Dialog and set Home Page
-  prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogHomePageCallback);
 
   tabs.closeAllTabs(controller);
 
@@ -65,7 +67,7 @@ function testSetHomePage() {
  *        MozMillController of the window to operate on
  */
 function prefDialogHomePageCallback(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = 'paneMain';
 
   // Set Home Page to the current page

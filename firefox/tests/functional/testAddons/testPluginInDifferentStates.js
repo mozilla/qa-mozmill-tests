@@ -6,7 +6,7 @@
 
 // Include required modules
 var addons = require("../../../../lib/addons");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 
@@ -54,7 +54,7 @@ function teardownTest(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   // Enable the plugin that was disabled
   addons.enableAddon(persisted.plugin.id);

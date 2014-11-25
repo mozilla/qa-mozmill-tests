@@ -7,7 +7,7 @@
 // Include the required modules
 var domUtils = require("../../../../lib/dom-utils");
 var localization = require("../../../../lib/localization");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 
 const TEST_DATA = "http://www.mozqa.com/data/firefox/layout/html_elements.html";
@@ -27,11 +27,11 @@ const DEFAULT_HTML_ELEMENT = {
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.contextMenu = aModule.controller.getMenu("#contentAreaContextMenu");
-  prefs.preferences.setPref(PREF_MISSING_FLASH, false);
+  prefs.setPref(PREF_MISSING_FLASH, false);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_MISSING_FLASH);
+  prefs.clearUserPref(PREF_MISSING_FLASH);
 }
 
 /**

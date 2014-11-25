@@ -6,7 +6,7 @@
 
 // Include required modules
 var {expect} = require("../../../../../lib/assertions");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var softwareUpdate = require("../../../../lib/software-update");
 
 const BROWSER_HOME_PAGE = 'browser.startup.homepage';
@@ -22,9 +22,9 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(BROWSER_HOME_PAGE);
-  prefs.preferences.clearUserPref(BROWSER_STARTUP_PAGE);
-  prefs.preferences.clearUserPref(PROXY_TYPE);
+  prefs.clearUserPref(BROWSER_HOME_PAGE);
+  prefs.clearUserPref(BROWSER_STARTUP_PAGE);
+  prefs.clearUserPref(PROXY_TYPE);
 
   aModule.controller.stopApplication(true);
 }

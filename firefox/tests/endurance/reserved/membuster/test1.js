@@ -6,7 +6,7 @@
 
 var endurance = require("../../../../../lib/endurance");
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const TEST_SITES = ["facebook.com", "youtube.com", "imdb.com", "bbc.co.uk", "cnn.com", "livejournal.com",
@@ -35,7 +35,7 @@ function setupModule(aModule) {
 
   // Bug 673399
   // Tab modal dialogs are not yet supported so we switch back to browser modal dialogs
-  prefs.preferences.setPref(TAB_MODAL, false);
+  prefs.setPref(TAB_MODAL, false);
 
   aModule.md = new modalDialog.modalDialog(aModule.controller.window);
   aModule.md.start(closeModalDialog);

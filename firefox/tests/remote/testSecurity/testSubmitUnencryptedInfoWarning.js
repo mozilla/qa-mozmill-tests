@@ -7,7 +7,7 @@
 // Include necessary modules
 var {expect} = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -29,7 +29,7 @@ function setupModule(aModule) {
 
 function teardownModule(aModule) {
   for each (var p in gPreferences)
-    prefs.preferences.clearUserPref(p);
+    prefs.clearUserPref(p);
 }
 
 /**
@@ -38,7 +38,7 @@ function teardownModule(aModule) {
 function testSubmitUnencryptedInfoWarning() {
   // Enable the 'warn_submit_insecure' pref only
   for (var i = 0; i < gPreferences.length; i++)
-    prefs.preferences.setPref(gPreferences[i], (i == 3));
+    prefs.setPref(gPreferences[i], (i == 3));
 
   // Load an unencrypted page
   controller.open(TEST_DATA);

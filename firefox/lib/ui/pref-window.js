@@ -4,18 +4,17 @@
 
 /**
  * @fileoverview
- * The PrefsAPI adds support for preferences related functions. It gives access
- * to the preferences system and allows to handle the preferences dialog
+ * The Firefox UI prefs library adds support for preferences related functions.
+ * It allows to handle the preferences dialog.
  *
- * @version 1.0.1
+ * @version 1.0.0
  */
 
-Cu.import("resource://gre/modules/Services.jsm");
-
 // Include required modules
-var { assert, expect } = require("../../lib/assertions");
-var modalDialog = require("../../lib/modal-dialog");
-var windows = require("../../lib/windows");
+var { assert, expect } = require("../../../lib/assertions");
+var modalDialog = require("../../../lib/modal-dialog");
+var prefs = require("../../../lib/prefs");
+var windows = require("../../../lib/windows");
 
 const PREF_PANE_ANIMATION = "browser.preferences.animateFadeIn";
 
@@ -81,7 +80,7 @@ preferencesDialog.prototype = {
    */
   set paneId(aId) {
     // Disable the animation when switching panes
-    preferences.setPref(PREF_PANE_ANIMATION, false);
+    prefs.setPref(PREF_PANE_ANIMATION, false);
 
     var button = this.getElement({type: "selector_button", value: aId});
     this._controller.waitThenClick(button);
@@ -97,7 +96,7 @@ preferencesDialog.prototype = {
       throw e;
     }
     finally {
-      preferences.clearUserPref(PREF_PANE_ANIMATION);
+      prefs.clearUserPref(PREF_PANE_ANIMATION);
     }
 
     return this.paneId;
@@ -202,138 +201,6 @@ preferencesDialog.prototype = {
 };
 
 /**
- * Preferences object to simplify the access to the nsIPrefBranch.
- */
-var preferences = {
-  /**
-   * Use branch to access low level functions of nsIPrefBranch
-   *
-   * @return Instance of the preferences branch
-   * @type nsIPrefBranch
-   */
-  get prefBranch() {
-    return Services.prefs.QueryInterface(Ci.nsIPrefBranch);
-  },
-
-  /**
-   * Use defaultPrefBranch to access low level functions of the default branch
-   *
-   * @return Instance of the preferences branch
-   * @type nsIPrefBranch
-   */
-  get defaultPrefBranch() {
-    return Services.prefs.getDefaultBranch("");
-  },
-
-  /**
-   * Use prefService to access low level functions of nsIPrefService
-   *
-   * @return Instance of the pref service
-   * @type nsIPrefService
-   */
-  get prefService() {
-    return Services.prefs;
-  },
-
-  /**
-   * Clear a user set preference
-   *
-   * @param {string} aPrefName
-   *        The user-set preference to clear
-   * @return False if the preference had the default value
-   * @type boolean
-   **/
-  clearUserPref : function preferences_clearUserPref(aPrefName) {
-    try {
-      this.prefBranch.clearUserPref(aPrefName);
-      return true;
-    }
-    catch (e) {
-      return false;
-    }
-  },
-
-  /**
-   * Retrieve the value of an individual preference.
-   *
-   * @param {string} aPrefName
-   *        The preference to get the value of.
-   * @param {boolean/number/string} aDefaultValue
-   *        The default value if preference cannot be found.
-   * @param {boolean/number/string} aDefaultBranch
-   *        If true the value will be read from the default branch (optional)
-   * @param {string} aInterfaceType
-   *        Interface to use for the complex value (optional)
-   *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
-   *
-   * @return The value of the requested preference
-   * @type boolean/int/string/complex
-   */
-  getPref : function preferences_getPref(aPrefName, aDefaultValue, aDefaultBranch,
-                                         aInterfaceType) {
-    try {
-      branch = aDefaultBranch ? this.defaultPrefBranch : this.prefBranch;
-
-      // If interfaceType has been set, handle it differently
-      if (aInterfaceType != undefined) {
-        return branch.getComplexValue(aPrefName, aInterfaceType);
-      }
-
-      switch (typeof aDefaultValue) {
-        case ('boolean'):
-          return branch.getBoolPref(aPrefName);
-        case ('string'):
-          return branch.getCharPref(aPrefName);
-        case ('number'):
-          return branch.getIntPref(aPrefName);
-        default:
-          return undefined;
-      }
-    }
-    catch(e) {
-      return aDefaultValue;
-    }
-  },
-
-  /**
-   * Set the value of an individual preference.
-   *
-   * @param {string} aPrefName
-   *        The preference to set the value of.
-   * @param {boolean/number/string/complex} aValue
-   *        The value to set the preference to.
-   * @param {string} aInterfaceType
-   *        Interface to use for the complex value
-   *        (nsILocalFile, nsISupportsString, nsIPrefLocalizedString)
-   *
-   * @return Returns if the value was successfully set.
-   * @type boolean
-   */
-  setPref : function preferences_setPref(aPrefName, aValue, aInterfaceType) {
-    try {
-      switch (typeof aValue) {
-        case ('boolean'):
-          this.prefBranch.setBoolPref(aPrefName, aValue);
-          break;
-        case ('string'):
-          this.prefBranch.setCharPref(aPrefName, aValue);
-          break;
-        case ('number'):
-          this.prefBranch.setIntPref(aPrefName, aValue);
-          break;
-        default:
-          this.prefBranch.setComplexValue(aPrefName, aInterfaceType, aValue);
-      }
-    }
-    catch(e) {
-      return false;
-    }
-
-    return true;
-  }
-};
-
-/**
  * Open the preferences dialog and call the given handler
  *
  * @param {MozMillController} aController
@@ -378,9 +245,6 @@ function openPreferencesDialog(aController, aCallback, aLauncher) {
     windows.handleWindow("type", prefWindowType, aCallback);
   }
 }
-
-// Export of variables
-exports.preferences = preferences;
 
 // Export of functions
 exports.openPreferencesDialog = openPreferencesDialog;

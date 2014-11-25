@@ -9,8 +9,10 @@
  */
 
 // Include the required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const DELAY = 100;
 
@@ -20,22 +22,22 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 }
 
 /**
  * Switching through all panes of the preferences dialog
  */
 var testPreferencesPanes = function() {
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**
@@ -45,7 +47,7 @@ var testPreferencesPanes = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   // List of all available panes inside the Preferences window
   var panes = [

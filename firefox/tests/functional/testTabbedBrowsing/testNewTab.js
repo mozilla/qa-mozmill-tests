@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var {expect} = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -85,7 +85,7 @@ function checkOpenTab(aEventType) {
   // Bug 716108 has landed but we still require this for a clean test
   controller.waitForPageLoad();
 
-  var newTabURL = prefs.preferences.getPref(PREF_NEWTAB_URL, '');
+  var newTabURL = prefs.getPref(PREF_NEWTAB_URL, '');
 
   expect.equal(tabBrowser.length, 2, "Two tabs visible - opened via " + aEventType);
   expect.equal(controller.tabs.activeTab.location.href, newTabURL,

@@ -6,7 +6,7 @@
 
 // Include necessary modules
 var { assert } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var search = require("../../../lib/search");
 var utils = require("../../../../lib/utils");
 
@@ -20,11 +20,11 @@ function setupModule(aModule) {
 
   aModule.searchBar = new search.searchBar(aModule.controller);
 
-  prefs.preferences.setPref(PREF_SEARCH_ENGINES_URL, TEST_DATA);
+  prefs.setPref(PREF_SEARCH_ENGINES_URL, TEST_DATA);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_SEARCH_ENGINES_URL);
+  prefs.clearUserPref(PREF_SEARCH_ENGINES_URL);
 }
 
 /**

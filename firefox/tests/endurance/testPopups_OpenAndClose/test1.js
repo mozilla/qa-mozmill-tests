@@ -8,7 +8,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
 var endurance = require("../../../../lib/endurance");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var windows = require("../../../../lib/windows");
 
@@ -23,8 +23,8 @@ function setupModule(aModule) {
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  prefs.preferences.setPref(PREF_MAX_POPUPS, enduranceManager.entities);
-  prefs.preferences.setPref(PREF_DISABLE_POPUPS, false);
+  prefs.setPref(PREF_MAX_POPUPS, enduranceManager.entities);
+  prefs.setPref(PREF_DISABLE_POPUPS, false);
 
   aModule.tabBrowser.closeAllTabs();
 }
@@ -33,8 +33,8 @@ function teardownModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
   windows.closeAllWindows(aModule.controller.window);
 
-  prefs.preferences.clearUserPref(PREF_MAX_POPUPS);
-  prefs.preferences.clearUserPref(PREF_DISABLE_POPUPS);
+  prefs.clearUserPref(PREF_MAX_POPUPS);
+  prefs.clearUserPref(PREF_DISABLE_POPUPS);
 }
 
 /**

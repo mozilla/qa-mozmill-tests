@@ -8,7 +8,7 @@
 var { assert } = require("../../../../lib/assertions");
 var endurance = require("../../../../lib/endurance");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -28,8 +28,8 @@ function setupModule(aModule) {
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Do not warn about max opened tab number
-  prefs.preferences.setPref(PREF_TAB_NUMBER_WARNING,
-                            aModule.enduranceManager.entities + 1);
+  prefs.setPref(PREF_TAB_NUMBER_WARNING,
+                aModule.enduranceManager.entities + 1);
 
   // Bookmark some pages in a custom folder
   setupBookmarks();

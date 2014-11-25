@@ -7,7 +7,7 @@
 // Include required modules
 var addons = require("../../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var utils = require("../../../../../lib/utils");
 
 const TEST_DATA = "http://mozqa.com/data/firefox/layout/mozilla.html";
@@ -20,13 +20,13 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
   // Change pref to show the full url in the location bar
-  prefs.preferences.setPref(PREF_TRIM_URL, false);
+  prefs.setPref(PREF_TRIM_URL, false);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_TRIM_URL);
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_TRIM_URL);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.addon;
 

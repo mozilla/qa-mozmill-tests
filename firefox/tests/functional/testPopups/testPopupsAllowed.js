@@ -6,7 +6,7 @@
 
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -20,12 +20,12 @@ var setupModule = function(aModule) {
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 
-  prefs.preferences.setPref(PREF_POPUP_BLOCK, false);
+  prefs.setPref(PREF_POPUP_BLOCK, false);
 }
 
 var teardownModule = function(aModule) {
   // Reset the pop-up blocking pref
-  prefs.preferences.clearUserPref(PREF_POPUP_BLOCK);
+  prefs.clearUserPref(PREF_POPUP_BLOCK);
 
   for each (var window in mozmill.utils.getWindows("navigator:browser")) {
     if (!window.toolbar.visible)

@@ -7,7 +7,7 @@
 // Include required modules
 var addons = require("../../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -21,8 +21,8 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.addons;
 
