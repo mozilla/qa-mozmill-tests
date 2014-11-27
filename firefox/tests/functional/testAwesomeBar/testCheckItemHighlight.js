@@ -68,11 +68,11 @@ var testCheckItemHighlight = function() {
   }, "Autocomplete popup has been opened - expected 'true'");
 
   // Wait for the autocomplete to be populated
-  assert.waitFor(() => (locationBar.autoCompleteResults.visibleResults.length === 2),
-                 "Expected to be two visible results in the autocomplete list");
+  assert.waitFor(() => (locationBar.autoCompleteResults.visibleResults.length === 1),
+                 "Expected to be one visible result in the autocomplete list");
 
   // Result to check for underlined text
-  var richlistItem = locationBar.autoCompleteResults.getResult(1);
+  var richlistItem = locationBar.autoCompleteResults.getResult(0);
 
   checkAwesomebarResults(richlistItem, "title");
   checkAwesomebarResults(richlistItem, "url");
