@@ -6,7 +6,7 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var search = require("../../../lib/search");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
@@ -34,7 +34,7 @@ var teardownModule = function(aModule) {
   aModule.searchBar.clear();
   aModule.searchBar.restoreDefaultEngines();
 
-  prefs.preferences.clearUserPref(PREF_LOAD_IN_BACKGROUND);
+  prefs.clearUserPref(PREF_LOAD_IN_BACKGROUND);
 }
 
 /**
@@ -76,7 +76,7 @@ var startSearch = function(aElement, aEngineName, aLoadInBackground) {
   var tabCount = tabs.length;
   var tabIndex = tabs.selectedIndex;
 
-  prefs.preferences.setPref(PREF_LOAD_IN_BACKGROUND, aLoadInBackground);
+  prefs.setPref(PREF_LOAD_IN_BACKGROUND, aLoadInBackground);
 
   // Select a word and remember the selection
   controller.doubleClick(aElement, 5, 5);

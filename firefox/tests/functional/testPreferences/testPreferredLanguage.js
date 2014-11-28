@@ -8,8 +8,10 @@
 var { assert, expect } = require("../../../../lib/assertions");
 var { nodeCollector } = require("../../../../lib/dom-utils");
 var modalDialog = require("../../../../lib/modal-dialog");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const PREF_ACCEPT_LANG = "intl.accept_languages";
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
@@ -19,19 +21,19 @@ var setupModule = function (aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.contentLocale = null;
 
-  var intlProperties = prefs.preferences.getPref(PREF_ACCEPT_LANG, "", false,
-                                                 Ci['nsIPrefLocalizedString']);
+  var intlProperties = prefs.getPref(PREF_ACCEPT_LANG, "", false,
+                                     Ci['nsIPrefLocalizedString']);
   aModule.initLang = intlProperties.toString().toLowerCase().split(/\s*,\s*/);
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
 }
 
 var teardownModule = function (aModule) {
-  prefs.preferences.clearUserPref(PREF_ACCEPT_LANG);
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_ACCEPT_LANG);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 }
 
 /**
@@ -39,10 +41,10 @@ var teardownModule = function (aModule) {
  */
 var testChangeContentLanguage = function () {
   // Set a primary language, other than preinstalled locales
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogCallback);
 
-  var acceptedLanguage = prefs.preferences.getPref(PREF_ACCEPT_LANG, "", false,
-                                                   Ci['nsIPrefLocalizedString']);
+  var acceptedLanguage = prefs.getPref(PREF_ACCEPT_LANG, "", false,
+                                       Ci['nsIPrefLocalizedString']);
 
   // Verify the primary language is correctly set
   expect.match(acceptedLanguage.toString(), "/^" + contentLocale + "/",
@@ -55,7 +57,7 @@ var testChangeContentLanguage = function () {
  * @param {MozMillController} aController Controller of the window to operate on
  */
 var prefDialogCallback = function (aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = "paneContent";
 
   // Call language dialog and set a new primary language

@@ -12,7 +12,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var addons = require("../../lib/addons");
 var files = require("../../lib/files");
-var prefs = require("prefs");
+var prefs = require("../../lib/prefs");
 var utils = require("../../lib/utils");
 var windows = require("../../lib/windows");
 
@@ -249,7 +249,7 @@ SoftwareUpdate.prototype = {
     return {
       buildid : utils.appInfo.buildID,
       channel : this.updateChannel.channel,
-      disabled_addons : prefs.preferences.getPref(PREF_DISABLED_ADDONS, ''),
+      disabled_addons : prefs.getPref(PREF_DISABLED_ADDONS, ''),
       locale : utils.appInfo.locale,
       mar_channels : this.marChannels.channels,
       url_aus : this.getUpdateURL(true),
@@ -577,11 +577,10 @@ SoftwareUpdate.prototype = {
    * @returns {String} The URL of the update snippet
    */
   getUpdateURL: function SU_getUpdateURL(aForce) {
-    var url = prefs.preferences.getPref(PREF_APP_UPDATE_URL, "");
-    var dist = prefs.preferences.getPref(PREF_APP_DISTRIBUTION,
-                                         "default", true, null);
-    var dist_version = prefs.preferences.getPref(PREF_APP_DISTRIBUTION_VERSION,
-                                                 "default", true, null);
+    var url = prefs.getPref(PREF_APP_UPDATE_URL, "");
+    var dist = prefs.getPref(PREF_APP_DISTRIBUTION, "default", true, null);
+    var dist_version = prefs.getPref(PREF_APP_DISTRIBUTION_VERSION,
+                                     "default", true, null);
 
     if (!url || url == "") {
       return null;
@@ -729,7 +728,7 @@ UpdateChannel.prototype = {
    * @returns {string} Current update channel
    */
   get channel() {
-    return prefs.preferences.getPref('app.update.channel', '', true, null);
+    return prefs.getPref('app.update.channel', '', true, null);
   },
 
   /**

@@ -7,7 +7,7 @@
 // Include the required modules
 var addons = require("../../../../lib/addons");
 var endurance = require("../../../../lib/endurance");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
@@ -25,14 +25,14 @@ function setupModule(aModule) {
 
   aModule.tabBrowser.closeAllTabs();
 
-  prefs.preferences.setPref(PREF_LAST_CATEGORY, PREF_VALUE);
+  prefs.setPref(PREF_LAST_CATEGORY, PREF_VALUE);
 }
 
 function teardownModule() {
   addons.resetDiscoveryPaneURL();
 
   // Make Add-ons Manager forget last visited category
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 }
 
 function testOpenAndCloseExtensionList() {

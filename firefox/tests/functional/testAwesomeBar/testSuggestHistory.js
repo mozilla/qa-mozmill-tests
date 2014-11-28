@@ -7,7 +7,7 @@
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 
 var browser = require("../../../lib/ui/browser");
 
@@ -27,13 +27,13 @@ var setupModule = function(aModule) {
   places.removeAllHistory();
 
   // Location bar suggests "History and Bookmarks"
-  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
+  prefs.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function(aModule) {
   places.restoreDefaultBookmarks();
   aModule.locationBar.autoCompleteResults.close(true);
-  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
+  prefs.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
@@ -59,8 +59,8 @@ var testSuggestHistoryAndBookmarks = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  expect.equal(locationBar.autoCompleteResults.visibleResults.length, 1,
-               "Expected to be one visible result in the autocomplete list");
+  expect.waitFor(() => (locationBar.autoCompleteResults.visibleResults.length === 1),
+                 "Expected to be one visible result in the autocomplete list");
 
   // Define the path to the first auto-complete result
   var richlistItem = locationBar.autoCompleteResults.getResult(0);

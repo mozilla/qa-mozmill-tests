@@ -7,7 +7,7 @@
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
 
 var browser = require("../../../lib/ui/browser");
@@ -29,13 +29,13 @@ var setupModule = function(aModule) {
   places.removeAllHistory();
 
   // Location bar suggests "History and Bookmarks"
-  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
+  prefs.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function(aModule) {
   places.restoreDefaultBookmarks();
   aModule.locationBar.autoCompleteResults.close(true);
-  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
+  prefs.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
@@ -77,8 +77,8 @@ var testStarInAutocomplete = function() {
     return locationBar.autoCompleteResults.isOpened;
   }, "Autocomplete list has been opened");
 
-  // Define the path to the first auto-complete result
-  var richlistItem = locationBar.autoCompleteResults.getResult(0);
+  // Define the path to the second auto-complete result
+  var richlistItem = locationBar.autoCompleteResults.getResult(1);
 
   // For the page title check matched text is underlined
   var underlined = locationBar.autoCompleteResults.getUnderlinedText(richlistItem,

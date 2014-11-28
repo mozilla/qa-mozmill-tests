@@ -8,7 +8,7 @@ var blocklist = require("../ui/addons_blocklist");
 var addons = require("../../../lib/addons");
 var {assert, expect} = require("../../../lib/assertions");
 var modalDialog = require("../../../lib/modal-dialog");
-var prefs = require("../prefs");
+var prefs = require("../../../lib/prefs");
 var tabs = require("../tabs");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
@@ -31,8 +31,8 @@ function setupModule() {
   addonsManager = new addons.AddonsManager(controller);
   blocklistWindow = new blocklist.BlocklistWindow();
 
-  prefs.preferences.setPref(PREF_BLOCKLIST, TEST_DATA);
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_BLOCKLIST, TEST_DATA);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   tabs.closeAllTabs(controller);
 }
@@ -78,6 +78,6 @@ function testBlocklistAPI() {
 }
 
 function teardownModule() {
-  prefs.preferences.clearUserPref(PREF_BLOCKLIST);
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_BLOCKLIST);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
 }

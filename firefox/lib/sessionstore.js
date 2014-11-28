@@ -11,7 +11,7 @@
 
 // Include required modules
 var { assert } = require("../../lib/assertions");
-var prefs = require("prefs");
+var prefs = require("../../lib/prefs");
 var utils = require("../../lib/utils");
 var widgets = require("../../lib/ui/widgets");
 
@@ -195,8 +195,8 @@ aboutSessionRestore.prototype = {
  */
 function resetRecentlyClosedTabs()
 {
-  prefs.preferences.setPref(SESSIONSTORE_MAXTABS_PREF, 0);
-  prefs.preferences.clearUserPref(SESSIONSTORE_MAXTABS_PREF);
+  prefs.setPref(SESSIONSTORE_MAXTABS_PREF, 0);
+  prefs.clearUserPref(SESSIONSTORE_MAXTABS_PREF);
 }
 
 /**

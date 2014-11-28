@@ -6,9 +6,11 @@
 
 // Include the required modules
 var {assert, expect} = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -19,17 +21,17 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   tabs.closeAllTabs(aModule.controller);
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
-  prefs.preferences.clearUserPref("browser.startup.homepage");
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref("browser.startup.homepage");
 }
 
 /**
@@ -44,7 +46,7 @@ var testRestoreHomeToDefault = function() {
   assert.ok(link.exists(), "'Organization' link has been found");
 
   // Call Preferences dialog and set home page
-  prefs.openPreferencesDialog(controller, prefDialogHomePageCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogHomePageCallback);
 
   // Go to the saved home page and verify it's the correct page
   controller.click(new elementslib.ID(controller.window.document, "home-button"));
@@ -54,10 +56,10 @@ var testRestoreHomeToDefault = function() {
   assert.ok(link.exists(), "'Organization' link has been found");
 
   // Open Preferences dialog and reset home page to default
-  prefs.openPreferencesDialog(controller, prefDialogDefHomePageCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogDefHomePageCallback);
 
   // Check that the current homepage is set to the default homepage - about:home
-  var currentHomepage = prefs.preferences.getPref("browser.startup.homepage", "");
+  var currentHomepage = prefs.getPref("browser.startup.homepage", "");
   var defaultHomepage = utils.getDefaultHomepage();
 
   assert.equal(currentHomepage, defaultHomepage, "Default homepage restored");
@@ -70,7 +72,7 @@ var testRestoreHomeToDefault = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogHomePageCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = 'paneMain';
 
   // Set home page to the current page
@@ -82,7 +84,7 @@ var prefDialogHomePageCallback = function(aController) {
 }
 
 var prefDialogDefHomePageCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   // Reset home page to the default page
   var useDefault = new elementslib.ID(aController.window.document, "restoreDefaultHomePage");

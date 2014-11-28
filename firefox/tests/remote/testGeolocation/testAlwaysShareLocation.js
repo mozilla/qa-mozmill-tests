@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -28,7 +28,7 @@ const PREF_GEO_WIFI_URI = "geo.wifi.uri";
 const TIMEOUT_GEOLOCATE = 30000;
 
 function setupModule(aModule) {
-  prefs.preferences.setPref(PREF_GEO_WIFI_URI, TEST_DATA["locations"]);
+  prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA["locations"]);
 }
 
 function setupTest(aModule) {
@@ -55,7 +55,7 @@ function teardownTest(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_GEO_WIFI_URI);
+  prefs.clearUserPref(PREF_GEO_WIFI_URI);
 
   delete persisted.nextTest;
 

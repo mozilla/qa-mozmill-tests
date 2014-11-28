@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 
 const BROWSER_HOME_PAGE = 'browser.startup.homepage';
 const BROWSER_STARTUP_PAGE = 'browser.startup.page';
@@ -16,13 +16,13 @@ const PROXY_TYPE = 'network.proxy.type';
  */
 var setupModule = function(aModule) {
   // Set browser home page to about:blank
-  prefs.preferences.setPref(BROWSER_HOME_PAGE, "about:blank");
+  prefs.setPref(BROWSER_HOME_PAGE, "about:blank");
 
   // Set browser start up to display current home page
-  prefs.preferences.setPref(BROWSER_STARTUP_PAGE, 1);
+  prefs.setPref(BROWSER_STARTUP_PAGE, 1);
 
   // Set the proxy type in connection settings to 'Auto-detect proxy settings ...'
-  prefs.preferences.setPref(PROXY_TYPE, 4);
+  prefs.setPref(PROXY_TYPE, 4);
 
   aModule.controller = mozmill.getBrowserController();
 }

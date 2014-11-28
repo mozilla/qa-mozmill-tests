@@ -8,7 +8,7 @@
 var addons = require("../../../../lib/addons");
 var files = require("../../../../lib/files");
 var modalDialog = require("../../../../lib/modal-dialog");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 var { BlocklistWindow } = require("../../../lib/ui/addons_blocklist");
@@ -36,8 +36,8 @@ function setupModule(aModule) {
   persisted.addon = TEST_DATA.addon;
 
   addons.setDiscoveryPaneURL("about:home");
-  prefs.preferences.setPref(PREF_BLOCKLIST, TEST_DATA.blocklist);
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_BLOCKLIST, TEST_DATA.blocklist);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   var file = new files.File(files.getProfileResource(BLOCKLIST_FILE_NAME));
   file.remove();
@@ -64,9 +64,9 @@ function teardownTest(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_BLOCKLIST);
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_BLOCKLIST);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.addon;
   delete persisted.nextTest;
