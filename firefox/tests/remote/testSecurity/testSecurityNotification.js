@@ -6,7 +6,8 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
-var toolbars = require("../../../lib/toolbars");
+
+var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = [
   // Invalid cert page
@@ -18,9 +19,9 @@ const TEST_DATA = [
 ];
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
-  aModule.identityPopup = aModule.locationBar.identityPopup;
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.identityPopup = aModule.browserWindow.navBar.locationBar.identityPopup;
 }
 
 /**

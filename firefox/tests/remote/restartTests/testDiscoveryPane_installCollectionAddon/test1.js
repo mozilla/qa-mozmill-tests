@@ -96,7 +96,7 @@ function handleInstallAddonDialog(aController) {
                                              '/id("xpinstallConfirm")' +
                                              '/anon({"anonid":"buttons"})' +
                                              '/{"dlgtype":"accept"}');
-  assert.waitFor(function () {
+  assert.waitFor(function(){
     return !installButton.getNode().disabled;
   }, "Install button is enabled");
 

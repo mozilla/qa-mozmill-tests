@@ -10,9 +10,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../lib/prefs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
@@ -21,8 +22,9 @@ const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
