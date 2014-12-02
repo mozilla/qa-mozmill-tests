@@ -50,7 +50,7 @@ function teardownTest(aModule) {
   }
 }
 
-/*
+/**
  * Install the add-on from data/ folder
  */
 function testInstallAddon() {
@@ -63,7 +63,7 @@ function testInstallAddon() {
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
 
-/*
+/**
  * Test disable an extension
  */
 function testDisableExtension() {
@@ -83,11 +83,11 @@ function testDisableExtension() {
   addonsManager.disableAddon({addon: addon});
 }
 
-/*
+/**
  * Test enable the extension
  */
 function testEnableExtension() {
-  persisted.nextTest = "testUndoUninstall";
+  persisted.nextTest = "testCheckAddonIsEnabled";
   addonsManager.open();
 
   // Get the addon by name
@@ -102,11 +102,10 @@ function testEnableExtension() {
   addonsManager.enableAddon({addon: addon});
 }
 
-/*
- * Test uninstall and then Undo
+/**
+ * Test check if addon is enabled
  */
-function testUndoUninstall() {
-  persisted.nextTest = "testAddonNotUninstalled";
+function testCheckAddonIsEnabled() {
   addonsManager.open();
 
   // Get the addon by name
@@ -114,38 +113,5 @@ function testUndoUninstall() {
                                        value: ADDON.id})[0];
 
   // Check if the addon is enabled
-  assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
-
-  // Remove the addon
-  addonsManager.removeAddon({addon: addon});
-  assert.equal(addon.getNode().getAttribute("pending"), "uninstall",
-               "Addon was marked for uninstall");
-
-  // Undo addon removal
-  addonsManager.undo({addon: addon});
-  assert.equal(addon.getNode().getAttribute("pending"), "",
-               "Addon is no longer marked for uninstall");
-
-  // Check that addon is still installed
-  assert.ok(addonsManager.isAddonInstalled({addon: addon}),
-            "The addon is installed");
-
-  // Check if the addon is enabled
-  assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
-}
-
-/*
- * Test that the addon was not uninstalled
- */
-function testAddonNotUninstalled() {
-  addonsManager.open();
-
-  // Get the addon by name
-  var addon = addonsManager.getAddons({attribute: "value",
-                                       value: ADDON.id})[0];
-
-  // Check if the addon is still installed and enabled after restart
-  assert.ok(addonsManager.isAddonInstalled({addon: addon}),
-            "The addon is installed");
   assert.ok(addonsManager.isAddonEnabled({addon: addon}), "The addon is enabled");
 }
