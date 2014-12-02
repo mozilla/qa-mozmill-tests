@@ -10,7 +10,7 @@ var windows = require("../../../../lib/windows");
 
 var browser = require("../../../lib/ui/browser");
 
-const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
+const TEST_DATA = "https://ssl-ev.mozqa.com/";
 
 var setupModule = function(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
