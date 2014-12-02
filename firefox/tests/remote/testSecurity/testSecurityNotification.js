@@ -13,7 +13,7 @@ const TEST_DATA = [
   // Invalid cert page
   "https://summitbook.mozilla.org",
   // Secure page
-  "https://addons.mozilla.org/en-US/licenses/5.txt",
+  "https://ssl-ev.mozqa.com/",
   // Unsecure page
   "http://www.mozqa.com"
 ];
