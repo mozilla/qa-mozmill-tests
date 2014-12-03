@@ -12,7 +12,7 @@ var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
-const TEST_DATA = "https://addons.mozilla.org/licenses/5.txt";
+const TEST_DATA = "https://ssl-ev.mozqa.com/";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();

@@ -19,8 +19,8 @@ const TEST_DATA = [{
   type: "verifiedDomain",
   callback: checkSecurityTab_DV
 }, {
-  url: "https://bugzilla.mozilla.org/",
-  identity: "Mozilla Foundation",
+  url: "https://ssl-ev.mozqa.com/",
+  identity: "Mozilla Corporation",
   type: "verifiedIdentity",
   callback: checkSecurityTab_EV
 }, {
