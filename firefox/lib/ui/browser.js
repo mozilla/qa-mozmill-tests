@@ -27,6 +27,7 @@ function BrowserWindow(aController) {
   this._dtds = ["chrome://branding/locale/brand.dtd",
                 "chrome://browser/locale/browser.dtd",
                 "chrome://browser/locale/aboutPrivateBrowsing.dtd"];
+  this._properties = ["chrome://browser/locale/browser.properties"];
   this._tabs = null;
   this._navBar = null;
 }
