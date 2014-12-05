@@ -6,8 +6,10 @@
 
 // Include the required modules
 var { expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
@@ -16,16 +18,16 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.lastSelectedPaneId = undefined;
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
 }
 
 function teardownModule(aModule) {
-  prefs.openPreferencesDialog(controller, prefPaneResetCallback);
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefWindow.openPreferencesDialog(controller, prefPaneResetCallback);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 }
 
 /**
@@ -33,10 +35,10 @@ function teardownModule(aModule) {
  */
 function testPreferencesDialogRetention() {
   // Choose the Privacy pane
-  prefs.openPreferencesDialog(controller, prefPaneSetCallback);
+  prefWindow.openPreferencesDialog(controller, prefPaneSetCallback);
 
   // And check if the Privacy pane is still selected
-  prefs.openPreferencesDialog(controller, prefPaneCheckCallback);
+  prefWindow.openPreferencesDialog(controller, prefPaneCheckCallback);
 }
 
 /**
@@ -46,7 +48,7 @@ function testPreferencesDialogRetention() {
  *        MozMillController of the window to operate on
  */
 function prefPaneSetCallback(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneAdvanced';
   prefDialog.paneId = 'panePrivacy';
@@ -63,7 +65,7 @@ function prefPaneSetCallback(aController) {
  *        MozMillController of the window to operate on
  */
 function prefPaneCheckCallback(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   expect.waitFor(function () {
     return prefDialog.paneId === lastSelectedPaneId;
@@ -78,7 +80,7 @@ function prefPaneCheckCallback(aController) {
  *        MozMillController of the window to operate on
  */
 function prefPaneResetCallback(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneMain';
   prefDialog.close();

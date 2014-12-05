@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var prefs = require("../prefs");
+var prefWindow = require("../ui/pref-window");
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 }
 
 var testPrefHelperClass = function () {
-  prefs.openPreferencesDialog(controller, handlePrefDialog);
+  prefWindow.openPreferencesDialog(controller, handlePrefDialog);
 }
 
 /**
@@ -20,7 +20,7 @@ var testPrefHelperClass = function () {
  *        MozMillController of the window to operate on
  */
 function handlePrefDialog(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   var pane = prefDialog.pane;
   prefDialog.paneId = 'paneContent';

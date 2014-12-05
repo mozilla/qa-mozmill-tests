@@ -7,7 +7,7 @@
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 
 var browser = require("../../../lib/ui/browser");
 
@@ -34,12 +34,12 @@ var setupModule = function(aModule) {
   places.removeAllHistory();
 
   // Ensure Location bar suggests "History and Bookmarks"
-  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
+  prefs.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function(aModule) {
   aModule.locationBar.autoCompleteResults.close(true);
-  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
+  prefs.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**

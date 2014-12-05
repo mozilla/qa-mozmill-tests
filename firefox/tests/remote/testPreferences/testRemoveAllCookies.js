@@ -8,9 +8,11 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const TEST_DATA = [
   "http://domain1.mozqa.com/data/firefox/cookies/cookie_single.html",
@@ -23,16 +25,16 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   Services.cookies.removeAll();
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 
   Services.cookies.removeAll();
 }
@@ -48,7 +50,7 @@ var testRemoveAllCookies = function() {
   });
 
   // Call preferences dialog and delete the created cookies
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**
@@ -57,7 +59,7 @@ var testRemoveAllCookies = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button

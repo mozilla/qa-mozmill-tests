@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var utils = require("../../../../../lib/utils");
 
@@ -19,7 +19,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   delete persisted.testData;
 
-  prefs.preferences.clearUserPref(PREF_BROWSER_HOME_PAGE);
+  prefs.clearUserPref(PREF_BROWSER_HOME_PAGE);
   aModule.controller.stopApplication(true);
 }
 

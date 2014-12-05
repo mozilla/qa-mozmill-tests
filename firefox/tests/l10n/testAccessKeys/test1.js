@@ -12,7 +12,9 @@
 // Include the required modules
 var domUtils = require("../../../../lib/dom-utils");
 var localization = require("../../../../lib/localization");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const GET_BY_ID = domUtils.DOMWalker.GET_BY_ID;
 const GET_BY_SELECTOR = domUtils.DOMWalker.GET_BY_SELECTOR;
@@ -26,15 +28,15 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
   aModule.controller.stopApplication(true);
 }
 
@@ -206,7 +208,7 @@ function prefPaneInit(aController, aPrefDialog) {
 }
 
 function prefPanesAccessKeyTest(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   var ids = prefPaneInit(aController, prefDialog);
 
@@ -221,7 +223,7 @@ function prefPanesAccessKeyTest(aController) {
 }
 
 function testPrefWindowAccessKeys() {
-  prefs.openPreferencesDialog(controller, prefPanesAccessKeyTest);
+  prefWindow.openPreferencesDialog(controller, prefPanesAccessKeyTest);
 }
 
 /**

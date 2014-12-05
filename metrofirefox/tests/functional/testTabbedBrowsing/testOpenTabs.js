@@ -7,7 +7,6 @@
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var tabs = require("../../../lib/ui/tabs");
-var prefs = require("../../../../firefox/lib/prefs");
 
 const METHODS = [
   "sidebarButton",

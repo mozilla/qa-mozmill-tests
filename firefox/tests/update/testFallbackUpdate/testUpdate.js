@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var softwareUpdate = require("../../../lib/software-update");
 var utils = require("../../../../lib/utils");
 
@@ -33,8 +33,8 @@ function teardownModule(aModule) {
   // Prepare persisted object for the next update
   persisted.update.updateIndex++;
 
-  prefs.preferences.clearUserPref(PREF_UPDATE_LOG);
-  prefs.preferences.clearUserPref(PREF_UPDATE_URL_OVERRIDE);
+  prefs.clearUserPref(PREF_UPDATE_LOG);
+  prefs.clearUserPref(PREF_UPDATE_URL_OVERRIDE);
 
   aModule.controller.stopApplication(true);
 }
@@ -45,12 +45,11 @@ function testPrepareTest() {
   softwareUpdate.initUpdateTests(true);
 
   // Turn on software update logging
-  prefs.preferences.setPref(PREF_UPDATE_LOG, true);
+  prefs.setPref(PREF_UPDATE_LOG, true);
 
   // If requested force a specific update URL
   if (persisted.update.update_url) {
-    prefs.preferences.setPref(PREF_UPDATE_URL_OVERRIDE,
-                              persisted.update.update_url);
+    prefs.setPref(PREF_UPDATE_URL_OVERRIDE, persisted.update.update_url);
   }
 }
 

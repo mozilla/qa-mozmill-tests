@@ -8,7 +8,7 @@
 var addons = require("../../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
@@ -33,7 +33,7 @@ function setupModule(aModule) {
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
 
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   // Whitelist add the local test folder
   addons.addToWhiteList(BASE_URL);

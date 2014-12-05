@@ -4,7 +4,7 @@
 
 "use strict";
 
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var security = require("../../../lib/security");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
@@ -33,7 +33,7 @@ const TEST_DATA = [{
 
 function setupModule(aModule) {
   // Set browser to restore previous session
-  prefs.preferences.setPref(PREF_STARTUP_PAGE, 3);
+  prefs.setPref(PREF_STARTUP_PAGE, 3);
 }
 
 function setupTest(aModule) {
@@ -59,7 +59,7 @@ function teardownModule(aModule) {
 
   delete persisted.nextTest;
 
-  prefs.preferences.clearUserPref(PREF_STARTUP_PAGE);
+  prefs.clearUserPref(PREF_STARTUP_PAGE);
 }
 
 /**

@@ -15,7 +15,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
-var prefs = require("prefs");
+var prefs = require("../../lib/prefs");
 var utils = require("../../lib/utils");
 var windows = require("../../lib/windows");
 
@@ -94,7 +94,7 @@ downloadManager.prototype = {
    * @return {String} aPath where the downloaded files are saved
    */
   get downloadDir() {
-    return prefs.preferences.getPref(PREF_DOWNLOAD_DIR, "");
+    return prefs.getPref(PREF_DOWNLOAD_DIR, "");
   },
 
   /**
@@ -102,8 +102,8 @@ downloadManager.prototype = {
    * @param {String} aPath Where to save downloaded files
    */
   set downloadDir(aPath) {
-    prefs.preferences.setPref(PREF_DOWNLOAD_DIR, aPath);
-    prefs.preferences.setPref(PREF_DOWNLOAD_FOLDERLIST, 2);
+    prefs.setPref(PREF_DOWNLOAD_DIR, aPath);
+    prefs.setPref(PREF_DOWNLOAD_FOLDERLIST, 2);
   },
 
   /**
@@ -369,8 +369,8 @@ downloadManager.prototype = {
    * @return {String} aPath where the downloaded files are saved
    */
   resetDownloadDir : function downloadManager_resetDownloadDir() {
-    prefs.preferences.clearUserPref(PREF_DOWNLOAD_DIR);
-    prefs.preferences.clearUserPref(PREF_DOWNLOAD_FOLDERLIST);
+    prefs.clearUserPref(PREF_DOWNLOAD_DIR);
+    prefs.clearUserPref(PREF_DOWNLOAD_FOLDERLIST);
   },
 
   /**

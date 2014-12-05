@@ -6,7 +6,7 @@
 
 // Include required modules
 var downloads = require("../../../lib/downloads");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 
 const PREF_DOWNLOAD_USE_TOOLKIT = "browser.download.useToolkitUI";
@@ -19,11 +19,11 @@ var setupModule = function(aModule) {
   aModule.dm = new downloads.downloadManager();
 
   // Enable the old tookit UI to test the download manager
-  prefs.preferences.setPref(PREF_DOWNLOAD_USE_TOOLKIT, true);
+  prefs.setPref(PREF_DOWNLOAD_USE_TOOLKIT, true);
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_DOWNLOAD_USE_TOOLKIT);
+  prefs.clearUserPref(PREF_DOWNLOAD_USE_TOOLKIT);
 
   // If we failed in closing the Download Manager window force it now
   aModule.dm.close(true);

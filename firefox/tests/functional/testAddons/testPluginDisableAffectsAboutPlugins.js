@@ -8,7 +8,7 @@
 var addons = require("../../../../lib/addons");
 var {assert, expect} = require("../../../../lib/assertions");
 var domUtils = require("../../../../lib/dom-utils");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -43,7 +43,7 @@ function setupModule(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   addons.resetDiscoveryPaneURL();
 

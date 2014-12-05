@@ -8,7 +8,7 @@
 var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
 var utils = require("../../../../../lib/utils");
 
@@ -34,7 +34,7 @@ function setupModule(aModule) {
 
   addons.setDiscoveryPaneURL("about:home");
 
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   persisted.addon = ADDON;
 
@@ -44,7 +44,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   // Bug 951138
   // Mozprofile doesn't clear this pref while it is clearing all permissions
-  prefs.preferences.clearUserPref(PREF_XPI_WHITELIST);
+  prefs.clearUserPref(PREF_XPI_WHITELIST);
 
   tabs.closeAllTabs(aModule.controller);
 

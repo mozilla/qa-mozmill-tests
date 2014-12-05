@@ -5,7 +5,7 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -28,13 +28,13 @@ function setupModule(aModule) {
 
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  prefs.preferences.setPref(PREF_GEO_WIFI_URI, TEST_DATA["location"]);
+  prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA["location"]);
 
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_GEO_WIFI_URI);
+  prefs.clearUserPref(PREF_GEO_WIFI_URI);
 
   aModule.tabBrowser.closeAllTabs();
 }

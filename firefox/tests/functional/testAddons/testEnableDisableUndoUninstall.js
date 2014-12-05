@@ -7,7 +7,7 @@
 // Include required modules
 var addons = require("../../../../lib/addons");
 var modalDialog = require("../../../../lib/modal-dialog");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -22,7 +22,7 @@ const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 function setupModule(aModule) {
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
   addons.setDiscoveryPaneURL("about:home");
 }
 
@@ -38,7 +38,7 @@ function setupTest(aModule) {
 
 function teardownModule(aModule) {
   delete persisted.nextTest;
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
 
   addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();

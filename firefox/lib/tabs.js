@@ -38,7 +38,7 @@ var animationObserver = {
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
-var prefs = require("prefs");
+var prefs = require("../../lib/prefs");
 var sessionStore = require("../lib/sessionstore");
 var utils = require("../../lib/utils");
 
@@ -427,7 +427,7 @@ function tabBrowser(aController) {
 
   // Bug 1076870
   // TODO: Remove this pref once it has been added in Mozmill
-  prefs.preferences.setPref(PREF_NEWTAB_INTRO, true);
+  prefs.setPref(PREF_NEWTAB_INTRO, true);
 }
 
 /**

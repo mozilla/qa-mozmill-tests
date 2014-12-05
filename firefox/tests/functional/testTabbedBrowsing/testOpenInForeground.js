@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -27,11 +27,11 @@ var setupModule = function(aModule) {
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 
-  prefs.preferences.setPref(PREF_TAB_LOAD_IN_BACKGROUND, false);
+  prefs.setPref(PREF_TAB_LOAD_IN_BACKGROUND, false);
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_TAB_LOAD_IN_BACKGROUND);
+  prefs.clearUserPref(PREF_TAB_LOAD_IN_BACKGROUND);
   utils.closeContentAreaContextMenu(aModule.controller);
   aModule.tabBrowser.closeAllTabs();
 }

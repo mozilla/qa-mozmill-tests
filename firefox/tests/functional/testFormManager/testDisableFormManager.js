@@ -6,7 +6,7 @@
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "form_manager/form.html";
@@ -25,11 +25,11 @@ var setupModule = function(aModule) {
   formHistory.removeAllEntries();
 
   // Do not save form and search history
-  prefs.preferences.setPref(PREF_SAVE_FORM_SEARCH_HISTORY, false);
+  prefs.setPref(PREF_SAVE_FORM_SEARCH_HISTORY, false);
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_SAVE_FORM_SEARCH_HISTORY);
+  prefs.clearUserPref(PREF_SAVE_FORM_SEARCH_HISTORY);
 }
 
 var testToggleFormManager = function() {

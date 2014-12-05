@@ -6,7 +6,9 @@
 
 // Include required modules
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
+
+var prefWindow = require("../../../../lib/ui/pref-window");
 
 const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
@@ -14,15 +16,15 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 
   aModule.controller.stopApplication(true);
 }
@@ -32,7 +34,7 @@ var teardownModule = function(aModule) {
  */
 var testRemoveMasterPassword = function() {
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(controller, deleteMasterPassword);
+  prefWindow.openPreferencesDialog(controller, deleteMasterPassword);
 }
 
 /**
@@ -41,7 +43,7 @@ var testRemoveMasterPassword = function() {
  *        MozMillController of the window to operate on
  */
 var deleteMasterPassword = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneSecurity';
 
