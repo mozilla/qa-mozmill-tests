@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8">
+    <title>Testing Social Service</title>
+    <script type="text/javascript">
+      var result = null;
+
+      function handlePosition(aPosition) {
+        result.innerHTML = aPosition.coords.latitude + " " + aPosition.coords.longitude;
+      }
+
+      function handleError(aError) {
+        switch (aError.code) {
+          case aError.PERMISSION_DENIED:
+            result.innerHTML = "denied";
+            break;
+          case aError.POSITION_UNAVAILABLE:
+            result.innerHTML = "unavailable";
+            break;
+          case aError.TIMEOUT:
+            result.innerHTML = "timed_out";
+            break;
+          case aError.UNKNOWN_ERROR:
+            result.innerHTML = "unknown_error";
+            break;
+          default:
+            result.innerHTML = "Unknown error code: " + aError.code;
+        }
+      }
+
+      function geoLocationShare() {
+        result = document.getElementById("geoLocationResult");
+        navigator.geolocation.getCurrentPosition(handlePosition, handleError,
+                                                 {enableHighAccuracy: false, timeout: 30000});
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <p>Share location: <button id="shareLocation" onclick='geoLocationShare()'>Share Geolocation</button></p>
+      <p>Result: <label id="geoLocationResult"></label></p>
+    </div>
+  </body>
+</html>
