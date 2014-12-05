@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8">
+    <title>Test page for installing a service</title>
+    <script type="text/javascript">
+      var currentLocation = window.location.origin;
+
+      var dataService = '{' +
+        '"origin":"' + currentLocation + '",' +
+        '"name":"Testing Social Service",' +
+        '"iconURL":"' + currentLocation + '/services/empty_service/images/firefox16.png",' +
+        '"icon32URL":"' + currentLocation + '/services/empty_service/images/firefox32.png",' +
+        '"icon64URL":"' + currentLocation + '/services/empty_service/images/firefox64.png",' +
+        '"sidebarURL":"' + currentLocation + '/services/empty_service/sidebar.html",' +
+        '"description":"A mockup social service for testing",' +
+        '"author":" Firefox Automation team",' +
+        '"homepageURL":"hg.mozilla.org/qa/mozmill-tests",' +
+        '"version": 1.0}';
+
+      function activateProvider(node, name) {
+        var event = new CustomEvent("ActivateSocialFeature");
+        node.setAttribute("data-service", dataService);
+        node.dispatchEvent(event);
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <p>Install the service: <button id="service" onclick='activateProvider(this)'>Testing Social Service</button></p>
+    </div>
+  </body>
+</html>
