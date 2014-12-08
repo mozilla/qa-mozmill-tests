@@ -35,6 +35,7 @@ function testAboutAccounts() {
   var signUp = aboutAccounts.getElement({type: "signUp"});
   signUp.waitThenClick();
 
+  signIn = aboutAccounts.getElement({type: "signIn"});
   signIn.waitThenClick();
 
   // "Forgot password?" link should be displayed
