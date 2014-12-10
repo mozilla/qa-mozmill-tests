@@ -6,7 +6,7 @@
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-const TIMEOUT = 10000;
+const TIMEOUT = 30000;
 const FILE_NAMES = [
   "goog-phish-shavar.cache",
   "goog-phish-shavar.pset",
