@@ -50,7 +50,7 @@ function testAccessLocationBarHistory() {
 
   // Second - Arrow down to open the autocomplete list, displaying
   // the most recent visit first, then arrow down again to the first entry,
-  // in this case mozilla_projects.html
+  // in this case mozilla_mission.html
   controller.keypress(locationBar.urlbar, "VK_DOWN", {});
   assert.waitFor(function () {
     return locationBar.autoCompleteResults.isOpened;
@@ -61,7 +61,8 @@ function testAccessLocationBarHistory() {
     return locationBar.autoCompleteResults.selectedIndex === 0;
   }, "The first item in the drop down list should be selected");
 
-  locationBar.contains("mission");
+  assert.ok(locationBar.contains("mission"),
+            "Mozilla mission autocomplete entry selected");
   controller.keypress(null, "VK_RETURN", {});
   controller.waitForPageLoad();
 
@@ -71,5 +72,8 @@ function testAccessLocationBarHistory() {
   controller.waitForElement(mozillaLogo);
 
   // Check that the URL in the awesomebar matches the last TEST_DATA URL
-  locationBar.contains(TEST_DATA[2]);
+  // Remove the protocol from the TEST_DATA URL
+  var testURL = TEST_DATA[2].replace(/.*?:\/\//g, "");
+  assert.ok(locationBar.contains(testURL),
+            "Location bar URL matches '" + testURL + "'");
 }
