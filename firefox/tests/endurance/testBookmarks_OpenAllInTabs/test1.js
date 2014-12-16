@@ -52,14 +52,12 @@ function testOpenAllBookmarksInTabs() {
   var testFolder = new elementslib.Selector(controller.window.document,
                                             "toolbarbutton.bookmark-item[label='Test Folder']");
   controller.waitForElement(testFolder);
-  var openAllInTabs = new elementslib.ID(controller.window.document,
-                                         "placesContext_openContainer:tabs");
 
   enduranceManager.run(function () {
     tabBrowser.closeAllTabs();
 
-    controller.rightClick(testFolder);
-    controller.click(openAllInTabs);
+    var contextMenu = controller.getMenu("#placesContext");
+    contextMenu.select("#placesContext_openContainer\\:tabs", testFolder);
     controller.waitForPageLoad();
 
     // Dismiss the context menu
