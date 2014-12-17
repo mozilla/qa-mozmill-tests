@@ -6,13 +6,19 @@
 
 var addons = require("../../../../lib/addons");
 var browser = require("../../../lib/ui/browser");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
+  "location" : BASE_URL + "geolocation/locations/mozilla_san_francisco.json",
   "url" : BASE_URL + "services/install.html",
   "service" : "Testing Social Service"
 };
+
+const PREF_GEO_WIFI_URI = "geo.wifi.uri";
+
+const TIMEOUT_POSITION = 30000;
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
@@ -20,9 +26,13 @@ function setupModule(aModule) {
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
   aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
+  prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA.location);
 }
 
 function teardownModule(aModule) {
+  prefs.clearUserPref(PREF_GEO_WIFI_URI);
+
   aModule.browserWindow.tabs.closeAllTabs();
   aModule.controller.stopApplication(true);
 }
@@ -52,7 +62,7 @@ function testInstall() {
   // When installing the service the sidebar should be displayed
   var sidebar = findElement.ID(controller.window.document, "social-sidebar-box");
   assert.waitFor(() => {
-    return sidebar.exists() && utils.isDisplayed(controller, sidebar);
+    return utils.isDisplayed(controller, sidebar);
   }, "Sidebar has been displayed");
 }
 
@@ -63,7 +73,7 @@ function testShareLocation() {
   // Share Location
   var shareLocation = findElement.ID(controller.window.document, "shareLocation");
   assert.waitFor(() => {
-    return shareLocation.exists() && utils.isDisplayed(controller, shareLocation);
+    return utils.isDisplayed(controller, shareLocation);
   }, "Share geolocation button has been found");
 
   locationBar.waitForNotificationPanel(() => {
@@ -77,6 +87,14 @@ function testShareLocation() {
   locationBar.waitForNotificationPanel(() => {
     shareButton.click();
   }, {type: "notification", open: false});
+
+  // Check if the location is displayed
+  // The position updates lazily so additional timeout is needed
+  var result = findElement.ID(controller.window.document, "geoLocationResult");
+  var regExp = /\d+(\.\d*)?\.\d+/;
+  assert.waitFor(function () {
+    return regExp.test(result.getNode().textContent);
+  }, "Geolocation position is: " + result.getNode().textContent, TIMEOUT_POSITION);
 }
 
 /**
@@ -102,7 +120,7 @@ function testDisableEnableRemoveUndo() {
   // Sidebar should be hidden when the service is disabled
   var sidebar = findElement.ID(controller.window.document, "social-sidebar-box");
   assert.waitFor(() => {
-    return sidebar.exists() && !utils.isDisplayed(controller, sidebar);
+    return !utils.isDisplayed(controller, sidebar);
   }, "Sidebar has been hidden.");
 
   // Enable the service
