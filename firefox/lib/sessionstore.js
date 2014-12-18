@@ -9,6 +9,8 @@
  * @version 1.0.0
  */
 
+Cu.import("resource://gre/modules/Services.jsm");
+
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var prefs = require("../../lib/prefs");
@@ -21,6 +23,8 @@ var sessionStoreService = Cc["@mozilla.org/browser/sessionstore;1"]
 
 // Preference for indicating the amount of restorable tabs
 const SESSIONSTORE_MAXTABS_PREF = 'browser.sessionstore.max_tabs_undo';
+
+const TOPIC_SESSIONSTORE_STATE_CHANGED = "sessionstore-state-write-complete";
 
 /**
  * Constructor
@@ -267,11 +271,37 @@ function undoClosedWindow(aController, aEvent)
     assert.ok(sessionStoreService.getClosedWindowCount(aController.window) < count, "Closed window count is lower");
 }
 
+/**
+ * Executes a function and waits for session to be saved on disk
+ *
+ * @param {function} aCallback
+ *        Callback that will cause the session to be written to disk
+ * @param {number} [aTimeout=60000]
+ *        Timeout the session data to be saved on disk
+ */
+function waitForSessionSaved(aCallback, aTimeout=60000) {
+  assert.equal(typeof aCallback, "function", "Callback is defined");
+
+  var updated = false;
+  var observer = { observe: function () { updated = true } };
+
+  Services.obs.addObserver(observer, TOPIC_SESSIONSTORE_STATE_CHANGED, false);
+  try {
+    aCallback();
+
+    assert.waitFor(() => updated, "Session has been saved to disk", aTimeout);
+  }
+  finally {
+    Services.obs.removeObserver(observer, TOPIC_SESSIONSTORE_STATE_CHANGED);
+  }
+}
+
 // Export of functions
 exports.getClosedTabCount = getClosedTabCount;
 exports.resetRecentlyClosedTabs = resetRecentlyClosedTabs;
 exports.undoClosedTab = undoClosedTab;
 exports.undoClosedWindow = undoClosedWindow;
+exports.waitForSessionSaved = waitForSessionSaved;
 
 // Export of classes
 exports.aboutSessionRestore = aboutSessionRestore;

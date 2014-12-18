@@ -6,6 +6,7 @@
 
 // Include required modules
 var prefs = require("../../../../../lib/prefs");
+var sessionstore = require("../../../../lib/sessionstore");
 var tabs = require("../../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
@@ -39,15 +40,24 @@ function teardownModule(aModule) {
  * Open three webpages in different tabs
  */
 function testOpenTabs() {
-  controller.open(TEST_DATA[0])
+  controller.open(TEST_DATA[0]);
   controller.waitForPageLoad();
-  // Open 2 new tabs
   openTabWithUrl(TEST_DATA[1]);
-  openTabWithUrl(TEST_DATA[2]);
+
+  // Open the third tab and wait for session to be written to disk
+  sessionstore.waitForSessionSaved(() => {
+    openTabWithUrl(TEST_DATA[2]);
+  });
 
   // Check for correct number of opened tabs
   assert.equal(tabBrowser.length, TEST_DATA.length,
                "There are " + TEST_DATA.length + " opened tabs");
+
+  // Check if correct tabs have been opened
+  TEST_DATA.forEach((aURL, aIndex) => {
+    assert.ok(controller.tabs.getTabWindow(aIndex).location.toString() === aURL,
+              "Tab with URL '" + aURL + "' has been opened");
+  });
 }
 
 /**
@@ -58,6 +68,6 @@ function testOpenTabs() {
  */
 function openTabWithUrl(aURL) {
   tabBrowser.openTab();
-  tabBrowser.controller.open(aURL);
-  tabBrowser.controller.waitForPageLoad();
+  controller.open(aURL);
+  controller.waitForPageLoad();
 }
