@@ -82,7 +82,7 @@ BaseInContentPage.prototype = {
    * @returns {string} URL of the page
    */
   get url() {
-    return this.contentWindow.location.href;
+    return this.contentWindow ? this.contentWindow.location.href : null;
   },
 
   /**
@@ -147,6 +147,7 @@ BaseInContentPage.prototype = {
     }
 
     this.browserWindow.tabs.selectedIndex = this.tabs[0].index;
+    this._contentWindow = null;
 
     if (typeof aCallback === "function") {
       aCallback();
