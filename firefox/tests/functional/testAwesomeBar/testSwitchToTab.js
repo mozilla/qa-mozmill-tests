@@ -6,6 +6,7 @@
 
 // Include the required modules
 var {assert, expect} = require("../../../../lib/assertions");
+var places = require("../../../../lib/places");
 var tabs = require("../../../lib/tabs");
 
 var browser = require("../../../lib/ui/browser");
@@ -16,8 +17,6 @@ const TEST_DATA = [
   {url: BASE_URL + "layout/mozilla_governance.html", string: "governance"},
   {url: BASE_URL + "layout/mozilla_grants.html", string: "grants"}
 ];
-
-const PLACES_DB_TIMEOUT = 4000;
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
@@ -33,18 +32,18 @@ function teardownModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
 }
 
-/*
+/**
  * Test Switch to Tab feature
  */
 function testSwitchToTab() {
   TEST_DATA.forEach(function (aPage) {
-    controller.open(aPage.url);
-    controller.waitForPageLoad();
-    tabBrowser.openTab();
+    // History visit listener
+    places.waitForVisited(aPage.url, () => {
+      controller.open(aPage.url);
+      controller.waitForPageLoad();
+      tabBrowser.openTab();
+    });
   });
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(PLACES_DB_TIMEOUT);
 
   TEST_DATA.forEach(function (aPage) {
     locationBar.clear();

@@ -17,8 +17,6 @@ const TEST_DATA = {
   name: "grants"
 };
 
-const PLACES_DB_TIMEOUT = 4000;
-
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
 var setupModule = function(aModule) {
@@ -42,14 +40,14 @@ var teardownModule = function(aModule) {
  * Check matched awesomebar items are highlighted.
  */
 var testCheckItemHighlight = function() {
-  // Open the test page then about:blank to set up the test test environment
-  controller.open(TEST_DATA.url);
-  controller.waitForPageLoad();
-  controller.open("about:blank");
-  controller.waitForPageLoad();
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(PLACES_DB_TIMEOUT);
+  // History visit listener
+  places.waitForVisited(TEST_DATA.url, () => {
+    // Open the test page then about:blank to set up the test test environment
+    controller.open(TEST_DATA.url);
+    controller.waitForPageLoad();
+    controller.open("about:blank");
+    controller.waitForPageLoad();
+  });
 
   // Focus the locationbar, delete any contents there, then type in a match string
   locationBar.clear();

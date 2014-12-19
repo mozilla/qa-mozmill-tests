@@ -46,14 +46,14 @@ var teardownModule = function(aModule) {
  * Check the maximum visible items in a match list.
  */
 var testVisibleItemsMax = function() {
-  // Open some local pages to set up the test environment
-  TEST_DATA.forEach(function (aPage) {
-    locationBar.loadURL(aPage);
-    controller.waitForPageLoad();
+  // History visit listener
+  places.waitForVisited(TEST_DATA, () => {
+    // Open some local pages to set up the test environment
+    TEST_DATA.forEach(function (aPage) {
+      locationBar.loadURL(aPage);
+      controller.waitForPageLoad();
+    });
   });
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
 
   var testString = 'll';
 
