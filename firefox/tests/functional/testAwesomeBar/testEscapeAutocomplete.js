@@ -34,14 +34,14 @@ var teardownModule = function(aModule) {
  * Check Escape key functionality during auto-complete process
  */
 var testEscape = function() {
-  // Open some local pages to set up the test environment
-  TEST_DATA.forEach(function (aPage) {
-    locationBar.loadURL(aPage);
-    controller.waitForPageLoad();
+  // History visit listener
+  places.waitForVisited(TEST_DATA, () => {
+    // Open some local pages to set up the test environment
+    TEST_DATA.forEach(aPage => {
+      locationBar.loadURL(aPage);
+      controller.waitForPageLoad();
+    });
   });
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
 
   // Focus the locationbar and delete any content that is there
   locationBar.clear();

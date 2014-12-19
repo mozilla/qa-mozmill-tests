@@ -34,16 +34,21 @@ function teardownModule(aModule) {
  * Check access to the location bar drop down list via autocomplete
  */
 function testAccessLocationBarHistory() {
-  // Open a few different sites to create a small history
-  // NOTE: about:blank doesn't appear in history and clears the page
-  //       for clean test arena
-  TEST_DATA.forEach(function (aPage) {
-    locationBar.loadURL(aPage);
-    controller.waitForPageLoad();
+  // History visit listener
+  places.waitForVisited(TEST_DATA.slice(0, -1), () => {
+    // Open a few different sites to create a small history
+    // NOTE: about:blank doesn't appear in history and clears the page
+    //       for clean test arena
+    TEST_DATA.forEach((aPage, aIndex) => {
+      locationBar.loadURL(aPage);
+      controller.waitForPageLoad();
+      if (aIndex !== 3) {
+        dump(locationBar.value + '\n');
+        assert.waitFor(() => (locationBar.value === aPage.split("//")[1]),
+                       "Location bar value is correct, expected: '" + aPage + "'");
+      }
+    });
   });
-
-  // Wait about 4s so the history gets populated
-  controller.sleep(4000);
 
   // First - Focus the locationbar then delete any contents there
   locationBar.clear();

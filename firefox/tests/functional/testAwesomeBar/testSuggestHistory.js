@@ -38,12 +38,12 @@ var teardownModule = function(aModule) {
  * Check history item appears in autocomplete list.
  */
 var testSuggestHistoryAndBookmarks = function() {
-  // Open the test page
-  locationBar.loadURL(TEST_DATA.url);
-  controller.waitForPageLoad();
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
+  // History visit listener
+  places.waitForVisited(TEST_DATA.url, () => {
+    // Open the test page
+    locationBar.loadURL(TEST_DATA.url);
+    controller.waitForPageLoad();
+  });
 
   // Focus the locationbar, delete any contents there
   locationBar.clear();

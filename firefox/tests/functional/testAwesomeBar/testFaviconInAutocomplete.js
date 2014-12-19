@@ -39,15 +39,15 @@ var teardownModule = function(aModule) {
  *
  */
 var testFaviconInAutoComplete = function() {
-  // Open the local test page
-  locationBar.loadURL(TEST_DATA.url);
-  controller.waitForPageLoad();
+  // History visit listener
+  places.waitForVisited(TEST_DATA.url, () => {
+    // Open the local test page
+    locationBar.loadURL(TEST_DATA.url);
+    controller.waitForPageLoad();
+  });
 
   // Get the location bar Favicon element URL
   var locationBarFaviconUrl = locationBar.getElement({type:"favicon"}).getNode().getAttribute('src');
-
-  // Wait for 4 seconds to work around Firefox LAZY ADD of items to the DB
-  controller.sleep(4000);
 
   // Focus the locationbar, delete any contents there
   locationBar.clear();
