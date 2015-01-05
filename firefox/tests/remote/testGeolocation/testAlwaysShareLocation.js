@@ -5,10 +5,11 @@
 "use strict";
 
 // Include required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
@@ -27,12 +28,14 @@ const PREF_GEO_WIFI_URI = "geo.wifi.uri";
 const TIMEOUT_GEOLOCATE = 30000;
 
 function setupModule(aModule) {
-  prefs.preferences.setPref(PREF_GEO_WIFI_URI, TEST_DATA["locations"]);
+  prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA["locations"]);
 }
 
 function setupTest(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.tabBrowser.closeAllTabs();
@@ -52,7 +55,7 @@ function teardownTest(aModule) {
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_GEO_WIFI_URI);
+  prefs.clearUserPref(PREF_GEO_WIFI_URI);
 
   delete persisted.nextTest;
 

@@ -12,23 +12,24 @@
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
+var search = require("search");
 var utils = require("../../lib/utils");
 
 /**
- * Constructor
+ * Auto Complete Results class
  *
- * @param {MozmillController} aController
- *        MozMillController of the window to operate on
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the results are part of
  */
-function autoCompleteResults(aController) {
-  this._controller = aController;
+function autoCompleteResults(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "A browser window has been defined");
+
+  this._browserWindow = aBrowserWindow;
   this._popup = this.getElement({type: "popup"});
   this._results = this.getElement({type: "results"});
 }
 
-/**
- * AutoComplete Result class
- */
 autoCompleteResults.prototype = {
   /**
    * Returns all autocomplete results
@@ -45,13 +46,12 @@ autoCompleteResults.prototype = {
   },
 
   /**
-   * Returns the controller of the current window
+   * Get the Browser Window
    *
-   * @returns Mozmill Controller
-   * @type MozMillController
+   * @returns {object} The browser window where the popup lives
    */
-  get controller() {
-    return this._controller;
+  get browserWindow() {
+    return this._browserWindow;
   },
 
   /**
@@ -183,7 +183,8 @@ autoCompleteResults.prototype = {
   getElements : function autoCompleteResults_getElements(aSpec) {
     var spec = aSpec || {};
 
-    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var root = spec.parent ? spec.parent.getNode()
+                           : this.browserWindow.controller.window.document;
     var nodeCollector = new domUtils.nodeCollector(root);
 
     switch (spec.type) {
@@ -195,8 +196,8 @@ autoCompleteResults.prototype = {
         nodeCollector.queryAnonymousNode("anonid", "richlistbox");
         break;
       case "result":
-        var elem = new elementslib.Elem(this.getElement({type: "results"}).
-                                        getNode().getItemAtIndex(spec.value));
+        var elem = findElement.Elem(this.getElement({type: "results"}).
+                                    getNode().getItemAtIndex(spec.value));
         return [elem];
       default:
         assert.fail("Unknown element type - " + spec.type);
@@ -230,7 +231,7 @@ autoCompleteResults.prototype = {
         this._popup.getNode().hidePopup();
       }
       else {
-        this._controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
+        this.browserWindow.controller.keypress(locationBar.urlbar, "VK_ESCAPE", {});
       }
       assert.waitFor(function () {
           return !this.isOpened;
@@ -464,13 +465,240 @@ DownloadsPanel.prototype = {
 }
 
 /**
- * Constructor
+ * Downloads Panel class
  *
- * @param {MozmillController} aController
- *        MozMillController of the window to operate on
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the downloads panel is part of
  */
-function editBookmarksPanel(aController) {
-  this._controller = aController;
+function DownloadsPanel(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "Browser Window has been defined");
+
+  this._browserWindow = aBrowserWindow;
+  this._panel = this.getElement({type: "panel"});
+}
+
+DownloadsPanel.prototype = {
+  /**
+   * Get the Browser Window
+   *
+   * @returns {object} The browser window where the panel lives
+   */
+  get browserWindow() {
+    return this._browserWindow;
+  },
+
+  /**
+   * Check if the Downloads Panel is open
+   *
+   * @returns {boolen} True if the panel is open, false otherwise
+   */
+  get isOpen() {
+    return this.panel.getNode().state === "open";
+  },
+
+  /**
+   * Get the panel
+   *
+   * @returns {MozMillElement} The downloads panel
+   */
+  get panel() {
+    return this._panel;
+  },
+
+  /**
+   * Get the state of a download
+   *
+   * @param {MozMillElement} aDownload
+   *        The element for which to get the state
+   *
+   * @returns {number} The number representing the state download is in
+   */
+  getDownloadStatus : function DownloadsPanel_getDownloadState(aDownload) {
+    assert.ok(aDownload, "Download element has been specified");
+
+    return parseInt(aDownload.getNode().getAttribute("state"));
+  },
+
+  /**
+   * Retrieve an UI element based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @parma {string} aSpec.type
+   *        Identifier of the element
+   * @param {string} [aSpec.subtype]
+   *        Attribute of the element to filter
+   * @param {string} [aSpec.value]
+   *        Value of the attribute to filter
+   * @param {string} [aSpec.parent=document]
+   *        Parent of the to find element
+   *
+   * @returns {ElemBase} Element which has been found
+   */
+  getElement : function DownloadsPanel_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve list of UI elements based on the given specification
+   *
+   * @param {object} aSpec
+   *        Information of the UI elements which should be retrieved
+   * @parma {string} aSpec.type
+   *        Identifier of the element
+   * @param {string} [aSpec.subtype]
+   *        Attribute of the element to filter
+   * @param {string} [aSpec.value]
+   *        Value of the attribute to filter
+   * @param {string} [aSpec.parent=document]
+   *        Parent of the to find element
+   *
+   * @returns {ElemBase[]} Elements which have been found
+   */
+  getElements : function DownloadsPanel_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent || this.browserWindow.controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
+
+    var elems = null;
+
+    switch (spec.type) {
+      case "download":
+        assert.ok(spec.value, "Download index has been specified");
+
+        elems = [findElement.ID(root, "downloadsItem_id:" + spec.value)];
+        break;
+      case "downloads":
+        nodeCollector.root = findElement.ID(root, "downloadsListBox").getNode();
+        nodeCollector.queryNodes("richlistitem");
+        elems = nodeCollector.elements;
+        break;
+      case "downloadButton":
+        assert.ok(spec.value, "Download index has been specified");
+        assert.ok(spec.subtype, "Download button has been specified");
+
+        var item = this.getElement({type: "download", value: spec.value});
+        nodeCollector.root = item.getNode();
+        switch (spec.subtype) {
+          case "cancel":
+            nodeCollector.queryAnonymousNode("class",
+                                             "downloadButton downloadCancel");
+            break;
+          case "retry":
+            nodeCollector.queryAnonymousNode("class",
+                                             "downloadButton downloadRetry");
+            break;
+          case "show":
+            nodeCollector.queryAnonymousNode("class",
+                                             "downloadButton downloadShow");
+            break;
+          default:
+            assert.fail("Unknown element subtype - " + spec.subtype);
+        }
+        elems = nodeCollector.elements;
+        break;
+      case "openButton":
+        elems = [findElement.ID(root, "downloads-button")];
+        break;
+      case "panel":
+        elems = [findElement.ID(root, "downloadsPanel")];
+        break;
+      case "showAllDownloads":
+        elems = [findElement.ID(root, "downloadsHistory")];
+        break;
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return elems;
+  },
+
+  /**
+   * Close the panel
+   *
+   * @params {object} [aSpec={}]
+   *         Information on how to close the panel
+   * @params {string} [aSpec.method="shortcut"]
+   *         Method to use to close the downloads panel ("callback"|"shortcut")
+   * @params {function} [aSpec.callback]
+   *         Callback that triggeres the download panel to close
+   * @params {boolean} [aSpec.force=false]
+   *         Force closing the Downloads Panel
+   *
+   */
+  close : function DownloadsPanel_close(aSpec={}) {
+    var method = aSpec.method || "shortcut";
+
+    if (this.panel.getNode().state === "closed" && aSpec.force) {
+      return;
+    }
+
+    waitForNotificationPanel(() => {
+      if (aSpec.force && this.panel.getNode()) {
+        this.panel.getNode().hidePopup();
+        return;
+      }
+
+      switch (method) {
+        case "callback":
+          assert.equal(aSpec.callback, "function",
+                       "Callback has been defined");
+          aSpec.callback();
+          break;
+        case "shortcut":
+          this.panel.keypress("VK_ESCAPE", {});
+          break;
+        default:
+          assert.fail("Unknown method to open the downloads panel - " + method);
+      }
+    }, {panel: this.panel, open: false});
+  },
+
+  /**
+   * Open the panel
+   *
+   * @params {object} [aSpec={}]
+   *         Information on how to open the panel
+   * @params {string} [aSpec.method="button"]
+   *         Method to use to open the downloads panel ("button"|"callback")
+   * @params {function} [aSpec.callback]
+   *         Callback that triggeres the download panel to open
+   */
+  open : function DownloadsPanel_waitForState(aSpec={}) {
+    var method = aSpec.method || "button";
+
+    waitForNotificationPanel(() => {
+      switch (method) {
+        case "button":
+          this.getElement({type: "openButton"}).click();
+          break;
+        case "callback":
+          assert.equal(aSpec.callback, "function",
+                       "Callback has been defined");
+          aSpec.callback();
+          break;
+        default:
+          assert.fail("Unknown method to open the downloads panel - " + method);
+      }
+    }, {panel: this.panel, open: true});
+  }
+}
+
+/**
+ * Edit Bookmarks Panel class
+ *
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the panel is part of
+ */
+function editBookmarksPanel(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "A browser window has been defined");
+
+  this._browserWindow = aBrowserWindow;
 }
 
 /**
@@ -478,12 +706,12 @@ function editBookmarksPanel(aController) {
  */
 editBookmarksPanel.prototype = {
   /**
-   * Get the controller of the window
+   * Get the Browser Window
    *
-   * @returns {MozMillController} Mozmill Controller
+   * @returns {object} The browser window where the popup lives
    */
-  get controller() {
-    return this._controller;
+  get browserWindow() {
+    return this._browserWindow;
   },
 
   /**
@@ -499,6 +727,7 @@ editBookmarksPanel.prototype = {
    */
   getElement : function editBookmarksPanel_getElement(aSpec) {
     var elem = null;
+    var parent = this.browserWindow.controller.window.document;
 
     switch(aSpec.type) {
       /**
@@ -506,25 +735,25 @@ editBookmarksPanel.prototype = {
        * value: value to match
        */
       case "bookmarkPanel":
-        elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanel");
+        elem = findElement.ID(parent, "editBookmarkPanel");
         break;
       case "doneButton":
-        elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanelDoneButton");
+        elem = findElement.ID(parent, "editBookmarkPanelDoneButton");
         break;
       case "folderExpander":
-        elem = new elementslib.ID(this._controller.window.document, "editBMPanel_foldersExpander");
+        elem = findElement.ID(parent, "editBMPanel_foldersExpander");
         break;
       case "folderList":
-        elem = new elementslib.ID(this._controller.window.document, "editBMPanel_folderMenuList");
+        elem = findElement.ID(parent, "editBMPanel_folderMenuList");
         break;
       case "nameField":
-        elem = new elementslib.ID(this._controller.window.document, "editBMPanel_namePicker");
+        elem = findElement.ID(parent, "editBMPanel_namePicker");
         break;
       case "removeButton":
-        elem = new elementslib.ID(this._controller.window.document, "editBookmarkPanelRemoveButton");
+        elem = findElement.ID(parent, "editBookmarkPanelRemoveButton");
         break;
       case "tagExpander":
-        elem = new elementslib.ID(this._controller.window.document, "editBMPanel_tagsSelectorExpander");
+        elem = findElement.ID(parent, "editBMPanel_tagsSelectorExpander");
         break;
       default:
         assert.fail("Unknown element type - " + aSpec.type);
@@ -535,27 +764,27 @@ editBookmarksPanel.prototype = {
 }
 
 /**
- * Identity popup (from location bar) class
- * @constructor
+ * Identity Popup class
  *
- * @param {MozMillController} aController
- *        MozMillController of the window to operate on
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the identity popup is part of
  */
-function IdentityPopup(aController) {
-  assert.ok(aController, "A controller has to be specified");
+function IdentityPopup(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "A browser window has been defined");
 
-  this._controller = aController;
+  this._browserWindow = aBrowserWindow;
   this._popup = this.getElement({type: "popup"});
 }
 
 IdentityPopup.prototype = {
   /**
-   * Get the controller of the window
+   * Get the Browser Window
    *
-   * @returns {MozMillController} Mozmill Controller
+   * @returns {object} The browser window where the popup lives
    */
-  get controller() {
-    return this._controller;
+  get browserWindow() {
+    return this._browserWindow;
   },
 
   /**
@@ -596,7 +825,7 @@ IdentityPopup.prototype = {
   getElements : function IdentityPopup_getElements(aSpec) {
     var spec = aSpec || { };
     var elem = null;
-    var parent = this._controller.window.document;
+    var parent = this.browserWindow.controller.window.document;
 
     switch (spec.type) {
       case "box":
@@ -644,18 +873,18 @@ IdentityPopup.prototype = {
 }
 
 /**
- * Constructor
+ * Location Bar class
  *
- * @param {MozmillController} aController
- *        MozMillController of the window to operate on
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the location bar is part of
  */
-function locationBar(aController) {
-  assert.ok(aController, "A controller has to be specified");
+function locationBar(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "Browser window has been defined");
 
-  this._controller = aController;
-  this._autoCompleteResults = new autoCompleteResults(aController);
-  this._editBookmarksPanel = new editBookmarksPanel(aController);
-  this._identityPopup = new IdentityPopup(aController);
+  this._browserWindow = aBrowserWindow;
+  this._autoCompleteResults = null;
+  this._identityPopup = null;
 }
 
 /**
@@ -663,23 +892,24 @@ function locationBar(aController) {
  */
 locationBar.prototype = {
   /**
-   * Returns the autocomplete object
+   * Get the Browser Window
    *
-   * @returns Autocomplete object
-   * @type {object}
+   * @returns {object} The browser window where the panel lives
    */
-  get autoCompleteResults() {
-    return this._autoCompleteResults;
+  get browserWindow() {
+    return this._browserWindow;
   },
 
   /**
-   * Returns the edit bookmarks panel object
+   * Returns the autocomplete object
    *
-   * @returns editBookmarksPanel object
-   * @type {object}
+   * @returns {object} Autocomplete instance
    */
-  get editBookmarksPanel() {
-    return this._editBookmarksPanel;
+  get autoCompleteResults() {
+    if (!this._autoCompleteResults) {
+      this._autoCompleteResults = new autoCompleteResults(this.browserWindow);
+    }
+    return this._autoCompleteResults;
   },
 
   /**
@@ -688,24 +918,16 @@ locationBar.prototype = {
    * @returns {object} Identity popup instance
    */
   get identityPopup() {
+    if (!this._identityPopup) {
+      this._identityPopup = new IdentityPopup(this.browserWindow);
+    }
     return this._identityPopup;
-  },
-
-  /**
-   * Returns the controller of the current window
-   *
-   * @returns Mozmill controller
-   * @type {MozMillController}
-   */
-  get controller() {
-    return this._controller;
   },
 
   /**
    * Returns the urlbar element
    *
-   * @returns URL bar
-   * @type {ElemBase}
+   * @returns {ElemBase} URL bar
    */
   get urlbar() {
     return this.getElement({type: "urlbar"});
@@ -714,8 +936,7 @@ locationBar.prototype = {
   /**
    * Returns the currently shown URL
    *
-   * @returns Text inside the location bar
-   * @type {string}
+   * @returns {string} Text inside the location bar
    */
   get value() {
     return this.urlbar.getNode().value;
@@ -726,7 +947,7 @@ locationBar.prototype = {
    */
   clear : function locationBar_clear() {
     this.focus({type: "shortcut"});
-    this._controller.keypress(this.urlbar, "VK_DELETE", {});
+    this.urlbar.keypress("VK_DELETE", {});
 
     assert.waitFor(function () {
       return this.urlbar.getNode().value === '';
@@ -738,7 +959,7 @@ locationBar.prototype = {
    */
   closeContextMenu : function locationBar_closeContextMenu() {
     var menu = this.getElement({type: "contextMenu"});
-    this._controller.keypress(menu, "VK_ESCAPE", {});
+    menu.keypress("VK_ESCAPE", {});
   },
 
   /**
@@ -760,11 +981,12 @@ locationBar.prototype = {
   focus : function locationBar_focus(aEvent) {
     switch (aEvent.type) {
       case "click":
-        this._controller.click(this.urlbar);
+        this.urlbar.click();
         break;
       case "shortcut":
         var cmdKey = utils.getEntity(this.getDtds(), "openCmd.commandkey");
-        this._controller.keypress(null, cmdKey, {accelKey: true});
+        this.browserWindow.controller.keypress(null, cmdKey,
+                                               {accelKey: true});
         break;
       default:
         assert.fail("Unkown event type - " + aEvent.type);
@@ -823,7 +1045,8 @@ locationBar.prototype = {
   getElements : function locationBar_getElements(aSpec) {
     var spec = aSpec || {};
 
-    var root = spec.parent ? spec.parent.getNode() : this._controller.window.document;
+    var root = spec.parent ? spec.parent.getNode()
+                           : this.browserWindow.controller.window.document;
     var nodeCollector = new domUtils.nodeCollector(root);
 
     switch(spec.type) {
@@ -831,8 +1054,6 @@ locationBar.prototype = {
        * subtype: subtype to match
        * value: value to match
        */
-      case "bookmarksMenuButton":
-        return [new elementslib.ID(root, "bookmarks-menu-button")];
       case "contextMenu":
         nodeCollector.root = this.getElement({type: "urlbar_input"}).getNode().parentNode;
         nodeCollector.queryAnonymousNode("anonid", "input-box-contextmenu");
@@ -843,11 +1064,9 @@ locationBar.prototype = {
                                                                  "cmd_" + spec.subtype);
         break;
       case "favicon":
-        return [new elementslib.ID(root, "page-proxy-favicon")];
-      case "feedButton":
-        return [new elementslib.ID(root, "feed-button")];
+        return [findElement.ID(root, "page-proxy-favicon")];
       case "goButton":
-        return [new elementslib.ID(root, "urlbar-go-button")];
+        return [findElement.ID(root, "urlbar-go-button")];
       case "historyDropMarker":
         nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
         nodeCollector.queryAnonymousNode("anonid", "historydropmarker");
@@ -863,23 +1082,15 @@ locationBar.prototype = {
         nodeCollector.queryNodes("#" + spec.subtype);
         break;
       case "notificationIcon":
-        return [new elementslib.ID(root, spec.subtype + "-notification-icon")];
+        return [findElement.ID(root, spec.subtype + "-notification-icon")];
       case "notification_popup":
-        return [new elementslib.ID(root, "notification-popup")];
+        return [findElement.ID(root, "notification-popup")];
       case "reloadButton":
-        return [new elementslib.ID(root, "urlbar-reload-button")];
-      case "starButton":
-        if (utils.australis.isAustralis()) {
-          nodeCollector.root = this.getElement({type: "bookmarksMenuButton"}).getNode();
-          nodeCollector.queryAnonymousNode("anonid", "button");
-          break;
-        }
-
-        return [new elementslib.ID(root, "star-button")];
+        return [findElement.ID(root, "urlbar-reload-button")];
       case "stopButton":
-        return [new elementslib.ID(root, "urlbar-stop-button")];
+        return [findElement.ID(root, "urlbar-stop-button")];
       case "urlbar":
-        return [new elementslib.ID(root, "urlbar")];
+        return [findElement.ID(root, "urlbar")];
       case "urlbar_input":
         nodeCollector.root = this.getElement({type: "urlbar"}).getNode();
         nodeCollector.queryAnonymousNode("anonid", "input");
@@ -936,7 +1147,7 @@ locationBar.prototype = {
   loadURL : function locationBar_loadURL(aUrl) {
     this.focus({type: "shortcut"});
     this.type(aUrl);
-    this._controller.keypress(this.urlbar, "VK_RETURN", {});
+    this.urlbar.keypress("VK_RETURN", {});
   },
 
   /**
@@ -985,44 +1196,7 @@ locationBar.prototype = {
    *        Text to enter into the location bar
    */
   type : function locationBar_type(aText) {
-    this._controller.type(this.urlbar, aText);
-  },
-
-  /**
-   * Bookmark a page
-   * Also waits for the animation event that occurs to finish
-   *
-   * @param {function} aCallback
-   *        Function to trigger page bookmarking event
-   */
-  bookmarkWithAnimation : function locationBar_bookmarkWithAnimation(aCallback) {
-    var self = { started: false, ended: false };
-    var bookmarksMenuButton = this.getElement({type: "bookmarksMenuButton"});
-    var window = this._controller.window.document.defaultView;
-
-    var mutationObserver = new window.MutationObserver(function (aMutations) {
-      aMutations.forEach(function (aMutation) {
-        // For changing the CSS style and enabling the button there's a different
-        // action besides animationend event
-        // We have to wait until the attribute has been added then removed
-
-        if (!self.started) {
-          self.started = (aMutation.target.getAttribute("notification") === "finish");
-        }
-        else {
-          self.ended = !aMutation.target.hasAttribute("notification");
-        }
-      });
-    });
-    try {
-      mutationObserver.observe(bookmarksMenuButton.getNode(),
-                               {attributes: true, attributeFilter: ["notification"]});
-      aCallback();
-      assert.waitFor(() => self.ended);
-    }
-    finally {
-      mutationObserver.disconnect();
-    }
+    this.browserWindow.controller.type(this.urlbar, aText);
   },
 
   /**
@@ -1046,9 +1220,6 @@ locationBar.prototype = {
     switch (spec.type) {
       case "notification":
         panel = this.getElement({type: "notification_popup"});
-        break;
-      case "bookmark":
-        panel = this._editBookmarksPanel.getElement({type: "bookmarkPanel"});
         break;
       case "identity":
         panel = this._identityPopup.getElement({type: "popup"});
@@ -1243,30 +1414,219 @@ MenuPanel.prototype = {
 }
 
 /**
- * Toogle bookmarks toolbar
+ * Navigation Bar class
  *
- * @param {MozmillController} aController
- *        MozMillController of the window to operate on
- * @param {Boolean} aState
- *        Expected state of the BookmarksToolbar
+ * @constructor
+ * @param {object} aBrowserWindow
+ *        Browser window the navigation bar is part of
  */
-function toggleBookmarksToolbar(aController, aState) {
-  var navbar = new elementslib.ID(aController.window.document, "nav-bar");
+function NavBar(aBrowserWindow) {
+  assert.ok(aBrowserWindow, "Browser window has been defined");
 
-  aController.rightClick(navbar, navbar.getNode().boxObject.width / 2, 2);
+  this._browserWindow = aBrowserWindow;
+  this._root = this.getElement({type: "nav-bar"});
 
-  var toggle = new elementslib.ID(aController.window.document,
-                                  "toggle_PersonalToolbar");
-  aController.mouseDown(toggle);
-  aController.mouseUp(toggle);
+  this._downloadsPanel = null;
+  this._editBookmarksPanel = null;
+  this._locationBar = null;
+  this._menuPanel = null;
+  this._searchBar = null;
+}
 
-  // Check that the Bookmark toolbar is in the correct state
-  var state = !!aState;
-  var bookmakrsToolbar = new elementslib.ID(aController.window.document,
-                                            "PersonalToolbar");
-  assert.waitFor(function () {
-    return bookmakrsToolbar.getNode().getAttribute("collapsed") === String(!state);
-  }, "Bookmarks Toolbar has " + ((state) ? "opened" : "closed"));
+NavBar.prototype = {
+  /**
+   * Get the Browser Window
+   *
+   * @returns {object} The browser window where the nav bar lives
+   */
+  get browserWindow() {
+    return this._browserWindow;
+  },
+
+  /**
+   * Returns the downloadsPanel object
+   *
+   * @returns {object} menuPanel
+   */
+  get downloadsPanel() {
+    if (!this._downloadsPanel) {
+      this._downloadsPanel = new DownloadsPanel(this.browserWindow);
+    }
+    return this._downloadsPanel;
+  },
+
+  /**
+   * Returns the editBookmarksPanel object
+   *
+   * @returns {object} editBookmarksPanel
+   */
+  get editBookmarksPanel() {
+    if (!this._editBookmarksPanel) {
+      this._editBookmarksPanel = new editBookmarksPanel(this.browserWindow);
+    }
+    return this._editBookmarksPanel;
+  },
+
+  /**
+   * Returns the locationBar object
+   *
+   * @returns {object} locationBar
+   */
+  get locationBar() {
+    if (!this._locationBar) {
+      this._locationBar = new locationBar(this.browserWindow);
+    }
+    return this._locationBar;
+  },
+
+  /**
+   * Returns the menuPanel object
+   *
+   * @returns {object} menuPanel
+   */
+  get menuPanel() {
+    if (!this._menuPanel) {
+      this._menuPanel = new MenuPanel(this.browserWindow);
+    }
+    return this._menuPanel;
+  },
+
+  /**
+   * Returns the searchBar object
+   *
+   * @returns {object} searchBar
+   */
+  get searchBar() {
+    if (!this._searchBar) {
+      this._searchBar = new search.searchBar(this.browserWindow.controller);
+    }
+    return this._searchBar;
+  },
+
+  /**
+   * Retrieve an UI element based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @param {string} aSpec.type - General type information
+   * @param {string} [aSpec.subtype] - Attribute of the element to filter
+   * @param {string} [aSpec.value] - Value of the element or property
+   * @param {element} [aSpec.parent=document] - Parent of the to find element
+   *
+   * @returns {ElemBase} Element which has been found
+   */
+  getElement : function NavBar_getElement(aSpec) {
+    var elements = this.getElements(aSpec);
+
+    return (elements.length > 0) ? elements[0] : undefined;
+  },
+
+  /**
+   * Retrieve list of UI elements based on the given spec
+   *
+   * @param {object} aSpec
+   *        Information of the UI element which should be retrieved
+   * @param {string} aSpec.type - General type information
+   * @param {string} [aSpec.subtype] - Attribute of the element to filter
+   * @param {string} [aSpec.value] - Value of the element or property
+   * @param {element} [aSpec.parent=document] - Parent of the to find element
+   *
+   * @returns {ElemBase[]} Elements which have been found
+   */
+  getElements : function NavBar_getElements(aSpec) {
+    var spec = aSpec || {};
+
+    var root = spec.parent ? spec.parent.getNode()
+                           : this.browserWindow.controller.window.document;
+    var nodeCollector = new domUtils.nodeCollector(root);
+
+    switch(spec.type) {
+      /**
+       * subtype: subtype to match
+       * value: value to match
+       */
+      case "bookmarksMenuButton":
+        return [findElement.ID(root, "bookmarks-menu-button")];
+      case "feedButton":
+        return [findElement.ID(root, "feed-button")];
+      case "nav-bar":
+        return [findElement.ID(root, "nav-bar")];
+      case "PersonalToolbar":
+        return [findElement.ID(root, "PersonalToolbar")];
+      case "starButton":
+        nodeCollector.root = this.getElement({type: "bookmarksMenuButton"}).
+                                  getNode();
+        nodeCollector.queryAnonymousNode("anonid", "button");
+        break;
+      case "toggle_PersonalToolbar":
+        return [findElement.ID(root, "toggle_PersonalToolbar")];
+      default:
+        assert.fail("Unknown element type - " + spec.type);
+    }
+
+    return nodeCollector.elements;
+  },
+
+  /**
+   * Bookmark a page
+   * Also waits for the animation event that occurs to finish
+   *
+   * @param {function} aCallback
+   *        Function to trigger page bookmarking event
+   */
+  bookmarkWithAnimation : function NavBar_bookmarkWithAnimation(aCallback) {
+    var self = { started: false, ended: false };
+    var bookmarksMenuButton = this.getElement({type: "bookmarksMenuButton"});
+    var window = this.browserWindow.controller.window.document.defaultView;
+
+    var mutationObserver = new window.MutationObserver(function (aMutations) {
+      aMutations.forEach(function (aMutation) {
+        // For changing the CSS style and enabling the button there's a different
+        // action besides animationend event
+        // We have to wait until the attribute has been added then removed
+
+        if (!self.started) {
+          self.started = (aMutation.target.getAttribute("notification") === "finish");
+        }
+        else {
+          self.ended = !aMutation.target.hasAttribute("notification");
+        }
+      });
+    });
+
+    try {
+      mutationObserver.observe(bookmarksMenuButton.getNode(),
+                               {attributes: true, attributeFilter: ["notification"]});
+      aCallback();
+      assert.waitFor(() => self.ended);
+    }
+    finally {
+      mutationObserver.disconnect();
+    }
+  },
+
+  /**
+   * Toggle bookmarks toolbar
+   *
+   * @param {Boolean} aState
+   *        Expected state of the BookmarksToolbar
+   */
+  toggleBookmarksToolbar : function NavBar_toggleBookmarksToolbar(aState) {
+    var navbar = this._root;
+
+    navbar.rightClick(navbar.getNode().boxObject.width / 2, 2);
+
+    var toggle = this.getElement({type: 'toggle_PersonalToolbar'});
+    toggle.mouseDown();
+    toggle.mouseUp();
+
+    // Check that the Bookmark toolbar is in the correct state
+    var state = !!aState;
+    var bookmarksToolbar = this.getElement({type: "PersonalToolbar"});
+    assert.waitFor(function () {
+      return bookmarksToolbar.getNode().getAttribute("collapsed") === String(!state);
+    }, "Bookmarks Toolbar has " + ((state) ? "opened" : "closed"));
+  }
 }
 
 /**
@@ -1327,12 +1687,7 @@ function waitForNotificationPanel(aCallback, aSpec) {
 }
 
 // Export of classes
-exports.autoCompleteResults = autoCompleteResults;
-exports.DownloadsPanel = DownloadsPanel;
-exports.editBookmarksPanel = editBookmarksPanel;
-exports.locationBar = locationBar;
-exports.MenuPanel = MenuPanel;
+exports.NavBar = NavBar;
 
 // Export of functions
-exports.toggleBookmarksToolbar = toggleBookmarksToolbar;
 exports.waitForNotificationPanel = waitForNotificationPanel;

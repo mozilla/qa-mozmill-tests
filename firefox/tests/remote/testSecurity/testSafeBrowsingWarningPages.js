@@ -6,7 +6,7 @@
 
 // Include necessary modules
 var { assert } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -81,7 +81,7 @@ var checkReportButton = function(aType, aBadUrl) {
   controller.waitThenClick(reportButton);
   controller.waitForPageLoad();
 
-  var locale = prefs.preferences.getPref("general.useragent.locale", "");
+  var locale = prefs.getPref("general.useragent.locale", "");
   var url = "";
 
   if (aType == 0) {

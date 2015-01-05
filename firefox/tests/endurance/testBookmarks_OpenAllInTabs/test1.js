@@ -8,10 +8,11 @@
 var { assert } = require("../../../../lib/assertions");
 var endurance = require("../../../../lib/endurance");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
@@ -19,24 +20,26 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html?entity=";
 const PREF_TAB_NUMBER_WARNING = "browser.tabs.maxOpenBeforeWarn";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.navBar = aModule.browserWindow.navBar;
 
   aModule.enduranceManager = new endurance.EnduranceManager(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Do not warn about max opened tab number
-  prefs.preferences.setPref(PREF_TAB_NUMBER_WARNING,
-                            aModule.enduranceManager.entities + 1);
+  prefs.setPref(PREF_TAB_NUMBER_WARNING,
+                aModule.enduranceManager.entities + 1);
 
   // Bookmark some pages in a custom folder
-  setupBookmarks(aModule.controller);
+  setupBookmarks();
 
 }
 
 function teardownModule(aModule) {
   aModule.tabBrowser.closeAllTabs();
 
-  toolbars.toggleBookmarksToolbar(aModule.controller, false);
+  aModule.navBar.toggleBookmarksToolbar(false);
 
   // Bug 839996
   // This is a workaround for moment since there is no event to wait for before
@@ -52,14 +55,12 @@ function testOpenAllBookmarksInTabs() {
   var testFolder = new elementslib.Selector(controller.window.document,
                                             "toolbarbutton.bookmark-item[label='Test Folder']");
   controller.waitForElement(testFolder);
-  var openAllInTabs = new elementslib.ID(controller.window.document,
-                                         "placesContext_openContainer:tabs");
 
   enduranceManager.run(function () {
     tabBrowser.closeAllTabs();
 
-    controller.rightClick(testFolder);
-    controller.click(openAllInTabs);
+    var contextMenu = controller.getMenu("#placesContext");
+    contextMenu.select("#placesContext_openContainer\\:tabs", testFolder);
     controller.waitForPageLoad();
 
     // Dismiss the context menu
@@ -70,8 +71,8 @@ function testOpenAllBookmarksInTabs() {
 /*
  * Insert bookmarks in a custom folder under Bookmarks Toolbar
  */
-function setupBookmarks(aController) {
-  toolbars.toggleBookmarksToolbar(aController, true);
+function setupBookmarks() {
+  navBar.toggleBookmarksToolbar(true);
 
   // Create a custom folder in Bookmarks Toolbar
   var toolbarFolder = places.bookmarksService.toolbarFolder;

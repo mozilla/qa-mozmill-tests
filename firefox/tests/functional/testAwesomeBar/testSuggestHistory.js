@@ -7,8 +7,9 @@
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
-var toolbars = require("../../../lib/toolbars");
+var prefs = require("../../../../lib/prefs");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
@@ -19,19 +20,20 @@ const TEST_DATA = {
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   places.removeAllHistory();
 
   // Location bar suggests "History and Bookmarks"
-  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
+  prefs.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function(aModule) {
   places.restoreDefaultBookmarks();
   aModule.locationBar.autoCompleteResults.close(true);
-  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
+  prefs.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**

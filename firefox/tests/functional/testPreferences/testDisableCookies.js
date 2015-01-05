@@ -8,9 +8,11 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
+
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "cookies/cookie_single.html";
@@ -21,17 +23,17 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   Services.cookies.removeAll();
 }
 
 var teardownModule = function(aModule) {
-  prefs.preferences.clearUserPref("network.cookie.cookieBehavior");
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref("network.cookie.cookieBehavior");
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 
   Services.cookies.removeAll();
 
@@ -43,7 +45,7 @@ var teardownModule = function(aModule) {
  */
 var testDisableCookies = function() {
   // Call preferences dialog and disable cookies
-  prefs.openPreferencesDialog(controller, prefDisableCookieDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefDisableCookieDialogCallback);
 
   // Go to a test page to build a cookie
   controller.open(TEST_DATA);
@@ -53,7 +55,7 @@ var testDisableCookies = function() {
   persisted.hostName = controller.window.content.location.hostname;
 
   // Call preferences dialog and check cookies
-  prefs.openPreferencesDialog(controller, prefCheckDisableDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefCheckDisableDialogCallback);
 }
 
 /**
@@ -62,7 +64,7 @@ var testDisableCookies = function() {
  *        MozMillController of the window to operate on
  */
 var prefDisableCookieDialogCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = 'panePrivacy';
 
   // Go to custom history settings and click on the show cookies button
@@ -86,7 +88,7 @@ var prefDisableCookieDialogCallback = function(aController) {
  *        MozMillController of the window to operate on
  */
 var prefCheckDisableDialogCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   var showCookies = new elementslib.ID(aController.window.document, "showCookiesButton");
   aController.click(showCookies);
 

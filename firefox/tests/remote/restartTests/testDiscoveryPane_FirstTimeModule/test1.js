@@ -9,7 +9,7 @@ var {assert} = require("../../../../../lib/assertions");
 var addons = require("../../../../../lib/addons");
 var modalDialog = require("../../../../../lib/modal-dialog");
 var tabs = require("../../../../lib/tabs");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 
 const PREF_ADDONS_CACHE_ENABLED = "extensions.getAddons.cache.enabled";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
@@ -24,16 +24,16 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.am = new addons.AddonsManager(aModule.controller);
 
-  prefs.preferences.setPref(PREF_ADDONS_CACHE_ENABLED, "false");
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_ADDONS_CACHE_ENABLED, "false");
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_ADDONS_CACHE_ENABLED);
-  prefs.preferences.clearUserPref(PREF_INSTALL_DIALOG);
-  prefs.preferences.clearUserPref(PREF_LAST_CATEGORY);
+  prefs.clearUserPref(PREF_ADDONS_CACHE_ENABLED);
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   aModule.am.close();
 }

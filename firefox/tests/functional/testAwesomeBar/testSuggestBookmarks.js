@@ -7,8 +7,10 @@
 // Include required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var places = require("../../../../lib/places");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var toolbars = require("../../../lib/toolbars");
+
+var browser = require("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = {
@@ -19,19 +21,21 @@ const TEST_DATA = {
 const PREF_LOCATION_BAR_SUGGEST = "browser.urlbar.default.behavior";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.editBookmarksPanel = aModule.browserWindow.navBar.editBookmarksPanel;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   places.removeAllHistory();
 
   // Location bar suggests "History and Bookmarks"
-  prefs.preferences.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
+  prefs.setPref(PREF_LOCATION_BAR_SUGGEST, 0);
 }
 
 var teardownModule = function(aModule) {
   places.restoreDefaultBookmarks();
   aModule.locationBar.autoCompleteResults.close(true);
-  prefs.preferences.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
+  prefs.clearUserPref(PREF_LOCATION_BAR_SUGGEST);
 }
 
 /**
@@ -43,16 +47,17 @@ var testStarInAutocomplete = function() {
   controller.waitForPageLoad();
 
   // Bookmark the test page via bookmarks menu
-  locationBar.waitForNotificationPanel(() => {
+  var bookmarksPanel = editBookmarksPanel.getElement({type: "bookmarkPanel"});
+  toolbars.waitForNotificationPanel(() => {
     controller.mainMenu.click("#menu_bookmarkThisPage");
-  }, {type: "bookmark"});
+  }, {type: "bookmark", panel: bookmarksPanel});
 
-  locationBar.waitForNotificationPanel(() => {
-    var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
+  toolbars.waitForNotificationPanel(() => {
+    var doneButton = editBookmarksPanel.getElement({type: "doneButton"});
     doneButton.click();
-  }, {type: "bookmark", open: false});
+  }, {type: "bookmark", open: false, panel: bookmarksPanel});
 
-  // We must open the blank page so the autocomplete result isn't "Swith to tab"
+  // We must open the blank page so the autocomplete result isn't "Switch to tab"
   controller.open("about:blank");
   controller.waitForPageLoad();
 

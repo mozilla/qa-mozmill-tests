@@ -4,8 +4,9 @@
 
 // Include required modules
 var {expect} = require("../../../lib/assertions");
-var toolbars = require("../toolbars");
 var utils = require("../../../lib/utils");
+
+var browser = require("../ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla.html";
@@ -13,8 +14,10 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 const METHODS = ["shortcut", "shortcut2", "button"];
 
 var setupModule = function(aModule) {
-  controller = mozmill.getBrowserController();
-  locationBar = new toolbars.locationBar(controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.navBar = aModule.browserWindow.navBar;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 }
 
 var testLocationBarAPI = function() {
@@ -53,9 +56,8 @@ var testLocationBarAPI = function() {
   expect.equal(historyDropMarker.getNode().localName, "dropmarker",
                "History drop marker has been found");
 
-  var starButton = locationBar.getElement({type: "starButton"});
-  expect.equal(starButton.getNode().localName,
-               utils.australis.isAustralis() ? "toolbarbutton" : "image",
+  var starButton = navBar.getElement({type: "starButton"});
+  expect.equal(starButton.getNode().localName, "toolbarbutton",
                "Star button has been found");
 
   var stopButton = locationBar.getElement({type: "stopButton"});

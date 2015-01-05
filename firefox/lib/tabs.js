@@ -38,9 +38,11 @@ var animationObserver = {
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
-var prefs = require("prefs");
+var prefs = require("../../lib/prefs");
 var sessionStore = require("../lib/sessionstore");
 var utils = require("../../lib/utils");
+
+const PREF_NEWTAB_INTRO = "browser.newtabpage.introShown";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -422,6 +424,10 @@ function tabBrowser(aController) {
   let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
                                           subtype: "down"});
   animationObserver.init(tabsScrollButton);
+
+  // Bug 1076870
+  // TODO: Remove this pref once it has been added in Mozmill
+  prefs.setPref(PREF_NEWTAB_INTRO, true);
 }
 
 /**

@@ -7,28 +7,31 @@
  // Include required modules
 var { assert } = require("../../../../lib/assertions");
 var addons = require("../../../../lib/addons");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
-var toolbars = require("../../../lib/toolbars");
+
+var browser = require("../../../lib/ui/browser");
 
 const NUMBER_OF_MAX_RESULTS = 2;
 const PREF_MAX_RESULTS = "extensions.getAddons.maxResults";
 
 var setupModule = function (aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   aModule.am = new addons.AddonsManager(aModule.controller);
   addons.setDiscoveryPaneURL("about:home");
 
   addons.useAmoPreviewUrls();
-  prefs.preferences.setPref(PREF_MAX_RESULTS, NUMBER_OF_MAX_RESULTS);
+  prefs.setPref(PREF_MAX_RESULTS, NUMBER_OF_MAX_RESULTS);
   aModule.tabBrowser.closeAllTabs();
 }
 
 var teardownModule = function (aModule) {
-  prefs.preferences.clearUserPref(PREF_MAX_RESULTS);
+  prefs.clearUserPref(PREF_MAX_RESULTS);
 
   addons.resetDiscoveryPaneURL();
   addons.resetAmoPreviewUrls();

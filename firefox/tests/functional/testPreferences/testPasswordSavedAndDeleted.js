@@ -9,10 +9,12 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
 var modalDialog = require("../../../../lib/modal-dialog");
-var prefs = require("../../../lib/prefs");
-var toolbars = require("../../../lib/toolbars");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
+var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
@@ -21,19 +23,20 @@ const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   Services.logins.removeAllLogins();
 }
 
 function teardownModule() {
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 
   // Just in case the test fails remove all cookies
   Services.logins.removeAllLogins();
@@ -83,7 +86,7 @@ function testSaveAndDeletePassword() {
                  "Password has been saved");
 
   // Call preferences dialog and delete the saved password
-  prefs.openPreferencesDialog(controller, prefDialogCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogCallback);
 }
 
 /**
@@ -92,7 +95,7 @@ function testSaveAndDeletePassword() {
  *        MozMillController of the window to operate on
  */
 function prefDialogCallback(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
   prefDialog.paneId = 'paneSecurity';
 
   var showPasswords = new elementslib.ID(aController.window.document, "showPasswords");

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Include required modules
-var toolbars = require("../toolbars");
+var browser = require("../ui/browser");
 
 const TEST_DATA = {
   url : "https://ssl-dv.mozqa.com",
@@ -26,8 +26,9 @@ const TEST_DATA = {
 };
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
   aModule.identityPopup = aModule.locationBar.identityPopup;
 
   aModule.targetPanel = null;

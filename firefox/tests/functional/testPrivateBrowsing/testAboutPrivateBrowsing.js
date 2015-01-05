@@ -6,7 +6,7 @@
 
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
@@ -21,11 +21,11 @@ function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
   aModule.browserWindow = new browser.BrowserWindow();
 
-  prefs.preferences.setPref(PREF_PRIVATE_BROWSING_SUPPORT, TEST_DATA);
+  prefs.setPref(PREF_PRIVATE_BROWSING_SUPPORT, TEST_DATA);
 }
 
 function teardownModule(aModule) {
-  prefs.preferences.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
+  prefs.clearUserPref(PREF_PRIVATE_BROWSING_SUPPORT);
   windows.closeAllWindows(aModule.browserWindow);
 }
 

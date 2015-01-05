@@ -5,7 +5,7 @@
 "use strict";
 
 // Include the required modules
-var prefs = require("../../../lib/prefs");
+var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
@@ -17,13 +17,13 @@ const PREF_BROWSER_HOMEPAGE = "browser.startup.homepage";
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, TEST_DATA);
+  prefs.setPref(PREF_BROWSER_HOMEPAGE, TEST_DATA);
 
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule() {
-  prefs.preferences.clearUserPref(PREF_BROWSER_HOMEPAGE);
+  prefs.clearUserPref(PREF_BROWSER_HOMEPAGE);
 }
 
 /**

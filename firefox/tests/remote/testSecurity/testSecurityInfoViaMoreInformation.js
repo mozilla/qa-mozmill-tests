@@ -6,14 +6,16 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
-var toolbars = require("../../../lib/toolbars");
 var windows = require("../../../../lib/windows");
+
+var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = "https://ssl-ev.mozqa.com/";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
   aModule.identityPopup = aModule.locationBar.identityPopup;
 
   aModule.targetPanel = null;

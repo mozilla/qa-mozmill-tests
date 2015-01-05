@@ -5,8 +5,6 @@
 "use strict";
 
 // Include required modules
-var toolbars = require("../toolbars");
-
 var browser = require("../ui/browser");
 
 const DOWNLOADS_PANEL_ELEMENTS = {
@@ -17,7 +15,7 @@ const DOWNLOADS_PANEL_ELEMENTS = {
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
-  aModule.downloadsPanel = new toolbars.DownloadsPanel(aModule.browserWindow);
+  aModule.downloadsPanel = aModule.browserWindow.navBar.downloadsPanel;
 }
 
 function teardownModule(aModule) {

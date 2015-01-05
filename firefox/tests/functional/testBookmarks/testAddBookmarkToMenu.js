@@ -10,12 +10,15 @@ var places = require("../../../../lib/places");
 var toolbars = require("../../../lib/toolbars");
 var utils = require("../../../../lib/utils");
 
+var browser = require("../../../lib/ui/browser");
+
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "layout/mozilla_contribute.html";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar =  new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.editBookmarksPanel = aModule.browserWindow.navBar.editBookmarksPanel;
 }
 
 var teardownModule = function(aModule) {
@@ -30,18 +33,19 @@ var testAddBookmarkToBookmarksMenu = function() {
   controller.waitForPageLoad();
 
   // Open the bookmark panel via bookmarks menu
-  locationBar.waitForNotificationPanel(() => {
+  var bookmarksPanel = editBookmarksPanel.getElement({type: "bookmarkPanel"});
+  toolbars.waitForNotificationPanel(() => {
     controller.mainMenu.click("#menu_bookmarkThisPage");
-  }, {type: "bookmark"});
+  }, {type: "bookmark", panel: bookmarksPanel});
 
   // Bookmark should automatically be stored under the Bookmark Menu
-  var nameField = locationBar.editBookmarksPanel.getElement({type: "nameField"});
-  var doneButton = locationBar.editBookmarksPanel.getElement({type: "doneButton"});
+  var nameField = editBookmarksPanel.getElement({type: "nameField"});
+  var doneButton = editBookmarksPanel.getElement({type: "doneButton"});
 
   controller.type(nameField, "Mozilla");
-  locationBar.waitForNotificationPanel(() => {
+  toolbars.waitForNotificationPanel(() => {
     doneButton.click();
-  }, {type: "bookmark", open: false});
+  }, {type: "bookmark", open: false, panel: bookmarksPanel});
 
   // Bug 474486
   // Until we can't check via a menu click, call the Places API function for now
@@ -49,4 +53,3 @@ var testAddBookmarkToBookmarksMenu = function() {
   var bookmarkExists = places.isBookmarkInFolder(uri, bookmarkFolder);
   expect.ok(bookmarkExists, "Bookmark was created in the bookmarks menu");
 }
-

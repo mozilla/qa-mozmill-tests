@@ -8,10 +8,11 @@
 var addons = require("../../../../../lib/addons");
 var { assert } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
-var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../../lib/utils");
+
+var browser = require("../../../../lib/ui/browser");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";
@@ -25,14 +26,15 @@ const ADDON = {
 };
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
 
   addons.setDiscoveryPaneURL("about:home");
 
-  prefs.preferences.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 
   persisted.addon = ADDON;
 
@@ -42,7 +44,7 @@ function setupModule(aModule) {
 function teardownModule(aModule) {
   // Bug 951138
   // Mozprofile doesn't clear this pref while it is clearing all permissions
-  prefs.preferences.clearUserPref(PREF_XPI_WHITELIST);
+  prefs.clearUserPref(PREF_XPI_WHITELIST);
 
   tabs.closeAllTabs(aModule.controller);
 

@@ -7,11 +7,12 @@
 // Include required modules
 var { expect } = require("../../../../../lib/assertions");
 var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../lib/prefs");
+var prefs = require("../../../../../lib/prefs");
 var tabs = require("../../../../lib/tabs");
-var toolbars = require("../../../../lib/toolbars");
 var utils = require("../../../../../lib/utils");
 
+var browser = require("../../../../lib/ui/browser");
+var prefWindow = require("../../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../../data/");
 const TEST_DATA = BASE_URL + "password_manager/login_form.html";
@@ -20,13 +21,15 @@ const PREF_BROWSER_IN_CONTENT = "browser.preferences.inContent";
 const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.locationBar = new toolbars.locationBar(aModule.controller);
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = aModule.browserWindow.controller;
+  aModule.locationBar = aModule.browserWindow.navBar.locationBar;
+
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
-  prefs.preferences.setPref(PREF_BROWSER_IN_CONTENT, false);
+  prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
-    prefs.preferences.setPref(PREF_BROWSER_INSTANT_APPLY, false);
+    prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
   aModule.tabBrowser.closeAllTabs();
 }
@@ -34,8 +37,8 @@ var setupModule = function(aModule) {
 var teardownModule = function(aModule) {
   controller.open("about:blank");
 
-  prefs.preferences.clearUserPref(PREF_BROWSER_IN_CONTENT);
-  prefs.preferences.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
+  prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
+  prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
 
   aModule.controller.restartApplication();
 }
@@ -77,7 +80,7 @@ var testSetMasterPassword = function() {
   }, {type: "notification", open: false});
 
   // Call preferences dialog and invoke master password functionality
-  prefs.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
+  prefWindow.openPreferencesDialog(controller, prefDialogSetMasterPasswordCallback);
 }
 
 /**
@@ -86,7 +89,7 @@ var testSetMasterPassword = function() {
  *        MozMillController of the window to operate on
  */
 var prefDialogSetMasterPasswordCallback = function(aController) {
-  var prefDialog = new prefs.preferencesDialog(aController);
+  var prefDialog = new prefWindow.preferencesDialog(aController);
 
   prefDialog.paneId = 'paneSecurity';
 
