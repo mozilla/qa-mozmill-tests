@@ -30,24 +30,24 @@ var testCloseTab = function() {
   }, "5 tabs have been opened");
 
   // Closing the tab via close button first makes bug 890181 reproducible in testrun
-  tabBrowser.closeTab("closeButton");
+  tabBrowser.closeTab({method: "button"});
   assert.waitFor(function () {
     return tabBrowser.length === 4;
   }, "One tab has been closed via the close button");
 
   // Close a tab via File > Close tab:
-  tabBrowser.closeTab("menu");
+  tabBrowser.closeTab({method: "menu"});
   assert.waitFor(function () {
     return tabBrowser.length === 3;
   }, "One tab has been closed via File menu");
 
   // Close an inactive tab via middle click
-  tabBrowser.closeTab("middleClick", 0);
+  tabBrowser.closeTab({method: "middleClick", index: 0});
   assert.waitFor(function () {
     return tabBrowser.length === 2;
   }, "One tab has been closed via middle click");
 
-  tabBrowser.closeTab("shortcut");
+  tabBrowser.closeTab({method: "shortcut"});
   assert.waitFor(function () {
     return tabBrowser.length === 1;
   }, "One tab has been closed via keyboard shortcut");

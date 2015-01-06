@@ -79,7 +79,7 @@ var testOpenInForegroundTab = function() {
 
   // Click the close button of the second tab
   tabBrowser.selectedIndex = 1;
-  tabBrowser.closeTab("closeButton");
+  tabBrowser.closeTab({method: "button"});
 
   // Verify that we have 3 tabs now and the first tab is selected:
   assert.waitFor(function () {
