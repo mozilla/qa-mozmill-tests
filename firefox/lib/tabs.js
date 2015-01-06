@@ -516,7 +516,7 @@ tabBrowser.prototype = {
    * Close all tabs of the window except the last one and open a blank page.
    */
   closeAllTabs : function tabBrowser_closeAllTabs() {
-    while (this._controller.tabs.length > 1) {
+    while (this.controller.tabs.length > 1) {
       this.closeTab();
     }
 
@@ -525,61 +525,102 @@ tabBrowser.prototype = {
   },
 
   /**
-   * Close an open tab
+   * Close a tab using different methods
    *
-   * @param {String} [aEventType="menu"]
-   *   Type of event which triggers the action
-   *   <dl>
-   *     <dt>closeButton</dt>
-   *     <dd>The close button on the selected tab is used</dd>
-   *     <dt>menu</dt>
-   *     <dd>The main menu is used</dd>
-   *     <dt>middleClick</dt>
-   *     <dd>A middle mouse click gets synthesized</dd>
-   *     <dt>shortcut</dt>
-   *     <dd>The keyboard shortcut is used</dd>
-   *   </dl>
-   * @param {Number} [aIndex=selectedIndex]
-   *   Index of the tab to close (only used for middleClick)
+   * @param {object} [aSpec]
+   *        Information about how to close the tab
+   * @param {function} [aSpec.callback]
+   *        Callback used for closing the tab
+   * @param {number} [aSpec.index=selectedIndex]
+   *        Index of the tab to close (only used for middleClick)
+   * @param {string} [aSpec.method="menu"]
+   *        Method used for closing the tab
+   *        ("button", "callback", "menu", "shortcut", "middleClick")
+   * @param {MozElement} [aSpec.target]
+   *        Element from where to open the tab
    */
-  closeTab : function tabBrowser_closeTab(aEventType, aIndex) {
-    var type = aEventType || "menu";
-    var index = (typeof aIndex === undefined) ? this.selectedIndex : aIndex;
+  closeTab : function tabBrowser_closeTab(aSpec={}) {
+    var method = aSpec.method || "menu";
+    var index = (typeof aSpec.index === undefined) ? this.selectedIndex
+                                                   : aSpec.index;
 
+    var closed = false;
     var length = this.length;
+    var transitioned = {
+      completed: false,
+      minWidth: false,
+      maxWidth: false
+    };
 
-    switch (type) {
-      case "closeButton":
-        var button = this.getElement({type: "tabs_tabCloseButton",
-                                     subtype: "tab", value: this.getTab()});
-
-        // Wait for the button to be displayed
-        assert.waitFor(() => utils.isDisplayed(this._controller, button),
-                       "Close button is visible");
-
-        this._controller.click(button);
-        break;
-      case "menu":
-        this._controller.mainMenu.click("#menu_close");
-        break;
-      case "middleClick":
-        var tab = this.getTab(index);
-        this._controller.middleClick(tab);
-        break;
-      case "shortcut":
-        var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
-        this._controller.keypress(null, cmdKey, {accelKey: true});
-        break;
-      default:
-        assert.fail("Unknown event type - " + type);
+    var checkTabClosed = () => { closed = true; }
+    var checkTabTransitioned = (aEvent) => {
+      switch (aEvent.propertyName) {
+        case "min-width":
+          transitioned.minWidth= true;
+          break;
+        case "max-width":
+          transitioned.maxWidth= true;
+          break;
+        default:
+          break;
+      }
+      transitioned.completed = transitioned.minWidth && transitioned.maxWidth;
     }
 
-    // When removing a tab it animates outside of visible space and only after that
-    // it's being removed, so the length property gets updated last
-    var self = this;
-    assert.waitFor(function () {
-      return self.length === length - 1;
-    }, "Tab has been closed");
+    // Add event listener to wait until the tab has been closed
+    this.controller.window.addEventListener("TabClose", checkTabClosed);
+    if (animationObserver.isAnimated) {
+      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
+    }
+    else {
+      transitioned.completed = true;
+    }
+
+    var callback = () => {
+      switch (method) {
+        case "button":
+          var button = this.getElement({type: "tabs_tabCloseButton",
+                                       subtype: "tab", value: this.getTab()});
+
+          // Wait for the button to be displayed
+          assert.waitFor(() => utils.isDisplayed(this.controller, button),
+                         "Close button is visible");
+          button.click();
+          break;
+        case "callback":
+          assert.equal(typeof aSpec.callback, "function",
+                       "Callback is defined");
+
+          aSpec.callback();
+          break;
+        case "menu":
+          this.controller.mainMenu.click("#menu_close");
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
+          this.controller.keypress(null, cmdKey, {accelKey: true});
+          break;
+        case "middleClick":
+          var tab = this.getTab(index);
+          tab.middleClick();
+          break;
+        default:
+          assert.fail("Unknown method - " + method);
+      }
+    };
+
+    try {
+      callback();
+
+      assert.waitFor(() => closed && transitioned.completed &&
+                           this.length === (length - 1), "Tab has been closed");
+    }
+    finally {
+      this.controller.window.removeEventListener("TabClose", checkTabClosed);
+      if (animationObserver.isAnimated) {
+        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
+      }
+    }
   },
 
   /**
@@ -757,6 +798,8 @@ tabBrowser.prototype = {
    *        Callback used for opening the tab
    * @param {string} [aSpec.method="menu"]
    *        Method used for opening the tab
+   *        ("callback", "menu", "newTabButton", "shortcut", "tabStrip"
+   *         "contextMenu", "middleClick")
    * @param {MozElement} [aSpec.target]
    *        Element from where to open the tab
    */
@@ -923,13 +966,33 @@ tabBrowser.prototype = {
    *        Function that opens the tab
    */
   _waitForTabOpened: function tabBrowser_waitForTabOpened(aCallback) {
-    var self = {
-      opened: false,
-      transitioned: false
+    var opened = false;
+    var transitioned = {
+      completed: false,
+      visibility: false,
+      minWidth: false,
+      maxWidth: false
     };
 
-    function checkTabOpened() { self.opened = true; }
-    function checkTabTransitioned() { self.transitioned = true; }
+    var checkTabOpened = () => { opened = true; }
+    var checkTabTransitioned = (aEvent) => {
+      switch (aEvent.propertyName){
+        case "visibility":
+          transitioned.visibility= true;
+          break;
+        case "min-width":
+          transitioned.minWidth= true;
+          break;
+        case "max-width":
+          transitioned.maxWidth= true;
+          break;
+        default:
+          break;
+      }
+      transitioned.completed = transitioned.visibility &&
+                               transitioned.minWidth &&
+                               transitioned.maxWidth;
+    }
 
     // Add event listener to wait until the tab has been opened
     this._controller.window.addEventListener("TabOpen", checkTabOpened);
@@ -937,14 +1000,14 @@ tabBrowser.prototype = {
       this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
     }
     else {
-      self.transitioned = true;
+      transitioned.completed = true;
     }
 
     try {
       aCallback();
 
       assert.waitFor(() => {
-        return self.opened && self.transitioned;
+        return opened && transitioned.completed;
       }, "Tab has been opened");
     }
     finally {
