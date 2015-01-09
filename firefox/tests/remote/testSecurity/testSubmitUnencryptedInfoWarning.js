@@ -11,6 +11,8 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
+var dialogs = require("../../../../lib/ui/dialogs");
+
 const TEST_DATA = "https://ssl-dv.mozqa.com/data/firefox/security/" +
                   "unencryptedsearch.html";
 
@@ -83,21 +85,16 @@ function handleSecurityWarningDialog(aController) {
   // Get the message text
   var message = utils.getProperty("chrome://pipnss/locale/security.properties",
                                   "PostToInsecureFromSecureMessage");
+  var dialog = new dialogs.CommonDialog(aController);
 
   // Wait for the content to load
-  var infoBody = new elementslib.ID(aController.window.document, "info.body");
-  aController.waitForElement(infoBody);
+  var infoBody = dialog.getElement({type: "info_body"});
 
   // The message string contains "##" instead of \n for newlines.
   // There are two instances in the string. Replace them both.
   message = message.replace(/##/g, "\n\n");
 
-  expect.equal(infoBody.getNode().textContent, message, "The dialog shows the security message");
-
-  // Click the OK button
-  var okButton = new elementslib.Lookup(aController.window.document,
-                                        '/id("commonDialog")' +
-                                        '/anon({"anonid":"buttons"})' +
-                                        '/{"dlgtype":"accept"}');
-  aController.click(okButton);
+  expect.equal(infoBody.getNode().textContent, message,
+               "The dialog shows the security message");
+  dialog.accept();
 }
