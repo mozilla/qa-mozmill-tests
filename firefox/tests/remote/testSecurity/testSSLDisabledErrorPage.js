@@ -61,7 +61,7 @@ var testDisableSSL = function() {
   var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text);
 
-  expect.contain(text.getNode().textContent, 'ssl_error_no_cypher_overlap',
+  expect.contain(text.getNode().textContent, 'ssl_error_unsupported_version',
                  "The SSL error message contains disabled information");
 
   expect.contain(text.getNode().textContent, 'mozqa.com',
