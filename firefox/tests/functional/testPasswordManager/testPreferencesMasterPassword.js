@@ -12,6 +12,7 @@ var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
 var browser = require("../../../lib/ui/browser");
+var dialogs = require("../../../../lib/ui/dialogs");
 var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -240,15 +241,12 @@ function checkPasswordManager(aController) {
  *        MozMillController of the window to operate on
  */
 function checkMasterHandler(aController) {
-  var passwordBox = findElement.ID(aController.window.document, "password1Textbox");
-  passwordBox.waitForElement();
+  var dialog = new dialogs.CommonDialog(aController);
+
+  var passwordBox = dialog.getElement({type: "password_textbox"});
   passwordBox.sendKeys("test1");
 
-  var button = findElement.Lookup(aController.window.document,
-                                  '/id("commonDialog")' +
-                                  '/anon({"anonid":"buttons"})' +
-                                  '/{"dlgtype":"accept"}');
-  button.click();
+  dialog.accept();
 }
 
 /**
@@ -305,9 +303,6 @@ function removeMasterHandler(aController) {
  *        MozMillController of the window to operate on
  */
 function confirmHandler(aController) {
-  var button = findElement.Lookup(aController.window.document,
-                                  '/id("commonDialog")' +
-                                  '/anon({"anonid":"buttons"})' +
-                                  '/{"dlgtype":"accept"}');
-  button.waitThenClick();
+  var dialog = new dialogs.CommonDialog(aController);
+  dialog.accept();
 }
