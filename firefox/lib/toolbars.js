@@ -1430,16 +1430,16 @@ function waitForNotificationPanel(aCallback, aSpec) {
   var eventType = "popupshown";
   if (open) {
     if (spec.panel.getNode()) {
-      expect.equal(spec.panel.getNode().state, "closed",
-                   "Panel is in the correct state");
+      assert.waitFor(() => (spec.panel.getNode().state === "closed"),
+                     "Panel is in closed state");
     }
     else {
       spec.parent = spec.parent || spec.panel._defaultView;
     }
   }
   else {
-    expect.equal(spec.panel.getNode().state, "open",
-                 "Panel is in the correct state");
+    assert.waitFor(() => (spec.panel.getNode().state === "open"),
+                   "Panel is in opened state");
     eventType = "popuphidden";
   }
 
@@ -1447,7 +1447,6 @@ function waitForNotificationPanel(aCallback, aSpec) {
   var panelStateChanged = false;
 
   function onPanelState() { panelStateChanged = true; }
-
   parent.addEventListener(eventType, onPanelState);
 
   try {

@@ -111,7 +111,7 @@ var prefCheckEnableDialogCallback = function(aController) {
  *        MozMillController of the window to operate on
  */
 function checkSavedCookies(aController) {
-  var removeCookieButton = new elementslib.ID(aController.window.document, "removeCookie");
+  var removeCookieButton = new elementslib.ID(aController.window.document, "removeSelectedCookies");
   aController.waitForElement(removeCookieButton);
   expect.ok(!removeCookieButton.getNode().disabled, "The Remove Cookie Button is disabled");
 

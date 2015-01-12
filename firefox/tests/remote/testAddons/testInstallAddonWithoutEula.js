@@ -5,17 +5,17 @@
 "use strict";
 
 // Include required modules
-var addons = require("../../../../../lib/addons");
-var { assert } = require("../../../../../lib/assertions");
-var modalDialog = require("../../../../../lib/modal-dialog");
-var prefs = require("../../../../../lib/prefs");
-var tabs = require("../../../../lib/tabs");
-var utils = require("../../../../../lib/utils");
+var addons = require("../../../../lib/addons");
+var modalDialog = require("../../../../lib/modal-dialog");
+var prefs = require("../../../../lib/prefs");
+var tabs = require("../../../lib/tabs");
+var utils = require("../../../../lib/utils");
 
-var browser = require("../../../../lib/ui/browser");
+var browser = require("../../../lib/ui/browser");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
 const PREF_XPI_WHITELIST = "xpinstall.whitelist.add";
+const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
@@ -26,35 +26,53 @@ const ADDON = {
 };
 
 function setupModule(aModule) {
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  addons.setDiscoveryPaneURL("about:home");
+}
+
+function setupTest(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
   aModule.controller = aModule.browserWindow.controller;
   aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   aModule.addonsManager = new addons.AddonsManager(aModule.controller);
 
-  addons.setDiscoveryPaneURL("about:home");
-
-  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
-
-  persisted.addon = ADDON;
-
   tabs.closeAllTabs(aModule.controller);
+
+  persisted.nextTest = null;
+}
+
+function teardownTest(aModule) {
+  if (addonsManager.isOpen) {
+    addonsManager.close();
+  }
+
+  if (persisted.nextTest) {
+    controller.restartApplication(persisted.nextTest);
+  }
 }
 
 function teardownModule(aModule) {
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_LAST_CATEGORY);
+
   // Bug 951138
   // Mozprofile doesn't clear this pref while it is clearing all permissions
   prefs.clearUserPref(PREF_XPI_WHITELIST);
 
   tabs.closeAllTabs(aModule.controller);
+  delete persisted.nextTest;
 
-  aModule.controller.restartApplication();
+  addons.resetDiscoveryPaneURL();
+  aModule.controller.stopApplication(true);
 }
 
 /**
  * Installs an Addon without EULA from addons.mozilla.org
  */
 function testInstallAddonWithEULA() {
+  persisted.nextTest = "testCheckAddonIsInstalled";
+
   controller.open(ADDON.url);
   controller.waitForPageLoad();
 
@@ -77,4 +95,25 @@ function testInstallAddonWithEULA() {
   }, {type: "notification"});
 
   md.waitForDialog(TIMEOUT_DOWNLOAD);
+
+  // Dispose of the restart doorhanger notification by keyboard event
+  controller.keypress(null , 'VK_ESCAPE', {});
+}
+
+/**
+ * Test check if the addon is correctly installed
+ */
+function testCheckAddonIsInstalled() {
+  // Open the Add-ons Manager
+  addonsManager.open();
+
+  addonsManager.setCategory({
+    category: addonsManager.getCategoryById({id: "extension"})
+  });
+
+  // Verify the add-on is installed
+  var addon = addonsManager.getAddons({attribute: "name",
+                                       value: ADDON.name})[0];
+  assert.ok(addonsManager.isAddonInstalled({addon: addon}),
+            "The add-on has been correctly installed");
 }

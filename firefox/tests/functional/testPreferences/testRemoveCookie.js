@@ -98,7 +98,9 @@ function deleteCookie(aController) {
 
   var origNumCookies = cookiesList.view.rowCount;
 
-  aController.click(new elementslib.ID(aController.window.document, "removeCookie"));
+  var removeSelectedCookies = findElement.ID(aController.window.document,
+                                             "removeSelectedCookies");
+  removeSelectedCookies.click();
 
   var cookieRemoved = !Services.cookies.cookieExists({host: persisted.hostName,
                                                       name: "litmus_1",
