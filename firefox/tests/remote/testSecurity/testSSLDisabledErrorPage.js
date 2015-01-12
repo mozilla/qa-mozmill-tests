@@ -50,13 +50,6 @@ var testDisableSSL = function() {
   controller.waitForElement(title);
 
   var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title");
-
-  // Bug 1096695
-  // 34 and 35 Firefox versions, have this title hardcoded for en-US locale
-  if (utils.appInfo.locale === "en-US") {
-    nssFailure2title = "Unable to Connect Securely";
-  }
-
   expect.equal(title.getNode().textContent, nssFailure2title,
                "The correct SSL error title is shown");
 
@@ -65,7 +58,7 @@ var testDisableSSL = function() {
   assert.ok(tryAgain.exists(), "'Try again' button has been found");
 
   // Verify the error message is correct
-  var text = new elementslib.ID(controller.tabs.activeTab, "errorLongContent");
+  var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
   controller.waitForElement(text);
 
   expect.contain(text.getNode().textContent, 'ssl_error_no_cypher_overlap',

@@ -58,7 +58,7 @@ function testSwitchToTab() {
     }, "Autocomplete popup has been opened");
 
     assert.waitFor(function () {
-      return locationBar.autoCompleteResults.length != 0;
+      return locationBar.autoCompleteResults.visibleResults.length > 0;
     }, "Waiting for autocomplete results to load");
 
     // Go through all results and click 'Switch to tab'
