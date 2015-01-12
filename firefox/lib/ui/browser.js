@@ -169,18 +169,18 @@ BrowserWindow.prototype.openPageInfoWindow = function BW_openPageInfoWindow(aSpe
 }
 
 /**
-+ * Open the places organizer window
-+ *
-+ * @param {object} [aSpec]
-+ *        Information for opening the window
-+ * @param {string} [aSpec.type="shortcut"]
-+ *        How to open the Library Window ("menu", "shortcut")
-+ * @param {string} [aSpec.location="bookmarks"]
-+ *        Which pane to be selected after opening the window
-+ *        ("bookmarks", "downloads", "history", "tags")
-+ *
-+ * @returns {PlacesOrganizerWindow} New instance of PlacesOrganizerWindow
-+ */
+ * Open the places organizer window
+ *
+ * @param {object} [aSpec]
+ *        Information for opening the window
+ * @param {string} [aSpec.type="shortcut"]
+ *        How to open the Library Window ("menu", "shortcut")
+ * @param {string} [aSpec.location="bookmarks"]
+ *        Which pane to be selected after opening the window
+ *        ("bookmarks", "downloads", "history", "tags")
+ *
+ * @returns {PlacesOrganizerWindow} New instance of PlacesOrganizerWindow
+ */
 BrowserWindow.prototype.openPlacesOrganizer = function BW_openPlacesOrganizer(aSpec={}) {
   var type = aSpec.type || "shortcut";
   var location = aSpec.location || "bookmarks";
