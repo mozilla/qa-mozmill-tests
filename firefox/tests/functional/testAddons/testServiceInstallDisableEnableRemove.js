@@ -28,10 +28,12 @@ function setupModule(aModule) {
   aModule.locationBar = aModule.browserWindow.navBar.locationBar;
 
   prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA.location);
+  addons.setDiscoveryPaneURL("about:home");
 }
 
 function teardownModule(aModule) {
   prefs.clearUserPref(PREF_GEO_WIFI_URI);
+  addons.resetDiscoveryPaneURL();
 
   aModule.browserWindow.tabs.closeAllTabs();
   aModule.controller.stopApplication(true);
