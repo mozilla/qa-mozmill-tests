@@ -1005,6 +1005,20 @@ locationBar.prototype = {
     }
 
     waitForNotificationPanel(aCallback, {open: spec.open, panel: panel});
+  },
+
+  /**
+   * Wait for the current URL to have the expected pageproxystate state
+   * 'pageproxystate' is set when the URL location changes
+   *
+   * @param {string} [aState='valid']
+   *        Expected state of page proxy, can be either 'valid' or 'invalid'
+   */
+  waitForProxyState : function locationBar_waitForProxyState(aState="valid") {
+    var urlbar = this.getElement({type: "urlbar"});
+
+    assert.waitFor(() => urlbar.getNode().getAttribute("pageproxystate") === aState,
+                   "Current URL has the proxy state: " + aState);
   }
 }
 
