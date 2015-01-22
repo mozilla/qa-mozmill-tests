@@ -29,6 +29,7 @@ function setupModule(aModule) {
 
   prefs.setPref(PREF_GEO_WIFI_URI, TEST_DATA.location);
   addons.setDiscoveryPaneURL("about:home");
+  aModule.browserWindow.tabs.closeAllTabs();
 }
 
 function teardownModule(aModule) {
