@@ -8,6 +8,7 @@
 var addons = require("../../../../../lib/addons");
 var {assert} = require("../../../../../lib/assertions");
 var prefs = require("../../../../../lib/prefs");
+var tabs = require("../../../../lib/tabs");
 var utils = require("../../../../../lib/utils");
 
 const TEST_DATA = "http://mozqa.com/data/firefox/layout/mozilla.html";
@@ -18,6 +19,8 @@ const PREF_TRIM_URL = "browser.urlbar.trimURLs";
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+
+  aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
   // Change pref to show the full url in the location bar
   prefs.setPref(PREF_TRIM_URL, false);
@@ -31,7 +34,6 @@ function teardownModule(aModule) {
   delete persisted.addon;
 
   addons.resetDiscoveryPaneURL();
-  aModule.addonsManager.close();
 
   aModule.controller.stopApplication(true);
 }
@@ -40,23 +42,20 @@ function teardownModule(aModule) {
  * Test that verifies the addon works after browser restart
  */
 function testRestartlessExtensionWorksAfterRestart() {
-  // Context menu item that is provided by the restartless extension
-  var contextMenuItem = new elementslib.ID(controller.window.document,
-                                           persisted.addon.id +
-                                           "-context-menu-item-0");
-
   var locationBar = new elementslib.ID(controller.window.document, "urlbar");
 
   // Open content area context menu in a blank page
   controller.open("about:blank");
   controller.waitForPageLoad();
-  controller.rightClick(new elementslib.XPath(controller.tabs.activeTab, "/html"));
+  var htmlElement = new elementslib.XPath(controller.tabs.activeTab, "/html");
+  controller.rightClick(htmlElement);
 
-  // Click the item from the context menu to open mozilla.html from mozqa.com
-  controller.click(contextMenuItem);
-
-  // Close the context menu
-  utils.closeContentAreaContextMenu(controller);
+  // Select "Open MozQA" context menu entry
+  var contextMenu = controller.getMenu("#contentAreaContextMenu");
+  tabBrowser.openTab({method: "callback", callback: () => {
+    contextMenu.select(".addon-context-menu-item.addon-context-menu-item-toplevel",
+                       htmlElement);
+  }});
   controller.waitForPageLoad();
 
   // Verify that the loaded url matches http://mozqa.com/data/firefox/layout/mozilla.html

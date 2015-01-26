@@ -67,6 +67,7 @@ function testInstallRestartlessExtension() {
 
   // Verify the addon is installed
   var anAddon = addonsManager.getAddons({attribute: "value", value: ADDON.id})[0];
+
   var addonIsInstalled = addonsManager.isAddonInstalled({addon: anAddon});
 
   assert.ok(addonIsInstalled, ADDON.id + " is successfully installed");
