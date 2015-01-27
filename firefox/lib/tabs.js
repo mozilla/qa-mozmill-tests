@@ -43,6 +43,7 @@ var sessionStore = require("../lib/sessionstore");
 var utils = require("../../lib/utils");
 
 const PREF_NEWTAB_INTRO = "browser.newtabpage.introShown";
+const PREF_NEWTAB_PRELOAD = "browser.newtab.preload";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -516,12 +517,24 @@ tabBrowser.prototype = {
    * Close all tabs of the window except the last one and open a blank page.
    */
   closeAllTabs : function tabBrowser_closeAllTabs() {
+    // TODO: Bug 1120906
+    // waitForPageLoad fails after opening "about:newtab" when
+    // "browser.newtab.preload" preference is set to true
+    prefs.setPref(PREF_NEWTAB_PRELOAD, false);
+
+    try {
+      this.openTab();
+      this.controller.waitForPageLoad();
+    }
+    finally {
+      prefs.clearUserPref(PREF_NEWTAB_PRELOAD);
+    }
+
+    this.selectTab({index: 0});
+
     while (this.controller.tabs.length > 1) {
       this.closeTab();
     }
-
-    this._controller.open(this._controller.window.BROWSER_NEW_TAB_URL);
-    this._controller.waitForPageLoad();
   },
 
   /**
