@@ -5,6 +5,8 @@
 // Include required modules
 var tabs = require("../tabs");
 
+var browser = require("../ui/browser");
+
 const TEST_DATA = {
   text: "string",
   fragment: "#sync",
@@ -13,7 +15,8 @@ const TEST_DATA = {
 };
 
 function setupModule(aModule) {
-  aModule.controller = mozmill.getBrowserController();
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.controller = browserWindow.controller;
   aModule.tabBrowser = new tabs.tabBrowser(controller);
   aModule.findBar = aModule.tabBrowser.findBar;
 }
@@ -32,6 +35,26 @@ const NODES = [
   {type: "previousButton", localName: "toolbarbutton"},
   {type: "textbox", localName: "textbox"},
 ];
+
+/**
+ * Test tabBrowser closeAllTabs() method
+ * Bug 1122516
+ */
+function testCloseAllTabs() {
+  for (var i = 0; i < 3; i++) {
+    browserWindow.tabs.openTab();
+    browserWindow.controller.open("about:blank?index=" + i);
+  }
+
+  browserWindow.tabs.closeAllTabs();
+
+  expect.equal(browserWindow.tabs.length, 1,
+               "There is only one open tab");
+
+  var location = browserWindow.controller.tabs.activeTab.location.toString();
+  expect.equal(location, "about:newtab",
+               "'about:newtab' tab is open and is the active tab");
+}
 
 var testFindBarAPI = function () {
   // Test all opening methods
