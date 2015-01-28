@@ -88,39 +88,6 @@ function testTabs() {
   expect.equal(tabsWithUrl.length, 1, "Expected tabs have been found");
 }
 
-/*
- * Test select tab
- * Bug 1071566
- */
-function testTabSelect(){
-  // Select first tab using selectTab -click method
-  tabBrowser.selectTab({index: 0});
-
-  // Check if the first tab is selected
-  assert.waitFor(() => (tabBrowser.selectedIndex === 0),
-                 "First tab has been selected");
-
-  // Select third tab using selectTab - callback method
-  tabBrowser.selectTab({
-    method: "callback",
-    callback: () => {
-      tabBrowser.getTab(2).click();
-    }
-  });
-
-  // Check if the third tab is selected
-  assert.waitFor(() => (tabBrowser.selectedIndex === 2),
-                 "Third tab has been selected");
-
-  // Select last tab using selectTab via reference
-  lastTab = tabBrowser.getTab(tabBrowser.length - 1);
-  tabBrowser.selectTab({tab: lastTab });
-
-  // Check if the last tab is selected
-  assert.waitFor(() => (tabBrowser.selectedIndex === tabBrowser.length - 1),
-                 "Last tab has been selected");
-}
-
 /**
  * Open a new tab and navigate to a specific page
  *
