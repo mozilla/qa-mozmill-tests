@@ -11,30 +11,6 @@
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-/**
- * Initialisation of tabs observer, which will set "isAnimated" flag when
- * scroll-button collapses
- */
-var animationObserver = {
-  isAnimated: true,
-
-  /**
-   * @param {MozElement} aElement
-   *        Element to observe
-   */
-  init: function (aElement) {
-    var win = aElement.getNode().ownerDocument.defaultView;
-    var self = this;
-    this.mutationObserver = new win.MutationObserver(function (aMutations) {
-      aMutations.forEach(function (aMutation) {
-        self.isAnimated = aMutation.target.hasAttribute("collapsed");
-      });
-    });
-    this.mutationObserver.observe(aElement.getNode(), {attributes: true,
-                                                       attributeFilter: ["collapsed"]});
-  }
-}
-
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
@@ -44,6 +20,7 @@ var utils = require("../../lib/utils");
 
 const PREF_NEWTAB_INTRO = "browser.newtabpage.introShown";
 const PREF_NEWTAB_PRELOAD = "browser.newtab.preload";
+const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -422,9 +399,6 @@ function tabBrowser(aController) {
   this._controller = aController;
   this.findBar = new findBar(this);
   this._tabs = this.getElement({type: "tabs"});
-  let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
-                                          subtype: "down"});
-  animationObserver.init(tabsScrollButton);
 
   // Bug 1076870
   // TODO: Remove this pref once it has been added in Mozmill
@@ -557,37 +531,14 @@ tabBrowser.prototype = {
     var index = (typeof aSpec.index === undefined) ? this.selectedIndex
                                                    : aSpec.index;
 
-    var closed = false;
-    var length = this.length;
-    var transitioned = {
-      completed: false,
-      minWidth: false,
-      maxWidth: false
-    };
-
-    var checkTabClosed = () => { closed = true; }
-    var checkTabTransitioned = (aEvent) => {
-      switch (aEvent.propertyName) {
-        case "min-width":
-          transitioned.minWidth= true;
-          break;
-        case "max-width":
-          transitioned.maxWidth= true;
-          break;
-        default:
-          break;
-      }
-      transitioned.completed = transitioned.minWidth && transitioned.maxWidth;
-    }
+    // Bug 1112601
+    // TODO: Remove this pref once it has been added in Mozmill
+    prefs.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been closed
-    this.controller.window.addEventListener("TabClose", checkTabClosed);
-    if (animationObserver.isAnimated) {
-      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
-    }
-    else {
-      transitioned.completed = true;
-    }
+    var closed = false;
+    var checkTabClosed = () => { closed = true; }
+    this.controller.window.addEventListener("TabClose", checkTabClosed, false);
 
     var callback = () => {
       switch (method) {
@@ -625,14 +576,11 @@ tabBrowser.prototype = {
     try {
       callback();
 
-      assert.waitFor(() => closed && transitioned.completed &&
-                           this.length === (length - 1), "Tab has been closed");
+      assert.waitFor(() => closed, "Tab has been closed");
     }
     finally {
       this.controller.window.removeEventListener("TabClose", checkTabClosed);
-      if (animationObserver.isAnimated) {
-        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
-      }
+      prefs.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
@@ -979,55 +927,23 @@ tabBrowser.prototype = {
    *        Function that opens the tab
    */
   _waitForTabOpened: function tabBrowser_waitForTabOpened(aCallback) {
-    var opened = false;
-    var transitioned = {
-      completed: false,
-      visibility: false,
-      minWidth: false,
-      maxWidth: false
-    };
-
-    var checkTabOpened = () => { opened = true; }
-    var checkTabTransitioned = (aEvent) => {
-      switch (aEvent.propertyName){
-        case "visibility":
-          transitioned.visibility= true;
-          break;
-        case "min-width":
-          transitioned.minWidth= true;
-          break;
-        case "max-width":
-          transitioned.maxWidth= true;
-          break;
-        default:
-          break;
-      }
-      transitioned.completed = transitioned.visibility &&
-                               transitioned.minWidth &&
-                               transitioned.maxWidth;
-    }
+    // Bug 1112601
+    // TODO: Remove this pref once it has been added in Mozmill
+    prefs.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been opened
-    this._controller.window.addEventListener("TabOpen", checkTabOpened);
-    if (animationObserver.isAnimated) {
-      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
-    }
-    else {
-      transitioned.completed = true;
-    }
+    var opened = false;
+    var checkTabOpened = () => { opened = true; }
+    this.controller.window.addEventListener("TabOpen", checkTabOpened);
 
     try {
       aCallback();
 
-      assert.waitFor(() => {
-        return opened && transitioned.completed;
-      }, "Tab has been opened");
+      assert.waitFor(() => opened, "Tab has been opened");
     }
     finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
-      if (animationObserver.isAnimated) {
-        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
-      }
+      this.controller.window.removeEventListener("TabOpen", checkTabOpened);
+      prefs.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 
