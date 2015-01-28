@@ -56,6 +56,10 @@ function teardownModule(aModule) {
  * Tests disabling a plugin is affecting about:plugins
  */
 function testDisableEnablePlugin() {
+  // Open a new tab for the addons manager page in order to have two open tabs
+  // the second one will be used for handling the addons related checks
+  // while the first one will be used for handling the plugins related checks
+  tabBrowser.openTab();
   addonsManager.open();
 
   // Select the Plugins category
