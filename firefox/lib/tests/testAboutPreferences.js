@@ -124,8 +124,6 @@ const TEST_DATA = {
 
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
-
-  aModule.browserWindow.tabs.closeAllTabs();
 }
 
 function teardownModule(aModule) {
