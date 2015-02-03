@@ -79,19 +79,21 @@ function testInstallMultipleExtensions() {
     controller.waitForPageLoad();
 
     var md = new modalDialog.modalDialog(addonsManager.controller.window);
-    md.start(aController => {
-      // Wait for the 'addon-install-complete' notification to show
+    md.start(aController => addons.handleInstallAddonDialog(aController));
+
+    var callback = () => {
+      // Wait for installing notification to appear
       locationBar.waitForNotificationPanel(() => {
-        addons.handleInstallAddonDialog(aController);
+        var installLink = findElement.ID(controller.tabs.activeTab, "addon");
+        installLink.click();
       }, {type: "notification"});
-    });
 
-    locationBar.waitForNotificationPanel(() => {
-      var installLink = findElement.ID(controller.tabs.activeTab, "addon");
-      installLink.click();
-    }, {type: "notification"});
+      // Wait for 'Software Installation' dialog to be handled
+      md.waitForDialog(TIMEOUT_DOWNLOAD);
+    }
 
-    md.waitForDialog(TIMEOUT_DOWNLOAD);
+    // Install the addon and wait for the 'addon-install-complete' notification to show
+    locationBar.waitForNotificationPanel(callback, {type: "notification"});
 
     // Wait for the notification to unload
     locationBar.waitForNotificationPanel(panel => {
