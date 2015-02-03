@@ -81,23 +81,23 @@ function testInstallAddonWithEULA() {
   var md = new modalDialog.modalDialog(controller.window);
 
   // Install the add-on
-  md.start(aController => {
-    // Wait for the 'addon-install-complete' notification to show
-    locationBar.waitForNotificationPanel(() => {
-      addons.handleInstallAddonDialog(aController);
-    }, {type: "notification"});
-  });
+  md.start(aController => addons.handleInstallAddonDialog(aController));
 
+  // Wait for installing notification to appear
   locationBar.waitForNotificationPanel(() => {
     expect.waitFor(() => utils.isDisplayed(controller, addButton),
                    "Add extension to Firefox button is ready");
     addButton.click();
   }, {type: "notification"});
 
-  md.waitForDialog(TIMEOUT_DOWNLOAD);
+  // Install the addon and wait for the 'addon-install-complete' notification to show
+  locationBar.waitForNotificationPanel(() => {
+    md.waitForDialog(TIMEOUT_DOWNLOAD);
+  }, {type: "notification"});
 
   // Dispose of the restart doorhanger notification by keyboard event
-  controller.keypress(null , 'VK_ESCAPE', {});
+  locationBar.waitForNotificationPanel(panel => panel.keypress('VK_ESCAPE', {}),
+                                       {type: "notification", open:false});
 }
 
 /**
