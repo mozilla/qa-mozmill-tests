@@ -23,12 +23,18 @@ function setupModule(aModule) {
   // Downloads gets duplicated with a new profile
   // Remove pref once this is fixed
   prefs.setPref(PREF_PANEL_SHOWN, true);
+
+  // Maximize the browser window because the download panel button is not
+  // displayed on smaller window sizes hence the downloads panel is not open
+  aModule.browserWindow.maximize();
 }
 
 function teardownModule(aModule) {
   prefs.clearUserPref(PREF_PANEL_SHOWN);
   downloads.removeAllDownloads();
   aModule.downloadsPanel.close({force: true});
+
+  aModule.browserWindow.restore();
 }
 
 /**
