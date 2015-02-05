@@ -43,6 +43,11 @@ function setupModule(aModule) {
   // Download gets duplicated and stuck with a new profile
   // Remove this pref once bug has been fixed
   prefs.setPref(PREF_PANEL_SHOWN, true);
+
+  // Maximize the browser windows because the download panel button is not
+  // displayed on smaller window sizes hence the download panel is not open
+  aModule.browserWindow.maximize();
+  aModule.pbBrowserWindow.maximize();
 }
 
 function teardownModule(aModule) {
@@ -52,6 +57,9 @@ function teardownModule(aModule) {
 
   aModule.downloadsPanel.close({force: true});
   aModule.pbDownloadsPanel.close({force: true});
+
+  aModule.browserWindow.restore();
+  aModule.pbBrowserWindow.restore();
 
   windows.closeAllWindows(aModule.browserWindow);
 }
