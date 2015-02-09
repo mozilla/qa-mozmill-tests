@@ -30,12 +30,19 @@ var setupModule = function(aModule) {
   aModule.locationBar = new toolbar.locationBar(aModule.controller);
   aModule.tabBrowser = new tabs.tabBrowser(aModule.controller);
 
+  // TODO:
+  // Bug 1084289 - The close button is not visible on certain locales and
+  // browser window sizes in the notification bar
+  aModule.controller.window.maximize();
+
   aModule.tabBrowser.closeAllTabs();
 }
 
 function teardownModule(aModule) {
   // Clear the Safe Browsing permission
   utils.removePermission("www.itisatrap.org", "safe-browsing");
+
+  aModule.controller.window.restore();
 }
 
 var testNotificationBar = function() {
