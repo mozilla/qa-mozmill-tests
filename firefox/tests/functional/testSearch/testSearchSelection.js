@@ -85,6 +85,7 @@ var startSearch = function(element, engineName, loadInBackground) {
   // Use the context menu to start a search
   controller.rightClick(element);
 
+
   var contextEntry = new elementslib.ID(controller.window.document, "context-searchselect");
   controller.waitForElement(contextEntry);
 
@@ -92,8 +93,10 @@ var startSearch = function(element, engineName, loadInBackground) {
 
   expect.contain(contextLabel, engineName, "The specified search engine is installed");
 
-  controller.click(contextEntry);
-  utils.closeContentAreaContextMenu(controller);
+  tabs.openTab({method: "callback", callback: () => {
+    controller.click(contextEntry);
+    utils.closeContentAreaContextMenu(controller);
+  }});
 
   // A new tab will be opened in the background
   assert.waitFor(function () {
