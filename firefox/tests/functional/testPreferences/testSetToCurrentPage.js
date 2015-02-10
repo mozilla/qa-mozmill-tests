@@ -18,11 +18,17 @@ const BROWSER_HOMEPAGE = "browser.startup.homepage";
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
+  // Maximize the browser window because the home button is not
+  // displayed on smaller window sizes
+  aModule.controller.window.maximize();
+
   tabs.closeAllTabs(aModule.controller);
 }
 
 function teardownModule(aModule) {
   prefs.preferences.clearUserPref(BROWSER_HOMEPAGE);
+
+  aModule.controller.window.restore();
 }
 
 /**
@@ -65,9 +71,4 @@ function prefDialogHomePageCallback(controller) {
   controller.click(useCurrent);
 
   prefDialog.close(true);
-}
-
-if (mozmill.isLinux) {
-  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
-  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
 }
