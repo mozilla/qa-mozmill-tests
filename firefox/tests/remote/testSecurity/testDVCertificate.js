@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var security = require("../../../lib/security");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
@@ -40,8 +41,7 @@ function testLarryBlue() {
   controller.waitForPageLoad();
 
   // Get the information from the certificate
-  var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  cert = security.getCertificate(browserWindow.tabs.securityUI);
 
   // Check the favicon
   var favicon = locationBar.getElement({type: "favicon"});
