@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var security = require("../../../lib/security");
 var utils = require("../../../../lib/utils");
 var windows = require("../../../../lib/windows");
 
@@ -35,13 +36,11 @@ function teardownModule(aModule) {
  * Test the Larry displays GREEN
  */
 var testLarryGreen = function() {
-  // Go to a "green" website
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
-  var securityUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  cert = securityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  cert = security.getCertificate(browserWindow.tabs.securityUI);
 
   var country = cert.subjectName.substring(cert.subjectName.indexOf("C=") + 2,
                                            cert.subjectName.indexOf(",postalCode="));

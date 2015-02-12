@@ -6,6 +6,7 @@
 
 // Include necessary modules
 var { assert, expect } = require("../../../../lib/assertions");
+var security = require("../../../lib/security");
 var windows = require("../../../../lib/windows");
 
 var browser = require("../../../lib/ui/browser");
@@ -38,8 +39,7 @@ function testSecurityInfoViaMoreInformation() {
   controller.waitForPageLoad();
 
   // Get the information from the certificate for comparison
-  var secUI = controller.window.getBrowser().mCurrentBrowser.securityUI;
-  cert = secUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus.serverCert;
+  cert = security.getCertificate(browserWindow.tabs.securityUI);
 
   locationBar.waitForNotificationPanel(aPanel => {
     targetPanel = aPanel;

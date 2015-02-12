@@ -7,6 +7,8 @@
 // Include required modules
 var { assert } = require("../../lib/assertions");
 
+const SSLSTATUS_TIMEOUT = 10000;
+
 /**
  * Get the certificate of the associated controller
  *
@@ -17,9 +19,14 @@ var { assert } = require("../../lib/assertions");
  *                   certificate exists
  */
 function getCertificate(aSecurityUI) {
-  var SSLStatus = aSecurityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus;
+  assert.ok(aSecurityUI instanceof Ci.nsISSLStatusProvider,
+            "aSecurityUI has been passed of correct type");
 
-  return SSLStatus ? SSLStatus.serverCert : null;
+  var SSLStatus = aSecurityUI.QueryInterface(Ci.nsISSLStatusProvider).SSLStatus;
+  assert.waitFor(() => !!SSLStatus,
+                 "SSLStatus is ready", SSLSTATUS_TIMEOUT);
+
+  return SSLStatus.serverCert;
 }
 
 /**
