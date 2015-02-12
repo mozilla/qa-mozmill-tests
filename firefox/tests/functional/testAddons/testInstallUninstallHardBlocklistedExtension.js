@@ -19,12 +19,13 @@ const TEST_DATA = {
   addon: {
     name: "Test Extension (icons)",
     id: "test-icons@quality.mozilla.org",
-    url: BASE_URL + "addons/extensions/icons.xpi"
+    url: BASE_URL + "addons/install.html?addon=extensions/icons.xpi"
   }
 };
 
 const PREF_BLOCKLIST = "extensions.blocklist.url";
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_INSTALL_SECURE = "extensions.install.requireSecureOrigin";
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 1000;
@@ -36,8 +37,13 @@ function setupModule(aModule) {
   persisted.addon = TEST_DATA.addon;
 
   addons.setDiscoveryPaneURL("about:home");
+
   prefs.setPref(PREF_BLOCKLIST, TEST_DATA.blocklist);
   prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_SECURE, false);
+
+  // Whitelist add the local test folder
+  addons.addToWhiteList(BASE_URL);
 
   var file = new files.File(files.getProfileResource(BLOCKLIST_FILE_NAME));
   file.remove();
@@ -66,6 +72,7 @@ function teardownTest(aModule) {
 function teardownModule(aModule) {
   prefs.clearUserPref(PREF_BLOCKLIST);
   prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_SECURE);
   prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.addon;
@@ -84,10 +91,14 @@ function teardownModule(aModule) {
 function testInstallBlocklistedExtension() {
   persisted.nextTest = "testBlocklistsExtension";
 
+  controller.open(persisted.addon.url);
+  controller.waitForPageLoad();
+
+  var installLink = findElement.ID(controller.tabs.activeTab, "addon");
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
   md.start(addons.handleInstallAddonDialog);
-  controller.open(persisted.addon.url);
+  installLink.click();
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
 

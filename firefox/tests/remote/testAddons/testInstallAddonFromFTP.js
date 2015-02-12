@@ -22,8 +22,9 @@ const ADDON = {
 };
 
 function setupModule(aModule) {
-  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
   addons.setDiscoveryPaneURL("about:home");
+
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
 }
 
 function setupTest(aModule) {
