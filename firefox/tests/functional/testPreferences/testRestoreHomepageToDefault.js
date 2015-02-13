@@ -10,7 +10,6 @@ var prefs = require("../../../../lib/prefs");
 var tabs = require("../../../lib/tabs");
 var utils = require("../../../../lib/utils");
 
-var browser = require("../../../lib/ui/browser");
 var prefWindow = require("../../../lib/ui/pref-window");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
@@ -21,17 +20,11 @@ const PREF_BROWSER_INSTANT_APPLY = "browser.preferences.instantApply";
 
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
-  aModule.browserWindow = new browser.BrowserWindow();
 
   prefs.setPref(PREF_BROWSER_IN_CONTENT, false);
   if (mozmill.isWindows) {
     prefs.setPref(PREF_BROWSER_INSTANT_APPLY, false);
   }
-
-  // Maximize the browser window because the home button is not
-  // displayed on smaller window sizes
-  aModule.browserWindow.maximize();
-
   tabs.closeAllTabs(aModule.controller);
 }
 
@@ -39,8 +32,6 @@ var teardownModule = function(aModule) {
   prefs.clearUserPref(PREF_BROWSER_IN_CONTENT);
   prefs.clearUserPref(PREF_BROWSER_INSTANT_APPLY);
   prefs.clearUserPref("browser.startup.homepage");
-
-  aModule.browserWindow.restore();
 }
 
 /**
