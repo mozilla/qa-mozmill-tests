@@ -16,15 +16,11 @@ const TEST_DATA = BASE_URL + "layout/mozilla.html";
 var setupModule = function(aModule) {
   aModule.controller = mozmill.getBrowserController();
 
-  aModule.controller.window.maximize();
-
   tabs.closeAllTabs(aModule.controller);
 }
 
 var teardownModule = function(aModule) {
   prefs.preferences.clearUserPref("browser.startup.homepage");
-
-  aModule.controller.window.restore();
 }
 
 /**
@@ -93,4 +89,9 @@ var prefDialogDefHomePageCallback = function(controller) {
   expect.equal(browserHomepagePlaceholderText, defaultHomepageTitle, "Default homepage title");
 
   prefDialog.close(true);
+}
+
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
 }

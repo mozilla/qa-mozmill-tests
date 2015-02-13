@@ -19,17 +19,11 @@ function setupModule(aModule) {
 
   prefs.preferences.setPref(PREF_BROWSER_HOMEPAGE, TEST_DATA);
 
-  // Maximize the browser window because the home button is not
-  // displayed on smaller window sizes
-  aModule.controller.window.maximize();
-
   tabs.closeAllTabs(aModule.controller);
 }
 
-function teardownModule(aModule) {
+function teardownModule() {
   prefs.preferences.clearUserPref(PREF_BROWSER_HOMEPAGE);
-
-  aModule.controller.window.restore();
 }
 
 /**
@@ -43,4 +37,9 @@ function testHomeButton() {
 
   // Verify location bar with the saved home page
   utils.assertLoadedUrlEqual(controller, TEST_DATA);
+}
+
+if (mozmill.isLinux) {
+  setupModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
+  teardownModule.__force_skip__ = "Bug 1015126 - waitForPageLoad failure";
 }
