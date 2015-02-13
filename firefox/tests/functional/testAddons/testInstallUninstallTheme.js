@@ -13,6 +13,7 @@ var tabs = require("../../../lib/tabs");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_INSTALL_SECURE = "extensions.install.requireSecureOrigin";
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 1000;
@@ -26,7 +27,9 @@ const THEME = {
 
 function setupModule(aModule) {
   addons.setDiscoveryPaneURL("about:home");
+
   prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_SECURE, false);
 
   // Whitelist add the AMO preview site
   addons.addToWhiteList(BASE_URL);
@@ -53,6 +56,7 @@ function teardownTest(aModule) {
 
 function teardownModule(aModule) {
   prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_SECURE);
   prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.nextTest;
