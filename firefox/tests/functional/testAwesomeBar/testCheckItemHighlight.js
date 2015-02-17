@@ -65,6 +65,10 @@ var testCheckItemHighlight = function() {
     return locationBar.autoCompleteResults.isOpened == true;
   }, "Autocomplete popup has been opened - expected 'true'");
 
+  // Wait for the autocomplete to be populated
+  assert.waitFor(() => (locationBar.autoCompleteResults.visibleResults.length === 1),
+                 "Expected to be one visible result in the autocomplete list");
+
   // Result to check for underlined text
   var richlistItem = locationBar.autoCompleteResults.getResult(0);
 

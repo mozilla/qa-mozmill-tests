@@ -465,230 +465,6 @@ DownloadsPanel.prototype = {
 }
 
 /**
- * Downloads Panel class
- *
- * @constructor
- * @param {object} aBrowserWindow
- *        Browser window the downloads panel is part of
- */
-function DownloadsPanel(aBrowserWindow) {
-  assert.ok(aBrowserWindow, "Browser Window has been defined");
-
-  this._browserWindow = aBrowserWindow;
-  this._panel = this.getElement({type: "panel"});
-}
-
-DownloadsPanel.prototype = {
-  /**
-   * Get the Browser Window
-   *
-   * @returns {object} The browser window where the panel lives
-   */
-  get browserWindow() {
-    return this._browserWindow;
-  },
-
-  /**
-   * Check if the Downloads Panel is open
-   *
-   * @returns {boolen} True if the panel is open, false otherwise
-   */
-  get isOpen() {
-    return this.panel.getNode().state === "open";
-  },
-
-  /**
-   * Get the panel
-   *
-   * @returns {MozMillElement} The downloads panel
-   */
-  get panel() {
-    return this._panel;
-  },
-
-  /**
-   * Get the state of a download
-   *
-   * @param {MozMillElement} aDownload
-   *        The element for which to get the state
-   *
-   * @returns {number} The number representing the state download is in
-   */
-  getDownloadStatus : function DownloadsPanel_getDownloadState(aDownload) {
-    assert.ok(aDownload, "Download element has been specified");
-
-    return parseInt(aDownload.getNode().getAttribute("state"));
-  },
-
-  /**
-   * Retrieve an UI element based on the given specification
-   *
-   * @param {object} aSpec
-   *        Information of the UI elements which should be retrieved
-   * @parma {string} aSpec.type
-   *        Identifier of the element
-   * @param {string} [aSpec.subtype]
-   *        Attribute of the element to filter
-   * @param {string} [aSpec.value]
-   *        Value of the attribute to filter
-   * @param {string} [aSpec.parent=document]
-   *        Parent of the to find element
-   *
-   * @returns {ElemBase} Element which has been found
-   */
-  getElement : function DownloadsPanel_getElement(aSpec) {
-    var elements = this.getElements(aSpec);
-
-    return (elements.length > 0) ? elements[0] : undefined;
-  },
-
-  /**
-   * Retrieve list of UI elements based on the given specification
-   *
-   * @param {object} aSpec
-   *        Information of the UI elements which should be retrieved
-   * @parma {string} aSpec.type
-   *        Identifier of the element
-   * @param {string} [aSpec.subtype]
-   *        Attribute of the element to filter
-   * @param {string} [aSpec.value]
-   *        Value of the attribute to filter
-   * @param {string} [aSpec.parent=document]
-   *        Parent of the to find element
-   *
-   * @returns {ElemBase[]} Elements which have been found
-   */
-  getElements : function DownloadsPanel_getElements(aSpec) {
-    var spec = aSpec || {};
-
-    var root = spec.parent || this.browserWindow.controller.window.document;
-    var nodeCollector = new domUtils.nodeCollector(root);
-
-    var elems = null;
-
-    switch (spec.type) {
-      case "download":
-        assert.ok(spec.value, "Download index has been specified");
-
-        elems = [findElement.ID(root, "downloadsItem_id:" + spec.value)];
-        break;
-      case "downloads":
-        nodeCollector.root = findElement.ID(root, "downloadsListBox").getNode();
-        nodeCollector.queryNodes("richlistitem");
-        elems = nodeCollector.elements;
-        break;
-      case "downloadButton":
-        assert.ok(spec.value, "Download index has been specified");
-        assert.ok(spec.subtype, "Download button has been specified");
-
-        var item = this.getElement({type: "download", value: spec.value});
-        nodeCollector.root = item.getNode();
-        switch (spec.subtype) {
-          case "cancel":
-            nodeCollector.queryAnonymousNode("class",
-                                             "downloadButton downloadCancel");
-            break;
-          case "retry":
-            nodeCollector.queryAnonymousNode("class",
-                                             "downloadButton downloadRetry");
-            break;
-          case "show":
-            nodeCollector.queryAnonymousNode("class",
-                                             "downloadButton downloadShow");
-            break;
-          default:
-            assert.fail("Unknown element subtype - " + spec.subtype);
-        }
-        elems = nodeCollector.elements;
-        break;
-      case "openButton":
-        elems = [findElement.ID(root, "downloads-button")];
-        break;
-      case "panel":
-        elems = [findElement.ID(root, "downloadsPanel")];
-        break;
-      case "showAllDownloads":
-        elems = [findElement.ID(root, "downloadsHistory")];
-        break;
-      default:
-        assert.fail("Unknown element type - " + spec.type);
-    }
-
-    return elems;
-  },
-
-  /**
-   * Close the panel
-   *
-   * @params {object} [aSpec={}]
-   *         Information on how to close the panel
-   * @params {string} [aSpec.method="shortcut"]
-   *         Method to use to close the downloads panel ("callback"|"shortcut")
-   * @params {function} [aSpec.callback]
-   *         Callback that triggeres the download panel to close
-   * @params {boolean} [aSpec.force=false]
-   *         Force closing the Downloads Panel
-   *
-   */
-  close : function DownloadsPanel_close(aSpec={}) {
-    var method = aSpec.method || "shortcut";
-
-    if (this.panel.getNode().state === "closed" && aSpec.force) {
-      return;
-    }
-
-    waitForNotificationPanel(() => {
-      if (aSpec.force && this.panel.getNode()) {
-        this.panel.getNode().hidePopup();
-        return;
-      }
-
-      switch (method) {
-        case "callback":
-          assert.equal(aSpec.callback, "function",
-                       "Callback has been defined");
-          aSpec.callback();
-          break;
-        case "shortcut":
-          this.panel.keypress("VK_ESCAPE", {});
-          break;
-        default:
-          assert.fail("Unknown method to open the downloads panel - " + method);
-      }
-    }, {panel: this.panel, open: false});
-  },
-
-  /**
-   * Open the panel
-   *
-   * @params {object} [aSpec={}]
-   *         Information on how to open the panel
-   * @params {string} [aSpec.method="button"]
-   *         Method to use to open the downloads panel ("button"|"callback")
-   * @params {function} [aSpec.callback]
-   *         Callback that triggeres the download panel to open
-   */
-  open : function DownloadsPanel_waitForState(aSpec={}) {
-    var method = aSpec.method || "button";
-
-    waitForNotificationPanel(() => {
-      switch (method) {
-        case "button":
-          this.getElement({type: "openButton"}).click();
-          break;
-        case "callback":
-          assert.equal(aSpec.callback, "function",
-                       "Callback has been defined");
-          aSpec.callback();
-          break;
-        default:
-          assert.fail("Unknown method to open the downloads panel - " + method);
-      }
-    }, {panel: this.panel, open: true});
-  }
-}
-
-/**
  * Edit Bookmarks Panel class
  *
  * @constructor
@@ -1229,6 +1005,20 @@ locationBar.prototype = {
     }
 
     waitForNotificationPanel(aCallback, {open: spec.open, panel: panel});
+  },
+
+  /**
+   * Wait for the current URL to have the expected pageproxystate state
+   * 'pageproxystate' is set when the URL location changes
+   *
+   * @param {string} [aState='valid']
+   *        Expected state of page proxy, can be either 'valid' or 'invalid'
+   */
+  waitForProxyState : function locationBar_waitForProxyState(aState="valid") {
+    var urlbar = this.getElement({type: "urlbar"});
+
+    assert.waitFor(() => urlbar.getNode().getAttribute("pageproxystate") === aState,
+                   "Current URL has the proxy state: " + aState);
   }
 }
 
@@ -1308,7 +1098,7 @@ MenuPanel.prototype = {
     var spec = aSpec || { };
 
     var root = spec.parent ? spec.parent.getNode()
-                           : this._browserWindow.controller.window.document;
+                           : this.browserWindow.controller.window.document;
     var elems = [];
 
     switch (spec.type) {

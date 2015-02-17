@@ -11,30 +11,6 @@
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-/**
- * Initialisation of tabs observer, which will set "isAnimated" flag when
- * scroll-button collapses
- */
-var animationObserver = {
-  isAnimated: true,
-
-  /**
-   * @param {MozElement} aElement
-   *        Element to observe
-   */
-  init: function (aElement) {
-    var win = aElement.getNode().ownerDocument.defaultView;
-    var self = this;
-    this.mutationObserver = new win.MutationObserver(function (aMutations) {
-      aMutations.forEach(function (aMutation) {
-        self.isAnimated = aMutation.target.hasAttribute("collapsed");
-      });
-    });
-    this.mutationObserver.observe(aElement.getNode(), {attributes: true,
-                                                       attributeFilter: ["collapsed"]});
-  }
-}
-
 // Include required modules
 var { assert } = require("../../lib/assertions");
 var domUtils = require("../../lib/dom-utils");
@@ -44,6 +20,7 @@ var utils = require("../../lib/utils");
 
 const PREF_NEWTAB_INTRO = "browser.newtabpage.introShown";
 const PREF_NEWTAB_PRELOAD = "browser.newtab.preload";
+const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
 const TABS_BROWSER = TABS_VIEW + utils.australis.getElement("tabs") +
@@ -422,9 +399,6 @@ function tabBrowser(aController) {
   this._controller = aController;
   this.findBar = new findBar(this);
   this._tabs = this.getElement({type: "tabs"});
-  let tabsScrollButton = this.getElement({type: "tabs_scrollButton",
-                                          subtype: "down"});
-  animationObserver.init(tabsScrollButton);
 
   // Bug 1076870
   // TODO: Remove this pref once it has been added in Mozmill
@@ -538,61 +512,76 @@ tabBrowser.prototype = {
   },
 
   /**
-   * Close an open tab
+   * Close a tab using different methods
    *
-   * @param {String} [aEventType="menu"]
-   *   Type of event which triggers the action
-   *   <dl>
-   *     <dt>closeButton</dt>
-   *     <dd>The close button on the selected tab is used</dd>
-   *     <dt>menu</dt>
-   *     <dd>The main menu is used</dd>
-   *     <dt>middleClick</dt>
-   *     <dd>A middle mouse click gets synthesized</dd>
-   *     <dt>shortcut</dt>
-   *     <dd>The keyboard shortcut is used</dd>
-   *   </dl>
-   * @param {Number} [aIndex=selectedIndex]
-   *   Index of the tab to close (only used for middleClick)
+   * @param {object} [aSpec]
+   *        Information about how to close the tab
+   * @param {function} [aSpec.callback]
+   *        Callback used for closing the tab
+   * @param {number} [aSpec.index=selectedIndex]
+   *        Index of the tab to close (only used for middleClick)
+   * @param {string} [aSpec.method="menu"]
+   *        Method used for closing the tab
+   *        ("button", "callback", "menu", "shortcut", "middleClick")
+   * @param {MozElement} [aSpec.target]
+   *        Element from where to open the tab
    */
-  closeTab : function tabBrowser_closeTab(aEventType, aIndex) {
-    var type = aEventType || "menu";
-    var index = (typeof aIndex === undefined) ? this.selectedIndex : aIndex;
+  closeTab : function tabBrowser_closeTab(aSpec={}) {
+    var method = aSpec.method || "menu";
+    var index = (typeof aSpec.index === undefined) ? this.selectedIndex
+                                                   : aSpec.index;
 
-    var length = this.length;
+    // Bug 1112601
+    // TODO: Remove this pref once it has been added in Mozmill
+    prefs.setPref(PREF_TABS_ANIMATE, false);
 
-    switch (type) {
-      case "closeButton":
-        var button = this.getElement({type: "tabs_tabCloseButton",
-                                     subtype: "tab", value: this.getTab()});
+    // Add event listener to wait until the tab has been closed
+    var closed = false;
+    var checkTabClosed = () => { closed = true; }
+    this.controller.window.addEventListener("TabClose", checkTabClosed, false);
 
-        // Wait for the button to be displayed
-        assert.waitFor(() => utils.isDisplayed(this._controller, button),
-                       "Close button is visible");
+    var callback = () => {
+      switch (method) {
+        case "button":
+          var button = this.getElement({type: "tabs_tabCloseButton",
+                                       subtype: "tab", value: this.getTab()});
 
-        this._controller.click(button);
-        break;
-      case "menu":
-        this._controller.mainMenu.click("#menu_close");
-        break;
-      case "middleClick":
-        var tab = this.getTab(index);
-        this._controller.middleClick(tab);
-        break;
-      case "shortcut":
-        var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
-        this._controller.keypress(null, cmdKey, {accelKey: true});
-        break;
-      default:
-        assert.fail("Unknown event type - " + type);
+          // Wait for the button to be displayed
+          assert.waitFor(() => utils.isDisplayed(this.controller, button),
+                         "Close button is visible");
+          button.click();
+          break;
+        case "callback":
+          assert.equal(typeof aSpec.callback, "function",
+                       "Callback is defined");
+
+          aSpec.callback();
+          break;
+        case "menu":
+          this.controller.mainMenu.click("#menu_close");
+          break;
+        case "shortcut":
+          var cmdKey = utils.getEntity(this.getDtds(), "closeCmd.key");
+          this.controller.keypress(null, cmdKey, {accelKey: true});
+          break;
+        case "middleClick":
+          var tab = this.getTab(index);
+          tab.middleClick();
+          break;
+        default:
+          assert.fail("Unknown method - " + method);
+      }
+    };
+
+    try {
+      callback();
+
+      assert.waitFor(() => closed, "Tab has been closed");
     }
-
-    // When removing a tab it animates outside of visible space and only after that
-    // it's being removed, so the length property gets updated last
-    var self = this;
-    assert.waitFor(function () {
-      return self.length === length - 1;
-    }, "Tab has been closed");
+    finally {
+      this.controller.window.removeEventListener("TabClose", checkTabClosed);
+      prefs.clearUserPref(PREF_TABS_ANIMATE);
+    }
   },
 
   /**
@@ -770,6 +759,8 @@ tabBrowser.prototype = {
    *        Callback used for opening the tab
    * @param {string} [aSpec.method="menu"]
    *        Method used for opening the tab
+   *        ("callback", "menu", "newTabButton", "shortcut", "tabStrip"
+   *         "contextMenu", "middleClick")
    * @param {MozElement} [aSpec.target]
    *        Element from where to open the tab
    */
@@ -936,35 +927,23 @@ tabBrowser.prototype = {
    *        Function that opens the tab
    */
   _waitForTabOpened: function tabBrowser_waitForTabOpened(aCallback) {
-    var self = {
-      opened: false,
-      transitioned: false
-    };
-
-    function checkTabOpened() { self.opened = true; }
-    function checkTabTransitioned() { self.transitioned = true; }
+    // Bug 1112601
+    // TODO: Remove this pref once it has been added in Mozmill
+    prefs.setPref(PREF_TABS_ANIMATE, false);
 
     // Add event listener to wait until the tab has been opened
-    this._controller.window.addEventListener("TabOpen", checkTabOpened);
-    if (animationObserver.isAnimated) {
-      this._tabs.getNode().addEventListener("transitionend", checkTabTransitioned);
-    }
-    else {
-      self.transitioned = true;
-    }
+    var opened = false;
+    var checkTabOpened = () => { opened = true; }
+    this.controller.window.addEventListener("TabOpen", checkTabOpened);
 
     try {
       aCallback();
 
-      assert.waitFor(() => {
-        return self.opened && self.transitioned;
-      }, "Tab has been opened");
+      assert.waitFor(() => opened, "Tab has been opened");
     }
     finally {
-      this._controller.window.removeEventListener("TabOpen", checkTabOpened);
-      if (animationObserver.isAnimated) {
-        this._tabs.getNode().removeEventListener("transitionend", checkTabTransitioned);
-      }
+      this.controller.window.removeEventListener("TabOpen", checkTabOpened);
+      prefs.clearUserPref(PREF_TABS_ANIMATE);
     }
   },
 

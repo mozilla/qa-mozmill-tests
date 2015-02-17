@@ -73,7 +73,7 @@ var testOpenInBackgroundTab = function() {
 
   // Click the close button of the last tab
   tabBrowser.selectedIndex = 3;
-  tabBrowser.closeTab("closeButton");
+  tabBrowser.closeTab({method: "button"});
 
   // Verify that the last tab is selected:
   assert.waitFor(function () {

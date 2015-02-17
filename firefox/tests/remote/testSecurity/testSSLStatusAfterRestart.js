@@ -75,6 +75,7 @@ function testDisplayCertificateStatus() {
     controller.open(aPage.url);
     controller.waitForPageLoad();
 
+    locationBar.waitForProxyState();
     cert = security.getCertificate(tabBrowser.securityUI);
     verifyCertificateStatus(aPage);
 
@@ -89,6 +90,7 @@ function testDisplayCertificateStatusAfterRestart() {
   TEST_DATA.forEach(aPage => {
     controller.waitForPageLoad();
 
+    locationBar.waitForProxyState();
     cert = security.getCertificate(tabBrowser.securityUI);
     verifyCertificateStatus(aPage);
     tabBrowser.selectedIndex++;
