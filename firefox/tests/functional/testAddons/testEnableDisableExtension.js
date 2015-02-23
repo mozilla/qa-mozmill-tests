@@ -12,18 +12,24 @@ var tabs = require("../../../lib/tabs");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const ADDON = {
-  url: BASE_URL + "addons/extensions/icons.xpi",
+  url: BASE_URL + "addons/install.html?addon=extensions/icons.xpi",
   id: "test-icons@quality.mozilla.org"
 };
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_INSTALL_SECURE = "extensions.install.requireSecureOrigin";
 
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
 
 function setupModule(aModule) {
-  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
   addons.setDiscoveryPaneURL("about:home");
+
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_SECURE, false);
+
+  // Whitelist add the local test folder
+  addons.addToWhiteList(BASE_URL);
 }
 
 function setupTest(aModule) {
@@ -38,7 +44,9 @@ function setupTest(aModule) {
 
 function teardownModule(aModule) {
   delete persisted.nextTest;
+
   prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_SECURE);
 
   addons.resetDiscoveryPaneURL();
   aModule.addonsManager.close();
@@ -55,11 +63,16 @@ function teardownTest(aModule) {
  */
 function testInstallAddon() {
   persisted.nextTest = "testDisableExtension";
+
+  controller.open(ADDON.url);
+  controller.waitForPageLoad();
+
+  var installLink = findElement.ID(controller.tabs.activeTab, "addon");
   var md = new modalDialog.modalDialog(addonsManager.controller.window);
 
   // Install the add-on
   md.start(addons.handleInstallAddonDialog);
-  controller.open(ADDON.url);
+  installLink.click();
   md.waitForDialog(TIMEOUT_DOWNLOAD);
 }
 

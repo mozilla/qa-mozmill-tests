@@ -14,6 +14,7 @@ var tabs = require("../../../../lib/tabs");
 const BASE_URL = collector.addHttpResource("../../../../../data/");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_INSTALL_SECURE = "extensions.install.requireSecureOrigin";
 
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
@@ -30,6 +31,7 @@ function setupModule(aModule) {
   addons.setDiscoveryPaneURL("about:home");
 
   prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_SECURE, false);
 
   // Whitelist localhost
   addons.addToWhiteList(BASE_URL + "addons/");
@@ -39,6 +41,9 @@ function setupModule(aModule) {
 
 function teardownModule(aModule) {
   aModule.controller.restartApplication();
+
+  prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_SECURE);
 }
 
 /**

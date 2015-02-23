@@ -49,11 +49,9 @@ var testDisableSSL = function() {
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title);
 
-  var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title");
-  var oldSecurityProtTitle = utils.getEntity(DTDS, "oldSecurityProtocol.title");
-  expect.waitFor(() => title.getNode().textContent ===
-                       (oldSecurityProtTitle || nssFailure2title),
-                 "The correct SSL error title is shown");
+  var nssFailure2title = utils.getEntity(DTDS, "oldSecurityProtocol.title");
+  expect.equal(title.getNode().textContent, nssFailure2title,
+               "The correct SSL error title is shown");
 
   // Verify "Try Again" button appears
   var tryAgain = new elementslib.ID(controller.tabs.activeTab, "errorTryAgain");

@@ -14,6 +14,7 @@ var tabs = require("../../../lib/tabs");
 const BASE_URL = collector.addHttpResource("../../../../data/");
 
 const PREF_INSTALL_DIALOG = "security.dialog_enable_delay";
+const PREF_INSTALL_SECURE = "extensions.install.requireSecureOrigin";
 const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 1000;
@@ -21,14 +22,19 @@ const TIMEOUT_DOWNLOAD = 25000;
 
 const ADDONS = [
   {id: "test-icons@quality.mozilla.org",
-   url: BASE_URL + "addons/extensions/icons.xpi"},
+   url: BASE_URL + "addons/install.html?addon=extensions/icons.xpi"},
   {id: "test-long-name@quality.mozilla.org",
-   url: BASE_URL + "addons/extensions/long-name.xpi"}
+   url: BASE_URL + "addons/install.html?addon=extensions/long-name.xpi"}
 ];
 
 function setupModule(aModule) {
-  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
   addons.setDiscoveryPaneURL("about:home");
+
+  prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
+  prefs.setPref(PREF_INSTALL_SECURE, false);
+
+  // Whitelist add the local test folder
+  addons.addToWhiteList(BASE_URL);
 }
 
 function setupTest(aModule) {
@@ -52,6 +58,7 @@ function teardownTest(aModule) {
 
 function teardownModule(aModule) {
   prefs.clearUserPref(PREF_INSTALL_DIALOG);
+  prefs.clearUserPref(PREF_INSTALL_SECURE);
   prefs.clearUserPref(PREF_LAST_CATEGORY);
 
   delete persisted.nextTest;
@@ -70,8 +77,13 @@ function testInstallExtensions() {
 
   ADDONS.forEach(function (aAddon) {
     // Install the addon
-    md.start(addons.handleInstallAddonDialog);
     controller.open(aAddon.url);
+    controller.waitForPageLoad();
+
+    var installLink = findElement.ID(controller.tabs.activeTab, "addon");
+
+    md.start(addons.handleInstallAddonDialog);
+    installLink.click();
     md.waitForDialog(TIMEOUT_DOWNLOAD);
 
     // Dispose of the restart doorhanger notification by keyboard event

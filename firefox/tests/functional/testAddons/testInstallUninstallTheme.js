@@ -18,15 +18,12 @@ const PREF_LAST_CATEGORY = "extensions.ui.lastCategory";
 
 const INSTALL_DIALOG_DELAY = 1000;
 const TIMEOUT_DOWNLOAD = 25000;
-const TIMEOUT_USER_SHUTDOWN = 2000;
 
-const THEME = [
-  {name: "Theme (Plain)",
-   id: "plain.theme@quality.mozilla.org",
-   url: BASE_URL + "addons/install.html?addon=themes/plain.jar"},
-  {name: "Default",
-   id: "{972ce4c6-7e08-4474-a285-3208198ce6fd}"}
-];
+const THEME = {
+  name: "Theme (Plain)",
+  id: "plain.theme@quality.mozilla.org",
+  url: BASE_URL + "addons/install.html?addon=/themes/plain.jar"
+};
 
 function setupModule(aModule) {
   addons.setDiscoveryPaneURL("about:home");
@@ -34,7 +31,7 @@ function setupModule(aModule) {
   prefs.setPref(PREF_INSTALL_DIALOG, INSTALL_DIALOG_DELAY);
   prefs.setPref(PREF_INSTALL_SECURE, false);
 
-  // Whitelist add the local test folder
+  // Whitelist add the AMO preview site
   addons.addToWhiteList(BASE_URL);
 }
 
@@ -75,7 +72,7 @@ function testInstallTheme() {
   persisted.nextTest = "testThemeIsInstalled";
 
   // Go to theme url and perform install
-  controller.open(THEME[0].url);
+  controller.open(THEME.url);
   controller.waitForPageLoad();
 
   var installLink = findElement.ID(controller.tabs.activeTab, "addon");
@@ -84,6 +81,13 @@ function testInstallTheme() {
   md.start(addons.handleInstallAddonDialog);
   installLink.click();
   md.waitForDialog(TIMEOUT_DOWNLOAD);
+}
+
+/**
+ * Test theme has been installed then uninstall
+ */
+function testThemeIsInstalled() {
+  persisted.nextTest = "testThemeIsUninstalled";
 
   addonsManager.open();
 
@@ -92,57 +96,24 @@ function testInstallTheme() {
     category: addonsManager.getCategoryById({id: "theme"})
   });
 
-  var plainTheme;
-  assert.waitFor(() => {
-    plainTheme = addonsManager.getAddons({attribute: "value",
-                                          value: THEME[0].id})[0];
-    return !!plainTheme;
-  }, "New installed theme has been found.");
+  // Verify the theme is installed
+  var theme = addonsManager.getAddons({attribute: "value", value: THEME.id})[0];
+  var themeIsInstalled = addonsManager.isAddonInstalled({addon: theme});
 
-  // Verify that plain-theme is marked to be enabled
-  assert.equal(plainTheme.getNode().getAttribute("pending"), "enable",
-               "Plain-theme is marked to be enabled.");
+  assert.ok(themeIsInstalled, THEME.id + " is installed");
+
+  // Remove theme
+  addonsManager.removeAddon({addon: theme});
 }
 
 /**
- * Verifies the theme is installed and enabled
+ * Test that a theme has been uninstalled
  */
-function testThemeIsInstalled() {
-  persisted.nextTest = "testChangedThemeToDefault";
-
+function testThemeIsUninstalled() {
   addonsManager.open();
 
-  // Verify the plain-theme is installed
-  var plainTheme = addonsManager.getAddons({attribute: "value",
-                                            value: THEME[0].id})[0];
+  var theme = addonsManager.getAddons({attribute: "value",
+                                       value: THEME.id});
 
-  assert.ok(addonsManager.isAddonInstalled({addon: plainTheme}),
-            "The theme '" + THEME[0].id + "' is installed");
-
-  // Verify the plain-theme is enabled
-  assert.ok(addonsManager.isAddonEnabled({addon: plainTheme}),
-            "The theme '" + THEME[0].id + "' is enabled");
-
-  // Enable the default theme
-  var defaultTheme = addonsManager.getAddons({attribute: "value",
-                                              value: THEME[1].id})[0];
-
-  addonsManager.enableAddon({addon: defaultTheme});
-
-  // Verify that default theme is marked to be enabled
-  assert.equal(defaultTheme.getNode().getAttribute("pending"), "enable",
-               "Default-theme is marked to be enabled.");
-}
-
-/**
- * Verify we changed to the default theme
- */
-function testChangedThemeToDefault() {
-  addonsManager.open();
-
-  // Verify the default theme is active
-  var defaultTheme = addonsManager.getAddons({attribute: "value",
-                                              value: THEME[1].id})[0];
-
-  assert.equal(defaultTheme.getNode().getAttribute("active"), "true");
+  assert.equal(theme.length, 0, THEME.id + " is uninstalled");
 }
