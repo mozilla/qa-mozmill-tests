@@ -74,6 +74,28 @@ UnknownContentTypeDialog.prototype.getElements = function UCTD_getElements(aSpec
 }
 
 /**
+ * Download the file of unknown type from current open UCTD by
+ * saving it automatically to disk
+ */
+UnknownContentTypeDialog.prototype.save = function UCTD_save() {
+  var saveFileRadio = this.getElement({type: "save"});
+
+  assert.waitFor(() => !!saveFileRadio.getNode(),
+                 "Save File radio button has been enabled");
+
+  saveFileRadio.click();
+  assert.ok(saveFileRadio.getNode().selected,
+            "Save File radio button has been selected");
+
+  // Wait until the OK button has been enabled and click on it
+  var acceptButton = this.getElement({type: "button", subtype: "accept"});
+  assert.waitFor(() => (acceptButton.exists() &&
+                        !acceptButton.getNode().hasAttribute("disabled")),
+                        "The OK button has been enabled");
+  this.close(() => { acceptButton.click(); });
+}
+
+/**
  * Helper for opening the Unknown Content Type dialog
  *
  * @param {function} aCallback

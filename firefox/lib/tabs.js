@@ -803,10 +803,8 @@ tabBrowser.prototype = {
         case "contextMenu":
           assert.ok(spec.target, "Target element has to be specified");
 
-          var contextMenuItem = this.getElement({type: "openLinkInNewTab"});
-          spec.target.rightClick();
-          contextMenuItem.click();
-          utils.closeContentAreaContextMenu(this._controller);
+          var contextMenu = this._controller.getMenu("#contentAreaContextMenu");
+          contextMenu.select("#context-openlinkintab", aSpec.target);
           break;
         case "middleClick":
           assert.ok(spec.target, "Target element has to be specified");

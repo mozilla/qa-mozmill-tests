@@ -5,56 +5,90 @@
 "use strict";
 
 // Include required modules
-var downloads = require("../../../lib/downloads");
+var downloads = require("../../../../lib/downloads");
+var prefs = require("../../../../lib/prefs");
+var utils = require("../../../../lib/utils");
 
-const TEST_DATA = "ftp://ftp.mozilla.org/pub/firefox/releases/3.6/source/" +
-                  "firefox-3.6.source.tar.bz2";
+var browser = require("../../../lib/ui/browser");
 
-var setupModule = function(aModule) {
-  aModule.controller = mozmill.getBrowserController();
-  aModule.dm = new downloads.downloadManager();
+const TEST_DATA = "ftp://ftp.mozilla.org/pub/mozilla.org/firefox/releases/31.0/source/firefox-31.0.bundle";
 
-  // Make sure Download Manager is clean before starting
-  aModule.dm.cleanAll();
+const PREF_PANEL_SHOWN = "browser.download.panel.shown";
+
+function setupModule(aModule) {
+  aModule.browserWindow = new browser.BrowserWindow();
+  aModule.downloadsPanel = aModule.browserWindow.navBar.downloadsPanel;
+
+  // Bug 959103
+  // Downloads gets duplicated with a new profile
+  // Remove pref once this is fixed
+  prefs.setPref(PREF_PANEL_SHOWN, true);
+
+  // Maximize the browser window because the download panel button is not
+  // displayed on smaller window sizes hence the downloads panel is not open
+  aModule.browserWindow.maximize();
 }
 
-var teardownModule = function(aModule) {
-  aModule.dm.cleanAll();
-  aModule.dm.close();
+function teardownModule(aModule) {
+  prefs.clearUserPref(PREF_PANEL_SHOWN);
+  downloads.removeAllDownloads();
+  aModule.downloadsPanel.close({force: true});
+
+  aModule.browserWindow.restore();
 }
 
-/*
- * This tests all four download states:
- *   Pause, Resume, Cancel, and Retry
+/**
+ * Test download states:
+ * Downloading, Canceled, and Retry
  */
-var testDownloadStates = function() {
-  // Download a file
-  downloads.downloadFileOfUnknownType(controller, TEST_DATA);
+function testDownloadPanel() {
+  // Initialize state variable
+  var state = downloads.DOWNLOAD_STATE["notStarted"];
 
-  // Wait for the Download Manager to open
-  dm.waitForOpened(controller);
+  var dialog = browserWindow.openUnknownContentTypeDialog(() => {
+    browserWindow.controller.open(TEST_DATA);
+  });
 
-  // Get the download object
-  var download = dm.getElement({type: "download", subtype: "id", value: "dl1"});
-  controller.waitForElement(download);
+  dialog.save();
 
-  // Click the pause button and verify the download is paused
-  var pauseButton = dm.getElement({type: "download_button", subtype: "pause", value: download});
-  controller.waitThenClick(pauseButton);
-  dm.waitForDownloadState(download, downloads.downloadState.paused);
+  downloadsPanel.open();
+  assert.ok(downloadsPanel.isOpen, "Downloads panel is open");
 
-  // Click the resume button and verify the download is active
-  var resumeButton = dm.getElement({type: "download_button", subtype: "resume", value: download});
-  controller.waitThenClick(resumeButton);
-  dm.waitForDownloadState(download, downloads.downloadState.downloading);
+  var downloadItem = downloadsPanel.getElement({type: "download", value: 0});
+  expect.ok(utils.isDisplayed(browserWindow.controller, downloadItem),
+            "List element has been found");
+  assert.waitFor(() => {
+    state = downloadsPanel.getDownloadStatus(downloadItem);
+    return (state === downloads.DOWNLOAD_STATE["downloading"]);
+  }, "The file is downloading");
 
-  // Click the cancel button and verify the download is canceled
-  var cancelButton = dm.getElement({type: "download_button", subtype: "cancel", value: download});
-  controller.waitThenClick(cancelButton);
-  dm.waitForDownloadState(download, downloads.downloadState.canceled);
+  // Cancel the download
+  var cancelDownload = downloadsPanel.getElement({type: "downloadButton",
+                                                  subtype: "cancel",
+                                                  value: 0});
+  cancelDownload.click();
 
-  // Click the retry button and verify the download is active
-  var retryButton = dm.getElement({type: "download_button", subtype: "retry", value: download});
-  controller.waitThenClick(retryButton);
-  dm.waitForDownloadState(download, downloads.downloadState.downloading);
+  assert.waitFor(() => {
+    state = downloadsPanel.getDownloadStatus(downloadItem);
+    return (state === downloads.DOWNLOAD_STATE["canceled"]);
+  }, "Download has been canceled");
+
+  // Retry the download
+  var retryDownload = downloadsPanel.getElement({type: "downloadButton",
+                                                 subtype: "retry",
+                                                 value: 0});
+  retryDownload.click();
+  assert.waitFor(() => {
+    state = downloadsPanel.getDownloadStatus(downloadItem);
+    return (state === downloads.DOWNLOAD_STATE["downloading"]);
+  }, "The file is downloading after retry");
+
+  // Cancel the download again
+  cancelDownload.click();
+  assert.waitFor(() => {
+    state = downloadsPanel.getDownloadStatus(downloadItem);
+    return (state === downloads.DOWNLOAD_STATE["canceled"]);
+  }, "Download has been canceled");
+
+  downloadsPanel.close();
 }

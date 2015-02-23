@@ -11,11 +11,11 @@ var tabs = require("../../../../../../lib/tabs");
 
 function setupModule(aModule) {
   aModule.controller = mozmill.getBrowserController();
+  tabs.closeAllTabs(aModule.controller);
 
   aModule.sm = new selenium.SeleniumManager();
   aModule.sm.open(aModule.controller);
 
-  tabs.closeAllTabs(aModule.controller);
   aModule.controller.open("chrome://selenium-ide/content/tests/functional/aut/search.html");
   aModule.controller.waitForPageLoad();
 }

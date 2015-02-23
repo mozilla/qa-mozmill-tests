@@ -83,8 +83,8 @@ function testSubmitUnencryptedInfoWarning() {
  */
 function handleSecurityWarningDialog(aController) {
   // Get the message text
-  var message = utils.getProperty("chrome://pipnss/locale/security.properties",
-                                  "PostToInsecureFromSecureMessage");
+  var message = utils.getProperty("chrome://global/locale/browser.properties",
+                                  "formPostSecureToInsecureWarning.message");
   var dialog = new dialogs.CommonDialog(aController);
 
   // Wait for the content to load
