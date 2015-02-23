@@ -47,7 +47,7 @@ var testAboutSessionRestoreErrorPage = function() {
   tabBrowser.openTab({method: "shortcut"});
   controller.open(TEST_DATA);
   controller.waitForPageLoad();
-  tabBrowser.closeTab("shortcut");
+  tabBrowser.closeTab({method: "shortcut"});
 
   sessionStore.undoClosedTab(controller, {type: "shortcut"});
 }
