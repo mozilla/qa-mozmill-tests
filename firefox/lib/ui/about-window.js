@@ -86,8 +86,8 @@ AboutWindow.prototype.__defineGetter__('wizardState', function() {
  * Clicks on "Check for Updates" button, and waits for check to complete
  */
 AboutWindow.prototype.checkForUpdates = function AW_checkForUpdates() {
-  var updateButton = this.getElement({type: "updateButton"});
-  updateButton.waitThenClick();
+  var checkButton = this.getElement({type: "checkForUpdatesButton"});
+  checkButton.click();
 
   this.waitForCheckFinished();
 };
@@ -149,6 +149,10 @@ AboutWindow.prototype.getElements = function AW_getElements(aSpec={}) {
   var elements = [];
 
   switch (aSpec.type) {
+    case "checkForUpdatesButton":
+      elements = [findElement.ID(this._controller.window.document,
+                                 "checkForUpdatesButton")];
+      break;
     case "downloadAndInstallButton":
       elements = [findElement.ID(this._controller.window.document,
                                  "downloadAndInstallButton")];
@@ -175,8 +179,10 @@ AboutWindow.prototype.getElements = function AW_getElements(aSpec={}) {
  *        The amount of time to wait for check to complete
  */
 AboutWindow.prototype.waitForCheckFinished = function AW_waitForCheckFinished(aTimeout=TIMEOUT_UPDATE_CHECK) {
-  assert.waitFor(() => this.wizardState !== WIZARD_PAGES.checkingForUpdates,
-                 "An update has been found.", aTimeout);
+  assert.waitFor(() => {
+    return this.wizardState !== WIZARD_PAGES.checkForUpdates &&
+           this.wizardState !== WIZARD_PAGES.checkingForUpdates;
+  }, "An update has been found.", aTimeout);
 };
 
 /**
