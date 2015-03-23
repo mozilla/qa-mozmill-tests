@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
 var { assert, expect } = require("../../../../lib/assertions");
+var dialogs = require("../../../../lib/ui/dialogs");
 var modalDialog = require("../../../../lib/modal-dialog");
 var prefs = require("../../../../lib/prefs");
 var utils = require("../../../../lib/utils");
@@ -139,10 +140,6 @@ function deleteAllPasswords(aController) {
  *        MozMillController of the window to operate on
  */
 function confirmHandler(aController) {
-  var dialogButton = new elementslib.Lookup(aController.window.document,
-                                            '/id("commonDialog")' +
-                                            '/anon({"anonid":"buttons"})' +
-                                            '/{"dlgtype":"accept"}');
-
-  aController.waitThenClick(dialogButton);
+  var dialog = new dialogs.CommonDialog(aController);
+  dialog.accept();
 }

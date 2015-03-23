@@ -13,6 +13,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 var { assert, expect } = require("../../lib/assertions");
 var modalDialog = require("../../lib/modal-dialog");
 var utils = require("../../lib/utils");
+
+var dialogs = require("../../lib/ui/dialogs");
 var widgets = require("../../lib/ui/widgets");
 
 var autoCompleteController = Cc["@mozilla.org/autocomplete/controller;1"]
@@ -180,28 +182,15 @@ engineManager.prototype = {
    * @private
    */
   _handleEngineInstall : function engineManager_handleEngineInstall(aController) {
-    var confirmTitle = utils.getProperty("chrome://global/locale/search/search.properties",
-                                         "addEngineConfirmTitle");
-
-    if (mozmill.isMac) {
-      var title = aController.window.document.getElementById("info.title").textContent;
-    }
-    else {
-      var title = aController.window.document.title;
-    }
-
-    expect.equal(title, confirmTitle, "Window contains search engine title");
+    var dialog = new dialogs.AddEngineConfirmDialog(aController);
+    var title = dialog.getProperty("addEngineConfirmTitle");
+    expect.equal(dialog.title, title, "Window contains search engine title");
 
     // Check that the correct domain is shown
-    var infoBody = aController.window.document.getElementById("info.body");
-    assert.waitFor(function () {
-      return infoBody.textContent.indexOf('localhost') !== -1;
-    }, "Search Engine URL contains the 'localhost' domain");
-
-    var addButton = new elementslib.Lookup(aController.window.document,
-                                           '/id("commonDialog")/anon({"anonid":"buttons"})' +
-                                           '/{"dlgtype":"accept"}');
-    aController.click(addButton);
+    var infoBody = dialog.getElement({type: "info_body"});
+    assert.waitFor(() => (infoBody.getNode().textContent.indexOf('localhost') !== -1),
+                   "Search Engine URL contains the 'localhost' domain");
+    dialog.accept();
   },
 
   /**

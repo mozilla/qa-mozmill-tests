@@ -25,9 +25,9 @@ const TEST_DATA = [{
   type: "verifiedIdentity",
   callback: checkSecurityTab_EV
 }, {
-  url: "http://ssl-ov.mozqa.com/",
+  url: "https://ssl-ov.mozqa.com/",
   identity: "",
-  type: "unknownIdentity",
+  type: "verifiedDomain",
   callback: checkSecurityTab_OV
 }];
 
@@ -76,6 +76,7 @@ function testDisplayCertificateStatus() {
     controller.waitForPageLoad();
 
     locationBar.waitForProxyState();
+
     cert = security.getCertificate(tabBrowser.securityUI);
     verifyCertificateStatus(aPage);
 
@@ -91,6 +92,7 @@ function testDisplayCertificateStatusAfterRestart() {
     controller.waitForPageLoad();
 
     locationBar.waitForProxyState();
+
     cert = security.getCertificate(tabBrowser.securityUI);
     verifyCertificateStatus(aPage);
     tabBrowser.selectedIndex++;
@@ -188,11 +190,9 @@ function checkSecurityTab_OV(aController) {
   expect.equal(ownerElem.getNode().value, securityOwner,
                "Expected owner label found");
 
-  // Check that the Verifier is "Not specified"
+  // Check the Verifier against the Cert Issuer
   var verifierElem = findElement.ID(aController.window.document,
                                     "security-identity-verifier-value");
-  var securityVerifier = utils.getProperty("chrome://browser/locale/pageInfo.properties",
-                                           "notset");
-  expect.equal(verifierElem.getNode().value, securityVerifier,
+  expect.equal(verifierElem.getNode().value, cert.issuerOrganization,
                "Verifier matches certificate's issuer");
 }

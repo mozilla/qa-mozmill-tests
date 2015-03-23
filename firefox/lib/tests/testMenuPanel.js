@@ -40,5 +40,19 @@ function testMenuPanel() {
                  "Element has been found - " + element);
   }
 
+  // Open about:accounts page from menu panel
+  var fxaStatus = menuPanel.getElement({type: "panel_fxaStatus"});
+  var aboutAccountsPage = browserWindow.openAboutAccountsPage(
+    {type: "callback", callback: () => { fxaStatus.click(); }}
+  );
+  aboutAccountsPage.close();
+
+  // Open about:preferences page from menu panel
+  var preferencesButton = menuPanel.getElement({type: "panel_preferences"});
+  var aboutPreferencesPage = browserWindow.openAboutPreferencesPage(
+    {type: "callback", callback: () => { preferencesButton.click(); }}
+  );
+  aboutPreferencesPage.close();
+
   menuPanel.close();
 }
