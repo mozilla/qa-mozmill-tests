@@ -11,7 +11,7 @@ var browser = require("../../../lib/ui/browser");
 
 const TEST_DATA = [
   // Invalid cert page
-  "https://summitbook.mozilla.org",
+  "https://ssl-expired.mozqa.com",
   // Secure page
   "https://ssl-ev.mozqa.com/",
   // Unsecure page
@@ -46,7 +46,7 @@ function testSecNotification() {
     return identityBox.getNode().className === "unknownIdentity";
   }, "Identity is unknown");
 
-  /** Bug 1106077 - Broken root certificate for http://summitbook.mozilla.org
+  // Bug 1106077 - Broken root certificate for http://summitbook.mozilla.org
   // Go to a website which does not have a valid cert
   controller.open(TEST_DATA[0]);
   controller.waitForPageLoad();
@@ -70,5 +70,4 @@ function testSecNotification() {
   // Verify the error code is correct
   expect.contain(text.getNode().textContent, "sec_error_expired_certificate",
                  "The error code is a SEC Expired certificate error");
-  */
 }
