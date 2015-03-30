@@ -67,7 +67,7 @@ function testSaveAndDeletePassword() {
   locationBar.waitForNotificationPanel(() => {
     // After logging in, remember the login information
     var button = locationBar.getNotificationElement(
-                   "password-save-notification",
+                   "password-notification",
                    {type: "anonid", value: "button"}
                  );
     button.click();

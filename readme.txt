@@ -5,7 +5,7 @@ command line client. Once you have Mozmill installed, you can contribute by
 running the tests, raising any issues you find, and writing new tests!
 
 See the 'Mozmill' page on MDN for instructions on installing and running
-Mozmill Tests - https://developer.mozilla.org/en-US/docs/Mozmill
+Mozmill Tests - https://developer.mozilla.org/en-US/docs/Mozmill_Tests
 
 If you have questions, feel free to join us in #automation on irc.mozilla.org
 or use our Mozmill developer mailing list:
