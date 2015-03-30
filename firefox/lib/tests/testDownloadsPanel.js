@@ -5,7 +5,20 @@
 "use strict";
 
 // Include required modules
+var downloads = require("../../../lib/downloads");
+var prefs = require("../../../lib/prefs");
+
 var browser = require("../ui/browser");
+
+const BASE_URL = collector.addHttpResource("../../../data/");
+const TEST_DATA = {
+  url: BASE_URL + "downloading/unknown_type.mtdl",
+  elements: [
+    {name: "openButton", type: "toolbarbutton"},
+    {name: "panel", type: "panel"},
+    {name: "showAllDownloads", type: "button"}
+  ]
+};
 
 const DOWNLOADS_PANEL_ELEMENTS = {
   openButton: "toolbarbutton",
@@ -13,13 +26,22 @@ const DOWNLOADS_PANEL_ELEMENTS = {
   showAllDownloads: "button"
 };
 
+const PREF_PANEL_SHOWN = "browser.download.panel.shown";
+
 function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
   aModule.downloadsPanel = aModule.browserWindow.navBar.downloadsPanel;
+
+  // Bug 959103
+  // Downloads gets duplicated with a new profile
+  // Remove pref once this is fixed
+  prefs.setPref(PREF_PANEL_SHOWN, true);
 }
 
 function teardownModule(aModule) {
+  downloads.removeAllDownloads();
   aModule.downloadsPanel.close({force: true});
+  prefs.clearUserPref(PREF_PANEL_SHOWN);
 }
 
 /**
@@ -27,14 +49,20 @@ function teardownModule(aModule) {
  * Test that the elements in library are present on the Downloads Panel
  */
 function testDownloadPanel() {
+  var dialog = browserWindow.openUnknownContentTypeDialog(() => {
+    browserWindow.controller.open(TEST_DATA.url);
+  });
+
+  dialog.save();
+
   downloadsPanel.open();
   expect.ok(downloadsPanel.isOpen, "Downloads panel is open");
 
-  for (var element in DOWNLOADS_PANEL_ELEMENTS) {
-    var el = downloadsPanel.getElement({type: element});
-    expect.equal(el.getNode().localName, DOWNLOADS_PANEL_ELEMENTS[element],
-                 "element has been found - " + element);
-  }
+  TEST_DATA.elements.forEach(aElement => {
+    var element = downloadsPanel.getElement({type: aElement.name});
+    expect.equal(element.getNode().localName, aElement.type,
+                 aElement.name + " element has been found");
+  });
 
   downloadsPanel.close();
 }

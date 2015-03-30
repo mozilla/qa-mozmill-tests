@@ -49,22 +49,18 @@ var testDisableSSL = function() {
   var title = new elementslib.ID(controller.tabs.activeTab, "errorTitleText");
   controller.waitForElement(title);
 
-  var nssFailure2title = utils.getEntity(DTDS, "oldSecurityProtocol.title");
+  var nssFailure2title = utils.getEntity(DTDS, "nssFailure2.title");
   expect.equal(title.getNode().textContent, nssFailure2title,
                "The correct SSL error title is shown");
 
   // Verify "Try Again" button appears
   var tryAgain = new elementslib.ID(controller.tabs.activeTab, "errorTryAgain");
-  assert.ok(tryAgain.exists(), "'Try again' button has been found");
+  expect.ok(tryAgain.exists(), "'Try again' button has been found");
 
   // Verify the error message is correct
-  var text = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
-  controller.waitForElement(text);
-
-  var errorCode = findElement.ID(controller.tabs.activeTab, "errorcode");
-  expect.equal(errorCode.getNode().textContent, "ssl_error_unsupported_version",
+  var shortDescription = new elementslib.ID(controller.tabs.activeTab, "errorShortDescText");
+  expect.contain(shortDescription.getNode().textContent, "ssl_error_unsupported_version",
                "The SSL error message contains disabled information");
-
-  expect.contain(text.getNode().textContent, 'mozqa.com',
-                 "The SSL error message contains domain name");
+  expect.contain(shortDescription.getNode().textContent, 'mozqa.com',
+                 "The SSL error message contains the domain name");
 }

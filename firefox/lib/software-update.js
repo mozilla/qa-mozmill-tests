@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 /**
  * @fileoverview
  * The SoftwareUpdate API adds support for an easy access to the update process.
@@ -16,66 +18,12 @@ var prefs = require("../../lib/prefs");
 var utils = require("../../lib/utils");
 var windows = require("../../lib/windows");
 
-const TIMEOUT_UPDATE_APPLYING  = 300000;
-const TIMEOUT_UPDATE_CHECK     = 30000;
-const TIMEOUT_UPDATE_DOWNLOAD  = 360000;
-
 const PREF_APP_DISTRIBUTION = "distribution.id";
 const PREF_APP_DISTRIBUTION_VERSION = "distribution.version";
 const PREF_APP_UPDATE_URL = "app.update.url";
 const PREF_DISABLED_ADDONS = "extensions.disabledAddons";
 
 const REGEX_UPDATE_CHANNEL_PREF = /("app\.update\.channel", ")([^"].*)(?=")/m;
-
-// Helper lookup constants for elements of the software update dialog
-const WIZARD = '/id("updates")';
-const WIZARD_BUTTONS = WIZARD + '/anon({"anonid":"Buttons"})';
-const WIZARD_DECK = WIZARD  + '/anon({"anonid":"Deck"})';
-
-const WIZARD_PAGES = {
-  dummy: 'dummy',
-  checking: 'checking',
-  pluginUpdatesFound: 'pluginupdatesfound',
-  noUpdatesFound: 'noupdatesfound',
-  manualUpdate: 'manualUpdate',
-  incompatibleCheck: 'incompatibleCheck',
-  updatesFoundBasic: 'updatesfoundbasic',
-  updatesFoundBillboard: 'updatesfoundbillboard',
-  license: 'license',
-  incompatibleList: 'incompatibleList',
-  downloading: 'downloading',
-  errors: 'errors',
-  errorPatching: 'errorpatching',
-  finished: 'finished',
-  finishedBackground: 'finishedBackground',
-  installed: 'installed'
-}
-
-// On Mac there is another DOM structure used as on Windows and Linux
-if (mozmill.isMac) {
-  var WIZARD_BUTTONS_BOX = WIZARD_BUTTONS +
-                             '/anon({"flex":"1"})/{"class":"wizard-buttons-btm"}/';
-  var WIZARD_BUTTON = {
-    back: '{"dlgtype":"back"}',
-    next: '{"dlgtype":"next"}',
-    cancel: '{"dlgtype":"cancel"}',
-    finish: '{"dlgtype":"finish"}',
-    extra1: '{"dlgtype":"extra1"}',
-    extra2: '{"dlgtype":"extra2"}'
-  }
-}
-else {
-  var WIZARD_BUTTONS_BOX = WIZARD_BUTTONS +
-                       '/anon({"flex":"1"})/{"class":"wizard-buttons-box-2"}/';
-  var WIZARD_BUTTON = {
-    back: '{"dlgtype":"back"}',
-    next: 'anon({"anonid":"WizardButtonDeck"})/[1]/{"dlgtype":"next"}',
-    cancel: '{"dlgtype":"cancel"}',
-    finish: 'anon({"anonid":"WizardButtonDeck"})/[0]/{"dlgtype":"finish"}',
-    extra1: '{"dlgtype":"extra1"}',
-    extra2: '{"dlgtype":"extra2"}'
-  }
-}
 
 /**
  * Class to handle the allowed MAR channels as listed in update-settings.ini
@@ -178,10 +126,6 @@ MARChannels.prototype = {
  * Constructor for software update class
  */
 function SoftwareUpdate() {
-  this._controller = null;
-  this._wizard = null;
-  this._downloadDuration = -1;
-
   this._aus = Cc["@mozilla.org/updates/update-service;1"]
               .getService(Ci.nsIApplicationUpdateService);
   this._ums = Cc["@mozilla.org/updates/update-manager;1"]
@@ -259,30 +203,12 @@ SoftwareUpdate.prototype = {
   },
 
   /**
-   * Get the controller of the associated engine manager dialog
-   *
-   * @returns Controller of the browser window
-   * @type MozMillController
-   */
-  get controller() {
-    return this._controller;
-  },
-
-  /**
-   * Returns the current step of the software update dialog wizard
-   */
-  get currentPage() {
-    return this._wizard.getNode().getAttribute('currentpageid');
-  },
-
-  /**
    * Returns true if the offered update is a complete update
    */
   get isCompleteUpdate() {
     // Throw when isCompleteUpdate is called without an update. This should
     // never happen except if the test is incorrectly written.
-    assert.ok(this.activeUpdate, arguments.callee.name + ": isCompleteUpdate called " +
-              "when activeUpdate is null!");
+    assert.ok(this.activeUpdate, "An active update has been found");
 
     var patchCount = this.activeUpdate.patchCount;
     assert.ok(patchCount === 1 || patchCount === 2,
@@ -299,7 +225,7 @@ SoftwareUpdate.prototype = {
     return (this.activeUpdate.selectedPatch.type  == "complete");
   },
 
-   /**
+  /**
    * Returns information of the active update in the queue.
    */
   get patchInfo() {
@@ -313,7 +239,6 @@ SoftwareUpdate.prototype = {
       info.size = this.activeUpdate.selectedPatch.size;
       info.type = this.activeUpdate.type;
       info.url_mirror = this.activeUpdate.selectedPatch.finalURL || "n/a";
-      info.download_duration = this._downloadDuration;
       info.version = this.activeUpdate.version;
     }
 
@@ -365,13 +290,6 @@ SoftwareUpdate.prototype = {
   },
 
   /**
-   * Check if updates have been found
-   */
-  get updatesFound() {
-    return this.currentPage.indexOf("updatesfound") == 0;
-  },
-
-  /**
    * Checks if an update has been applied correctly
    *
    * @param {object} aUpdateData
@@ -417,96 +335,6 @@ SoftwareUpdate.prototype = {
   },
 
   /**
-   * Check if the update button in the about window is visible and close the
-   * window immediately, so we don't loose bandwidth when downloading the patch
-   * via the secondary ui.
-   *
-   * @param {MozMillController} aBrowserController
-   *        Controller of the browser window to spawn the about dialog
-   */
-  checkAboutDialog : function SU_checkAboutDialog(aBrowserController) {
-    aBrowserController.mainMenu.click("#aboutName");
-    windows.handleWindow("type", "Browser:About", function (aController) {
-      var button = new elementslib.Selector(aController.window.document, "#updateButton");
-      expect.ok(!button.getNode().hidden,
-                "The update button is always visible even after an update.");
-    }, true);
-  },
-
-  /**
-   * Close the software update dialog
-   */
-  closeDialog: function SU_closeDialog() {
-    if (this._controller) {
-      this._controller.keypress(null, "VK_ESCAPE", {});
-      this._controller.sleep(500);
-      this._controller = null;
-      this._wizard = null;
-    }
-  },
-
-  /**
-   * Download the update of the given channel and type
-   *
-   * @param {boolean} aWaitForFinish
-   *        Sets if the function should wait until the download has been finished
-   * @param {number} aTimeout
-   *        Timeout the download has to stop
-   */
-  download : function SU_download(aWaitForFinish, aTimeout) {
-    waitForFinish = aWaitForFinish ? aWaitForFinish : true;
-
-    // Check that the correct channel has been set
-    assert.equal(this.updateChannel.defaultChannel, this.updateChannel.channel,
-                 "The update channel has been set correctly.");
-
-    // Retrieve the timestamp, so we can measure the duration of the download
-    var startTime = Date.now();
-
-    // Click the next button
-    var next = this.getElement({type: "button", subtype: "next"});
-    var page = this.currentPage;
-
-    // Click 'Next' and wait until the next page has been selected
-    this._controller.click(next);
-    assert.waitFor(function () {
-      return this.currentPage !== page;
-    }, "Update available page has been processed.", undefined, undefined, this);
-
-    // If incompatible add-on are installed we have to skip over the wizard page
-    if (this.currentPage === WIZARD_PAGES.incompatibleList) {
-      this._controller.click(next);
-      assert.waitFor(function () {
-        return this.currentPage !== page;
-      }, "Incompatible add-ons page has been skipped.", undefined, undefined, this);
-    }
-
-    // It can happen that a download has been already cached and the 'finished'
-    // page gets directly shown. Make sure we react correctly for different pages.
-    switch (this.currentPage) {
-      case WIZARD_PAGES.downloading:
-        if (waitForFinish) {
-          this.waitforDownloadFinished(aTimeout);
-
-          assert.waitFor(function () {
-            return this.currentPage ===  WIZARD_PAGES.finished ||
-                   this.currentPage === WIZARD_PAGES.finishedBackground;
-          }, "Final wizard page has been selected.", undefined, undefined, this);
-
-        }
-        break;
-      case WIZARD_PAGES.finished:
-      case WIZARD_PAGES.finishedBackground:
-        break;
-      default:
-        assert.fail("No handler for wizard page: " + this.currentPage);
-    }
-
-    // Calculate the duration in ms
-    this._downloadDuration = Date.now() - startTime;
-  },
-
-  /**
    * Update the update.status file and set the status to 'failed:6'
    */
   forceFallback : function SU_forceFallback() {
@@ -515,58 +343,6 @@ SoftwareUpdate.prototype = {
 
     var file = new files.File(updateStatus);
     file.contents = "failed: 6\n";
-  },
-
-  /**
-   * Gets all the needed external DTD urls as an array
-   *
-   * @returns Array of external DTD urls
-   * @type [string]
-   */
-  getDtds : function SU_getDtds() {
-    var dtds = ["chrome://mozapps/locale/update/history.dtd",
-                "chrome://mozapps/locale/update/updates.dtd"]
-    return dtds;
-  },
-
-  /**
-   * Retrieve an UI element based on the given spec
-   *
-   * @param {object} aSpec
-   *        Information of the UI element which should be retrieved
-   *        type: General type information
-   *        subtype: Specific element or property
-   *        value: Value of the element or property
-   * @returns Element which has been created
-   * @type {ElemBase}
-   */
-  getElement : function SU_getElement(aSpec) {
-    var elem = null;
-
-    switch(aSpec.type) {
-      /**
-       * subtype: subtype to match
-       * value: value to match
-       */
-      case "button":
-        elem = new elementslib.Lookup(this._controller.window.document,
-                                      WIZARD_BUTTONS_BOX + WIZARD_BUTTON[aSpec.subtype]);
-        break;
-      case "wizard":
-        elem = new elementslib.Lookup(this._controller.window.document, WIZARD);
-        break;
-      case "wizard_page":
-        elem = new elementslib.Lookup(this._controller.window.document, WIZARD_DECK +
-                                      '/id(' + aSpec.subtype + ')');
-        break;
-      case "download_progress":
-        elem = new elementslib.ID(this._controller.window.document, "downloadProgress");
-        break;
-      default:
-        assert.fail("Unknown element type - " + aSpec.type);
-    }
-
-    return elem;
   },
 
   /**
@@ -601,113 +377,6 @@ SoftwareUpdate.prototype = {
       url += (url.indexOf("?") != -1 ? "&" : "?") + "force=1";
 
     return url;
-  },
-
-  /**
-   * Open software update dialog
-   *
-   * @param {MozMillController} aBrowserController
-   *        Mozmill controller of the browser window
-   */
-  openDialog: function SU_openDialog(aBrowserController) {
-    // TODO: After Firefox 4 has been released and we do not have to test any
-    // beta release anymore uncomment out the following code
-
-    // With version >= 4.0b7pre the update dialog is reachable from within the
-    // about window now.
-    var appVersion = utils.appInfo.version;
-
-    if (Services.vc.compare(appVersion, "4.0b7pre") >= 0) {
-      // We can't open the about window, otherwise a parallel download of
-      // the update will let us fallback to a complete one all the time
-
-      // Open the about window and check the update button
-      // browserController.mainMenu.click("#aboutName");
-
-      // windows.handleWindow("type", "Browser:About", function(controller) {
-      //  // Bug 599290
-      //  // Check for updates has been completely relocated
-      //  // into the about window. We can't check the in-about ui yet.
-      //  var updateButton = new elementslib.ID(controller.window.document,
-      //                                        "checkForUpdatesButton");
-      //  //controller.click(updateButton);
-      //  controller.waitForElement(updateButton, TIMEOUT);
-      // });
-
-      // For now just call the old ui until we have support for the about window.
-      var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"]
-                         .createInstance(Ci.nsIUpdatePrompt);
-      updatePrompt.checkForUpdates();
-    }
-    else {
-      // For builds <4.0b7pre
-      aBrowserController.mainMenu.click("#checkForUpdates");
-    }
-
-    this.waitForDialogOpen(aBrowserController);
-  },
-
-  /**
-   * Wait that check for updates has been finished
-   * @param {number} aTimeout
-   */
-  waitForCheckFinished : function SU_waitForCheckFinished(aTimeout) {
-    timeout = aTimeout ? aTimeout : TIMEOUT_UPDATE_CHECK;
-
-    assert.waitFor(function() {
-      return this.currentPage != WIZARD_PAGES.checking;
-    }, "Check for updates has been completed.", timeout, null, this);
-  },
-
-  /**
-   * Wait for the software update dialog
-   *
-   * @param {MozMillController} aBrowserController
-   *        Mozmill controller of the browser window
-   */
-  waitForDialogOpen : function SU_waitForDialogOpen(aBrowserController) {
-    this._controller = windows.handleWindow("type", "Update:Wizard",
-                                            undefined, false);
-    this._wizard = this.getElement({type: "wizard"});
-
-    assert.waitFor(function () {
-      return this.currentPage !== WIZARD_PAGES.dummy;
-    }, "Dummy wizard page has been made invisible", undefined, undefined, this);
-
-    this._controller.window.focus();
-  },
-
-  /**
-   * Wait until the download has been finished
-   *
-   * @param {number} aTimeout
-   *        Timeout the download has to stop
-   */
-  waitforDownloadFinished: function SU_waitForDownloadFinished(aTimeout) {
-    timeout = aTimeout ? aTimeout : TIMEOUT_UPDATE_DOWNLOAD;
-
-    var progress =  this.getElement({type: "download_progress"});
-    assert.waitFor(function () {
-      return this.currentPage !== WIZARD_PAGES.downloading ||
-             progress.getNode().value === '100';
-    }, "Update has been finished downloading.", timeout, undefined, this);
-
-    assert.notEqual(this.currentPage, WIZARD_PAGES.errors,
-                    "Update successfully downloaded.");
-
-    // We instantly apply the downloaded update
-    assert.waitFor(function () {
-      return this.currentPage !== WIZARD_PAGES.downloading;
-    }, "Downloaded update has been applied.", TIMEOUT_UPDATE_APPLYING, undefined, this);
-  },
-
-  /**
-   * Waits for the given page of the update dialog wizard
-   */
-  waitForWizardPage : function SU_waitForWizardPage(aStep) {
-    assert.waitFor(function () {
-      return this.currentPage === aStep;
-    }, "New wizard page has been selected", undefined, undefined, this);
   }
 }
 
@@ -816,10 +485,6 @@ function initUpdateTests(aFallback=false) {
     update.marChannels.add(persisted.update.allowed_mar_channels);
   }
 }
-
-
-// Export of variables
-exports.WIZARD_PAGES = WIZARD_PAGES;
 
 // Export of functions
 exports.initUpdateTests = initUpdateTests;

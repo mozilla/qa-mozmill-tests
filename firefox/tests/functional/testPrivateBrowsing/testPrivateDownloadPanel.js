@@ -7,17 +7,17 @@
 Cu.import("resource://gre/modules/Services.jsm");
 
 // Include the required modules
-var { assert } = require("../../../../lib/assertions");
-var downloads = require("../../../lib/downloads");
-var files = require("../../../../lib/files");
+var downloads = require("../../../../lib/downloads");
+var prefs = require("../../../../lib/prefs");
 var windows = require("../../../../lib/windows");
 
-var browser = require("../../../lib/ui/browser");
+var browser = require ("../../../lib/ui/browser");
 
 const BASE_URL = collector.addHttpResource("../../../../data/");
 const TEST_DATA = BASE_URL + "downloading/";
 
-const DOWNLOAD_LOCATION = files.getProfileResource("downloads").path;
+const PREF_PANEL_SHOWN = "browser.download.panel.shown";
+
 const DOWNLOADS = {
   normal: [
     "unknown_type.mtdl",
@@ -28,63 +28,81 @@ const DOWNLOADS = {
   ]
 };
 
-var setupModule = function (aModule) {
-  aModule.controller = mozmill.getBrowserController();
-
+function setupModule(aModule) {
   aModule.browserWindow = new browser.BrowserWindow();
-  aModule.pbWindow = browserWindow.open({private: true, method: "shortcut"});
+  aModule.downloadsPanel = aModule.browserWindow.navBar.downloadsPanel;
 
-  aModule.dm = new downloads.downloadManager();
+  // PB Window
+  aModule.pbBrowserWindow = browserWindow.open({private: true, method: "shortcut"});
+  aModule.pbDownloadsPanel = aModule.pbBrowserWindow.navBar.downloadsPanel;
 
   // Set the Download Folder to %profile%/downloads
-  aModule.dm.downloadDir = DOWNLOAD_LOCATION;
+  downloads.setDownloadLocation("downloads");
 
-  // Clean the Download Manager database
-  aModule.dm.cleanAll();
+  // Bug 959103
+  // Download gets duplicated and stuck with a new profile
+  // Remove this pref once bug has been fixed
+  prefs.setPref(PREF_PANEL_SHOWN, true);
+
+  // Maximize the browser windows because the download panel button is not
+  // displayed on smaller window sizes hence the download panel is not open
+  aModule.browserWindow.maximize();
+  aModule.pbBrowserWindow.maximize();
 }
 
-var teardownModule = function (aModule) {
-  // Clean all downloaded files from the system
-  aModule.dm.cleanAll();
+function teardownModule(aModule) {
+  downloads.removeAllDownloads();
+  downloads.resetDownloadLocation();
+  prefs.clearUserPref(PREF_PANEL_SHOWN);
 
-  aModule.dm.resetDownloadDir();
+  aModule.downloadsPanel.close({force: true});
+  aModule.pbDownloadsPanel.close({force: true});
 
-  aModule.dm.close();
+  aModule.browserWindow.restore();
+  aModule.pbBrowserWindow.restore();
+
   windows.closeAllWindows(aModule.browserWindow);
 }
 
 /**
  * Test that normal and pbWindow downloads are kept separate
  */
-var testPrivateDownloadPanel = function () {
-
+function testPrivateDownloadPanel() {
   // Download files of unknown type
   // Normal Browsing
-  DOWNLOADS.normal.forEach(function (aFile) {
-    downloads.downloadFileOfUnknownType(controller, TEST_DATA + aFile);
+  DOWNLOADS.normal.forEach(aFile => {
+    var dialog = browserWindow.openUnknownContentTypeDialog(() => {
+      browserWindow.controller.open(TEST_DATA + aFile);
+    });
+
+    dialog.save();
   });
 
   // Private Browsing
-  DOWNLOADS.pbWindow.forEach(function (aFile) {
-    downloads.downloadFileOfUnknownType(pbWindow.controller, TEST_DATA + aFile);
+  DOWNLOADS.pbWindow.forEach(aFile => {
+    var dialog = pbBrowserWindow.openUnknownContentTypeDialog(() => {
+      pbBrowserWindow.controller.open(TEST_DATA + aFile);
+    });
+
+    dialog.save();
   });
 
   // Wait until all downloads have been finished
-  assert.waitFor(function () {
-    return dm.activeDownloadCount === 0 && dm.activePrivateDownloadCount === 0;
-  }, "All downloads have been finished");
+  downloads.waitAllDownloadsFinished();
 
-  // Open Download Panel and read the downloaded item list
-  var downloadedFiles = dm.getPanelDownloads(controller);
+  // Open the Download panel of the non-private browsing window
+  // and check that we downloaded the correct files
+  downloadsPanel.open();
+  var downloadsList = downloadsPanel.getElements({type: "downloads"});
+  assert.equal(downloadsList.length, 2,
+               "File was downloaded in non-private window");
+  downloadsPanel.close();
 
-  // Check that number of normal downloaded files is identical to the original download list
-  assert._deepEqual(downloadedFiles, DOWNLOADS.normal,
-                    "Normal Downloads are correctly shown in the Downloads Panel");
-
-  // Open the Private Download Indicator and read the downloaded item list
-  var downloadedPBFiles = dm.getPanelDownloads(pbWindow.controller);
-
-  // Check that number of pbWindow downloaded files is identical to the original pbWindow download list
-  assert._deepEqual(downloadedPBFiles, DOWNLOADS.pbWindow,
-                    "Private Downloads are correctly shown in the Private Downloads Panel");
+  // Open the Download panel of the private browsing window
+  // and check that we downloaded the correct files
+  pbDownloadsPanel.open();
+  downloadsList = pbDownloadsPanel.getElements({type: "downloads"});
+  assert.equal(downloadsList.length, 1,
+               "File was downloaded in private window");
+  pbDownloadsPanel.close();
 }

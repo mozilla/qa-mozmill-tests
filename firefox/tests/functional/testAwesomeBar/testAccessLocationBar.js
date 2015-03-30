@@ -41,13 +41,9 @@ function testAccessLocationBarHistory() {
     // Open a few different sites to create a small history
     // NOTE: about:blank doesn't appear in history and clears the page
     //       for clean test arena
-    TEST_DATA.forEach((aPage, aIndex) => {
+    TEST_DATA.forEach(aPage => {
       locationBar.loadURL(aPage);
       controller.waitForPageLoad();
-      if (aIndex !== 3) {
-        assert.waitFor(() => (locationBar.value === aPage),
-                       "Location bar value is correct, expected: '" + aPage + "'");
-      }
     });
   });
 
