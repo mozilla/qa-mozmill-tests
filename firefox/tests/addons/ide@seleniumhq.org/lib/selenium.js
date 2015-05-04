@@ -119,16 +119,22 @@ SeleniumManager.prototype = {
 
     if (aSpec.action !== undefined) {
       var command = this.getElement({type: "command_action"});
+      // Clear possible left-over values
+      command.getNode().value = "";
       this._controller.type(command, aSpec.action);
     }
 
     if (aSpec.target !== undefined) {
       var target = this.getElement({type: "command_target"});
+      // Clear possible left-over values
+      target.getNode().value = "";
       this._controller.type(target, aSpec.target);
     }
 
     if (aSpec.value !== undefined) {
       var value = this.getElement({type: "command_value"});
+      // Clear possible left-over values
+      value.getNode().value = "";
       this._controller.type(value, aSpec.value);
     }
   },

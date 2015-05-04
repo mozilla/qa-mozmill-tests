@@ -69,6 +69,12 @@ AboutPreferencesPage.prototype.__defineSetter__('category', function (aCategory)
 
   assert.waitFor(() => this.isSelected(aCategory),
                  "Category has been loaded - " + aCategory);
+
+  // For "sync" category wait for weave:service to be ready
+  if (aCategory === "sync") {
+    assert.waitFor(() => weaveService.ready,
+                   "'weave:service' is ready.");
+  }
 });
 
 /**
@@ -457,10 +463,9 @@ AboutPreferencesPage.prototype.open = function APP_open(aCallback) {
   try {
     baseInContentPage.BaseInContentPage.prototype.open.call(this, aCallback);
 
-    // Wait for the Initialized event and for weave:service to be ready
-    assert.waitFor(() => initialized && weaveService.ready,
-                   "Preferences panes have been initialized"
-    );
+    // Wait for the Initialized event
+    assert.waitFor(() => initialized,
+                   "Preferences panes have been initialized");
   }
   finally {
    this.browserWindow.controller.window.removeEventListener("Initialized", initialize)

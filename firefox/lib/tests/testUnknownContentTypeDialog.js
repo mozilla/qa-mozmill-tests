@@ -44,7 +44,7 @@ function testUnknownContentTypeDialog() {
       var el = dialog.getElement({type: element});
     }
     expect.equal(el.getNode().localName, TEST_DATA.elements[element],
-                 "Elemens has been found - " + element);
+                 "Element has been found - " + element);
   }
 
   dialog.close();

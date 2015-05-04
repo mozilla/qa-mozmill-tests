@@ -267,7 +267,7 @@ DownloadsPanel.prototype = {
   /**
    * Check if the Downloads Panel is open
    *
-   * @returns {boolen} True if the panel is open, false otherwise
+   * @returns {boolean} True if the panel is open, false otherwise
    */
   get isOpen() {
     return this.panel.getNode().state === "open";
@@ -344,9 +344,9 @@ DownloadsPanel.prototype = {
 
     switch (spec.type) {
       case "download":
-        assert.ok(spec.value, "Download index has been specified");
-
-        elems = [findElement.ID(root, "downloadsItem_id:" + spec.value)];
+        assert.equal(typeof spec.value, "number",
+                     "Download index has been specified");
+        elems = [this.getElements({type: "downloads"})[spec.value]];
         break;
       case "downloads":
         nodeCollector.root = findElement.ID(root, "downloadsListBox").getNode();
@@ -354,7 +354,8 @@ DownloadsPanel.prototype = {
         elems = nodeCollector.elements;
         break;
       case "downloadButton":
-        assert.ok(spec.value, "Download index has been specified");
+        assert.equal(typeof spec.value, "number",
+                     "Download index has been specified");
         assert.ok(spec.subtype, "Download button has been specified");
 
         var item = this.getElement({type: "download", value: spec.value});
@@ -399,12 +400,11 @@ DownloadsPanel.prototype = {
    * @params {object} [aSpec={}]
    *         Information on how to close the panel
    * @params {string} [aSpec.method="shortcut"]
-   *         Method to use to close the downloads panel ("callback"|"shortcut")
+   *         Method to use to close the downloads panel ("callback", "shortcut")
    * @params {function} [aSpec.callback]
-   *         Callback that triggeres the download panel to close
+   *         Callback that triggers the download panel to close
    * @params {boolean} [aSpec.force=false]
    *         Force closing the Downloads Panel
-   *
    */
   close : function DownloadsPanel_close(aSpec={}) {
     var method = aSpec.method || "shortcut";
@@ -435,30 +435,31 @@ DownloadsPanel.prototype = {
   },
 
   /**
-   * Open the panel
+   * Open the downloads panel
    *
    * @params {object} [aSpec={}]
-   *         Information on how to open the panel
+   *         Information about the panel to open
    * @params {string} [aSpec.method="button"]
-   *         Method to use to open the downloads panel ("button"|"callback")
+   *         Method to use for opening the Downloads Panel ("button", "callback")
    * @params {function} [aSpec.callback]
-   *         Callback that triggeres the download panel to open
+   *         Callback that triggers the opening
    */
-  open : function DownloadsPanel_waitForState(aSpec={}) {
+  open : function DownloadsPanel_open(aSpec={}) {
     var method = aSpec.method || "button";
 
     waitForNotificationPanel(() => {
       switch (method) {
         case "button":
-          this.getElement({type: "openButton"}).click();
+          var button = this.getElement({type: "openButton"});
+          button.click();
           break;
         case "callback":
-          assert.equal(aSpec.callback, "function",
+          assert.equal(typeof aSpec.callback, "function",
                        "Callback has been defined");
           aSpec.callback();
           break;
         default:
-          assert.fail("Unknown method to open the downloads panel - " + method);
+          assert.fail("Unknown method for opening the downloads panel - " + method);
       }
     }, {panel: this.panel, open: true});
   }
@@ -1138,7 +1139,7 @@ MenuPanel.prototype = {
    * @params {string} [aSpec.method="shortcut"]
    *         Method to use to close the menu panel ("callback"|"shortcut")
    * @params {function} [aSpec.callback]
-   *         Callback that triggeres the menu panel to close
+   *         Callback that triggers the menu panel to close
    * @params {boolean} [aSpec.force=false]
    *         Force closing the Menu Panel
    *
@@ -1180,7 +1181,7 @@ MenuPanel.prototype = {
    * @params {string} [aSpec.method="button"]
    *         Method to use to open the menu panel ("button"|"callback")
    * @params {function} [aSpec.callback]
-   *         Callback that triggeres the menu panel to open
+   *         Callback that triggers the menu panel to open
    */
   open : function MenuPanel_open(aSpec={}) {
     var method = aSpec.method || "button";

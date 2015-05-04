@@ -13,6 +13,7 @@ var windows = require("../../../lib/windows");
 
 var aboutAccounts = require("about-accounts-page");
 var aboutPreferences = require("about-preferences-page");
+var aboutWindow = require("about-window");
 var baseWindow = require("../../../lib/ui/base-window");
 var pageInfo = require("page-info");
 var placesOrganizer = require("places-organizer");
@@ -321,6 +322,35 @@ BrowserWindow.prototype.openPlacesOrganizer = function BW_openPlacesOrganizer(aS
   };
 
   return placesOrganizer.open(callback);
+};
+
+/**
+ * Open the About window
+ *
+ * @param {object} [aSpec]
+ *        Information for opening the window
+ * @param {string} [aSpec.type="menu"|"callback"]
+ *        How to open the About Window
+ */
+BrowserWindow.prototype.openAboutWindow = function BW_openAboutWindow(aSpec={}) {
+  var type = aSpec.type || "menu";
+
+  var callback = () => {
+    switch (type) {
+      case "menu":
+        this._controller.mainMenu.click("#aboutName");
+        break;
+      case "callback":
+        assert.ok(aSpec.callback && (typeof aSpec.callback === "function"),
+                  "A callback for opening About Window has ben provided.");
+        aSpec.callback();
+        break;
+      default:
+        assert.fail("Unknown event type - " + type);
+    }
+  };
+
+  return aboutWindow.open(callback);
 };
 
 /**

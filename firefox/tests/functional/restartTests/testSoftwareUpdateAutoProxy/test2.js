@@ -9,6 +9,8 @@ var {expect} = require("../../../../../lib/assertions");
 var prefs = require("../../../../../lib/prefs");
 var softwareUpdate = require("../../../../lib/software-update");
 
+var updateWizard = require("../../../../lib/ui/update-wizard");
+
 const BROWSER_HOME_PAGE = 'browser.startup.homepage';
 const BROWSER_STARTUP_PAGE = 'browser.startup.page';
 const PROXY_TYPE = 'network.proxy.type';
@@ -34,11 +36,15 @@ function teardownModule(aModule) {
  */
 function testSoftwareUpdateAutoProxy() {
   // Open the software update dialog and wait until the check has been finished
-  update.openDialog(controller);
-  update.waitForCheckFinished();
+  var updatePrompt = Cc["@mozilla.org/updates/update-prompt;1"]
+                     .createInstance(Ci.nsIUpdatePrompt);
+  updatePrompt.checkForUpdates();
 
-  expect.notEqual(update.currentPage, softwareUpdate.WIZARD_PAGES.errors,
+  var update = updateWizard.handleUpdateWizardDialog();
+  update.waitForWizardPageChanged(updateWizard.WIZARD_PAGES.checking);
+
+  expect.notEqual(update.currentPage, updateWizard.WIZARD_PAGES.errors,
                   "Update dialog wizard doesn't show 'Update XML file malformed (200)' error.");
 
-  update.closeDialog();
+  update.close();
 }
