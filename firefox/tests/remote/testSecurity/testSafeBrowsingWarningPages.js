@@ -76,22 +76,12 @@ var checkGetMeOutOfHereButton = function() {
  *        URL of malware site to check
  */
 var checkReportButton = function(aType, aBadUrl) {
+  var url = utils.formatUrlPref("app.support.baseURL") + "phishing-malware";
+
   // Wait for the reportButton to be safely loaded onto the warning page
   var reportButton = new elementslib.ID(controller.tabs.activeTab, "reportButton");
   controller.waitThenClick(reportButton);
   controller.waitForPageLoad();
-
-  var locale = prefs.getPref("general.useragent.locale", "");
-  var url = "";
-
-  if (aType == 0) {
-    // Build phishing URL be replacing identifiers with actual locale of browser
-    url = utils.formatUrlPref("app.support.baseURL") + "phishing-malware";
-  }
-  else if (aType == 1) {
-    // Build malware URL be replacing identifiers with actual locale of browser and Firefox being used
-    url = utils.formatUrlPref("browser.safebrowsing.malware.reportURL") + aBadUrl;
-  }
 
   utils.assertLoadedUrlEqual(controller, url);
 }
