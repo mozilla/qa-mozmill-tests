@@ -10,7 +10,7 @@ var toolbars = require("../../../lib/toolbars");
 
 const TEST_DATA = [
   // Invalid cert page
-  "https://summitbook.mozilla.org",
+  "https://ssl-expired.mozqa.com",
   // Secure page
   "https://ssl-ev.mozqa.com/",
   // Unsecure page
