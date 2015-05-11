@@ -20,6 +20,7 @@ var utils = require("../../lib/utils");
 
 const PREF_NEWTAB_INTRO = "browser.newtabpage.introShown";
 const PREF_NEWTAB_PRELOAD = "browser.newtab.preload";
+const PREF_NEWTAB_URL = "browser.newtab.url";
 const PREF_TABS_ANIMATE = "browser.tabs.animate";
 
 const TABS_VIEW = '/id("main-window")/id("tab-view-deck")/[0]';
@@ -496,12 +497,16 @@ tabBrowser.prototype = {
     // "browser.newtab.preload" preference is set to true
     prefs.setPref(PREF_NEWTAB_PRELOAD, false);
 
+    // Bug 1163181 - about:newtab crashes localized builds of Firefox 38
+    prefs.setPref(PREF_NEWTAB_URL, "about:blank");
+
     try {
       this.openTab();
       this.controller.waitForPageLoad();
     }
     finally {
       prefs.clearUserPref(PREF_NEWTAB_PRELOAD);
+      prefs.clearUserPref(PREF_NEWTAB_URL);
     }
 
     this.selectTab({index: 0});
