@@ -81,7 +81,7 @@ function testSetMasterPassword() {
   }, {type: "notification"});
 
   // After logging in, remember the login information
-  var button = locationBar.getNotificationElement("password-save-notification",
+  var button = locationBar.getNotificationElement("password-notification",
                                                   {type: "anonid",
                                                    value: "button"});
 
